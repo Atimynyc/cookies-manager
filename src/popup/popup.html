@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cookie Controller</title>
+    <link rel="stylesheet" href="./popup.css">
+    <script type="module" src="./popup.js"></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <section class="site-summary" aria-label="Current page">
+          <div class="site-host" id="hostLabel">Loading page</div>
+          <div class="site-count" id="cookieCount">0 cookies</div>
+        </section>
+
+        <label class="site-switch">
+          <span>Site</span>
+          <select id="siteSelect" aria-label="Switch active tab site"></select>
+        </label>
+
+        <nav class="data-switch" aria-label="Data type">
+          <button class="is-active" id="cookiesViewButton" type="button" data-view="cookies" aria-pressed="true">Cookies</button>
+          <button id="localStorageViewButton" type="button" data-view="localStorage" aria-pressed="false">Local</button>
+          <button id="sessionStorageViewButton" type="button" data-view="sessionStorage" aria-pressed="false">Session</button>
+        </nav>
+
+        <label class="search-field">
+          <span class="search-icon" aria-hidden="true">Search</span>
+          <input id="searchInput" type="search" autocomplete="off" placeholder="Search name, value, domain, path">
+        </label>
+
+        <button class="icon-button" id="refreshButton" type="button" title="Refresh cookie list" aria-label="Refresh cookie list">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 5v4h4m-4 4a8.1 8.1 0 0 0 15.5 2M20 19v-4h-4" />
+          </svg>
+        </button>
+
+        <button class="icon-button panel-button" id="openSidePanelButton" type="button" title="Open side panel" aria-label="Open side panel">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 5h16v14H4zM14 5v14" />
+          </svg>
+        </button>
+
+        <label class="switch">
+          <input id="autoRefreshToggle" type="checkbox">
+          <span class="switch-track" aria-hidden="true"></span>
+          <span class="switch-label">Reload</span>
+        </label>
+      </header>
+
+      <section class="permission-banner" id="permissionBanner" hidden>
+        <span id="permissionMessage">Site access is required to read cookies.</span>
+        <button id="requestPermissionButton" type="button">Retry</button>
+      </section>
+
+      <section class="status-bar" id="statusBar" hidden>
+        <span class="status-message" id="statusMessage" role="status"></span>
+        <button class="status-close-button" id="closeStatusButton" type="button" title="Dismiss message" aria-label="Dismiss message">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        </button>
+      </section>
+
+      <section class="content">
+        <section class="table-pane" aria-label="Cookie list">
+          <div class="table-toolbar">
+            <span class="selection-count" id="selectionCount">0 selected</span>
+            <button id="batchEditButton" type="button" disabled>Set value</button>
+            <button id="batchDeleteButton" class="danger-button" type="button" disabled>Delete selected</button>
+            <button id="exportButton" type="button">Export</button>
+            <button id="importButton" type="button">Import name=value</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th class="select-column" scope="col">
+                    <input id="selectAllCheckbox" type="checkbox" aria-label="Select all visible rows">
+                  </th>
+                  <th scope="col" data-column-index="0">Name</th>
+                  <th scope="col" data-column-index="1">Value</th>
+                  <th scope="col" data-column-index="2">Domain</th>
+                  <th scope="col" data-column-index="3">Path</th>
+                  <th scope="col" data-column-index="4">Expires</th>
+                  <th scope="col" data-column-index="5">Flags</th>
+                  <th scope="col" data-column-index="6">Size</th>
+                </tr>
+              </thead>
+              <tbody id="cookieTableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="empty-state" id="loadingState">Reading cookies</div>
+          <div class="empty-state" id="emptyState" hidden>No cookies for this page</div>
+        </section>
+
+        <aside class="detail-pane" aria-label="Cookie workspace">
+          <nav class="side-card-nav" aria-label="Cookie workspace views">
+            <button class="side-card-button is-active" id="detailsViewButton" type="button" title="Cookie details" aria-label="Show cookie details" aria-pressed="true">
+              <span class="side-card-icon side-card-icon-data" aria-hidden="true"></span>
+            </button>
+            <button class="side-card-button" id="historyViewButton" type="button" title="Recent changes" aria-label="Show recent changes" aria-pressed="false">
+              <span class="side-card-icon side-card-icon-history" aria-hidden="true"></span>
+              <span class="side-card-badge" id="historyCountBadge" hidden>0</span>
+            </button>
+          </nav>
+
+          <div class="detail-content">
+            <section class="detail-view" id="detailsView" aria-label="Cookie editor">
+              <div class="detail-empty" id="detailPlaceholder">Select a cookie</div>
+
+              <form class="editor" id="cookieEditor" hidden>
+                <header class="editor-header">
+                  <div class="editor-title-block">
+                    <h1 id="editorName">Cookie</h1>
+                    <div id="editorLocation" class="editor-location"></div>
+                  </div>
+                  <div class="chip-row" id="editorChips"></div>
+                </header>
+
+                <label class="value-field">
+                  <span>Value</span>
+                  <textarea id="valueInput" spellcheck="false"></textarea>
+                </label>
+
+                <section class="utility-panel" aria-label="Cookie value tools">
+                  <div class="utility-actions">
+                    <label class="tool-mode-field">
+                      <span>Tool</span>
+                      <select id="valueToolModeSelect">
+                        <option value="none">Choose a helper</option>
+                        <option value="urlDecode">URL decode</option>
+                        <option value="urlEncode">URL encode</option>
+                        <option value="jsonFormat">Format JSON</option>
+                        <option value="jsonCompact">Compact JSON</option>
+                        <option value="jwt">JWT payload</option>
+                      </select>
+                    </label>
+                    <button id="runToolButton" type="button">Run</button>
+                  </div>
+
+                  <div class="tool-output" id="toolOutput" hidden>
+                    <div class="tool-output-header">
+                      <span id="toolOutputTitle">Output</span>
+                      <button id="copyToolOutputButton" type="button">Copy</button>
+                    </div>
+                    <pre id="toolOutputBody"></pre>
+                  </div>
+                </section>
+
+                <dl class="meta-grid">
+                  <div>
+                    <dt id="metaDomainLabel">Domain</dt>
+                    <dd id="metaDomain"></dd>
+                  </div>
+                  <div>
+                    <dt id="metaPathLabel">Path</dt>
+                    <dd id="metaPath"></dd>
+                  </div>
+                  <div>
+                    <dt id="metaExpiresLabel">Expires</dt>
+                    <dd id="metaExpires"></dd>
+                  </div>
+                  <div>
+                    <dt id="metaSameSiteLabel">SameSite</dt>
+                    <dd id="metaSameSite"></dd>
+                  </div>
+                  <div>
+                    <dt id="metaStoreLabel">Store</dt>
+                    <dd id="metaStore"></dd>
+                  </div>
+                  <div>
+                    <dt>Size</dt>
+                    <dd id="metaSize"></dd>
+                  </div>
+                </dl>
+
+                <div class="copy-row">
+                  <button id="copyValueButton" type="button">Copy value</button>
+                  <button id="copyPairButton" type="button">Copy name=value</button>
+                  <button id="copyJsonButton" type="button">Copy JSON</button>
+                </div>
+
+                <footer class="action-row">
+                  <button id="saveTemplateButton" type="button">Save template</button>
+                  <button id="applyTemplateButton" type="button">Apply template</button>
+                  <button id="resetButton" type="button">Reset</button>
+                  <button id="deleteButton" class="danger-button" type="button">Delete</button>
+                  <button id="saveButton" class="primary-button" type="submit">Save</button>
+                </footer>
+              </form>
+            </section>
+
+            <section class="history-panel" id="historyPanel" aria-label="Recent cookie changes" hidden>
+              <div class="history-header">
+                <h2>Recent changes</h2>
+                <button id="clearHistoryButton" type="button">Clear</button>
+              </div>
+              <ol class="history-list" id="historyList"></ol>
+              <div class="history-empty" id="historyEmpty">No recent changes</div>
+              <section class="history-detail" id="historyDetail" hidden>
+                <div class="history-detail-header">
+                  <h3 id="historyDetailTitle">Change detail</h3>
+                  <button id="closeHistoryDetailButton" type="button">Close</button>
+                </div>
+                <dl class="history-detail-grid" id="historyDetailGrid"></dl>
+                <div class="history-value-detail" id="historyValueDetail" hidden>
+                  <div>
+                    <span>Before</span>
+                    <pre id="historyBeforeValue"></pre>
+                  </div>
+                  <div>
+                    <span>After</span>
+                    <pre id="historyAfterValue"></pre>
+                  </div>
+                </div>
+                <div class="history-detail-note" id="historyDetailNote" hidden></div>
+              </section>
+            </section>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </body>
+</html>

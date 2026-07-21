@@ -1,0 +1,10 @@
+{
+  "type": "module",
+  "scripts": {
+    "test:acceptance": "node scripts/acceptance-extension.mjs",
+    "verify:m4": "node scripts/verify-milestone-4.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.60.0"
+  }
+}

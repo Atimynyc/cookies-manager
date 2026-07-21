@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Cookie Controller",
+  "version": "0.1.0",
+  "description": "View, copy, edit, and delete cookies for the current page.",
+  "permissions": ["cookies", "activeTab", "tabs", "storage", "scripting", "sidePanel"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_title": "Cookie Controller",
+    "default_icon": {
+      "16": "assets/icon-16.png",
+      "32": "assets/icon-32.png",
+      "48": "assets/icon-48.png",
+      "128": "assets/icon-128.png"
+    }
+  },
+  "background": {
+    "service_worker": "src/background/service-worker.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "src/popup/popup.html?surface=sidepanel"
+  },
+  "icons": {
+    "16": "assets/icon-16.png",
+    "32": "assets/icon-32.png",
+    "48": "assets/icon-48.png",
+    "128": "assets/icon-128.png"
+  }
+}

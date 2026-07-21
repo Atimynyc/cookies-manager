@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cookie Controller Test Page</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f8fb;
+        --panel: #ffffff;
+        --line: #d8dee9;
+        --text: #172033;
+        --muted: #657386;
+        --primary: #1267d6;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      main {
+        display: grid;
+        gap: 16px;
+        width: min(880px, calc(100vw - 32px));
+        margin: 32px auto;
+      }
+
+      header,
+      section {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 16px;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      h2 {
+        font-size: 14px;
+        text-transform: uppercase;
+      }
+
+      p {
+        margin: 6px 0 0;
+        color: var(--muted);
+      }
+
+      button {
+        width: max-content;
+        min-height: 34px;
+        border: 1px solid var(--primary);
+        border-radius: 6px;
+        background: var(--primary);
+        color: #fff;
+        padding: 0 12px;
+        font: inherit;
+      }
+
+      pre {
+        min-height: 120px;
+        margin: 10px 0 0;
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #fbfcff;
+        padding: 12px;
+        font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      table {
+        width: 100%;
+        margin-top: 10px;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid var(--line);
+        padding: 8px;
+        text-align: left;
+      }
+
+      th {
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Cookie Controller Test Page</h1>
+        <p>This page is served by the Playwright acceptance script and seeded with test cookies through Set-Cookie headers.</p>
+      </header>
+
+      <section>
+        <h2>Visible document.cookie</h2>
+        <pre id="cookieText"></pre>
+        <button id="refreshButton" type="button">Refresh visible cookies</button>
+      </section>
+
+      <section>
+        <h2>Visible web storage</h2>
+        <pre id="storageText"></pre>
+        <button id="refreshStorageButton" type="button">Refresh visible storage</button>
+      </section>
+
+      <section>
+        <h2>Expected server-seeded cookies</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>plain</td>
+              <td>basic list coverage</td>
+            </tr>
+            <tr>
+              <td>editable</td>
+              <td>value edit coverage</td>
+            </tr>
+            <tr>
+              <td>delete_me</td>
+              <td>delete coverage</td>
+            </tr>
+            <tr>
+              <td>encoded</td>
+              <td>URL decode and JSON format coverage</td>
+            </tr>
+            <tr>
+              <td>jwt</td>
+              <td>JWT payload decode coverage</td>
+            </tr>
+            <tr>
+              <td>http_only</td>
+              <td>Chrome cookies API HttpOnly visibility coverage</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <script>
+      const cookieText = document.querySelector("#cookieText");
+      const storageText = document.querySelector("#storageText");
+      const refreshButton = document.querySelector("#refreshButton");
+      const refreshStorageButton = document.querySelector("#refreshStorageButton");
+      const seed = new URL(location.href).searchParams.get("seed") || "manual";
+      const jwt = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VyIjoiZGV2Iiwicm9sZXMiOlsicWEiXX0.";
+
+      localStorage.setItem("local_plain", `local-before-${seed}`);
+      localStorage.setItem("local_delete_me", `local-remove-${seed}`);
+      localStorage.setItem("local_json", JSON.stringify({ ok: true, area: "local" }));
+      localStorage.setItem("local_jwt", jwt);
+      sessionStorage.setItem("session_plain", `session-before-${seed}`);
+      sessionStorage.setItem("session_delete_me", `session-remove-${seed}`);
+      sessionStorage.setItem("session_json", JSON.stringify({ ok: true, area: "session" }));
+
+      function renderCookies() {
+        cookieText.textContent = document.cookie || "(no document-visible cookies)";
+      }
+
+      function renderStorage() {
+        storageText.textContent = JSON.stringify({
+          local: Object.fromEntries(Object.entries(localStorage)),
+          session: Object.fromEntries(Object.entries(sessionStorage))
+        }, null, 2);
+      }
+
+      refreshButton.addEventListener("click", renderCookies);
+      refreshStorageButton.addEventListener("click", renderStorage);
+      renderCookies();
+      renderStorage();
+    </script>
+  </body>
+</html>
