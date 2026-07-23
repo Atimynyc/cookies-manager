@@ -1,0 +1,37 @@
+Cookie Controller - Chrome Web Store Review Explanations (English)
+
+Single purpose description
+
+Cookie Controller has one purpose: to let users inspect and manage site data for a website they explicitly select, including cookies, Local Storage, and Session Storage. Search, copy, batch editing, import/export, value formatting, templates, change history, and undo directly support this purpose. The extension contains no advertising, analytics, user tracking, or functionality unrelated to site data management.
+
+Justification for cookies
+
+The extension uses the chrome.cookies API to read cookies for a user-selected website, identify the cookie store associated with the current tab, and create, update, remove, and observe cookie changes. This permission is required for the extension's core cookie inspection and management functionality. Cookie data is processed locally only while the user opens and operates the extension. It is not uploaded or shared with the developer or third-party servers.
+
+Justification for activeTab
+
+The current version does not require the activeTab permission, and it should be removed from manifest.json before submission. The extension already uses the tabs permission to identify and switch tabs and declares HTTP/HTTPS host permissions. The source code does not depend on the temporary host access supplied by activeTab. To follow the principle of least privilege, a misleading or overly broad justification should not be submitted for this redundant permission.
+
+Justification for tabs
+
+The extension uses the chrome.tabs API to identify the active tab, list HTTP/HTTPS tabs in the current window, switch to a tab selected by the user, determine the tab's window, and reload the page when the user enables automatic reload. These operations identify and switch the site whose data is being managed. The permission is not used to build browsing histories, analyze browsing behavior, or transmit tab information to an external server.
+
+Justification for storage
+
+The extension uses chrome.storage.local to store interface preferences, automatic reload settings, column widths, the selected value-tool mode, cookie templates explicitly created by the user, and recent change records on the user's device. This data is used only to restore extension state and support site data management workflows. It is not synchronized or uploaded to the developer or third-party servers. Users can remove it by clearing extension data or uninstalling the extension.
+
+Justification for scripting
+
+The extension uses chrome.scripting.executeScript to run fixed functions bundled with the extension in the user-selected tab. These functions read, create, update, and remove Local Storage and Session Storage entries for that page. Injection occurs only when the user opens the extension and performs a related action. The extension does not download, generate, or execute remote code.
+
+Justification for sidePanel
+
+The extension uses the chrome.sidePanel API to open the same site data management interface in the Chrome side panel. This allows users to keep inspecting and managing cookies, Local Storage, and Session Storage while browsing. The permission is used only to create and open the extension's side-panel experience and is not used to modify other browser UI or collect additional data.
+
+Justification for host permissions
+
+The extension requires http://*/* and https://*/* host permissions so users can manage cookies, Local Storage, and Session Storage on any HTTP or HTTPS website they explicitly select. Access through the chrome.cookies API and chrome.scripting.executeScript requires host permission matching the target website. The extension does not scan websites in the background. It accesses site data only after the user opens the extension, selects a tab, and performs a view or modification action. No site data is transmitted to an external server.
+
+Remote code declaration
+
+The extension does not use remote code. All JavaScript is included in the extension package uploaded to the Chrome Web Store. It does not download scripts from the network or use eval or similar mechanisms to execute remotely supplied code.

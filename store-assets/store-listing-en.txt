@@ -1,0 +1,34 @@
+Cookie Controller
+
+Short description
+
+View, edit, import, export, and delete cookies and web storage for the current page.
+
+Detailed description
+
+Cookie Controller is a site data management tool for developers, testers, and advanced users. It lets you inspect and manage cookies, Local Storage, and Session Storage for the current page from a popup or the Chrome side panel, without opening the full developer tools.
+
+Main features
+
+- View cookies for the current page and quickly search by name, value, domain, or path.
+- Edit an individual cookie value while preserving its domain, path, expiration, SameSite, Secure, and HttpOnly attributes.
+- Create or delete cookies, delete multiple selected cookies, and set values in batches.
+- View, create, edit, and remove Local Storage and Session Storage entries.
+- Switch the management target between HTTP/HTTPS tabs in the current browser window.
+- Import, export, and copy site data as JSON or name=value pairs.
+- Copy a cookie value, a name=value pair, or structured JSON with one action.
+- Use built-in URL encode/decode, JSON format/compact, and JWT payload decoding tools.
+- Save frequently used values as local templates for reuse.
+- Review recent changes and before/after differences, and undo changes during the current working session.
+- Optionally reload the page automatically after a change.
+- Use the extension from either its popup or the Chrome side panel.
+
+Privacy
+
+Cookie Controller contains no advertising, analytics, or user tracking and does not require an account. Cookies and web storage data accessed by the extension are processed only on the user's device. They are not uploaded, sold, or shared with the developer or third-party servers. Interface preferences, templates explicitly saved by the user, and recent change records are stored in the browser's local extension storage and can be removed by clearing the extension data or uninstalling the extension.
+
+Usage notes
+
+The extension accesses data for a selected website only when the user opens and operates it. Cookies and web storage can contain sensitive information such as sign-in state, so use the extension only on trusted devices and protect any exported data.
+
+The JWT tool decodes the payload for inspection only. It does not verify signatures or determine whether a token is trustworthy or valid. Full value snapshots required for undo are kept only for the current popup or side-panel session.

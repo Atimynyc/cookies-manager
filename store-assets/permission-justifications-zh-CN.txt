@@ -1,0 +1,37 @@
+Cookie Controller - Chrome Web Store 审核说明（中文版）
+
+单一用途说明
+
+Cookie Controller 的唯一用途是在用户明确选择的网页上查看和管理站点数据，包括 Cookie、Local Storage 和 Session Storage。搜索、复制、批量修改、导入导出、值格式化、模板、修改历史和撤销功能均直接服务于这一用途。插件不提供广告、统计分析、用户跟踪或与站点数据管理无关的功能。
+
+需请求 cookies 的理由
+
+插件需要使用 chrome.cookies API 读取用户所选网站的 Cookie，获取当前标签页对应的 Cookie Store，并执行新增、修改、删除和变更监听操作。这是插件查看和管理 Cookie 这一核心功能所必需的。Cookie 数据只在用户打开并操作插件时于本地处理，不会上传或共享给开发者或第三方服务器。
+
+需请求 activeTab 的理由
+
+当前版本不需要 activeTab 权限，建议在提交审核前将其从 manifest.json 中删除。插件已通过 tabs 权限获取和切换标签页，并已声明 HTTP/HTTPS 主机权限；源码没有依赖 activeTab 所提供的临时主机访问能力。为遵守最小权限原则，不应为该冗余权限填写虚假或宽泛的用途说明。
+
+需请求 tabs 的理由
+
+插件需要使用 chrome.tabs API 识别当前活动标签页、读取当前窗口中的 HTTP/HTTPS 标签页列表、在用户选择后切换标签页、获取标签页所属窗口，以及在用户启用自动刷新后重新加载页面。这些操作用于确定和切换站点数据的管理目标。插件不会使用该权限建立浏览历史、分析用户访问行为或向外部服务器发送标签页信息。
+
+需请求 storage 的理由
+
+插件需要使用 chrome.storage.local 在用户设备上保存界面偏好、自动刷新设置、列宽、值工具模式、用户主动创建的 Cookie 模板和最近修改记录。这些数据仅用于恢复插件状态和支持站点数据管理工作流，不会同步或上传到开发者或第三方服务器。用户可以通过清除扩展数据或卸载插件删除这些本地数据。
+
+需请求 scripting 的理由
+
+插件需要使用 chrome.scripting.executeScript 在用户所选标签页中执行随扩展包一同发布的固定函数，以读取、添加、修改和删除该页面的 Local Storage 与 Session Storage 数据。注入操作只在用户打开插件并执行相关操作时发生。插件不下载、不生成也不执行任何远程代码。
+
+需请求 sidePanel 的理由
+
+插件需要使用 chrome.sidePanel API 在 Chrome 侧边栏中打开同一套站点数据管理界面，让用户在浏览网页的同时持续查看和管理 Cookie、Local Storage 与 Session Storage。该权限只用于创建和打开插件侧边栏，不用于修改其他浏览器界面或收集额外数据。
+
+需请求主机权限的理由
+
+插件需要 http://*/* 和 https://*/* 主机权限，以便用户可以在其主动选择的任意 HTTP 或 HTTPS 网站上管理 Cookie、Local Storage 和 Session Storage。chrome.cookies API 访问 Cookie 以及 chrome.scripting.executeScript 访问网页存储都要求具备与目标网站匹配的主机权限。插件不会在后台批量扫描网站；只有在用户打开插件、选择标签页并执行查看或修改操作时才访问对应网站的数据，数据不会传输到外部服务器。
+
+远程代码声明
+
+插件不使用远程代码。所有 JavaScript 均包含在上传至 Chrome Web Store 的扩展包内，不从网络下载脚本，也不通过 eval 或其他方式执行远程提供的代码。
