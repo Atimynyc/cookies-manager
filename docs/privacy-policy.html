@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Cookie Controller privacy policy in Chinese and English.">
+  <meta name="color-scheme" content="light dark">
+  <title>Privacy Policy | Cookie Controller</title>
+  <link rel="icon" type="image/png" sizes="128x128" href="./assets/icon-128.png">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --page: #f6f8fb;
+      --surface: #ffffff;
+      --text: #202124;
+      --muted: #5f6368;
+      --line: #dfe3e8;
+      --accent: #1967d2;
+      --accent-soft: #e8f0fe;
+      --positive: #137333;
+      --notice: #8a4b08;
+      --notice-bg: #fef7e0;
+      --max-width: 980px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: var(--accent);
+      text-underline-offset: 3px;
+    }
+
+    a:hover {
+      text-decoration-thickness: 2px;
+    }
+
+    .site-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .header-inner,
+    .page-nav,
+    main,
+    .footer-inner {
+      width: min(calc(100% - 40px), var(--max-width));
+      margin: 0 auto;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 28px 0 22px;
+    }
+
+    .brand-icon {
+      width: 56px;
+      height: 56px;
+      flex: 0 0 56px;
+    }
+
+    .title-group {
+      min-width: 0;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin-top: 0;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      margin-bottom: 4px;
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .page-nav-wrap {
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .page-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      padding: 12px 0;
+    }
+
+    .page-nav a {
+      color: var(--text);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .page-nav a:hover {
+      color: var(--accent);
+    }
+
+    main {
+      padding: 40px 0 64px;
+    }
+
+    .language-section {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 34px 40px;
+    }
+
+    .language-section + .language-section {
+      margin-top: 32px;
+    }
+
+    .language-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 20px;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h2 {
+      margin-bottom: 0;
+      font-size: 26px;
+    }
+
+    .updated {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .summary {
+      margin: 26px 0 0;
+      padding: 16px 18px;
+      background: var(--accent-soft);
+      border-left: 4px solid var(--accent);
+    }
+
+    .policy-section {
+      padding-top: 30px;
+    }
+
+    .policy-section + .policy-section {
+      margin-top: 30px;
+      border-top: 1px solid var(--line);
+    }
+
+    h3 {
+      margin-bottom: 12px;
+      font-size: 20px;
+    }
+
+    p {
+      margin: 0 0 14px;
+    }
+
+    ul {
+      margin: 10px 0 0;
+      padding-left: 24px;
+    }
+
+    li + li {
+      margin-top: 8px;
+    }
+
+    .data-table-wrap {
+      margin-top: 18px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 660px;
+      border-collapse: collapse;
+      background: var(--surface);
+    }
+
+    th,
+    td {
+      padding: 13px 15px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--page);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .local-only {
+      color: var(--positive);
+      font-weight: 700;
+    }
+
+    .security-note {
+      margin-top: 18px;
+      padding: 14px 16px;
+      background: var(--notice-bg);
+      border-left: 4px solid var(--notice);
+    }
+
+    .site-footer {
+      background: var(--surface);
+      border-top: 1px solid var(--line);
+    }
+
+    .footer-inner {
+      padding: 22px 0 30px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer-inner p {
+      margin: 0;
+    }
+
+    @media (max-width: 700px) {
+      .header-inner,
+      .page-nav,
+      main,
+      .footer-inner {
+        width: min(calc(100% - 28px), var(--max-width));
+      }
+
+      .header-inner {
+        align-items: flex-start;
+        padding-top: 22px;
+      }
+
+      h1 {
+        font-size: 27px;
+      }
+
+      .language-section {
+        padding: 26px 20px;
+      }
+
+      .language-heading {
+        display: block;
+      }
+
+      .updated {
+        margin-top: 8px;
+        white-space: normal;
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page: #17191d;
+        --surface: #202328;
+        --text: #f1f3f4;
+        --muted: #bdc1c6;
+        --line: #3c4043;
+        --accent: #8ab4f8;
+        --accent-soft: #203a5f;
+        --positive: #81c995;
+        --notice: #fdd663;
+        --notice-bg: #493b17;
+      }
+    }
+
+    @media print {
+      :root {
+        --page: #ffffff;
+        --surface: #ffffff;
+        --text: #000000;
+        --muted: #444444;
+        --line: #cccccc;
+      }
+
+      .page-nav-wrap {
+        display: none;
+      }
+
+      .language-section {
+        break-inside: avoid-page;
+        border: 0;
+        padding: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <img class="brand-icon" src="./assets/icon-128.png" width="56" height="56" alt="Cookie Controller icon">
+      <div class="title-group">
+        <h1>Cookie Controller</h1>
+        <p class="subtitle">Privacy Policy / 隐私权政策</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-nav-wrap">
+    <nav class="page-nav" aria-label="Language navigation">
+      <a href="#zh-CN">中文版</a>
+      <a href="#en">English</a>
+      <a href="https://github.com/Atimynyc/cookies-manager">Source code / 源代码</a>
+    </nav>
+  </div>
+
+  <main>
+    <article id="zh-CN" class="language-section" lang="zh-CN">
+      <div class="language-heading">
+        <h2>隐私权政策</h2>
+        <p class="updated">生效及最后更新日期：2026 年 7 月 23 日</p>
+      </div>
+
+      <p class="summary">Cookie Controller 在用户设备本地处理站点数据，不运营数据收集服务器，不包含广告、统计分析或用户跟踪功能，也不会出售或共享用户数据。</p>
+
+      <section class="policy-section">
+        <h3>1. 适用范围</h3>
+        <p>本政策适用于 Cookie Controller Chrome 扩展。该扩展的单一用途是帮助用户查看和管理其主动选择网站的 Cookie、Local Storage 和 Session Storage。搜索、复制、批量操作、导入导出、值处理工具、模板、修改历史和撤销功能均用于支持这一用途。</p>
+        <p>本政策不适用于用户通过该扩展管理的第三方网站。相关网站如何处理数据由其各自的隐私政策决定。</p>
+      </section>
+
+      <section class="policy-section">
+        <h3>2. 扩展访问和处理的数据</h3>
+        <p>当用户打开扩展并执行操作时，扩展可能在本地访问以下信息：</p>
+        <div class="data-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">数据类别</th>
+                <th scope="col">示例</th>
+                <th scope="col">用途</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>标签页信息</td>
+                <td>当前窗口中的标签页 URL、标题、标签页和窗口标识</td>
+                <td>识别当前网站、列出可选网站、切换管理目标及按用户设置重新加载页面</td>
+              </tr>
+              <tr>
+                <td>Cookie 数据</td>
+                <td>名称、值、域名、路径、有效期、SameSite、Secure、HttpOnly 和 Cookie Store</td>
+                <td>显示、搜索、复制、新增、修改、导入、导出和删除 Cookie</td>
+              </tr>
+              <tr>
+                <td>网页存储数据</td>
+                <td>Local Storage 和 Session Storage 的键和值</td>
+                <td>显示、搜索、复制、新增、修改、导入、导出和删除网页存储项</td>
+              </tr>
+              <tr>
+                <td>用户主动保存的内容</td>
+                <td>Cookie 模板、界面偏好和自动刷新设置</td>
+                <td>在后续使用中恢复用户选择的插件配置和模板</td>
+              </tr>
+              <tr>
+                <td>修改记录</td>
+                <td>项目名称、域名或来源、操作类型、时间和大小变化</td>
+                <td>显示最近操作及支持当前会话中的差异查看和撤销</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="policy-section">
+        <h3>3. 数据处理、传输和共享</h3>
+        <ul>
+          <li><span class="local-only">仅在本地处理：</span>Cookie 和网页存储数据在用户设备上的扩展界面与目标网页之间处理。</li>
+          <li>扩展没有开发者运营的后端服务器，也不包含广告、分析、遥测或跟踪 SDK。</li>
+          <li>扩展不会将站点数据、浏览信息或用户设置上传给开发者或第三方。</li>
+          <li>扩展不会出售、出租或以其他方式共享用户数据。</li>
+          <li>扩展不会将访问到的数据用于广告、信用评估或与站点数据管理无关的用途。</li>
+          <li>当用户主动执行导出或复制操作时，所选数据会写入系统剪贴板。后续如何保存或分享该数据由用户自行决定。</li>
+        </ul>
+      </section>
+
+      <section class="policy-section">
+        <h3>4. 本地存储和保留期限</h3>
+        <p>界面偏好、Cookie 模板和最近修改记录通过 <code>chrome.storage.local</code> 保存在用户的浏览器中，直到用户清除扩展数据、相关记录被替换，或用户卸载扩展。用于撤销操作的完整修改前后值只保留在当前弹出窗口或侧边栏会话的内存中，会在该会话结束后丢弃。</p>
+        <p>扩展读取的 Cookie、Local Storage 和 Session Storage 原始内容不会自动复制到开发者服务器。用户对网站数据所做的修改将按照浏览器和目标网站本身的规则保留。</p>
+      </section>
+
+      <section class="policy-section">
+        <h3>5. 权限用途</h3>
+        <ul>
+          <li><strong>cookies：</strong>读取、新增、修改、删除和监听用户所选网站的 Cookie。</li>
+          <li><strong>tabs：</strong>识别、列出和切换当前窗口中的网站标签页，并在用户启用自动刷新后重新加载页面。</li>
+          <li><strong>storage：</strong>在浏览器本地保存界面偏好、模板和最近修改记录。</li>
+          <li><strong>scripting：</strong>在用户所选标签页运行扩展包内置函数，以管理 Local Storage 和 Session Storage。</li>
+          <li><strong>sidePanel：</strong>在 Chrome 侧边栏中提供同一套站点数据管理界面。</li>
+          <li><strong>HTTP/HTTPS 主机权限：</strong>允许用户在其主动选择的任意 HTTP 或 HTTPS 网站上使用 Cookie 和网页存储管理功能。</li>
+        </ul>
+        <p>扩展不下载或执行远程代码。所有 JavaScript 均包含在提交至 Chrome Web Store 的扩展包中。</p>
+      </section>
+
+      <section class="policy-section">
+        <h3>6. 用户控制和数据删除</h3>
+        <ul>
+          <li>用户可以在扩展界面中清除最近修改记录。</li>
+          <li>用户可以通过 Chrome 的扩展数据清理功能删除本地保存的数据。</li>
+          <li>卸载 Cookie Controller 会删除该扩展的本地存储。</li>
+          <li>用户可以随时停止使用扩展，或通过 Chrome 扩展管理页面禁用其网站访问权限。</li>
+        </ul>
+      </section>
+
+      <section class="policy-section">
+        <h3>7. 安全说明</h3>
+        <p>Cookie 和网页存储可能包含登录状态、令牌或其他敏感信息。请只在可信设备上使用本扩展，并妥善保护复制或导出的数据。内置 JWT 工具只解码 Payload 以供查看，不验证签名，也不判断令牌是否可信或有效。</p>
+        <p class="security-note">Cookie Controller 不会要求用户提交密码、付款信息或身份验证代码。请勿向不受信任的人员分享通过本扩展查看或导出的站点数据。</p>
+      </section>
+
+      <section class="policy-section">
+        <h3>8. 政策变更</h3>
+        <p>如果扩展的数据处理方式发生变化，本页面将同步更新，并修改页面顶部的最后更新日期。对于会显著改变数据收集或共享方式的变更，开发者会在适用情况下通过扩展说明或版本更新进行提示。</p>
+      </section>
+
+      <section class="policy-section">
+        <h3>9. 联系方式</h3>
+        <p>如对本隐私权政策或 Cookie Controller 的数据处理方式有疑问，请通过 GitHub 提交问题：</p>
+        <p><a href="https://github.com/Atimynyc/cookies-manager/issues">https://github.com/Atimynyc/cookies-manager/issues</a></p>
+      </section>
+    </article>
+
+    <article id="en" class="language-section" lang="en">
+      <div class="language-heading">
+        <h2>Privacy Policy</h2>
+        <p class="updated">Effective and last updated: July 23, 2026</p>
+      </div>
+
+      <p class="summary">Cookie Controller processes site data locally on the user's device. It operates no data collection server, contains no advertising, analytics, or user tracking, and does not sell or share user data.</p>
+
+      <section class="policy-section">
+        <h3>1. Scope</h3>
+        <p>This policy applies to the Cookie Controller Chrome extension. The extension has one purpose: helping users inspect and manage cookies, Local Storage, and Session Storage for websites they explicitly select. Search, copy, batch actions, import/export, value tools, templates, change history, and undo support that purpose.</p>
+        <p>This policy does not apply to third-party websites managed through the extension. Their handling of data is governed by their own privacy policies.</p>
+      </section>
+
+      <section class="policy-section">
+        <h3>2. Data the extension accesses and processes</h3>
+        <p>When a user opens the extension and performs an action, the extension may locally access the following information:</p>
+        <div class="data-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Data category</th>
+                <th scope="col">Examples</th>
+                <th scope="col">Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Tab information</td>
+                <td>Tab URL, title, tab identifier, and window identifier for tabs in the current window</td>
+                <td>Identify the current site, list selectable sites, switch the management target, and reload a page when requested</td>
+              </tr>
+              <tr>
+                <td>Cookie data</td>
+                <td>Name, value, domain, path, expiration, SameSite, Secure, HttpOnly, and cookie store</td>
+                <td>Display, search, copy, create, update, import, export, and remove cookies</td>
+              </tr>
+              <tr>
+                <td>Web storage data</td>
+                <td>Local Storage and Session Storage keys and values</td>
+                <td>Display, search, copy, create, update, import, export, and remove web storage entries</td>
+              </tr>
+              <tr>
+                <td>User-saved content</td>
+                <td>Cookie templates, interface preferences, and automatic reload settings</td>
+                <td>Restore extension settings and templates selected by the user</td>
+              </tr>
+              <tr>
+                <td>Change records</td>
+                <td>Item name, domain or origin, action type, time, and size change</td>
+                <td>Show recent actions and support difference viewing and undo during the current session</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="policy-section">
+        <h3>3. Processing, transmission, and sharing</h3>
+        <ul>
+          <li><span class="local-only">Local processing only:</span> cookie and web storage data is processed between the extension interface and the target page on the user's device.</li>
+          <li>The extension has no developer-operated backend server and includes no advertising, analytics, telemetry, or tracking SDK.</li>
+          <li>The extension does not upload site data, browsing information, or user settings to the developer or any third party.</li>
+          <li>The extension does not sell, rent, or otherwise share user data.</li>
+          <li>The extension does not use accessed data for advertising, credit assessment, or purposes unrelated to site data management.</li>
+          <li>When a user explicitly exports or copies data, the selected data is written to the system clipboard. The user controls any later storage or sharing of that data.</li>
+        </ul>
+      </section>
+
+      <section class="policy-section">
+        <h3>4. Local storage and retention</h3>
+        <p>Interface preferences, cookie templates, and recent change records are stored in the user's browser through <code>chrome.storage.local</code> until the user clears extension data, the relevant records are replaced, or the extension is uninstalled. Complete before-and-after values needed for undo are held only in memory for the current popup or side-panel session and are discarded when that session ends.</p>
+        <p>Cookie, Local Storage, and Session Storage content read by the extension is not automatically copied to a developer server. Changes made by the user remain according to the rules of the browser and the target website.</p>
+      </section>
+
+      <section class="policy-section">
+        <h3>5. Permission use</h3>
+        <ul>
+          <li><strong>cookies:</strong> read, create, update, remove, and observe cookies for a user-selected website.</li>
+          <li><strong>tabs:</strong> identify, list, and switch website tabs in the current window and reload a page when automatic reload is enabled.</li>
+          <li><strong>storage:</strong> save interface preferences, templates, and recent change records in local browser storage.</li>
+          <li><strong>scripting:</strong> run bundled extension functions in the user-selected tab to manage Local Storage and Session Storage.</li>
+          <li><strong>sidePanel:</strong> provide the same site data management interface in the Chrome side panel.</li>
+          <li><strong>HTTP/HTTPS host permissions:</strong> allow users to manage cookies and web storage on any HTTP or HTTPS website they explicitly select.</li>
+        </ul>
+        <p>The extension does not download or execute remote code. All JavaScript is included in the extension package submitted to the Chrome Web Store.</p>
+      </section>
+
+      <section class="policy-section">
+        <h3>6. User control and deletion</h3>
+        <ul>
+          <li>Users can clear recent change records from the extension interface.</li>
+          <li>Users can remove locally stored data using Chrome's extension data controls.</li>
+          <li>Uninstalling Cookie Controller removes the extension's local storage.</li>
+          <li>Users can stop using the extension at any time or disable its website access through Chrome's extension management page.</li>
+        </ul>
+      </section>
+
+      <section class="policy-section">
+        <h3>7. Security notice</h3>
+        <p>Cookies and web storage may contain sign-in state, tokens, or other sensitive information. Use the extension only on trusted devices and protect any copied or exported data. The built-in JWT tool decodes the payload for inspection only. It does not verify signatures or determine whether a token is trustworthy or valid.</p>
+        <p class="security-note">Cookie Controller will not ask users to submit passwords, payment information, or authentication codes. Do not share site data viewed or exported through the extension with untrusted parties.</p>
+      </section>
+
+      <section class="policy-section">
+        <h3>8. Changes to this policy</h3>
+        <p>If the extension's data handling changes, this page will be updated and the last-updated date at the top will be revised. Material changes to data collection or sharing practices will be communicated through the extension description or a version update where appropriate.</p>
+      </section>
+
+      <section class="policy-section">
+        <h3>9. Contact</h3>
+        <p>For questions about this policy or Cookie Controller's data handling, open an issue on GitHub:</p>
+        <p><a href="https://github.com/Atimynyc/cookies-manager/issues">https://github.com/Atimynyc/cookies-manager/issues</a></p>
+      </section>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>Cookie Controller · Local processing only · 本地处理，不上传站点数据</p>
+    </div>
+  </footer>
+</body>
+</html>
