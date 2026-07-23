@@ -3,7 +3,7 @@
   "name": "Cookie Controller",
   "version": "0.1.0",
   "description": "View, copy, edit, and delete cookies for the current page.",
-  "permissions": ["cookies", "activeTab", "tabs", "storage", "scripting", "sidePanel"],
+  "permissions": ["cookies", "tabs", "storage", "scripting", "sidePanel"],
   "host_permissions": ["http://*/*", "https://*/*"],
   "action": {
     "default_popup": "src/popup/popup.html",
