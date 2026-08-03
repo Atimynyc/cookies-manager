@@ -45,6 +45,8 @@ try {
   const popup = await openPopupForActiveTab(context, testPage, extensionId);
   await waitForPopupReady(popup, "127.0.0.1");
   await assertPopupListsSeededCookies(popup);
+  await assertTableActionsBelowList(popup);
+  await assertEditorActions(popup);
   await assertValueTools(popup);
   await assertStressLayout(popup);
   await assertExportFlow(popup);
@@ -296,6 +298,99 @@ async function assertStressLayout(popup) {
   assert.equal(layout.panesDoNotOverlap, true, JSON.stringify(layout.rects, null, 2));
   assert.equal(layout.detailChildrenInsidePane, true, JSON.stringify(layout.rects, null, 2));
   await screenshot(popup, "milestone-4-popup-layout-stress.png");
+}
+
+async function assertEditorActions(popup) {
+  await selectCookieBySearch(popup, "plain");
+  const actions = await popup.evaluate(() => {
+    const valueInput = document.querySelector("#valueInput");
+    return ["resetButton", "deleteButton", "saveButton"].map((id) => {
+      const button = document.querySelector(`#${id}`);
+      return {
+        beforeValue: Boolean(button.compareDocumentPosition(valueInput) & Node.DOCUMENT_POSITION_FOLLOWING),
+        hasIcon: Boolean(button.querySelector("svg.icon")),
+        label: button.getAttribute("aria-label"),
+        text: button.textContent.trim(),
+        tooltip: button.dataset.tooltip
+      };
+    });
+  });
+
+  assert.deepEqual(actions, [
+    { beforeValue: true, hasIcon: true, label: "Reset", text: "", tooltip: "Reset" },
+    { beforeValue: true, hasIcon: true, label: "Delete", text: "", tooltip: "Delete" },
+    { beforeValue: true, hasIcon: true, label: "Save", text: "", tooltip: "Save" }
+  ]);
+
+  await popup.locator("#deleteButton").hover();
+  await popup.waitForFunction(() => {
+    const button = document.querySelector("#deleteButton");
+    return getComputedStyle(button, "::after").opacity === "1";
+  });
+  const tooltipContent = await popup.locator("#deleteButton").evaluate((button) => {
+    return getComputedStyle(button, "::after").content;
+  });
+  assert.equal(tooltipContent, '"Delete"');
+  await screenshot(popup, "milestone-4-popup-editor-actions.png");
+}
+
+async function assertTableActionsBelowList(popup) {
+  const result = await popup.evaluate(() => {
+    const tableWrapElement = document.querySelector(".table-wrap");
+    const toolbarElement = document.querySelector(".table-toolbar");
+    const emptyStateElement = document.querySelector("#emptyState");
+    const wasHidden = emptyStateElement.hidden;
+    emptyStateElement.hidden = false;
+
+    const tableWrap = tableWrapElement.getBoundingClientRect();
+    const toolbar = toolbarElement.getBoundingClientRect();
+    const emptyState = emptyStateElement.getBoundingClientRect();
+    emptyStateElement.hidden = wasHidden;
+
+    return {
+      actions: ["batchEditButton", "batchDeleteButton", "exportButton", "importButton"].map((id) => {
+        const button = document.querySelector(`#${id}`);
+        return {
+          hasIcon: Boolean(button.querySelector("svg.icon")),
+          label: button.getAttribute("aria-label"),
+          text: button.textContent.trim(),
+          tooltip: button.dataset.tooltip
+        };
+      }),
+      layout: {
+        emptyState: { bottom: emptyState.bottom, top: emptyState.top },
+        tableWrap: { bottom: tableWrap.bottom, top: tableWrap.top },
+        toolbar: { bottom: toolbar.bottom, top: toolbar.top }
+      }
+    };
+  });
+
+  assert.deepEqual(result.actions, [
+    { hasIcon: true, label: "Set value", text: "", tooltip: "Set value" },
+    { hasIcon: true, label: "Delete selected", text: "", tooltip: "Delete selected" },
+    { hasIcon: true, label: "Export", text: "", tooltip: "Export" },
+    { hasIcon: true, label: "Import name=value", text: "", tooltip: "Import name=value" }
+  ]);
+  assert.ok(result.layout.toolbar.top >= result.layout.tableWrap.bottom - 1, JSON.stringify(result.layout));
+  assert.ok(result.layout.emptyState.top >= result.layout.tableWrap.top + 33, JSON.stringify(result.layout));
+  assert.ok(result.layout.emptyState.bottom <= result.layout.tableWrap.bottom + 1, JSON.stringify(result.layout));
+
+  for (const [id, label] of [
+    ["batchEditButton", "Set value"],
+    ["batchDeleteButton", "Delete selected"],
+    ["exportButton", "Export"],
+    ["importButton", "Import name=value"]
+  ]) {
+    await popup.locator(`#${id}`).hover();
+    await popup.waitForFunction((buttonId) => {
+      const button = document.querySelector(`#${buttonId}`);
+      return getComputedStyle(button, "::after").opacity === "1";
+    }, id);
+    const tooltipContent = await popup.locator(`#${id}`).evaluate((button) => {
+      return getComputedStyle(button, "::after").content;
+    });
+    assert.equal(tooltipContent, `"${label}"`);
+  }
 }
 
 async function assertExportFlow(popup) {
@@ -561,6 +656,8 @@ async function assertSingleHistoryDetailLayout(popup, seed) {
 async function assertLocalStorageFlow(popup, page, seed) {
   await switchDataView(popup, "localStorage");
   await waitForPopupReady(popup, "127.0.0.1");
+  assert.equal(await popup.locator("#importButton").getAttribute("aria-label"), "Import key=value");
+  assert.equal(await popup.locator("#importButton").getAttribute("data-tooltip"), "Import key=value");
   await selectItemBySearch(popup, "local_plain");
   await popup.locator("#valueInput").fill(`local-after-${seed}`);
   await popup.locator("#saveButton").click();

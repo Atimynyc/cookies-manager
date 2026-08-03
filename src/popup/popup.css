@@ -453,19 +453,21 @@ button:disabled {
 .table-pane {
   position: relative;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: minmax(0, 1fr) auto;
   overflow: hidden;
 }
 
 .table-toolbar {
   display: flex;
+  grid-column: 1;
+  grid-row: 2;
   flex-wrap: wrap;
   justify-content: flex-start;
   align-content: center;
   align-items: center;
   gap: 7px;
   min-height: 42px;
-  border-bottom: 1px solid var(--line);
+  border-top: 1px solid var(--line);
   padding: 6px 8px;
   background: #f8fafc;
 }
@@ -478,6 +480,67 @@ button:disabled {
   white-space: nowrap;
 }
 
+.table-toolbar .table-action-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  min-height: 30px;
+  padding: 0;
+}
+
+.table-action-button .icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.table-action-button::after {
+  position: absolute;
+  z-index: 10;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  visibility: hidden;
+  border-radius: 4px;
+  padding: 4px 6px;
+  background: #172033;
+  color: #ffffff;
+  content: attr(data-tooltip);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(2px);
+  transition: opacity 120ms ease, transform 120ms ease, visibility 120ms ease;
+  white-space: nowrap;
+}
+
+.table-action-button:hover::after,
+.table-action-button:focus-visible::after {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.table-action-button:last-child::after {
+  right: 0;
+  left: auto;
+  transform: translateY(2px);
+}
+
+.table-action-button:last-child:hover::after,
+.table-action-button:last-child:focus-visible::after {
+  transform: translateY(0);
+}
+
 .selection-count {
   flex: 1 1 auto;
   min-width: 82px;
@@ -487,6 +550,8 @@ button:disabled {
 }
 
 .table-wrap {
+  grid-column: 1;
+  grid-row: 1;
   width: 100%;
   height: 100%;
   overflow: auto;
@@ -660,8 +725,11 @@ tbody tr:focus-visible td {
 }
 
 .empty-state {
-  position: absolute;
-  inset: 84px 0 0;
+  position: relative;
+  z-index: 2;
+  grid-column: 1;
+  grid-row: 1;
+  margin-top: 34px;
   display: grid;
   place-items: center;
   padding: 24px;
@@ -937,6 +1005,71 @@ body:not([data-view="cookies"]) .side-card-icon-data::after {
   font-weight: 700;
 }
 
+.value-field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 32px;
+}
+
+.editor-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.editor-action-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  min-height: 30px;
+  padding: 0;
+}
+
+.editor-action-button .icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.editor-action-button::after {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 6px);
+  left: 50%;
+  visibility: hidden;
+  border-radius: 4px;
+  padding: 4px 6px;
+  background: #172033;
+  color: #ffffff;
+  content: attr(data-tooltip);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(-2px);
+  transition: opacity 120ms ease, transform 120ms ease, visibility 120ms ease;
+  white-space: nowrap;
+}
+
+.editor-action-button:hover::after,
+.editor-action-button:focus-visible::after {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 .value-field textarea {
   min-width: 0;
   height: 112px;
@@ -1083,7 +1216,7 @@ body:not([data-view="cookies"]) .side-card-icon-data::after {
 }
 
 .copy-row,
-.action-row {
+.template-row {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
@@ -1099,7 +1232,7 @@ body:not([data-view="cookies"]) .side-card-icon-data::after {
   white-space: nowrap;
 }
 
-.action-row {
+.template-row {
   justify-content: flex-end;
   border-top: 1px solid var(--line);
   padding-top: 10px;

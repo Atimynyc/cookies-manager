@@ -969,7 +969,9 @@ function renderViewChrome() {
     : "Search key, value, origin";
   elements.refreshButton.title = `Refresh ${view.plural}`;
   elements.refreshButton.setAttribute("aria-label", `Refresh ${view.plural}`);
-  elements.importButton.textContent = `Import ${view.pairLabel}`;
+  const importLabel = `Import ${view.pairLabel}`;
+  elements.importButton.setAttribute("aria-label", importLabel);
+  elements.importButton.dataset.tooltip = importLabel;
   elements.detailsView.setAttribute("aria-label", `${view.title} editor`);
   elements.detailPlaceholder.textContent = `Select a ${view.singular}`;
 
