@@ -16,8 +16,7 @@
         </section>
 
         <label class="site-switch">
-          <span>Site</span>
-          <select id="siteSelect" aria-label="Switch active tab site"></select>
+          <select id="siteSelect" aria-label="Switch active tab site" title="Switch site"></select>
         </label>
 
         <nav class="data-switch" aria-label="Data type">
@@ -31,11 +30,29 @@
           <input id="searchInput" type="search" autocomplete="off" placeholder="Search name, value, domain, path">
         </label>
 
-        <button class="icon-button" id="refreshButton" type="button" title="Refresh cookie list" aria-label="Refresh cookie list">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 5v4h4m-4 4a8.1 8.1 0 0 0 15.5 2M20 19v-4h-4" />
-          </svg>
-        </button>
+        <div class="refresh-control" id="refreshControl">
+          <button class="icon-button refresh-action-button" id="refreshButton" type="button" title="Refresh data" aria-label="Refresh data">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 5v4h4m-4 4a8.1 8.1 0 0 0 15.5 2M20 19v-4h-4" />
+            </svg>
+            <span class="refresh-status-dot" aria-hidden="true"></span>
+          </button>
+          <button class="refresh-menu-button" id="refreshMenuButton" type="button" title="Reload settings" aria-label="Open reload settings" aria-haspopup="dialog" aria-controls="refreshMenu" aria-expanded="false">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m7 10 5 5 5-5" />
+            </svg>
+          </button>
+          <div class="refresh-menu" id="refreshMenu" role="dialog" aria-label="Reload settings" hidden>
+            <label class="refresh-setting">
+              <span class="refresh-setting-copy">
+                <span class="refresh-setting-title">Reload after changes</span>
+                <span class="refresh-setting-note">Reload the active page after editing data</span>
+              </span>
+              <input id="autoRefreshToggle" type="checkbox">
+              <span class="switch-track" aria-hidden="true"></span>
+            </label>
+          </div>
+        </div>
 
         <button class="icon-button panel-button" id="openSidePanelButton" type="button" title="Open side panel" aria-label="Open side panel">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -43,11 +60,14 @@
           </svg>
         </button>
 
-        <label class="switch">
-          <input id="autoRefreshToggle" type="checkbox">
-          <span class="switch-track" aria-hidden="true"></span>
-          <span class="switch-label">Reload</span>
-        </label>
+        <button class="history-view-button" id="historyViewButton" type="button" title="Recent changes" aria-label="Show recent changes" aria-controls="historyPanel" aria-pressed="false">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+            <path d="M3 3v5h5M12 7v5l3 2" />
+          </svg>
+          <span>History</span>
+          <span class="history-count-badge" id="historyCountBadge" hidden>0</span>
+        </button>
       </header>
 
       <section class="permission-banner" id="permissionBanner" hidden>
@@ -123,16 +143,6 @@
         </section>
 
         <aside class="detail-pane" aria-label="Cookie workspace">
-          <nav class="side-card-nav" aria-label="Cookie workspace views">
-            <button class="side-card-button is-active" id="detailsViewButton" type="button" title="Cookie details" aria-label="Show cookie details" aria-pressed="true">
-              <span class="side-card-icon side-card-icon-data" aria-hidden="true"></span>
-            </button>
-            <button class="side-card-button" id="historyViewButton" type="button" title="Recent changes" aria-label="Show recent changes" aria-pressed="false">
-              <span class="side-card-icon side-card-icon-history" aria-hidden="true"></span>
-              <span class="side-card-badge" id="historyCountBadge" hidden>0</span>
-            </button>
-          </nav>
-
           <div class="detail-content">
             <section class="detail-view" id="detailsView" aria-label="Cookie editor">
               <div class="detail-empty" id="detailPlaceholder">Select a cookie</div>

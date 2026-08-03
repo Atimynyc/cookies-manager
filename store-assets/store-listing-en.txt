@@ -19,7 +19,7 @@ Main features
 - Copy a cookie value, a name=value pair, or structured JSON with one action.
 - Use built-in URL encode/decode, JSON format/compact, and JWT payload decoding tools.
 - Save frequently used values as local templates for reuse.
-- Review recent changes and before/after differences, and undo changes during the current working session.
+- Review recent changes and before/after differences, and undo changes during the current browser session.
 - Optionally reload the page automatically after a change.
 - Use the extension from either its popup or the Chrome side panel.
 
@@ -31,4 +31,4 @@ Usage notes
 
 The extension accesses data for a selected website only when the user opens and operates it. Cookies and web storage can contain sensitive information such as sign-in state, so use the extension only on trusted devices and protect any exported data.
 
-The JWT tool decodes the payload for inspection only. It does not verify signatures or determine whether a token is trustworthy or valid. Full value snapshots required for undo are kept only for the current popup or side-panel session.
+The JWT tool decodes the payload for inspection only. It does not verify signatures or determine whether a token is trustworthy or valid. Full value snapshots required for difference viewing and undo are kept only in memory for the current browser session.

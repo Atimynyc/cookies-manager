@@ -18,7 +18,7 @@ The extension uses the chrome.tabs API to identify the active tab, list HTTP/HTT
 
 Justification for storage
 
-The extension uses chrome.storage.local to store interface preferences, automatic reload settings, column widths, the selected value-tool mode, cookie templates explicitly created by the user, and recent change records on the user's device. This data is used only to restore extension state and support site data management workflows. It is not synchronized or uploaded to the developer or third-party servers. Users can remove it by clearing extension data or uninstalling the extension.
+The extension uses chrome.storage.local to store interface preferences, automatic reload settings, column widths, the selected value-tool mode, cookie templates explicitly created by the user, and recent change records on the user's device. It uses chrome.storage.session to retain complete before-and-after values only in memory for difference viewing and undo during the current browser session. This data is used only to restore extension state and support site data management workflows. It is not synchronized or uploaded to the developer or third-party servers. Users can remove locally stored data by clearing extension data or uninstalling the extension, and session snapshots are discarded when the browser session ends.
 
 Justification for scripting
 

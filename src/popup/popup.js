@@ -1,4 +1,5 @@
 import {
+  clearRecentChangeSnapshots,
   clearRecentCookieChanges,
   activateTab,
   getActiveTab,
@@ -6,6 +7,7 @@ import {
   getCookieTemplates,
   getCookiesForUrl,
   getPreferences,
+  getRecentChangeSnapshots,
   getRecentCookieChanges,
   getWindowHttpTabs,
   hasSitePermission,
@@ -14,6 +16,7 @@ import {
   removeCookie,
   saveCookieTemplates,
   savePreferences,
+  saveRecentChangeSnapshots,
   saveRecentCookieChanges,
   setCookiePair,
   setCookieValue,
@@ -170,7 +173,10 @@ const elements = {
   siteSelect: document.querySelector("#siteSelect"),
   dataViewButtons: Array.from(document.querySelectorAll(".data-switch button[data-view]")),
   searchInput: document.querySelector("#searchInput"),
+  refreshControl: document.querySelector("#refreshControl"),
   refreshButton: document.querySelector("#refreshButton"),
+  refreshMenuButton: document.querySelector("#refreshMenuButton"),
+  refreshMenu: document.querySelector("#refreshMenu"),
   openSidePanelButton: document.querySelector("#openSidePanelButton"),
   autoRefreshToggle: document.querySelector("#autoRefreshToggle"),
   permissionBanner: document.querySelector("#permissionBanner"),
@@ -189,7 +195,6 @@ const elements = {
   loadingState: document.querySelector("#loadingState"),
   emptyState: document.querySelector("#emptyState"),
   detailPane: document.querySelector(".detail-pane"),
-  detailsViewButton: document.querySelector("#detailsViewButton"),
   historyViewButton: document.querySelector("#historyViewButton"),
   historyCountBadge: document.querySelector("#historyCountBadge"),
   detailsView: document.querySelector("#detailsView"),
@@ -253,11 +258,14 @@ async function initialize() {
     state.columnWidths = normalizeColumnWidths(preferences.columnWidths);
     elements.autoRefreshToggle.checked = state.autoRefreshPage;
     elements.valueToolModeSelect.value = state.valueToolMode;
+    updateRefreshControlState();
     applyColumnWidths();
   } catch {
     state.autoRefreshPage = false;
     state.valueToolMode = "none";
     state.columnWidths = [...DEFAULT_COLUMN_WIDTHS];
+    elements.autoRefreshToggle.checked = false;
+    updateRefreshControlState();
     applyColumnWidths();
   }
 
@@ -273,6 +281,10 @@ function bindEvents() {
   }
   elements.siteSelect.addEventListener("change", switchToSelectedSite);
   elements.refreshButton.addEventListener("click", refreshData);
+  elements.refreshMenuButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    setRefreshMenuOpen(elements.refreshMenu.hidden);
+  });
   elements.openSidePanelButton.addEventListener("click", openCurrentSidePanel);
   elements.requestPermissionButton.addEventListener("click", refreshData);
   elements.closeStatusButton.addEventListener("click", clearStatus);
@@ -287,6 +299,7 @@ function bindEvents() {
   });
   elements.autoRefreshToggle.addEventListener("change", async () => {
     state.autoRefreshPage = elements.autoRefreshToggle.checked;
+    updateRefreshControlState();
     await savePreferences({ autoRefreshPage: state.autoRefreshPage });
   });
   elements.cookieEditor.addEventListener("submit", saveSelectedItem);
@@ -309,11 +322,36 @@ function bindEvents() {
   });
   elements.runToolButton.addEventListener("click", runSelectedValueTool);
   elements.copyToolOutputButton.addEventListener("click", copyToolOutput);
-  elements.detailsViewButton.addEventListener("click", () => setActiveDetailView("details"));
-  elements.historyViewButton.addEventListener("click", () => setActiveDetailView("history"));
+  elements.historyViewButton.addEventListener("click", () => {
+    setActiveDetailView(state.activeDetailView === "history" ? "details" : "history");
+  });
   elements.clearHistoryButton.addEventListener("click", clearHistory);
   elements.closeHistoryDetailButton.addEventListener("click", clearHistoryDetail);
+  document.addEventListener("click", (event) => {
+    if (!elements.refreshControl.contains(event.target)) {
+      setRefreshMenuOpen(false);
+    }
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !elements.refreshMenu.hidden) {
+      setRefreshMenuOpen(false);
+      elements.refreshMenuButton.focus();
+    }
+  });
   initializeColumnResizers();
+}
+
+function setRefreshMenuOpen(open) {
+  elements.refreshMenu.hidden = !open;
+  elements.refreshMenuButton.setAttribute("aria-expanded", String(open));
+}
+
+function updateRefreshControlState() {
+  elements.refreshControl.classList.toggle("is-auto", state.autoRefreshPage);
+  const stateLabel = state.autoRefreshPage ? "on" : "off";
+  elements.refreshMenuButton.title = `Reload after changes: ${stateLabel}`;
+  elements.refreshMenuButton.setAttribute("aria-label", `Reload after changes: ${stateLabel}`);
+  elements.refreshButton.title = state.autoRefreshPage ? "Refresh data (page reload is on)" : "Refresh data";
 }
 
 async function setDataView(view) {
@@ -1241,10 +1279,9 @@ function setActiveDetailView(view) {
   const isHistoryView = state.activeDetailView === "history";
   elements.detailsView.hidden = isHistoryView;
   elements.historyPanel.hidden = !isHistoryView;
-  elements.detailsViewButton.classList.toggle("is-active", !isHistoryView);
   elements.historyViewButton.classList.toggle("is-active", isHistoryView);
-  elements.detailsViewButton.setAttribute("aria-pressed", String(!isHistoryView));
   elements.historyViewButton.setAttribute("aria-pressed", String(isHistoryView));
+  updateHistoryButtonState();
 
   if (isHistoryView) {
     renderHistory();
@@ -1367,6 +1404,16 @@ async function loadRecentChanges() {
     state.recentChanges = [];
   }
 
+  try {
+    const snapshots = await getRecentChangeSnapshots();
+    state.undoSnapshots = new Map(
+      Object.entries(snapshots).filter(([changeId, snapshot]) => changeId && snapshot && typeof snapshot === "object")
+    );
+    pruneUndoSnapshots();
+  } catch {
+    state.undoSnapshots = new Map();
+  }
+
   renderHistory();
 }
 
@@ -1387,7 +1434,7 @@ async function safelyRecordRecentChange(row, nextValue) {
     state.unreadHistoryIds.add(record.id);
     state.recentChanges = normalizeRecentChanges([record, ...state.recentChanges]);
     renderHistory();
-    await saveRecentCookieChanges(state.recentChanges);
+    await saveRecentHistory();
   } catch {
     // Saving should not fail because local history could not be updated.
   }
@@ -1423,7 +1470,7 @@ async function safelyRecordImportChange(row, nextValue, previousRow) {
     state.unreadHistoryIds.add(record.id);
     state.recentChanges = normalizeRecentChanges([record, ...state.recentChanges]);
     renderHistory();
-    await saveRecentCookieChanges(state.recentChanges);
+    await saveRecentHistory();
   } catch {
     // Importing should not fail because local history could not be updated.
   }
@@ -1440,7 +1487,7 @@ function getHistoryItemKind() {
 async function undoRecentChange(changeId) {
   const snapshot = state.undoSnapshots.get(changeId);
   if (!snapshot || !state.tab?.url) {
-    showStatus("This change can no longer be undone from this popup session.", "error");
+    showStatus("This change can no longer be undone in this browser session.", "error");
     return;
   }
 
@@ -1472,6 +1519,7 @@ async function undoRecentChange(changeId) {
       clearHistoryDetail();
     }
     renderHistory();
+    await safelySaveRecentChangeSnapshots();
     await refreshData();
 
     if (state.autoRefreshPage) {
@@ -1500,9 +1548,12 @@ async function clearHistory() {
       state.unreadHistoryIds.delete(changeId);
     });
     if (state.recentChanges.length === 0) {
-      await clearRecentCookieChanges();
+      await Promise.all([
+        clearRecentCookieChanges(),
+        clearRecentChangeSnapshots()
+      ]);
     } else {
-      await saveRecentCookieChanges(state.recentChanges);
+      await saveRecentHistory();
     }
     state.selectedHistoryId = "";
     clearHistoryDetail();
@@ -1534,10 +1585,36 @@ function renderHistory() {
 
 function getVisibleRecentChanges() {
   const itemKind = getHistoryItemKind();
-  return state.recentChanges.filter((change) => {
-    const snapshot = state.undoSnapshots.get(change.id);
-    return change.itemKind === itemKind && snapshot && "beforeValue" in snapshot && "afterValue" in snapshot;
-  });
+  return state.recentChanges.filter((change) => change.itemKind === itemKind);
+}
+
+function pruneUndoSnapshots() {
+  const retainedIds = new Set(state.recentChanges.map((change) => change.id));
+  for (const changeId of state.undoSnapshots.keys()) {
+    if (!retainedIds.has(changeId)) {
+      state.undoSnapshots.delete(changeId);
+    }
+  }
+}
+
+function serializeUndoSnapshots() {
+  pruneUndoSnapshots();
+  return Object.fromEntries(state.undoSnapshots);
+}
+
+async function saveRecentHistory() {
+  await Promise.all([
+    saveRecentCookieChanges(state.recentChanges),
+    saveRecentChangeSnapshots(serializeUndoSnapshots())
+  ]);
+}
+
+async function safelySaveRecentChangeSnapshots() {
+  try {
+    await saveRecentChangeSnapshots(serializeUndoSnapshots());
+  } catch {
+    // Undo should not fail because its session snapshot could not be removed.
+  }
 }
 
 function syncUnreadHistory(visibleChanges) {
@@ -1556,7 +1633,20 @@ function syncUnreadHistory(visibleChanges) {
 function updateHistoryBadge(count) {
   elements.historyCountBadge.hidden = count === 0;
   elements.historyCountBadge.textContent = count > 9 ? "9+" : String(count);
-  elements.historyViewButton.title = count > 0 ? `${count} unread changes` : "Recent changes";
+  updateHistoryButtonState(count);
+}
+
+function updateHistoryButtonState(unreadCount = null) {
+  const isHistoryView = state.activeDetailView === "history";
+  const visibleBadgeCount = elements.historyCountBadge.hidden ? 0 : elements.historyCountBadge.textContent;
+  const count = unreadCount === null ? visibleBadgeCount : unreadCount;
+  const label = isHistoryView
+    ? "Back to details"
+    : count
+      ? `${count} unread changes`
+      : "Recent changes";
+  elements.historyViewButton.title = label;
+  elements.historyViewButton.setAttribute("aria-label", label);
 }
 
 function createHistoryItem(change) {
@@ -1778,7 +1868,7 @@ function renderHistoryValueDetail(change, snapshot) {
   elements.historyValueDetail.hidden = true;
   elements.historyDetailNote.hidden = false;
   elements.historyDetailNote.textContent =
-    "Value snapshots are only available for changes made during the current popup session.";
+    "Value snapshots are only available during the current browser session.";
 }
 
 function renderValueDiff(beforeElement, afterElement, beforeValue, afterValue) {

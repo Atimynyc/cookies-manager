@@ -45,6 +45,7 @@ try {
   const popup = await openPopupForActiveTab(context, testPage, extensionId);
   await waitForPopupReady(popup, "127.0.0.1");
   await assertPopupListsSeededCookies(popup);
+  await assertWorkspaceNavigation(popup);
   await assertTableActionsBelowList(popup);
   await assertEditorActions(popup);
   await assertValueTools(popup);
@@ -68,7 +69,7 @@ try {
   await popup.locator("#searchInput").fill("");
   await popup.waitForFunction(() => document.querySelectorAll("#cookieTableBody tr").length >= 7);
   await screenshot(popup, "milestone-4-popup-final.png");
-  await assertHistoryRequiresValueSnapshots(popup);
+  await assertHistoryPersistsWithSessionSnapshots(popup, context, baseUrl, runId);
   await assertSingleHistoryDetailLayout(popup, runId);
   console.log("extension acceptance ok");
 } finally {
@@ -255,7 +256,7 @@ async function assertStressLayout(popup) {
       toolOutput: "#toolOutput",
       metaGrid: ".meta-grid",
       runButton: "#runToolButton",
-      autoRefresh: ".switch"
+      historyButton: "#historyViewButton"
     };
     const rects = Object.fromEntries(Object.entries(selectors).map(([name, selector]) => {
       const rect = document.querySelector(selector).getBoundingClientRect();
@@ -282,8 +283,8 @@ async function assertStressLayout(popup) {
         rects.runButton.top >= rects.utilityActions.top &&
         rects.runButton.bottom <= rects.utilityActions.bottom + 1,
       topbarInsideApp:
-        rects.autoRefresh.right <= rects.app.right + 1 &&
-        rects.autoRefresh.left >= rects.app.left,
+        rects.historyButton.right <= rects.app.right + 1 &&
+        rects.historyButton.left >= rects.app.left,
       panesDoNotOverlap: rects.tablePane.right <= rects.detailPane.left + 1,
       detailChildrenInsidePane:
         rects.valueInput.right <= rects.detailPane.right + 1 &&
@@ -298,6 +299,59 @@ async function assertStressLayout(popup) {
   assert.equal(layout.panesDoNotOverlap, true, JSON.stringify(layout.rects, null, 2));
   assert.equal(layout.detailChildrenInsidePane, true, JSON.stringify(layout.rects, null, 2));
   await screenshot(popup, "milestone-4-popup-layout-stress.png");
+}
+
+async function assertWorkspaceNavigation(popup) {
+  assert.equal(await popup.locator("#detailsViewButton").count(), 0);
+  assert.equal(await popup.locator(".side-card-nav").count(), 0);
+  assert.equal(await popup.locator(".site-switch > span").count(), 0);
+
+  const layout = await popup.evaluate(() => {
+    const search = document.querySelector(".search-field").getBoundingClientRect();
+    const history = document.querySelector("#historyViewButton").getBoundingClientRect();
+    const refresh = document.querySelector("#refreshControl").getBoundingClientRect();
+    const siteSelect = document.querySelector("#siteSelect");
+    const siteSelectRect = siteSelect.getBoundingClientRect();
+    const dataSwitchRect = document.querySelector(".data-switch").getBoundingClientRect();
+    const siteSelectStyle = getComputedStyle(siteSelect);
+    const detailPane = document.querySelector(".detail-pane").getBoundingClientRect();
+    const detailContent = document.querySelector(".detail-content").getBoundingClientRect();
+    return {
+      historyBesideSearch: search.right <= history.left + 1 && Math.abs(search.top - history.top) <= 1,
+      refreshAboveSearch: refresh.bottom <= search.top,
+      siteAlignedWithControls:
+        Math.abs(siteSelectRect.top - dataSwitchRect.top) <= 1 &&
+        Math.abs(siteSelectRect.bottom - dataSwitchRect.bottom) <= 1,
+      siteTextClearsArrow:
+        siteSelectStyle.appearance === "none" &&
+        Number.parseFloat(siteSelectStyle.paddingRight) >= 32 &&
+        siteSelectStyle.textOverflow === "ellipsis",
+      detailUsesFullPane: detailContent.left - detailPane.left <= 2
+    };
+  });
+  assert.equal(layout.historyBesideSearch, true, JSON.stringify(layout));
+  assert.equal(layout.refreshAboveSearch, true, JSON.stringify(layout));
+  assert.equal(layout.siteAlignedWithControls, true, JSON.stringify(layout));
+  assert.equal(layout.siteTextClearsArrow, true, JSON.stringify(layout));
+  assert.equal(layout.detailUsesFullPane, true, JSON.stringify(layout));
+
+  await popup.locator("#refreshMenuButton").click();
+  assert.equal(await popup.locator("#refreshMenu").isHidden(), false);
+  assert.equal(await popup.locator("#refreshMenuButton").getAttribute("aria-expanded"), "true");
+  await popup.locator("#autoRefreshToggle").check();
+  await popup.waitForFunction(() => document.querySelector("#refreshControl")?.classList.contains("is-auto"));
+  await popup.locator("#autoRefreshToggle").uncheck();
+  await popup.waitForFunction(() => !document.querySelector("#refreshControl")?.classList.contains("is-auto"));
+  await popup.locator("#hostLabel").click();
+  assert.equal(await popup.locator("#refreshMenu").isHidden(), true);
+
+  await popup.locator("#historyViewButton").click();
+  assert.equal(await popup.locator("#historyPanel").isHidden(), false);
+  assert.equal(await popup.locator("#detailsView").isHidden(), true);
+  assert.equal(await popup.locator("#historyViewButton").getAttribute("aria-pressed"), "true");
+  await popup.locator("#historyViewButton").click();
+  assert.equal(await popup.locator("#historyPanel").isHidden(), true);
+  assert.equal(await popup.locator("#detailsView").isHidden(), false);
 }
 
 async function assertEditorActions(popup) {
@@ -527,7 +581,7 @@ async function assertEditFlow(popup, context, baseUrl) {
   const restored = restoredCookies.find((cookie) => cookie.name === "editable");
   assert.equal(restored?.value, `before-${runId}`);
 
-  await popup.locator("#detailsViewButton").click();
+  await showDetailsView(popup);
   await popup.waitForFunction(() => {
     return document.querySelector("#detailsView")?.hidden === false &&
       document.querySelector("#historyPanel")?.hidden === true;
@@ -580,22 +634,65 @@ async function assertDeleteFlow(popup, context, baseUrl) {
   assert.equal(cookies.some((cookie) => cookie.name === "delete_me"), false);
 }
 
-async function assertHistoryRequiresValueSnapshots(popup) {
-  const storedChanges = await popup.evaluate(async () => {
-    const result = await chrome.storage.local.get({ recentCookieChanges: [] });
-    return result.recentCookieChanges;
+async function assertHistoryPersistsWithSessionSnapshots(popup, context, baseUrl, seed) {
+  await showDetailsView(popup);
+  await selectCookieBySearch(popup, "editable");
+  const cookiesBeforeEdit = await context.cookies(baseUrl);
+  const valueBeforeEdit = cookiesBeforeEdit.find((cookie) => cookie.name === "editable")?.value;
+  assert.ok(valueBeforeEdit, "Expected editable cookie before the persisted history check.");
+  const valueAfterEdit = `persisted-history-${seed}`;
+  await popup.locator("#valueInput").fill(valueAfterEdit);
+  await popup.locator("#saveButton").click();
+  await waitForStatus(popup, "Saved editable.");
+
+  const storedHistory = await popup.evaluate(async () => {
+    const [changeResult, snapshotResult] = await Promise.all([
+      chrome.storage.local.get({ recentCookieChanges: [] }),
+      chrome.storage.session.get({ recentChangeSnapshots: {} })
+    ]);
+    return {
+      changes: changeResult.recentCookieChanges,
+      snapshots: snapshotResult.recentChangeSnapshots
+    };
   });
-  assert.ok(storedChanges.length > 0, "Expected persisted history metadata before reloading the popup.");
+  const persistedChange = storedHistory.changes.find((change) => {
+    return (change.itemKind || "cookie") === "cookie" && change.name === "editable";
+  });
+  assert.ok(persistedChange, "Expected persisted cookie history before reloading the popup.");
+  assert.equal(storedHistory.snapshots[persistedChange.id]?.beforeValue, valueBeforeEdit);
+  assert.equal(storedHistory.snapshots[persistedChange.id]?.afterValue, valueAfterEdit);
 
   await popup.reload({ waitUntil: "domcontentloaded" });
   await waitForPopupReady(popup, "127.0.0.1");
   await popup.locator("#historyViewButton").click();
 
-  assert.equal(await popup.locator("#historyList li").count(), 0);
-  assert.equal(await popup.locator("#historyList").isHidden(), true);
-  assert.equal(await popup.locator("#historyEmpty").innerText(), "No recent changes");
+  const persistedItem = popup.locator(`#historyList li[data-change-id="${persistedChange.id}"]`);
+  assert.equal(await persistedItem.count(), 1);
+  assert.equal(await popup.locator("#historyList").isHidden(), false);
+  assert.equal(await popup.locator("#historyEmpty").isHidden(), true);
   assert.equal(await popup.locator("#historyCountBadge").isHidden(), true);
-  assert.equal(await popup.locator("#clearHistoryButton").isDisabled(), true);
+  assert.equal(await popup.locator("#clearHistoryButton").isDisabled(), false);
+  const persistedDetailButton = persistedItem.locator(".history-detail-button");
+  const persistedUndoButton = persistedItem.locator(".history-undo-button");
+  assert.equal(await persistedDetailButton.count(), 1);
+  assert.equal(await persistedUndoButton.count(), 1);
+  await persistedDetailButton.click();
+  assert.match(await popup.locator("#historyBeforeValue").innerText(), new RegExp(valueBeforeEdit));
+  assert.match(await popup.locator("#historyAfterValue").innerText(), new RegExp(valueAfterEdit));
+  assert.equal(await popup.locator("#historyBeforeValue .diff-removed").count(), 1);
+  assert.equal(await popup.locator("#historyAfterValue .diff-added").count(), 1);
+  assert.equal(await popup.locator("#historyDetailNote").isHidden(), true);
+
+  await persistedUndoButton.click();
+  await waitForStatus(popup, "Undid the selected change.");
+  const cookiesAfterUndo = await context.cookies(baseUrl);
+  assert.equal(cookiesAfterUndo.find((cookie) => cookie.name === "editable")?.value, valueBeforeEdit);
+
+  const snapshotAfterUndo = await popup.evaluate(async (changeId) => {
+    const result = await chrome.storage.session.get({ recentChangeSnapshots: {} });
+    return result.recentChangeSnapshots[changeId];
+  }, persistedChange.id);
+  assert.equal(snapshotAfterUndo, undefined);
 }
 
 async function assertHistoryDetailLayout(popup) {
@@ -641,7 +738,7 @@ async function assertHistoryDetailLayout(popup) {
 }
 
 async function assertSingleHistoryDetailLayout(popup, seed) {
-  await popup.locator("#detailsViewButton").click();
+  await showDetailsView(popup);
   await selectCookieBySearch(popup, "editable");
   await popup.locator("#valueInput").fill(`single-history-${seed}`);
   await popup.locator("#saveButton").click();
@@ -677,7 +774,7 @@ async function assertLocalStorageFlow(popup, page, seed) {
   const restored = await page.evaluate(() => localStorage.getItem("local_plain"));
   assert.equal(restored, `local-before-${seed}`);
 
-  await popup.locator("#detailsViewButton").click();
+  await showDetailsView(popup);
   await selectItemBySearch(popup, "local_json");
   await runValueTool(popup, "jsonFormat");
   await expectToolOutput(popup, '"area": "local"');
@@ -766,6 +863,17 @@ async function assertHistoryPartitioning(popup, seed) {
 
 async function selectCookieBySearch(popup, query) {
   await selectItemBySearch(popup, query);
+}
+
+async function showDetailsView(popup) {
+  const historyIsVisible = await popup.locator("#historyPanel").evaluate((panel) => !panel.hidden);
+  if (historyIsVisible) {
+    await popup.locator("#historyViewButton").click();
+  }
+  await popup.waitForFunction(() => {
+    return document.querySelector("#detailsView")?.hidden === false &&
+      document.querySelector("#historyPanel")?.hidden === true;
+  });
 }
 
 async function selectItemBySearch(popup, query) {
