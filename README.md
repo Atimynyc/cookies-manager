@@ -5,7 +5,7 @@ Cookie Controller is a site data management tool for developers, testers, and ad
 Main features
 
 - View cookies for the current page and quickly search by name, value, domain, or path.
-- Edit an individual cookie value while preserving its domain, path, expiration, SameSite, Secure, and HttpOnly attributes.
+- Edit an individual cookie value or expiration time while preserving its domain, path, SameSite, Secure, and HttpOnly attributes.
 - Create or delete cookies, delete multiple selected cookies, and set values in batches.
 - View, create, edit, and remove Local Storage and Session Storage entries.
 - Switch the management target between HTTP/HTTPS tabs in the current browser window.
@@ -22,7 +22,7 @@ Cookie Controller 是一款面向开发者、测试人员和高级用户的站�
 主要功能
 
 - 查看当前网页的 Cookie，并按名称、值、域名或路径快速搜索。
-- 修改单个 Cookie 的值，同时保留其域名、路径、过期时间、SameSite、Secure 和 HttpOnly 等属性。
+- 修改单个 Cookie 的值或过期时间，同时保留其域名、路径、SameSite、Secure 和 HttpOnly 等属性。
 - 新增、删除或批量删除 Cookie，并为多个选中项批量设置值。
 - 查看、添加、修改和删除 Local Storage 与 Session Storage 数据。
 - 在当前浏览器窗口的多个 HTTP/HTTPS 标签页之间快速切换管理目标。

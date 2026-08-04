@@ -214,6 +214,8 @@ const elements = {
   editorLocation: document.querySelector("#editorLocation"),
   editorChips: document.querySelector("#editorChips"),
   valueInput: document.querySelector("#valueInput"),
+  expirationEditorCell: document.querySelector("#expirationEditorCell"),
+  expirationInput: document.querySelector("#expirationInput"),
   valueToolModeSelect: document.querySelector("#valueToolModeSelect"),
   runToolButton: document.querySelector("#runToolButton"),
   toolOutput: document.querySelector("#toolOutput"),
@@ -332,7 +334,13 @@ function bindEvents() {
     updateSaveState();
     updateAutoToolOutput();
   });
-  elements.resetButton.addEventListener("click", resetSelectedValue);
+  const handleExpirationChange = () => {
+    updateExpirationValidity();
+    updateSaveState();
+  };
+  elements.expirationInput.addEventListener("input", handleExpirationChange);
+  elements.expirationInput.addEventListener("change", handleExpirationChange);
+  elements.resetButton.addEventListener("click", resetSelectedItem);
   elements.deleteButton.addEventListener("click", deleteSelectedItem);
   elements.copyValueButton.addEventListener("click", () => copySelected("value", elements.copyValueButton));
   elements.copyPairButton.addEventListener("click", () => copySelected("pair", elements.copyPairButton));
@@ -546,7 +554,13 @@ async function saveSelectedItem(event) {
   }
 
   const nextValue = elements.valueInput.value;
-  if (nextValue === row.value) {
+  const expiration = isCookieView() ? getExpirationDraft() : null;
+  if (!hasSelectedItemChanges(row)) {
+    return;
+  }
+
+  if (isCookieView() && !expiration) {
+    elements.expirationInput.reportValidity();
     return;
   }
 
@@ -555,12 +569,13 @@ async function saveSelectedItem(event) {
   suppressCookieWatcher();
 
   try {
+    let savedCookie = null;
     if (isCookieView()) {
-      await setCookieValue(state.tab.url, row.raw, nextValue);
+      savedCookie = await setCookieValue(state.tab.url, row.raw, nextValue, expiration);
     } else {
       await setStorageValue(state.tab.id, state.tab.url, getCurrentView().storageType, row.name, nextValue);
     }
-    await safelyRecordRecentChange(row, nextValue);
+    await safelyRecordRecentChange(row, nextValue, { savedCookie });
     state.selectedId = row.id;
     await refreshData();
 
@@ -725,13 +740,14 @@ function cancelDialogFromBackdrop(event) {
   }
 }
 
-function resetSelectedValue() {
+function resetSelectedItem() {
   const row = getSelectedRow();
   if (!row) {
     return;
   }
 
   elements.valueInput.value = row.value;
+  populateExpirationEditor(row);
   updateSaveState();
   updateAutoToolOutput();
 }
@@ -1330,6 +1346,7 @@ function isCookieView() {
 
 function renderViewChrome() {
   const view = getCurrentView();
+  const cookieView = isCookieView();
   document.body.dataset.view = state.dataView;
   elements.searchInput.placeholder = isCookieView()
     ? "Search name, value, domain, path"
@@ -1341,6 +1358,8 @@ function renderViewChrome() {
   elements.importButton.dataset.tooltip = importLabel;
   elements.detailsView.setAttribute("aria-label", `${view.title} editor`);
   elements.detailPlaceholder.textContent = `Select a ${view.singular}`;
+  elements.expirationEditorCell.hidden = !cookieView;
+  elements.metaExpires.hidden = cookieView;
 
   elements.dataViewButtons.forEach((button) => {
     const isActive = button.dataset.view === state.dataView;
@@ -1636,6 +1655,7 @@ function renderSelectedItem() {
   elements.editorLocation.textContent = getRowLocation(row);
   elements.editorLocation.title = getRowLocation(row);
   elements.valueInput.value = row.value;
+  populateExpirationEditor(row);
   updateAutoToolOutput();
   elements.metaDomain.textContent = row.domain;
   elements.metaDomain.title = row.domain;
@@ -1700,10 +1720,95 @@ function getRowJson(row) {
   return isCookieView() ? getCookieJson(row) : getStorageJson(row);
 }
 
+function populateExpirationEditor(row) {
+  if (!isCookieView()) {
+    return;
+  }
+
+  elements.expirationInput.value = row.session || !Number.isFinite(row.raw?.expirationDate)
+    ? ""
+    : formatDateTimeLocal(row.raw.expirationDate);
+  elements.expirationInput.min = formatDateTimeLocal(Date.now() / 1000 + 1);
+  updateExpirationValidity();
+}
+
+function updateExpirationValidity() {
+  elements.expirationInput.setCustomValidity("");
+  if (!elements.expirationInput.value) {
+    return;
+  }
+
+  const expirationDate = new Date(elements.expirationInput.value).getTime();
+  if (!Number.isFinite(expirationDate)) {
+    elements.expirationInput.setCustomValidity("Enter a valid expiration date and time.");
+  } else if (expirationDate <= Date.now()) {
+    elements.expirationInput.setCustomValidity("Expiration must be in the future.");
+  }
+}
+
+function getExpirationDraft() {
+  if (!elements.expirationInput.value) {
+    return { session: true };
+  }
+
+  updateExpirationValidity();
+  const expirationDate = new Date(elements.expirationInput.value).getTime() / 1000;
+  if (!elements.expirationInput.validity.valid || !Number.isFinite(expirationDate)) {
+    return null;
+  }
+
+  return {
+    session: false,
+    expirationDate
+  };
+}
+
+function formatDateTimeLocal(expirationDate) {
+  const date = new Date(expirationDate * 1000);
+  const pad = (value) => String(value).padStart(2, "0");
+  return [
+    date.getFullYear(),
+    "-",
+    pad(date.getMonth() + 1),
+    "-",
+    pad(date.getDate()),
+    "T",
+    pad(date.getHours()),
+    ":",
+    pad(date.getMinutes()),
+    ":",
+    pad(date.getSeconds())
+  ].join("");
+}
+
+function hasSelectedItemChanges(row) {
+  return Boolean(row) && (
+    elements.valueInput.value !== row.value ||
+    (isCookieView() && isExpirationDraftChanged(row))
+  );
+}
+
+function isExpirationDraftChanged(row) {
+  const draft = getExpirationDraft();
+  if (!draft) {
+    return true;
+  }
+  if (draft.session !== Boolean(row.session)) {
+    return true;
+  }
+  if (draft.session) {
+    return false;
+  }
+
+  return !Number.isFinite(row.raw?.expirationDate) ||
+    Math.abs(draft.expirationDate - row.raw.expirationDate) >= 1;
+}
+
 function updateSaveState() {
   const row = getSelectedRow();
-  elements.saveButton.disabled = !row || elements.valueInput.value === row.value;
-  elements.resetButton.disabled = !row || elements.valueInput.value === row.value;
+  const hasChanges = hasSelectedItemChanges(row);
+  elements.saveButton.disabled = !hasChanges;
+  elements.resetButton.disabled = !hasChanges;
   updateToolState();
 }
 
@@ -1746,20 +1851,45 @@ async function loadRecentChanges() {
   renderHistory();
 }
 
-async function safelyRecordRecentChange(row, nextValue) {
+async function safelyRecordRecentChange(row, nextValue, { savedCookie = null } = {}) {
   try {
-    const record = createRecentChange(row, nextValue, getDisplayHost(state.tab?.url), Date.now(), {
-      itemKind: getHistoryItemKind()
-    });
-    state.undoSnapshots.set(record.id, {
-      itemKind: getHistoryItemKind(),
+    const itemKind = getHistoryItemKind();
+    const afterCookie = savedCookie || row.raw;
+    const recordOptions = { itemKind };
+    if (itemKind === "cookie") {
+      Object.assign(recordOptions, {
+        beforeSession: Boolean(row.raw?.session),
+        beforeExpirationDate: row.raw?.expirationDate,
+        afterSession: Boolean(afterCookie?.session),
+        afterExpirationDate: afterCookie?.expirationDate
+      });
+    }
+
+    const record = createRecentChange(
+      row,
+      nextValue,
+      getDisplayHost(state.tab?.url),
+      Date.now(),
+      recordOptions
+    );
+    const snapshot = {
+      itemKind,
       raw: row.raw,
       storageType: row.type || getCurrentView().storageType,
       key: row.name,
       value: row.value,
       beforeValue: row.value,
       afterValue: nextValue
-    });
+    };
+    if (itemKind === "cookie") {
+      Object.assign(snapshot, {
+        beforeSession: Boolean(row.raw?.session),
+        beforeExpirationDate: row.raw?.expirationDate,
+        afterSession: Boolean(afterCookie?.session),
+        afterExpirationDate: afterCookie?.expirationDate
+      });
+    }
+    state.undoSnapshots.set(record.id, snapshot);
     state.unreadHistoryIds.add(record.id);
     state.recentChanges = normalizeRecentChanges([record, ...state.recentChanges]);
     renderHistory();
@@ -2091,6 +2221,10 @@ function renderHistoryDetailGrid(change) {
     ["Cookie", change.name || ""],
     ["Domain", change.domain || ""],
     ["Path", change.path || ""],
+    ...(change.hasExpirationDetails ? [
+      ["Before expiration", formatHistoryExpiration(change.beforeSession, change.beforeExpirationDate)],
+      ["After expiration", formatHistoryExpiration(change.afterSession, change.afterExpirationDate)]
+    ] : []),
     ["Store", change.storeId || "Default"],
     ["Host", change.host || ""],
     ["Changed", formatFullHistoryTime(change.timestamp)],
@@ -2120,6 +2254,16 @@ function renderHistoryDetailGrid(change) {
   }
 
   elements.historyDetailGrid.replaceChildren(fragment);
+}
+
+function formatHistoryExpiration(session, expirationDate) {
+  if (session) {
+    return "Session";
+  }
+  if (!Number.isFinite(expirationDate)) {
+    return "Unknown";
+  }
+  return new Date(expirationDate * 1000).toLocaleString();
 }
 
 function startCookieWatcher() {

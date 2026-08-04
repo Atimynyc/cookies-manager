@@ -79,7 +79,11 @@ export async function getCookiesForUrl(url, storeId = "") {
   return callChrome("cookies.getAll", details);
 }
 
-export async function setCookieValue(url, cookie, value) {
+export async function setCookieValue(url, cookie, value, overrides = {}) {
+  const session = Object.hasOwn(overrides, "session") ? overrides.session : cookie.session;
+  const expirationDate = Object.hasOwn(overrides, "expirationDate")
+    ? overrides.expirationDate
+    : cookie.expirationDate;
   const details = {
     url,
     name: cookie.name,
@@ -95,8 +99,11 @@ export async function setCookieValue(url, cookie, value) {
     details.domain = cookie.domain;
   }
 
-  if (!cookie.session && cookie.expirationDate) {
-    details.expirationDate = cookie.expirationDate;
+  if (!session) {
+    if (!Number.isFinite(expirationDate)) {
+      throw new Error("A persistent cookie requires a valid expiration date.");
+    }
+    details.expirationDate = expirationDate;
   }
 
   if (cookie.partitionKey) {

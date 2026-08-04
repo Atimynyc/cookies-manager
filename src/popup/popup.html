@@ -258,9 +258,12 @@
                     <dt id="metaPathLabel">Path</dt>
                     <dd id="metaPath"></dd>
                   </div>
-                  <div>
+                  <div id="metaExpiresGroup">
                     <dt id="metaExpiresLabel">Expires</dt>
                     <dd id="metaExpires"></dd>
+                    <dd class="meta-expiration-editor" id="expirationEditorCell" hidden>
+                      <input id="expirationInput" type="datetime-local" step="1" aria-label="Cookie expiration date and time" title="Clear the time to use a session cookie">
+                    </dd>
                   </div>
                   <div>
                     <dt id="metaSameSiteLabel">SameSite</dt>

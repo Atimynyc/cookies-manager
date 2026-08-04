@@ -62,6 +62,7 @@ try {
   await switchDataView(popup, "cookies");
   await screenshot(popup, "milestone-4-popup-tools.png");
   await assertEditFlow(popup, context, baseUrl);
+  await assertExpirationEditFlow(popup, context, baseUrl);
   await assertImportFlow(popup, context, baseUrl);
   await popup.locator("#historyViewButton").click();
   await screenshot(popup, "milestone-4-popup-history.png");
@@ -759,6 +760,90 @@ async function assertEditFlow(popup, context, baseUrl) {
     return document.querySelector("#detailsView")?.hidden === false &&
       document.querySelector("#historyPanel")?.hidden === true;
   });
+}
+
+async function assertExpirationEditFlow(popup, context, baseUrl) {
+  await showDetailsView(popup);
+  let cookies = await context.cookies(baseUrl);
+  const originalPersistent = cookies.find((cookie) => cookie.name === "expires_cookie");
+  assert.ok(originalPersistent?.expires > 0, "Expected a persistent cookie fixture.");
+  const originalValue = originalPersistent.value;
+
+  await selectCookieBySearch(popup, "expires_cookie");
+  assert.equal(await popup.locator("#expirationInput").isEnabled(), true);
+  assert.notEqual(await popup.locator("#expirationInput").inputValue(), "");
+
+  const changeOnlyExpiration = Math.floor(Date.now() / 1000) + 12 * 24 * 60 * 60;
+  await popup.locator("#expirationInput").evaluate((input, value) => {
+    input.value = value;
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }, await toPopupDateTimeLocal(popup, changeOnlyExpiration));
+  assert.equal(await popup.locator("#saveButton").isEnabled(), true);
+  await popup.locator("#resetButton").click();
+  assert.equal(await popup.locator("#saveButton").isDisabled(), true);
+
+  const nextExpiration = Math.floor(Date.now() / 1000) + 14 * 24 * 60 * 60;
+  await popup.locator("#expirationInput").fill(await toPopupDateTimeLocal(popup, nextExpiration));
+  assert.equal(await popup.locator("#saveButton").isEnabled(), true);
+  await popup.locator("#saveButton").click();
+  await waitForStatus(popup, "Saved expires_cookie.");
+
+  cookies = await context.cookies(baseUrl);
+  let updated = cookies.find((cookie) => cookie.name === "expires_cookie");
+  assert.equal(updated?.value, originalValue);
+  assert.ok(Math.abs(updated.expires - nextExpiration) <= 1, JSON.stringify(updated));
+
+  await popup.locator("#historyViewButton").click();
+  const expirationHistoryItem = popup.locator("#historyList li").first();
+  assert.match(await expirationHistoryItem.innerText(), /expires_cookie/);
+  await expirationHistoryItem.locator(".history-detail-button").click();
+  const expirationHistoryText = await popup.locator("#historyDetailGrid").innerText();
+  assert.match(expirationHistoryText, /Before expiration/i);
+  assert.match(expirationHistoryText, /After expiration/i);
+  await expirationHistoryItem.locator(".history-undo-button").click();
+  await waitForStatus(popup, "Undid the selected change.");
+
+  cookies = await context.cookies(baseUrl);
+  const restored = cookies.find((cookie) => cookie.name === "expires_cookie");
+  assert.equal(restored?.value, originalValue);
+  assert.ok(Math.abs(restored.expires - originalPersistent.expires) <= 1, JSON.stringify(restored));
+
+  await showDetailsView(popup);
+  await selectCookieBySearch(popup, "plain");
+  const sessionValue = (await context.cookies(baseUrl)).find((cookie) => cookie.name === "plain")?.value;
+  assert.equal(await popup.locator("#expirationInput").inputValue(), "");
+
+  const persistentExpiration = Math.floor(Date.now() / 1000) + 10 * 24 * 60 * 60;
+  await popup.locator("#expirationInput").fill(await toPopupDateTimeLocal(popup, persistentExpiration));
+  await popup.locator("#saveButton").click();
+  await waitForStatus(popup, "Saved plain.");
+
+  cookies = await context.cookies(baseUrl);
+  updated = cookies.find((cookie) => cookie.name === "plain");
+  assert.equal(updated?.value, sessionValue);
+  assert.ok(Math.abs(updated.expires - persistentExpiration) <= 1, JSON.stringify(updated));
+
+  await selectCookieBySearch(popup, "plain");
+  await popup.locator("#expirationInput").fill("");
+  await popup.locator("#saveButton").click();
+  await waitForStatus(popup, "Saved plain.");
+
+  cookies = await context.cookies(baseUrl);
+  updated = cookies.find((cookie) => cookie.name === "plain");
+  assert.equal(updated?.value, sessionValue);
+  assert.equal(updated?.expires, -1);
+
+  await selectCookieBySearch(popup, "expires_cookie");
+  await screenshot(popup, "milestone-4-popup-expiration.png");
+}
+
+async function toPopupDateTimeLocal(popup, timestamp) {
+  return popup.evaluate((seconds) => {
+    const date = new Date(seconds * 1000);
+    const pad = (value) => String(value).padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` +
+      `T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+  }, timestamp);
 }
 
 async function assertImportFlow(popup, context, baseUrl) {

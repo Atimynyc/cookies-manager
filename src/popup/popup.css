@@ -1375,6 +1375,23 @@ tbody tr:focus-visible td {
   white-space: nowrap;
 }
 
+.meta-grid .meta-expiration-editor {
+  overflow: visible;
+  margin-top: 3px;
+}
+
+.meta-expiration-editor input {
+  width: 100%;
+  min-width: 0;
+  height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: #fbfcff;
+  color: var(--text);
+  padding: 0 5px;
+  font-size: 10px;
+}
+
 .copy-row,
 .template-row {
   display: flex;
