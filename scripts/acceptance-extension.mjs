@@ -386,7 +386,7 @@ async function assertEditorActions(popup) {
   await selectCookieBySearch(popup, "plain");
   const actions = await popup.evaluate(() => {
     const valueInput = document.querySelector("#valueInput");
-    return ["resetButton", "deleteButton", "saveButton"].map((id) => {
+    return ["copyValueButton", "resetButton", "deleteButton", "saveButton"].map((id) => {
       const button = document.querySelector(`#${id}`);
       return {
         beforeValue: Boolean(button.compareDocumentPosition(valueInput) & Node.DOCUMENT_POSITION_FOLLOWING),
@@ -399,20 +399,26 @@ async function assertEditorActions(popup) {
   });
 
   assert.deepEqual(actions, [
+    { beforeValue: true, hasIcon: true, label: "Copy value", text: "", tooltip: "Copy value" },
     { beforeValue: true, hasIcon: true, label: "Reset", text: "", tooltip: "Reset" },
     { beforeValue: true, hasIcon: true, label: "Delete", text: "", tooltip: "Delete" },
     { beforeValue: true, hasIcon: true, label: "Save", text: "", tooltip: "Save" }
   ]);
+  assert.equal(
+    await popup.locator(".editor-actions > button").evaluateAll((buttons) => buttons.map((button) => button.id).join(",")),
+    "copyValueButton,resetButton,deleteButton,saveButton"
+  );
+  assert.equal(await popup.locator(".copy-row > button").count(), 2);
 
-  await popup.locator("#deleteButton").hover();
+  await popup.locator("#copyValueButton").hover();
   await popup.waitForFunction(() => {
-    const button = document.querySelector("#deleteButton");
+    const button = document.querySelector("#copyValueButton");
     return getComputedStyle(button, "::after").opacity === "1";
   });
-  const tooltipContent = await popup.locator("#deleteButton").evaluate((button) => {
+  const tooltipContent = await popup.locator("#copyValueButton").evaluate((button) => {
     return getComputedStyle(button, "::after").content;
   });
-  assert.equal(tooltipContent, '"Delete"');
+  assert.equal(tooltipContent, '"Copy value"');
   await screenshot(popup, "milestone-4-popup-editor-actions.png");
 }
 
