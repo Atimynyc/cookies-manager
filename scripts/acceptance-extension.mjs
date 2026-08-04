@@ -388,11 +388,16 @@ async function assertEditorActions(popup) {
     const valueInput = document.querySelector("#valueInput");
     return ["copyValueButton", "resetButton", "deleteButton", "saveButton"].map((id) => {
       const button = document.querySelector(`#${id}`);
+      const defaultText = Array.from(button.childNodes)
+        .filter((node) => !(node instanceof Element && node.matches(".copy-success-feedback")))
+        .map((node) => node.textContent || "")
+        .join("")
+        .trim();
       return {
         beforeValue: Boolean(button.compareDocumentPosition(valueInput) & Node.DOCUMENT_POSITION_FOLLOWING),
         hasIcon: Boolean(button.querySelector("svg.icon")),
         label: button.getAttribute("aria-label"),
-        text: button.textContent.trim(),
+        text: defaultText,
         tooltip: button.dataset.tooltip
       };
     });
@@ -419,6 +424,68 @@ async function assertEditorActions(popup) {
     return getComputedStyle(button, "::after").content;
   });
   assert.equal(tooltipContent, '"Copy value"');
+
+  const contentBeforeCopy = await popup.locator(".content").evaluate((content) => {
+    const rect = content.getBoundingClientRect();
+    return { bottom: rect.bottom, top: rect.top };
+  });
+  await popup.locator("#copyValueButton").click();
+  await popup.waitForFunction(() => document.querySelector("#copyValueButton")?.classList.contains("is-copied"));
+  const copiedState = await popup.evaluate(() => {
+    const button = document.querySelector("#copyValueButton");
+    const contentRect = document.querySelector(".content").getBoundingClientRect();
+    return {
+      ariaLabel: button.getAttribute("aria-label"),
+      contentBottom: contentRect.bottom,
+      contentTop: contentRect.top,
+      statusHidden: document.querySelector("#statusBar").hidden,
+      tooltip: button.dataset.tooltip,
+      tooltipContent: getComputedStyle(button, "::after").content
+    };
+  });
+  assert.equal(copiedState.ariaLabel, "Copied");
+  assert.equal(copiedState.tooltip, "Copied");
+  assert.equal(copiedState.tooltipContent, '"Copied"');
+  assert.equal(copiedState.statusHidden, true);
+  assert.equal(copiedState.contentTop, contentBeforeCopy.top);
+  assert.equal(copiedState.contentBottom, contentBeforeCopy.bottom);
+  await popup.locator("#copyValueButton").click();
+  await popup.waitForFunction(() => document.querySelector("#copyValueButton")?.getAttribute("aria-label") === "Copied");
+  await screenshot(popup, "milestone-4-popup-copy-feedback.png");
+
+  await popup.waitForFunction(() => !document.querySelector("#copyValueButton")?.classList.contains("is-copied"));
+  assert.equal(await popup.locator("#copyValueButton").getAttribute("aria-label"), "Copy value");
+  assert.equal(await popup.locator("#copyValueButton").getAttribute("data-tooltip"), "Copy value");
+
+  await popup.locator("#copyPairButton").click();
+  await popup.waitForFunction(() => document.querySelector("#copyPairButton")?.classList.contains("is-copied"));
+  await popup.waitForFunction(() => {
+    const feedback = document.querySelector("#copyPairButton .copy-success-feedback");
+    return feedback && getComputedStyle(feedback).opacity === "1";
+  });
+  const pairFeedback = await popup.locator("#copyPairButton .copy-success-feedback").evaluate((feedback) => ({
+    opacity: getComputedStyle(feedback).opacity,
+    text: feedback.textContent.trim()
+  }));
+  assert.deepEqual(pairFeedback, { opacity: "1", text: "Copied" });
+
+  await popup.evaluate(() => {
+    window.__copyFeedbackWriteText = navigator.clipboard.writeText;
+    navigator.clipboard.writeText = async () => {
+      throw new Error("Clipboard denied.");
+    };
+  });
+  await popup.locator("#copyJsonButton").click();
+  await waitForStatus(popup, "Clipboard denied.");
+  assert.equal(await popup.locator("#copyJsonButton").evaluate((button) => button.classList.contains("is-copied")), false);
+  assert.equal(await popup.locator("#closeStatusButton").isHidden(), false);
+  await popup.evaluate(() => {
+    navigator.clipboard.writeText = window.__copyFeedbackWriteText;
+    delete window.__copyFeedbackWriteText;
+  });
+  await popup.locator("#closeStatusButton").click();
+  await popup.waitForFunction(() => document.querySelector("#statusBar")?.hidden === true);
+  assert.equal(await popup.locator("#statusBar").isHidden(), true);
   await screenshot(popup, "milestone-4-popup-editor-actions.png");
 }
 
@@ -482,6 +549,10 @@ async function assertTableActionsBelowList(popup) {
 }
 
 async function assertExportFlow(popup) {
+  const contentBeforeExport = await popup.locator(".content").evaluate((content) => {
+    const rect = content.getBoundingClientRect();
+    return { bottom: rect.bottom, top: rect.top };
+  });
   await popup.evaluate(() => {
     window.__lastClipboardWrite = "";
     const originalWriteText = navigator.clipboard.writeText.bind(navigator.clipboard);
@@ -496,6 +567,29 @@ async function assertExportFlow(popup) {
   const exported = JSON.parse(exportedText);
   assert.ok(exported.cookies.some((cookie) => cookie.name === "plain"));
   assert.ok(exported.count >= 7);
+
+  const toastLayout = await popup.evaluate(() => {
+    const appRect = document.querySelector(".app-shell").getBoundingClientRect();
+    const contentRect = document.querySelector(".content").getBoundingClientRect();
+    const statusBar = document.querySelector("#statusBar");
+    const statusRect = statusBar.getBoundingClientRect();
+    return {
+      appRight: appRect.right,
+      closeHidden: document.querySelector("#closeStatusButton").hidden,
+      contentBottom: contentRect.bottom,
+      contentTop: contentRect.top,
+      position: getComputedStyle(statusBar).position,
+      statusRight: statusRect.right,
+      viewportWidth: window.innerWidth
+    };
+  });
+  assert.equal(toastLayout.position, "fixed");
+  assert.equal(toastLayout.closeHidden, true);
+  assert.equal(toastLayout.contentTop, contentBeforeExport.top);
+  assert.equal(toastLayout.contentBottom, contentBeforeExport.bottom);
+  assert.ok(toastLayout.statusRight <= toastLayout.viewportWidth);
+  assert.ok(Math.abs(toastLayout.appRight - toastLayout.statusRight - 12) <= 1, JSON.stringify(toastLayout));
+  await screenshot(popup, "milestone-4-popup-toast.png");
 }
 
 async function assertTemplateFlow(popup) {
@@ -574,7 +668,8 @@ async function assertEditFlow(popup, context, baseUrl) {
   await popup.locator("#valueInput").fill(nextValue);
   await popup.locator("#saveButton").click();
   await waitForStatus(popup, "Saved editable.");
-  await popup.locator("#closeStatusButton").click();
+  assert.equal(await popup.locator("#closeStatusButton").isHidden(), true);
+  await popup.waitForFunction(() => document.querySelector("#statusBar")?.hidden === true);
   assert.equal(await popup.locator("#statusBar").isHidden(), true);
   assert.equal(await popup.locator("#statusMessage").textContent(), "");
   assert.equal(await popup.locator("#closeStatusButton").count(), 1);

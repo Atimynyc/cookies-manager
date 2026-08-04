@@ -1,5 +1,6 @@
 :root {
   color-scheme: light;
+  --app-width: 760px;
   --bg: #f7f8fb;
   --panel: #ffffff;
   --line: #d9dee8;
@@ -38,7 +39,7 @@
 
 html,
 body {
-  width: 760px;
+  width: var(--app-width);
   height: 560px;
   margin: 0;
   overflow: hidden;
@@ -90,9 +91,8 @@ button:disabled {
   grid-template-areas:
     "topbar"
     "permission"
-    "status"
     "content";
-  grid-template-rows: auto auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
   height: 560px;
 }
 
@@ -514,8 +514,7 @@ button:disabled {
   display: none;
 }
 
-.permission-banner,
-.status-bar {
+.permission-banner {
   margin: 8px 12px 0;
   border-radius: 6px;
   padding: 8px 10px;
@@ -555,19 +554,55 @@ button:disabled {
 }
 
 .status-bar {
-  grid-area: status;
+  position: fixed;
+  z-index: 30;
+  top: 108px;
+  right: max(12px, calc(100vw - var(--app-width) + 12px));
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 9px;
+  width: min(320px, calc(100vw - 24px));
+  min-height: 42px;
+  max-height: 160px;
+  overflow: auto;
   border: 1px solid var(--line);
+  border-radius: 6px;
   background: var(--panel);
   color: var(--muted);
+  padding: 8px 9px;
+  box-shadow: 0 8px 24px rgba(24, 32, 51, 0.16);
+  animation: status-enter 150ms ease-out;
 }
 
 .status-message {
+  flex: 1 1 auto;
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+.status-icon {
+  display: inline-flex;
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.status-icon .icon {
+  display: none;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.status-bar:not(.is-success, .is-warning, .is-error) .status-icon-info,
+.status-bar.is-success .status-icon-success,
+.status-bar.is-warning .status-icon-warning,
+.status-bar.is-error .status-icon-error {
+  display: block;
 }
 
 .status-close-button {
@@ -582,6 +617,10 @@ button:disabled {
   border-color: transparent;
   background: transparent;
   color: currentColor;
+}
+
+.status-close-button[hidden] {
+  display: none;
 }
 
 .status-close-button .icon {
@@ -608,6 +647,45 @@ button:disabled {
   border-color: #efaaa5;
   background: var(--danger-soft);
   color: var(--danger);
+}
+
+.status-bar.is-warning {
+  border-color: #f1d38f;
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+@keyframes status-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.status-bar.is-leaving {
+  animation: status-exit 120ms ease-in forwards;
+}
+
+@keyframes status-exit {
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .content {
@@ -1058,6 +1136,55 @@ tbody tr:focus-visible td {
   padding: 0;
 }
 
+.copy-feedback-button {
+  position: relative;
+}
+
+.copy-success-feedback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  visibility: hidden;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: inherit;
+  background: var(--success-soft);
+  color: var(--success);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease, visibility 120ms ease;
+}
+
+.copy-success-feedback .icon {
+  display: block;
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
+}
+
+.copy-feedback-button.is-copied {
+  border-color: #9bd7ba;
+  color: var(--success);
+}
+
+.copy-feedback-button.is-copied .copy-success-feedback {
+  visibility: visible;
+  opacity: 1;
+}
+
+.editor-action-button .copy-feedback-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
 .editor-action-button .icon {
   display: block;
   width: 16px;
@@ -1091,10 +1218,15 @@ tbody tr:focus-visible td {
 }
 
 .editor-action-button:hover::after,
-.editor-action-button:focus-visible::after {
+.editor-action-button:focus-visible::after,
+.editor-action-button.is-copied::after {
   visibility: visible;
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+.editor-action-button.is-copied::after {
+  content: "Copied";
 }
 
 .value-field textarea {
@@ -1194,6 +1326,7 @@ tbody tr:focus-visible td {
 
 .tool-output-header button {
   flex: 0 0 auto;
+  width: 58px;
   min-height: 24px;
   padding: 0 8px;
   font-size: 11px;
@@ -1259,6 +1392,16 @@ tbody tr:focus-visible td {
   white-space: nowrap;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .status-bar {
+    animation: none;
+  }
+
+  .copy-success-feedback {
+    transition: none;
+  }
+}
+
 .template-row {
   justify-content: flex-end;
   border-top: 1px solid var(--line);
@@ -1277,6 +1420,10 @@ body[data-surface="sidepanel"] {
 
 body[data-surface="sidepanel"] .content {
   grid-template-columns: minmax(0, 1fr) minmax(360px, 420px);
+}
+
+body[data-surface="sidepanel"] .status-bar {
+  right: 12px;
 }
 
 .history-panel {

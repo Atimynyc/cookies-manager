@@ -132,6 +132,14 @@ const DATA_VIEWS = {
 const DEFAULT_COLUMN_WIDTHS = [115, 150, 130, 84, 116, 92, 58];
 const MIN_COLUMN_WIDTHS = [76, 110, 104, 64, 102, 76, 54];
 const MAX_COLUMN_WIDTH = 360;
+const COPY_FEEDBACK_DURATION = 2000;
+const STATUS_EXIT_DURATION = 120;
+const STATUS_DURATIONS = {
+  success: 2000,
+  info: 3000,
+  warning: 5000,
+  error: 0
+};
 const COLUMN_CSS_VARS = [
   "--cookie-col-name",
   "--cookie-col-value",
@@ -142,6 +150,9 @@ const COLUMN_CSS_VARS = [
   "--cookie-col-size"
 ];
 const TEMPLATE_LIMIT = 12;
+const copyFeedbackStates = new WeakMap();
+let statusTimerId = 0;
+let statusHideTimerId = 0;
 
 const state = {
   tab: null,
@@ -185,6 +196,7 @@ const elements = {
   statusBar: document.querySelector("#statusBar"),
   statusMessage: document.querySelector("#statusMessage"),
   closeStatusButton: document.querySelector("#closeStatusButton"),
+  copyAnnouncement: document.querySelector("#copyAnnouncement"),
   selectionCount: document.querySelector("#selectionCount"),
   selectAllCheckbox: document.querySelector("#selectAllCheckbox"),
   batchEditButton: document.querySelector("#batchEditButton"),
@@ -309,9 +321,9 @@ function bindEvents() {
   });
   elements.resetButton.addEventListener("click", resetSelectedValue);
   elements.deleteButton.addEventListener("click", deleteSelectedItem);
-  elements.copyValueButton.addEventListener("click", () => copySelected("value"));
-  elements.copyPairButton.addEventListener("click", () => copySelected("pair"));
-  elements.copyJsonButton.addEventListener("click", () => copySelected("json"));
+  elements.copyValueButton.addEventListener("click", () => copySelected("value", elements.copyValueButton));
+  elements.copyPairButton.addEventListener("click", () => copySelected("pair", elements.copyPairButton));
+  elements.copyJsonButton.addEventListener("click", () => copySelected("json", elements.copyJsonButton));
   elements.saveTemplateButton.addEventListener("click", saveSelectedTemplate);
   elements.applyTemplateButton.addEventListener("click", applyCookieTemplate);
   elements.valueToolModeSelect.addEventListener("change", async () => {
@@ -661,7 +673,7 @@ function resetSelectedValue() {
   updateAutoToolOutput();
 }
 
-async function copySelected(mode) {
+async function copySelected(mode, feedbackButton) {
   const row = getSelectedRow();
   if (!row) {
     return;
@@ -675,8 +687,10 @@ async function copySelected(mode) {
 
   try {
     await writeClipboard(text);
-    showStatus("Copied to clipboard.", "success");
+    clearStatus();
+    showCopyFeedback(feedbackButton);
   } catch (error) {
+    resetCopyFeedback(feedbackButton);
     showStatus(error?.message || "Failed to copy.", "error");
   }
 }
@@ -936,10 +950,62 @@ async function copyToolOutput() {
 
   try {
     await writeClipboard(state.toolOutputText);
-    showStatus("Copied tool output.", "success");
+    clearStatus();
+    showCopyFeedback(elements.copyToolOutputButton);
   } catch (error) {
+    resetCopyFeedback(elements.copyToolOutputButton);
     showStatus(error?.message || "Failed to copy.", "error");
   }
+}
+
+function showCopyFeedback(button) {
+  const existingState = copyFeedbackStates.get(button);
+  if (existingState) {
+    window.clearTimeout(existingState.timerId);
+  }
+
+  const originalState = existingState?.originalState || {
+    ariaLabel: button.getAttribute("aria-label"),
+    tooltip: button.hasAttribute("data-tooltip") ? button.dataset.tooltip : null
+  };
+
+  button.classList.add("is-copied");
+  button.setAttribute("aria-label", "Copied");
+  if (button.hasAttribute("data-tooltip")) {
+    button.dataset.tooltip = "Copied";
+  }
+
+  elements.copyAnnouncement.textContent = "";
+  window.requestAnimationFrame(() => {
+    elements.copyAnnouncement.textContent = "Copied to clipboard.";
+  });
+
+  const timerId = window.setTimeout(() => resetCopyFeedback(button), COPY_FEEDBACK_DURATION);
+  copyFeedbackStates.set(button, { originalState, timerId });
+}
+
+function resetCopyFeedback(button) {
+  const feedbackState = copyFeedbackStates.get(button);
+  if (!feedbackState) {
+    return;
+  }
+
+  window.clearTimeout(feedbackState.timerId);
+  button.classList.remove("is-copied");
+
+  if (feedbackState.originalState.ariaLabel === null) {
+    button.removeAttribute("aria-label");
+  } else {
+    button.setAttribute("aria-label", feedbackState.originalState.ariaLabel);
+  }
+
+  if (feedbackState.originalState.tooltip === null) {
+    button.removeAttribute("data-tooltip");
+  } else {
+    button.dataset.tooltip = feedbackState.originalState.tooltip;
+  }
+
+  copyFeedbackStates.delete(button);
 }
 
 async function writeClipboard(text) {
@@ -2022,12 +2088,44 @@ function setPermissionBanner(visible, message = "Site permission is required for
 }
 
 function showStatus(message, type = "info") {
+  window.clearTimeout(statusTimerId);
+  window.clearTimeout(statusHideTimerId);
+  statusTimerId = 0;
+  statusHideTimerId = 0;
+  const normalizedType = Object.hasOwn(STATUS_DURATIONS, type) ? type : "info";
+  const duration = STATUS_DURATIONS[normalizedType];
+
   elements.statusBar.hidden = false;
+  elements.statusMessage.setAttribute("role", normalizedType === "error" ? "alert" : "status");
+  elements.statusMessage.setAttribute("aria-live", normalizedType === "error" ? "assertive" : "polite");
   elements.statusMessage.textContent = message;
-  elements.statusBar.className = `status-bar is-${type}`;
+  elements.closeStatusButton.hidden = duration > 0;
+  elements.statusBar.className = `status-bar is-${normalizedType}`;
+
+  if (duration > 0) {
+    statusTimerId = window.setTimeout(clearStatus, duration);
+  }
 }
 
 function clearStatus() {
+  window.clearTimeout(statusTimerId);
+  window.clearTimeout(statusHideTimerId);
+  statusTimerId = 0;
+  statusHideTimerId = 0;
+
+  if (elements.statusBar.hidden) {
+    resetStatusElement();
+    return;
+  }
+
+  elements.closeStatusButton.hidden = true;
+  elements.statusBar.classList.add("is-leaving");
+  const exitDuration = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : STATUS_EXIT_DURATION;
+  statusHideTimerId = window.setTimeout(resetStatusElement, exitDuration);
+}
+
+function resetStatusElement() {
+  statusHideTimerId = 0;
   elements.statusBar.hidden = true;
   elements.statusMessage.textContent = "";
   elements.statusBar.className = "status-bar";
