@@ -45,6 +45,7 @@ try {
   const popup = await openPopupForActiveTab(context, testPage, extensionId);
   await waitForPopupReady(popup, "127.0.0.1");
   await assertPopupListsSeededCookies(popup);
+  await assertUnselectedWorkspaceFillsContent(popup);
   await assertWorkspaceNavigation(popup);
   await assertTableActionsBelowList(popup);
   await assertEditorActions(popup);
@@ -193,6 +194,33 @@ async function assertPopupListsSeededCookies(popup) {
   for (const expected of ["plain", "editable", "delete_me", "encoded", "jwt", "http_only"]) {
     assert.ok(names.includes(expected), `Expected popup list to include ${expected}. Got: ${names.join(", ")}`);
   }
+}
+
+async function assertUnselectedWorkspaceFillsContent(popup) {
+  const layout = await popup.evaluate(() => {
+    const app = document.querySelector(".app-shell");
+    const content = document.querySelector(".content");
+    const tablePane = document.querySelector(".table-pane");
+    const detailPane = document.querySelector(".detail-pane");
+    const appRect = app.getBoundingClientRect();
+    const contentRect = content.getBoundingClientRect();
+    const contentStyle = getComputedStyle(content);
+    const contentBottom = contentRect.bottom - Number.parseFloat(contentStyle.paddingBottom);
+
+    return {
+      contentBottomGap: appRect.bottom - contentRect.bottom,
+      detailBottomGap: contentBottom - detailPane.getBoundingClientRect().bottom,
+      editorHidden: document.querySelector("#cookieEditor").hidden,
+      placeholderHidden: document.querySelector("#detailPlaceholder").hidden,
+      tableBottomGap: contentBottom - tablePane.getBoundingClientRect().bottom
+    };
+  });
+
+  assert.equal(layout.editorHidden, true, JSON.stringify(layout));
+  assert.equal(layout.placeholderHidden, false, JSON.stringify(layout));
+  assert.ok(Math.abs(layout.contentBottomGap) <= 1, JSON.stringify(layout));
+  assert.ok(Math.abs(layout.tableBottomGap) <= 1, JSON.stringify(layout));
+  assert.ok(Math.abs(layout.detailBottomGap) <= 1, JSON.stringify(layout));
 }
 
 async function assertValueTools(popup) {

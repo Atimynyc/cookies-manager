@@ -87,11 +87,17 @@ button:disabled {
 
 .app-shell {
   display: grid;
-  grid-template-rows: auto auto auto 1fr;
+  grid-template-areas:
+    "topbar"
+    "permission"
+    "status"
+    "content";
+  grid-template-rows: auto auto auto minmax(0, 1fr);
   height: 560px;
 }
 
 .topbar {
+  grid-area: topbar;
   display: grid;
   grid-template-columns: minmax(104px, 148px) minmax(130px, 1fr) auto 60px 34px;
   grid-template-areas:
@@ -516,6 +522,7 @@ button:disabled {
 }
 
 .permission-banner {
+  grid-area: permission;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -548,6 +555,7 @@ button:disabled {
 }
 
 .status-bar {
+  grid-area: status;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -603,8 +611,10 @@ button:disabled {
 }
 
 .content {
+  grid-area: content;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(342px, 352px);
+  grid-template-rows: minmax(0, 1fr);
   gap: 10px;
   min-height: 0;
   overflow: hidden;
