@@ -1718,3 +1718,230 @@ body[data-surface="sidepanel"] .status-bar {
   border-color: #d55e57;
   background: var(--danger-soft);
 }
+
+.app-dialog {
+  max-width: none;
+  max-height: calc(100vh - 32px);
+  margin: auto;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  padding: 0;
+  box-shadow: 0 16px 40px rgba(24, 32, 51, 0.22);
+}
+
+.confirm-dialog {
+  width: min(360px, calc(100vw - 32px));
+}
+
+.text-input-dialog {
+  width: min(400px, calc(100vw - 32px));
+}
+
+.template-dialog {
+  width: min(420px, calc(100vw - 32px));
+}
+
+.app-dialog::backdrop {
+  background: rgba(24, 32, 51, 0.38);
+}
+
+.app-dialog form {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  max-height: calc(100vh - 34px);
+  margin: 0;
+}
+
+.app-dialog-body {
+  display: grid;
+  gap: 7px;
+  min-height: 0;
+  overflow: auto;
+  padding: 20px 20px 18px;
+}
+
+.app-dialog-body h2,
+.app-dialog-body p {
+  margin: 0;
+}
+
+.app-dialog-body h2 {
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.app-dialog-body p {
+  color: var(--muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.confirm-dialog-detail {
+  color: var(--text) !important;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 12px !important;
+}
+
+.confirm-dialog-detail[hidden] {
+  display: none;
+}
+
+.app-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  background: #f8f9fc;
+  padding: 10px 12px;
+}
+
+.app-dialog-actions button {
+  min-width: 72px;
+}
+
+.dialog-field {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.dialog-field input {
+  width: 100%;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fbfcff;
+  color: var(--text);
+  padding: 0 9px;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.dialog-field-error {
+  color: var(--danger) !important;
+  font-size: 12px !important;
+}
+
+.dialog-field-error[hidden] {
+  display: none;
+}
+
+.template-options {
+  display: grid;
+  gap: 6px;
+  max-height: 280px;
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+
+.template-option-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 32px;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.template-option {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fbfcff;
+  padding: 9px 10px;
+  cursor: pointer;
+}
+
+.template-option:hover {
+  border-color: var(--line-strong);
+  background: #f3f6fb;
+}
+
+.template-option:has(input:checked) {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.template-option input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--primary);
+}
+
+.template-option-copy {
+  display: grid;
+  min-width: 0;
+}
+
+.template-option-label,
+.template-option-source {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.template-option-label {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.template-option-source {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.template-option-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+}
+
+.template-option-delete .icon {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.template-dialog-feedback {
+  color: var(--success) !important;
+  font-size: 12px !important;
+}
+
+.template-dialog-feedback.is-error {
+  color: var(--danger) !important;
+}
+
+.template-dialog-feedback[hidden] {
+  display: none;
+}
+
+.confirm-dialog-delete {
+  border-color: var(--danger);
+  background: var(--danger);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.confirm-dialog-delete:hover {
+  border-color: #8f1e18;
+  background: #8f1e18;
+}

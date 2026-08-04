@@ -459,15 +459,7 @@ async function assertEditorActions(popup) {
 
   await popup.locator("#copyPairButton").click();
   await popup.waitForFunction(() => document.querySelector("#copyPairButton")?.classList.contains("is-copied"));
-  await popup.waitForFunction(() => {
-    const feedback = document.querySelector("#copyPairButton .copy-success-feedback");
-    return feedback && getComputedStyle(feedback).opacity === "1";
-  });
-  const pairFeedback = await popup.locator("#copyPairButton .copy-success-feedback").evaluate((feedback) => ({
-    opacity: getComputedStyle(feedback).opacity,
-    text: feedback.textContent.trim()
-  }));
-  assert.deepEqual(pairFeedback, { opacity: "1", text: "Copied" });
+  assert.equal((await popup.locator("#copyPairButton .copy-success-feedback").textContent()).trim(), "Copied");
 
   await popup.evaluate(() => {
     window.__copyFeedbackWriteText = navigator.clipboard.writeText;
@@ -594,17 +586,64 @@ async function assertExportFlow(popup) {
 
 async function assertTemplateFlow(popup) {
   await selectCookieBySearch(popup, "plain");
-  popup.once("dialog", (dialog) => dialog.accept(`Plain template ${runId}`));
   await popup.locator("#saveTemplateButton").click();
+  const saveTemplateDialogLayout = await getDialogLayout(popup, "#textInputDialog");
+  assert.ok(saveTemplateDialogLayout.width <= 440, JSON.stringify(saveTemplateDialogLayout));
+  assert.ok(saveTemplateDialogLayout.height <= 240, JSON.stringify(saveTemplateDialogLayout));
+  assert.equal(await popup.locator("#textInputDialogTitle").textContent(), "Save template");
+  assert.equal(await popup.locator("#textInputDialogInput").inputValue(), "plain");
+  await screenshot(popup, "milestone-4-popup-save-template-dialog.png");
+  await popup.locator("#textInputDialogInput").fill("   ");
+  await popup.locator("#textInputDialogSubmitButton").click();
+  assert.equal(await popup.locator("#textInputDialogError").isHidden(), false);
+  await popup.locator("#textInputDialogInput").fill(`Plain template ${runId}`);
+  await popup.locator("#textInputDialogSubmitButton").click();
+  await waitForStatus(popup, "Saved template");
+
+  await popup.locator("#saveTemplateButton").click();
+  await submitTextInput(popup, `Temporary template ${runId}`);
   await waitForStatus(popup, "Saved template");
 
   await selectCookieBySearch(popup, "editable");
-  popup.once("dialog", (dialog) => dialog.accept("1"));
   await popup.locator("#applyTemplateButton").click();
+  const templateDialogLayout = await getDialogLayout(popup, "#templateDialog");
+  assert.ok(templateDialogLayout.width <= 460, JSON.stringify(templateDialogLayout));
+  assert.ok(templateDialogLayout.height <= 420, JSON.stringify(templateDialogLayout));
+  assert.equal(await popup.locator(".template-option").count(), 2);
+  assert.equal(await popup.locator(".template-option-delete").count(), 2);
+  assert.match(await popup.locator(".template-option").first().innerText(), new RegExp(`Temporary template ${runId}`));
+  await screenshot(popup, "milestone-4-popup-template-dialog.png");
+
+  await popup.locator(".template-option-delete").first().click();
+  assert.equal(await popup.locator("#confirmDialogTitle").textContent(), "Delete template?");
+  assert.match(await popup.locator("#confirmDialogMessage").textContent(), new RegExp(`Temporary template ${runId}`));
+  await popup.keyboard.press("Escape");
+  await popup.locator("#confirmDialog").waitFor({ state: "hidden" });
+  assert.equal(await popup.locator(".template-option").count(), 2);
+
+  await popup.locator(".template-option-delete").first().click();
+  await acceptDeleteConfirmation(popup);
+  await popup.waitForFunction(() => document.querySelectorAll(".template-option").length === 1);
+  assert.match(await popup.locator("#templateDialogFeedback").textContent(), /Deleted template/);
+  const storedTemplates = await popup.evaluate(async () => {
+    const result = await chrome.storage.local.get({ cookieTemplates: [] });
+    return result.cookieTemplates;
+  });
+  assert.equal(storedTemplates.length, 1);
+  assert.doesNotMatch(storedTemplates[0].label, /Temporary template/);
+
+  await popup.locator("#templateDialogApplyButton").click();
   await waitForStatus(popup, "Applied template");
   const value = await popup.locator("#valueInput").inputValue();
   assert.match(value, new RegExp(`hello-world-${runId}`));
   await popup.locator("#resetButton").click();
+
+  await popup.locator("#applyTemplateButton").click();
+  await popup.locator(".template-option-delete").click();
+  await acceptDeleteConfirmation(popup);
+  await popup.locator("#templateDialog").waitFor({ state: "hidden" });
+  await waitForStatus(popup, "Deleted template");
+  assert.equal(await popup.locator("#applyTemplateButton").isDisabled(), true);
 }
 
 async function assertBatchFlow(popup, context, baseUrl) {
@@ -625,8 +664,13 @@ async function assertBatchFlow(popup, context, baseUrl) {
   await popup.waitForFunction(() => document.querySelectorAll("#cookieTableBody tr").length >= 2);
   await popup.locator("#selectAllCheckbox").check();
 
-  popup.once("dialog", (dialog) => dialog.accept(`batch-updated-${runId}`));
   await popup.locator("#batchEditButton").click();
+  const setValueDialogLayout = await getDialogLayout(popup, "#textInputDialog");
+  assert.ok(setValueDialogLayout.width <= 440, JSON.stringify(setValueDialogLayout));
+  assert.ok(setValueDialogLayout.height <= 240, JSON.stringify(setValueDialogLayout));
+  assert.equal(await popup.locator("#textInputDialogTitle").textContent(), "Set value");
+  await screenshot(popup, "milestone-4-popup-set-value-dialog.png");
+  await submitTextInput(popup, `batch-updated-${runId}`);
   await waitForStatus(popup, "Updated 2 selected cookies.");
 
   let cookies = await context.cookies(baseUrl);
@@ -634,8 +678,8 @@ async function assertBatchFlow(popup, context, baseUrl) {
   assert.equal(cookies.find((cookie) => cookie.name === `batch_two_${runId}`)?.value, `batch-updated-${runId}`);
 
   await popup.locator("#selectAllCheckbox").check();
-  popup.once("dialog", (dialog) => dialog.accept());
   await popup.locator("#batchDeleteButton").click();
+  await acceptDeleteConfirmation(popup);
   await waitForStatus(popup, "Deleted 2 selected cookies.");
 
   cookies = await context.cookies(baseUrl);
@@ -728,8 +772,16 @@ async function assertImportFlow(popup, context, baseUrl) {
       throw new Error("Clipboard reads are disabled for import.");
     };
   });
-  popup.once("dialog", (dialog) => dialog.accept(`${name}=${value}`));
   await popup.locator("#importButton").click();
+  const importDialogLayout = await getDialogLayout(popup, "#textInputDialog");
+  assert.ok(importDialogLayout.width <= 440, JSON.stringify(importDialogLayout));
+  assert.ok(importDialogLayout.height <= 240, JSON.stringify(importDialogLayout));
+  await screenshot(popup, "milestone-4-popup-import-dialog.png");
+  await popup.locator("#textInputDialogInput").fill("invalid pair");
+  await popup.locator("#textInputDialogSubmitButton").click();
+  assert.equal(await popup.locator("#textInputDialog").getAttribute("open"), "");
+  assert.equal(await popup.locator("#textInputDialogError").isHidden(), false);
+  await submitTextInput(popup, `${name}=${value}`);
   await waitForStatus(popup, `Imported ${name}.`);
   assert.equal(await popup.evaluate(() => window.__clipboardReadAttempted), false);
 
@@ -755,11 +807,36 @@ async function assertImportFlow(popup, context, baseUrl) {
 
 async function assertDeleteFlow(popup, context, baseUrl) {
   await selectCookieBySearch(popup, "delete_me");
-  popup.once("dialog", (dialog) => dialog.accept());
   await popup.locator("#deleteButton").click();
+
+  const dialogLayout = await popup.locator("#confirmDialog").evaluate((dialog) => {
+    const rect = dialog.getBoundingClientRect();
+    return {
+      open: dialog.open,
+      width: rect.width,
+      height: rect.height,
+      title: document.querySelector("#confirmDialogTitle")?.textContent,
+      message: document.querySelector("#confirmDialogMessage")?.textContent
+    };
+  });
+  assert.equal(dialogLayout.open, true);
+  assert.ok(dialogLayout.width <= 400, JSON.stringify(dialogLayout));
+  assert.ok(dialogLayout.height <= 240, JSON.stringify(dialogLayout));
+  assert.equal(dialogLayout.title, "Delete cookie?");
+  assert.match(dialogLayout.message, /delete_me/);
+  await screenshot(popup, "milestone-4-popup-delete-dialog.png");
+
+  await popup.keyboard.press("Escape");
+  await popup.locator("#confirmDialog").waitFor({ state: "hidden" });
+  let cookies = await context.cookies(baseUrl);
+  assert.equal(cookies.some((cookie) => cookie.name === "delete_me"), true);
+  assert.equal(await popup.locator("#deleteButton").evaluate((button) => button === document.activeElement), true);
+
+  await popup.locator("#deleteButton").click();
+  await acceptDeleteConfirmation(popup);
   await waitForStatus(popup, "Deleted delete_me.");
 
-  const cookies = await context.cookies(baseUrl);
+  cookies = await context.cookies(baseUrl);
   assert.equal(cookies.some((cookie) => cookie.name === "delete_me"), false);
 }
 
@@ -924,14 +1001,14 @@ async function assertLocalStorageFlow(popup, page, seed) {
   assert.ok(exported.items.some((item) => item.key === "local_plain"));
 
   const importName = `local_imported_${seed}`;
-  popup.once("dialog", (dialog) => dialog.accept(`${importName}=local-import-value`));
   await popup.locator("#importButton").click();
+  await submitTextInput(popup, `${importName}=local-import-value`);
   await waitForStatus(popup, `Imported ${importName}.`);
   assert.equal(await page.evaluate((key) => localStorage.getItem(key), importName), "local-import-value");
 
   await selectItemBySearch(popup, "local_delete_me");
-  popup.once("dialog", (dialog) => dialog.accept());
   await popup.locator("#deleteButton").click();
+  await acceptDeleteConfirmation(popup);
   await waitForStatus(popup, "Deleted local_delete_me.");
   assert.equal(await page.evaluate(() => localStorage.getItem("local_delete_me")), null);
 }
@@ -952,8 +1029,8 @@ async function assertSessionStorageFlow(popup, page, seed) {
   await expectToolOutput(popup, '"area": "session"');
 
   await selectItemBySearch(popup, "session_delete_me");
-  popup.once("dialog", (dialog) => dialog.accept());
   await popup.locator("#deleteButton").click();
+  await acceptDeleteConfirmation(popup);
   await waitForStatus(popup, "Deleted session_delete_me.");
   assert.equal(await page.evaluate(() => sessionStorage.getItem("session_delete_me")), null);
 }
@@ -1095,6 +1172,28 @@ async function waitForCookie(context, baseUrl, name) {
   }
 
   throw new Error(`Timed out waiting for cookie ${name}`);
+}
+
+async function acceptDeleteConfirmation(popup) {
+  await popup.locator("#confirmDialog").waitFor({ state: "visible" });
+  await popup.locator("#confirmDialogDeleteButton").click();
+}
+
+async function submitTextInput(popup, text) {
+  await popup.locator("#textInputDialog").waitFor({ state: "visible" });
+  await popup.locator("#textInputDialogInput").fill(text);
+  await popup.locator("#textInputDialogSubmitButton").click();
+}
+
+async function getDialogLayout(popup, selector) {
+  return popup.locator(selector).evaluate((dialog) => {
+    const rect = dialog.getBoundingClientRect();
+    return {
+      open: dialog.open,
+      width: rect.width,
+      height: rect.height
+    };
+  });
 }
 
 async function screenshot(page, name) {

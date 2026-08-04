@@ -334,5 +334,50 @@
         </aside>
       </section>
     </main>
+
+    <dialog class="app-dialog confirm-dialog" id="confirmDialog" aria-labelledby="confirmDialogTitle" aria-describedby="confirmDialogMessage">
+      <form method="dialog">
+        <div class="app-dialog-body">
+          <h2 id="confirmDialogTitle">Delete item?</h2>
+          <p id="confirmDialogMessage"></p>
+          <p class="confirm-dialog-detail" id="confirmDialogDetail" hidden></p>
+        </div>
+        <div class="app-dialog-actions">
+          <button id="confirmDialogCancelButton" type="button" data-dialog-cancel autofocus>Cancel</button>
+          <button class="confirm-dialog-delete" id="confirmDialogDeleteButton" type="submit" value="confirm">Delete</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="app-dialog text-input-dialog" id="textInputDialog" aria-labelledby="textInputDialogTitle">
+      <form id="textInputDialogForm" method="dialog">
+        <div class="app-dialog-body">
+          <h2 id="textInputDialogTitle">Enter value</h2>
+          <label class="dialog-field" for="textInputDialogInput">
+            <span id="textInputDialogFieldLabel">Value</span>
+            <input id="textInputDialogInput" type="text" autocomplete="off" spellcheck="false">
+          </label>
+          <p class="dialog-field-error" id="textInputDialogError" role="alert" hidden></p>
+        </div>
+        <div class="app-dialog-actions">
+          <button type="button" data-dialog-cancel>Cancel</button>
+          <button class="primary-button" id="textInputDialogSubmitButton" type="submit" value="submit">Continue</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="app-dialog template-dialog" id="templateDialog" aria-labelledby="templateDialogTitle">
+      <form method="dialog">
+        <div class="app-dialog-body">
+          <h2 id="templateDialogTitle">Apply template</h2>
+          <div class="template-options" id="templateDialogOptions" role="radiogroup" aria-label="Cookie templates"></div>
+          <p class="template-dialog-feedback" id="templateDialogFeedback" role="status" hidden></p>
+        </div>
+        <div class="app-dialog-actions">
+          <button type="button" data-dialog-cancel>Cancel</button>
+          <button class="primary-button" id="templateDialogApplyButton" type="submit" value="apply">Apply</button>
+        </div>
+      </form>
+    </dialog>
   </body>
 </html>

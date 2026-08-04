@@ -90,7 +90,6 @@ const DATA_VIEWS = {
     unsupportedMessage: "Only http:// and https:// pages support cookie operations.",
     readErrorMessage: "Failed to read cookies.",
     exportKey: "cookies",
-    importPrompt: "Enter one cookie as name=value",
     invalidPairMessage: "Cookie name is invalid.",
     pairLabel: "name=value",
     tableLabels: ["Name", "Value", "Domain", "Path", "Expires", "Flags", "Size"],
@@ -106,7 +105,6 @@ const DATA_VIEWS = {
     unsupportedMessage: "Only http:// and https:// pages support storage operations.",
     readErrorMessage: "Failed to read local storage.",
     exportKey: "items",
-    importPrompt: "Enter one local storage item as key=value",
     invalidPairMessage: "Storage key is invalid.",
     pairLabel: "key=value",
     tableLabels: ["Key", "Value", "Origin", "Storage", "Scope", "Flags", "Size"],
@@ -122,7 +120,6 @@ const DATA_VIEWS = {
     unsupportedMessage: "Only http:// and https:// pages support storage operations.",
     readErrorMessage: "Failed to read session storage.",
     exportKey: "items",
-    importPrompt: "Enter one session storage item as key=value",
     invalidPairMessage: "Storage key is invalid.",
     pairLabel: "key=value",
     tableLabels: ["Key", "Value", "Origin", "Storage", "Scope", "Flags", "Size"],
@@ -242,6 +239,22 @@ const elements = {
   resetButton: document.querySelector("#resetButton"),
   deleteButton: document.querySelector("#deleteButton"),
   saveButton: document.querySelector("#saveButton"),
+  confirmDialog: document.querySelector("#confirmDialog"),
+  confirmDialogTitle: document.querySelector("#confirmDialogTitle"),
+  confirmDialogMessage: document.querySelector("#confirmDialogMessage"),
+  confirmDialogDetail: document.querySelector("#confirmDialogDetail"),
+  textInputDialog: document.querySelector("#textInputDialog"),
+  textInputDialogForm: document.querySelector("#textInputDialogForm"),
+  textInputDialogTitle: document.querySelector("#textInputDialogTitle"),
+  textInputDialogFieldLabel: document.querySelector("#textInputDialogFieldLabel"),
+  textInputDialogInput: document.querySelector("#textInputDialogInput"),
+  textInputDialogError: document.querySelector("#textInputDialogError"),
+  textInputDialogSubmitButton: document.querySelector("#textInputDialogSubmitButton"),
+  templateDialog: document.querySelector("#templateDialog"),
+  templateDialogOptions: document.querySelector("#templateDialogOptions"),
+  templateDialogFeedback: document.querySelector("#templateDialogFeedback"),
+  templateDialogApplyButton: document.querySelector("#templateDialogApplyButton"),
+  dialogCancelButtons: Array.from(document.querySelectorAll("[data-dialog-cancel]")),
   historyList: document.querySelector("#historyList"),
   historyEmpty: document.querySelector("#historyEmpty"),
   clearHistoryButton: document.querySelector("#clearHistoryButton"),
@@ -339,6 +352,12 @@ function bindEvents() {
   });
   elements.clearHistoryButton.addEventListener("click", clearHistory);
   elements.closeHistoryDetailButton.addEventListener("click", clearHistoryDetail);
+  for (const dialog of [elements.confirmDialog, elements.textInputDialog, elements.templateDialog]) {
+    dialog.addEventListener("click", cancelDialogFromBackdrop);
+  }
+  for (const button of elements.dialogCancelButtons) {
+    button.addEventListener("click", () => button.closest("dialog")?.close("cancel"));
+  }
   document.addEventListener("click", (event) => {
     if (!elements.refreshControl.contains(event.target)) {
       setRefreshMenuOpen(false);
@@ -563,7 +582,11 @@ async function deleteSelectedItem() {
     return;
   }
 
-  const confirmed = window.confirm(`Delete ${getCurrentView().singular} "${row.name}"?\n${getRowLocation(row)}`);
+  const confirmed = await requestDeleteConfirmation({
+    title: `Delete ${getCurrentView().singular}?`,
+    message: `"${row.name}" will be permanently deleted.`,
+    detail: getRowLocation(row)
+  });
   if (!confirmed) {
     return;
   }
@@ -599,7 +622,11 @@ async function batchEditSelected() {
     return;
   }
 
-  const nextValue = window.prompt(`Set value for ${selectedRows.length} selected ${getCurrentView().plural}:`);
+  const nextValue = await requestTextInput({
+    title: "Set value",
+    fieldLabel: `Value for ${selectedRows.length} selected ${getCurrentView().plural}`,
+    submitLabel: "Set value"
+  });
   if (nextValue === null) {
     return;
   }
@@ -633,7 +660,10 @@ async function batchDeleteSelected() {
     return;
   }
 
-  const confirmed = window.confirm(`Delete ${selectedRows.length} selected ${getCurrentView().plural}?`);
+  const confirmed = await requestDeleteConfirmation({
+    title: `Delete selected ${getCurrentView().plural}?`,
+    message: `${selectedRows.length} selected ${getCurrentView().plural} will be permanently deleted.`
+  });
   if (!confirmed) {
     return;
   }
@@ -659,6 +689,39 @@ async function batchDeleteSelected() {
     showStatus(error?.message || `Failed to delete selected ${getCurrentView().plural}.`, "error");
   } finally {
     setBusy(false);
+  }
+}
+
+function requestDeleteConfirmation({ title, message, detail = "" }) {
+  const previouslyFocused = document.activeElement;
+  elements.confirmDialogTitle.textContent = title;
+  elements.confirmDialogMessage.textContent = message;
+  elements.confirmDialogDetail.textContent = detail;
+  elements.confirmDialogDetail.hidden = !detail;
+  elements.confirmDialog.returnValue = "cancel";
+
+  return new Promise((resolve) => {
+    elements.confirmDialog.addEventListener("close", () => {
+      if (previouslyFocused instanceof HTMLElement) {
+        previouslyFocused.focus();
+      }
+      resolve(elements.confirmDialog.returnValue === "confirm");
+    }, { once: true });
+    elements.confirmDialog.showModal();
+  });
+}
+
+function cancelDialogFromBackdrop(event) {
+  const dialog = event.currentTarget;
+  if (!(dialog instanceof HTMLDialogElement) || event.target !== dialog) {
+    return;
+  }
+
+  const rect = dialog.getBoundingClientRect();
+  const isOutside = event.clientX < rect.left || event.clientX > rect.right ||
+    event.clientY < rect.top || event.clientY > rect.bottom;
+  if (isOutside) {
+    dialog.close("cancel");
   }
 }
 
@@ -725,8 +788,8 @@ async function importPairFromInput() {
     return;
   }
 
-  const text = window.prompt(getCurrentView().importPrompt);
-  if (text === null) {
+  const pair = await requestImportPair();
+  if (!pair) {
     return;
   }
 
@@ -735,7 +798,6 @@ async function importPairFromInput() {
   suppressCookieWatcher();
 
   try {
-    const pair = parsePairText(text);
     const previousRow = findLikelyImportedRow(pair.name);
     const importedRow = await importPair(pair);
     await safelyRecordImportChange(importedRow, pair.value, previousRow);
@@ -761,14 +823,27 @@ async function saveSelectedTemplate() {
     return;
   }
 
-  const label = window.prompt("Template name", row.name);
-  if (!label) {
+  const label = await requestTextInput({
+    title: "Save template",
+    fieldLabel: "Template name",
+    initialValue: row.name,
+    submitLabel: "Save",
+    selectValue: true,
+    validate: (value) => {
+      const trimmedValue = value.trim();
+      if (!trimmedValue) {
+        throw new Error("Enter a template name.");
+      }
+      return trimmedValue;
+    }
+  });
+  if (label === null) {
     return;
   }
 
   const template = {
     id: `${Date.now()}-${row.name}`,
-    label: label.trim(),
+    label,
     name: row.name,
     value: elements.valueInput.value,
     domain: row.domain,
@@ -793,17 +868,8 @@ async function applyCookieTemplate() {
     return;
   }
 
-  const menu = state.cookieTemplates
-    .map((template, index) => `${index + 1}. ${template.label} (${template.name})`)
-    .join("\n");
-  const choice = window.prompt(`Choose a template number:\n${menu}`, "1");
-  const index = Number(choice) - 1;
-  const template = state.cookieTemplates[index];
-
+  const template = await requestTemplateSelection();
   if (!template) {
-    if (choice !== null) {
-      showStatus("Template choice is invalid.", "error");
-    }
     return;
   }
 
@@ -811,6 +877,203 @@ async function applyCookieTemplate() {
   updateSaveState();
   updateAutoToolOutput();
   showStatus(`Applied template ${template.label}. Save to write it.`, "success");
+}
+
+function requestImportPair() {
+  const view = getCurrentView();
+  return requestTextInput({
+    title: `Import ${view.singular}`,
+    fieldLabel: view.pairLabel,
+    placeholder: view.pairLabel,
+    submitLabel: "Import",
+    validate: parsePairText
+  });
+}
+
+function requestTextInput({
+  title,
+  fieldLabel,
+  initialValue = "",
+  placeholder = "",
+  submitLabel,
+  selectValue = false,
+  validate = (value) => value
+}) {
+  const previouslyFocused = document.activeElement;
+  elements.textInputDialogTitle.textContent = title;
+  elements.textInputDialogFieldLabel.textContent = fieldLabel;
+  elements.textInputDialogInput.value = initialValue;
+  elements.textInputDialogInput.placeholder = placeholder;
+  elements.textInputDialogError.textContent = "";
+  elements.textInputDialogError.hidden = true;
+  elements.textInputDialogSubmitButton.textContent = submitLabel;
+  elements.textInputDialog.returnValue = "cancel";
+
+  return new Promise((resolve) => {
+    let result = null;
+    const handleInput = () => {
+      elements.textInputDialogError.hidden = true;
+    };
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      try {
+        result = validate(elements.textInputDialogInput.value);
+        elements.textInputDialog.close("submit");
+      } catch (error) {
+        elements.textInputDialogError.textContent = error?.message || "Enter a valid value.";
+        elements.textInputDialogError.hidden = false;
+        elements.textInputDialogInput.focus();
+      }
+    };
+    const handleClose = () => {
+      elements.textInputDialogForm.removeEventListener("submit", handleSubmit);
+      elements.textInputDialogInput.removeEventListener("input", handleInput);
+      if (previouslyFocused instanceof HTMLElement) {
+        previouslyFocused.focus();
+      }
+      resolve(elements.textInputDialog.returnValue === "submit" ? result : null);
+    };
+
+    elements.textInputDialogForm.addEventListener("submit", handleSubmit);
+    elements.textInputDialogInput.addEventListener("input", handleInput);
+    elements.textInputDialog.addEventListener("close", handleClose, { once: true });
+    elements.textInputDialog.showModal();
+    if (selectValue) {
+      elements.textInputDialogInput.select();
+    } else {
+      elements.textInputDialogInput.focus();
+    }
+  });
+}
+
+function requestTemplateSelection() {
+  const previouslyFocused = document.activeElement;
+  elements.templateDialog.returnValue = "cancel";
+  setTemplateDialogFeedback();
+  renderTemplateOptions();
+
+  return new Promise((resolve) => {
+    elements.templateDialog.addEventListener("close", () => {
+      const selected = elements.templateDialogOptions.querySelector('input[name="cookieTemplate"]:checked');
+      const template = elements.templateDialog.returnValue === "apply"
+        ? state.cookieTemplates[Number(selected?.value)]
+        : null;
+      if (previouslyFocused instanceof HTMLElement) {
+        previouslyFocused.focus();
+      }
+      resolve(template || null);
+    }, { once: true });
+    elements.templateDialog.showModal();
+    elements.templateDialogOptions.querySelector("input")?.focus();
+  });
+}
+
+function renderTemplateOptions(selectedTemplate = state.cookieTemplates[0]) {
+  elements.templateDialogOptions.replaceChildren();
+
+  state.cookieTemplates.forEach((template, index) => {
+    const row = document.createElement("div");
+    row.className = "template-option-row";
+
+    const option = document.createElement("label");
+    option.className = "template-option";
+
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = "cookieTemplate";
+    input.value = String(index);
+    input.checked = template === selectedTemplate;
+
+    const copy = document.createElement("span");
+    copy.className = "template-option-copy";
+    const label = document.createElement("span");
+    label.className = "template-option-label";
+    label.textContent = template.label;
+    const source = document.createElement("span");
+    source.className = "template-option-source";
+    source.textContent = template.name;
+    copy.append(label, source);
+    option.append(input, copy);
+
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "template-option-delete danger-button";
+    deleteButton.type = "button";
+    deleteButton.title = `Delete ${template.label}`;
+    deleteButton.setAttribute("aria-label", `Delete template ${template.label}`);
+    deleteButton.append(createTemplateDeleteIcon());
+    deleteButton.addEventListener("click", () => deleteCookieTemplate(template));
+
+    row.append(option, deleteButton);
+    elements.templateDialogOptions.append(row);
+  });
+
+  elements.templateDialogApplyButton.disabled = state.cookieTemplates.length === 0;
+}
+
+function createTemplateDeleteIcon() {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("class", "icon");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("aria-hidden", "true");
+
+  for (const pathData of ["M3 6h18", "M8 6V4h8v2", "M19 6l-1 15H6L5 6", "M10 11v6M14 11v6"]) {
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", pathData);
+    svg.append(path);
+  }
+  return svg;
+}
+
+async function deleteCookieTemplate(template) {
+  const confirmed = await requestDeleteConfirmation({
+    title: "Delete template?",
+    message: `"${template.label}" will be permanently deleted.`,
+    detail: template.name
+  });
+  if (!confirmed) {
+    return;
+  }
+
+  const selectedIndex = Number(
+    elements.templateDialogOptions.querySelector('input[name="cookieTemplate"]:checked')?.value
+  );
+  const selectedTemplate = state.cookieTemplates[selectedIndex];
+  const templateIndex = state.cookieTemplates.indexOf(template);
+  const nextTemplates = state.cookieTemplates.filter((_, index) => index !== templateIndex);
+  const deleteButtons = Array.from(elements.templateDialogOptions.querySelectorAll(".template-option-delete"));
+  deleteButtons.forEach((button) => {
+    button.disabled = true;
+  });
+  elements.templateDialogApplyButton.disabled = true;
+
+  try {
+    await saveCookieTemplates(nextTemplates);
+    state.cookieTemplates = nextTemplates;
+    updateSelectionControls();
+
+    if (nextTemplates.length === 0) {
+      elements.templateDialog.close("cancel");
+      showStatus(`Deleted template ${template.label}.`, "success");
+      return;
+    }
+
+    const nextSelectedTemplate = selectedTemplate === template ? nextTemplates[0] : selectedTemplate;
+    renderTemplateOptions(nextSelectedTemplate);
+    setTemplateDialogFeedback(`Deleted template ${template.label}.`);
+    elements.templateDialogOptions.querySelector('input[name="cookieTemplate"]:checked')?.focus();
+  } catch (error) {
+    deleteButtons.forEach((button) => {
+      button.disabled = false;
+    });
+    elements.templateDialogApplyButton.disabled = false;
+    setTemplateDialogFeedback(error?.message || "Failed to delete template.", "error");
+  }
+}
+
+function setTemplateDialogFeedback(message = "", type = "success") {
+  elements.templateDialogFeedback.textContent = message;
+  elements.templateDialogFeedback.hidden = !message;
+  elements.templateDialogFeedback.classList.toggle("is-error", type === "error");
 }
 
 async function loadCookieTemplates() {
