@@ -1,30 +1,5 @@
 import { getCookieScopedUrl, getOriginPermissionPattern, isSupportedPageUrl } from "./url.js";
-
-const RECENT_CHANGES_KEY = "recentCookieChanges";
-const RECENT_CHANGE_SNAPSHOTS_KEY = "recentChangeSnapshots";
-const COOKIE_TEMPLATES_KEY = "cookieTemplates";
-const DEFAULT_PREFERENCES = {
-  autoRefreshPage: false,
-  valueToolMode: "none",
-  columnWidths: null
-};
-
-function callChrome(path, ...args) {
-  return new Promise((resolve, reject) => {
-    const keys = Array.isArray(path) ? path : path.split(".");
-    const method = keys.at(-1);
-    const target = keys.slice(0, -1).reduce((current, key) => current[key], chrome);
-
-    target[method](...args, (result) => {
-      const error = chrome.runtime.lastError;
-      if (error) {
-        reject(new Error(error.message));
-        return;
-      }
-      resolve(result);
-    });
-  });
-}
+import { callChrome } from "./chrome-call.js";
 
 export async function getActiveTab() {
   const tabs = await callChrome("tabs.query", {
@@ -151,77 +126,6 @@ export async function reloadTab(tabId) {
     return;
   }
   await callChrome("tabs.reload", tabId);
-}
-
-export async function getPreferences() {
-  const result = await callChrome("storage.local.get", DEFAULT_PREFERENCES);
-  return result;
-}
-
-export async function savePreferences(nextPreferences) {
-  await callChrome("storage.local.set", nextPreferences);
-}
-
-export async function getRecentCookieChanges() {
-  const result = await callChrome("storage.local.get", {
-    [RECENT_CHANGES_KEY]: []
-  });
-
-  return Array.isArray(result[RECENT_CHANGES_KEY]) ? result[RECENT_CHANGES_KEY] : [];
-}
-
-export async function saveRecentCookieChanges(changes) {
-  await callChrome("storage.local.set", {
-    [RECENT_CHANGES_KEY]: changes
-  });
-}
-
-export async function clearRecentCookieChanges() {
-  await callChrome("storage.local.remove", RECENT_CHANGES_KEY);
-}
-
-export async function getRecentChangeSnapshots() {
-  if (!chrome.storage?.session) {
-    return {};
-  }
-
-  const result = await callChrome("storage.session.get", {
-    [RECENT_CHANGE_SNAPSHOTS_KEY]: {}
-  });
-  const snapshots = result[RECENT_CHANGE_SNAPSHOTS_KEY];
-  return snapshots && typeof snapshots === "object" && !Array.isArray(snapshots) ? snapshots : {};
-}
-
-export async function saveRecentChangeSnapshots(snapshots) {
-  if (!chrome.storage?.session) {
-    return;
-  }
-
-  await callChrome("storage.session.set", {
-    [RECENT_CHANGE_SNAPSHOTS_KEY]: snapshots
-  });
-}
-
-export async function clearRecentChangeSnapshots() {
-  if (!chrome.storage?.session) {
-    return;
-  }
-
-  await callChrome("storage.session.remove", RECENT_CHANGE_SNAPSHOTS_KEY);
-}
-
-export async function getCookieTemplates() {
-  const result = await callChrome("storage.local.get", {
-    [COOKIE_TEMPLATES_KEY]: []
-  });
-
-  return Array.isArray(result[COOKIE_TEMPLATES_KEY]) ? result[COOKIE_TEMPLATES_KEY] : [];
-}
-
-export async function saveCookieTemplates(templates) {
-  await callChrome("storage.local.set", {
-    [COOKIE_TEMPLATES_KEY]: templates
-  });
 }
 
 export async function openSidePanel(tabId) {

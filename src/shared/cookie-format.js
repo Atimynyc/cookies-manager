@@ -1,3 +1,5 @@
+import { makeCookieId } from "./item-identity.js";
+
 const SAME_SITE_LABELS = {
   no_restriction: "None",
   lax: "Lax",
@@ -5,15 +7,7 @@ const SAME_SITE_LABELS = {
   unspecified: "Unspecified"
 };
 
-export function makeCookieId(cookie) {
-  return [
-    cookie.storeId || "",
-    cookie.partitionKey?.topLevelSite || "",
-    cookie.domain || "",
-    cookie.path || "",
-    cookie.name || ""
-  ].join("|");
-}
+export { makeCookieId } from "./item-identity.js";
 
 export function compareCookieRows(a, b) {
   return (

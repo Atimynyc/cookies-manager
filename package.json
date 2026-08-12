@@ -1,6 +1,7 @@
 {
   "type": "module",
   "scripts": {
+    "test": "node --test --test-isolation=none tests/unit/*.test.mjs",
     "test:acceptance": "node scripts/acceptance-extension.mjs",
     "verify:m4": "node scripts/verify-milestone-4.mjs"
   },

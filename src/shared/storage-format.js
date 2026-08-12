@@ -1,15 +1,11 @@
+import { makeStorageId } from "./item-identity.js";
+
 const STORAGE_LABELS = {
   local: "Local Storage",
   session: "Session Storage"
 };
 
-export function makeStorageId(item) {
-  return [
-    item.type || "",
-    item.origin || "",
-    item.key || ""
-  ].join("|");
-}
+export { makeStorageId } from "./item-identity.js";
 
 export function compareStorageRows(a, b) {
   return (

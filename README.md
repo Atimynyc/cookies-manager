@@ -33,3 +33,9 @@ Cookie Controller 是一款面向开发者、测试人员和高级用户的站�
 - 查看最近的修改记录和修改前后差异，并在当前操作会话中撤销变更。
 - 可选自动刷新页面，让修改后的站点状态立即生效。
 - 同时支持扩展弹出窗口和 Chrome 侧边栏模式。
+
+Development
+
+- Run `npm test` for the unit-test baseline covering parsing, identifiers, package validation, conflicts, batch results, templates, and recent-change normalization.
+- Run `npm run test:acceptance` for the full Chrome extension workflow.
+- The versioned site data interchange contract is documented in `docs/site-data-package-v1.md`.

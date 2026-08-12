@@ -1,41 +1,41 @@
 import {
-  clearRecentChangeSnapshots,
-  clearRecentCookieChanges,
   activateTab,
   getActiveTab,
-  getCookieStoreIdForTab,
-  getCookieTemplates,
-  getCookiesForUrl,
-  getPreferences,
-  getRecentChangeSnapshots,
-  getRecentCookieChanges,
   getWindowHttpTabs,
   hasSitePermission,
   openSidePanel,
   reloadTab,
   removeCookie,
-  saveCookieTemplates,
-  savePreferences,
-  saveRecentChangeSnapshots,
-  saveRecentCookieChanges,
   setCookiePair,
   setCookieValue,
   watchCookieChanges
 } from "../shared/cookie-api.js";
 import {
-  compareCookieRows,
+  clearRecentChangeSnapshots,
+  clearRecentCookieChanges,
+  getRecentChangeSnapshots,
+  getRecentCookieChanges,
+  saveRecentChangeSnapshots,
+  saveRecentCookieChanges
+} from "../shared/history-store.js";
+import {
+  getCookieTemplates,
+  getPreferences,
+  normalizeCookieTemplates,
+  saveCookieTemplates,
+  savePreferences
+} from "../shared/settings-store.js";
+import {
   getCookieJson,
   getCookieSearchText,
   toCookieRow
 } from "../shared/cookie-format.js";
 import {
-  getStorageItems,
   removeStorageItem,
   setStoragePair,
   setStorageValue
 } from "../shared/storage-api.js";
 import {
-  compareStorageRows,
   getStorageJson,
   getStorageSearchText,
   getStorageTypeLabel,
@@ -43,113 +43,28 @@ import {
 } from "../shared/storage-format.js";
 import {
   createRecentChange,
-  formatBytes,
   normalizeRecentChanges
 } from "../shared/recent-changes.js";
 import { getDisplayHost, isSupportedPageUrl } from "../shared/url.js";
+import { getAutoValueToolOutput } from "../shared/value-tools.js";
+import { parseNameValuePair } from "../shared/pair-parser.js";
+import { executeBatchOperation } from "../shared/batch-operations.js";
+import { getBatchOperationCounts } from "../shared/operation-result.js";
 import {
-  compactJsonValue,
-  decodeJwtPayload,
-  decodeUrlValue,
-  encodeUrlValue,
-  formatJsonValue,
-  getAutoValueToolOutput
-} from "../shared/value-tools.js";
-
-const VALUE_TOOL_DEFINITIONS = {
-  urlDecode: {
-    title: "URL decoded value",
-    run: decodeUrlValue
-  },
-  urlEncode: {
-    title: "URL encoded value",
-    run: encodeUrlValue
-  },
-  jsonFormat: {
-    title: "Formatted JSON",
-    run: formatJsonValue
-  },
-  jsonCompact: {
-    title: "Compacted JSON",
-    run: compactJsonValue
-  },
-  jwt: {
-    title: "JWT payload",
-    run: decodeJwtPayload
-  }
-};
-const VALUE_TOOL_MODES = new Set(["none", ...Object.keys(VALUE_TOOL_DEFINITIONS)]);
-const DATA_VIEWS = {
-  cookies: {
-    storageType: "",
-    singular: "cookie",
-    plural: "cookies",
-    title: "Cookie",
-    emptyMessage: "No cookies for this page",
-    unavailableMessage: "Cookies unavailable",
-    unsupportedMessage: "Only http:// and https:// pages support cookie operations.",
-    readErrorMessage: "Failed to read cookies.",
-    exportKey: "cookies",
-    invalidPairMessage: "Cookie name is invalid.",
-    pairLabel: "name=value",
-    tableLabels: ["Name", "Value", "Domain", "Path", "Expires", "Flags", "Size"],
-    metaLabels: ["Domain", "Path", "Expires", "SameSite", "Store", "Size"]
-  },
-  localStorage: {
-    storageType: "local",
-    singular: "local storage item",
-    plural: "local storage items",
-    title: "Local Storage",
-    emptyMessage: "No local storage for this page",
-    unavailableMessage: "Local storage unavailable",
-    unsupportedMessage: "Only http:// and https:// pages support storage operations.",
-    readErrorMessage: "Failed to read local storage.",
-    exportKey: "items",
-    invalidPairMessage: "Storage key is invalid.",
-    pairLabel: "key=value",
-    tableLabels: ["Key", "Value", "Origin", "Storage", "Scope", "Flags", "Size"],
-    metaLabels: ["Origin", "Storage", "Scope", "SameSite", "Type", "Size"]
-  },
-  sessionStorage: {
-    storageType: "session",
-    singular: "session storage item",
-    plural: "session storage items",
-    title: "Session Storage",
-    emptyMessage: "No session storage for this page",
-    unavailableMessage: "Session storage unavailable",
-    unsupportedMessage: "Only http:// and https:// pages support storage operations.",
-    readErrorMessage: "Failed to read session storage.",
-    exportKey: "items",
-    invalidPairMessage: "Storage key is invalid.",
-    pairLabel: "key=value",
-    tableLabels: ["Key", "Value", "Origin", "Storage", "Scope", "Flags", "Size"],
-    metaLabels: ["Origin", "Storage", "Scope", "SameSite", "Type", "Size"]
-  }
-};
-const DEFAULT_COLUMN_WIDTHS = [115, 150, 130, 84, 116, 92, 58];
-const MIN_COLUMN_WIDTHS = [76, 110, 104, 64, 102, 76, 54];
-const MAX_COLUMN_WIDTH = 360;
-const COPY_FEEDBACK_DURATION = 2000;
-const STATUS_EXIT_DURATION = 120;
-const STATUS_DURATIONS = {
-  success: 2000,
-  info: 3000,
-  warning: 5000,
-  error: 0
-};
-const COLUMN_CSS_VARS = [
-  "--cookie-col-name",
-  "--cookie-col-value",
-  "--cookie-col-domain",
-  "--cookie-col-path",
-  "--cookie-col-expires",
-  "--cookie-col-flags",
-  "--cookie-col-size"
-];
-const TEMPLATE_LIMIT = 12;
-const copyFeedbackStates = new WeakMap();
-let statusTimerId = 0;
-let statusHideTimerId = 0;
+  clampColumnWidth,
+  COLUMN_CSS_VARS,
+  DATA_VIEWS,
+  DEFAULT_COLUMN_WIDTHS,
+  MIN_COLUMN_WIDTHS,
+  normalizeColumnWidths,
+  normalizeValueToolMode,
+  VALUE_TOOL_DEFINITIONS
+} from "./popup-config.js";
+import { readSiteDataRows, resolveCookieStoreId } from "./popup-data-service.js";
+import { cancelDialogFromBackdrop, createDialogController } from "./popup-dialogs.js";
+import { createClipboardFeedback, createStatusController, writeClipboard } from "./popup-feedback.js";
+import { renderDataTable } from "./popup-table-view.js";
+import { createHistoryView } from "./popup-history-view.js";
 
 const state = {
   tab: null,
@@ -269,6 +184,25 @@ const elements = {
   historyAfterValue: document.querySelector("#historyAfterValue"),
   historyDetailNote: document.querySelector("#historyDetailNote")
 };
+
+const {
+  requestConfirmation: requestDeleteConfirmation,
+  requestTextInput
+} = createDialogController(elements);
+const { showStatus, clearStatus } = createStatusController(elements);
+const { showCopyFeedback, resetCopyFeedback } = createClipboardFeedback(elements.copyAnnouncement);
+const {
+  clearHistoryDetail,
+  getVisibleRecentChanges,
+  renderHistory,
+  updateHistoryButtonState
+} = createHistoryView({
+  state,
+  elements,
+  getHistoryItemKind,
+  onSelectHistoryView: () => setActiveDetailView("history"),
+  onUndo: undoRecentChange
+});
 
 const popupParams = new URLSearchParams(location.search);
 document.body.dataset.surface = popupParams.get("surface") === "sidepanel" ? "sidepanel" : "popup";
@@ -437,8 +371,8 @@ async function refreshData() {
     }
 
     renderHeader(tab.url);
-    state.cookieStoreId = await getCurrentCookieStoreId(tab);
-    state.rows = await readCurrentRows(tab);
+    state.cookieStoreId = await resolveCookieStoreId(tab);
+    state.rows = await readSiteDataRows(tab, state.dataView, state.cookieStoreId);
     state.emptyMessage = view.emptyMessage;
 
     if (state.selectedId && !state.rows.some((row) => row.id === state.selectedId)) {
@@ -509,17 +443,6 @@ async function openCurrentSidePanel() {
   } catch (error) {
     showStatus(error?.message || "Failed to open side panel.", "error");
   }
-}
-
-async function readCurrentRows(tab) {
-  if (state.dataView === "cookies") {
-    const cookies = await getCookiesForUrl(tab.url, state.cookieStoreId);
-    return cookies.map(toCookieRow).sort(compareCookieRows);
-  }
-
-  const view = getCurrentView();
-  const items = await getStorageItems(tab.id, tab.url, view.storageType);
-  return items.map(toStorageRow).sort(compareStorageRows);
 }
 
 async function handleReadError(error) {
@@ -651,17 +574,17 @@ async function batchEditSelected() {
   suppressCookieWatcher();
 
   try {
-    for (const row of selectedRows) {
+    const result = await executeBatchOperation(selectedRows, async (row) => {
       if (isCookieView()) {
         await setCookieValue(state.tab.url, row.raw, nextValue);
       } else {
         await setStorageValue(state.tab.id, state.tab.url, getCurrentView().storageType, row.name, nextValue);
       }
       await safelyRecordRecentChange(row, nextValue);
-    }
+    });
 
     await refreshData();
-    showStatus(`Updated ${selectedRows.length} selected ${getCurrentView().plural}.`, "success");
+    showBatchOperationStatus("Updated", result);
   } catch (error) {
     showStatus(error?.message || `Failed to update selected ${getCurrentView().plural}.`, "error");
   } finally {
@@ -688,18 +611,18 @@ async function batchDeleteSelected() {
   suppressCookieWatcher();
 
   try {
-    for (const row of selectedRows) {
+    const result = await executeBatchOperation(selectedRows, async (row) => {
       if (isCookieView()) {
         await removeCookie(state.tab.url, row.raw);
       } else {
         await removeStorageItem(state.tab.id, state.tab.url, getCurrentView().storageType, row.name);
       }
-    }
+    });
 
     state.selectedId = "";
-    state.selectedIds.clear();
+    state.selectedIds = new Set(result.failed.map((entry) => entry.itemId));
     await refreshData();
-    showStatus(`Deleted ${selectedRows.length} selected ${getCurrentView().plural}.`, "success");
+    showBatchOperationStatus("Deleted", result);
   } catch (error) {
     showStatus(error?.message || `Failed to delete selected ${getCurrentView().plural}.`, "error");
   } finally {
@@ -707,37 +630,20 @@ async function batchDeleteSelected() {
   }
 }
 
-function requestDeleteConfirmation({ title, message, detail = "" }) {
-  const previouslyFocused = document.activeElement;
-  elements.confirmDialogTitle.textContent = title;
-  elements.confirmDialogMessage.textContent = message;
-  elements.confirmDialogDetail.textContent = detail;
-  elements.confirmDialogDetail.hidden = !detail;
-  elements.confirmDialog.returnValue = "cancel";
-
-  return new Promise((resolve) => {
-    elements.confirmDialog.addEventListener("close", () => {
-      if (previouslyFocused instanceof HTMLElement) {
-        previouslyFocused.focus();
-      }
-      resolve(elements.confirmDialog.returnValue === "confirm");
-    }, { once: true });
-    elements.confirmDialog.showModal();
-  });
-}
-
-function cancelDialogFromBackdrop(event) {
-  const dialog = event.currentTarget;
-  if (!(dialog instanceof HTMLDialogElement) || event.target !== dialog) {
+function showBatchOperationStatus(action, result) {
+  const counts = getBatchOperationCounts(result);
+  if (counts.failed === 0 && counts.skipped === 0) {
+    showStatus(`${action} ${counts.success} selected ${getCurrentView().plural}.`, "success");
     return;
   }
 
-  const rect = dialog.getBoundingClientRect();
-  const isOutside = event.clientX < rect.left || event.clientX > rect.right ||
-    event.clientY < rect.top || event.clientY > rect.bottom;
-  if (isOutside) {
-    dialog.close("cancel");
-  }
+  const summary = [
+    `${action} ${counts.success}`,
+    counts.failed ? `${counts.failed} failed` : "",
+    counts.skipped ? `${counts.skipped} skipped` : ""
+  ].filter(Boolean).join(", ");
+  const firstError = result.failed[0]?.error?.message;
+  showStatus(`${summary}.${firstError ? ` ${firstError}` : ""}`, counts.failed ? "error" : "warning");
 }
 
 function resetSelectedItem() {
@@ -906,62 +812,6 @@ function requestImportPair() {
   });
 }
 
-function requestTextInput({
-  title,
-  fieldLabel,
-  initialValue = "",
-  placeholder = "",
-  submitLabel,
-  selectValue = false,
-  validate = (value) => value
-}) {
-  const previouslyFocused = document.activeElement;
-  elements.textInputDialogTitle.textContent = title;
-  elements.textInputDialogFieldLabel.textContent = fieldLabel;
-  elements.textInputDialogInput.value = initialValue;
-  elements.textInputDialogInput.placeholder = placeholder;
-  elements.textInputDialogError.textContent = "";
-  elements.textInputDialogError.hidden = true;
-  elements.textInputDialogSubmitButton.textContent = submitLabel;
-  elements.textInputDialog.returnValue = "cancel";
-
-  return new Promise((resolve) => {
-    let result = null;
-    const handleInput = () => {
-      elements.textInputDialogError.hidden = true;
-    };
-    const handleSubmit = (event) => {
-      event.preventDefault();
-      try {
-        result = validate(elements.textInputDialogInput.value);
-        elements.textInputDialog.close("submit");
-      } catch (error) {
-        elements.textInputDialogError.textContent = error?.message || "Enter a valid value.";
-        elements.textInputDialogError.hidden = false;
-        elements.textInputDialogInput.focus();
-      }
-    };
-    const handleClose = () => {
-      elements.textInputDialogForm.removeEventListener("submit", handleSubmit);
-      elements.textInputDialogInput.removeEventListener("input", handleInput);
-      if (previouslyFocused instanceof HTMLElement) {
-        previouslyFocused.focus();
-      }
-      resolve(elements.textInputDialog.returnValue === "submit" ? result : null);
-    };
-
-    elements.textInputDialogForm.addEventListener("submit", handleSubmit);
-    elements.textInputDialogInput.addEventListener("input", handleInput);
-    elements.textInputDialog.addEventListener("close", handleClose, { once: true });
-    elements.textInputDialog.showModal();
-    if (selectValue) {
-      elements.textInputDialogInput.select();
-    } else {
-      elements.textInputDialogInput.focus();
-    }
-  });
-}
-
 function requestTemplateSelection() {
   const previouslyFocused = document.activeElement;
   elements.templateDialog.returnValue = "cancel";
@@ -1094,47 +944,16 @@ function setTemplateDialogFeedback(message = "", type = "success") {
 
 async function loadCookieTemplates() {
   try {
-    state.cookieTemplates = normalizeCookieTemplates(await getCookieTemplates());
+    state.cookieTemplates = await getCookieTemplates();
   } catch {
     state.cookieTemplates = [];
   }
 }
 
-function normalizeCookieTemplates(templates) {
-  if (!Array.isArray(templates)) {
-    return [];
-  }
-
-  return templates
-    .filter((template) => template && typeof template.label === "string" && typeof template.value === "string")
-    .slice(0, TEMPLATE_LIMIT);
-}
-
 function parsePairText(text) {
-  const line = String(text || "")
-    .split(/\r?\n/)
-    .map((item) => item.trim())
-    .find(Boolean);
-
-  if (!line) {
-    throw new Error(`Enter a valid ${getCurrentView().pairLabel}.`);
-  }
-
-  const firstPair = isCookieView() ? line.replace(/^Cookie:\s*/i, "").split(";")[0].trim() : line;
-  const separatorIndex = firstPair.indexOf("=");
-
-  if (separatorIndex <= 0) {
-    throw new Error(`Enter a valid ${getCurrentView().pairLabel}.`);
-  }
-
-  const name = firstPair.slice(0, separatorIndex).trim();
-  const value = firstPair.slice(separatorIndex + 1);
-
-  if (!name || (isCookieView() && /[\s;=]/.test(name))) {
-    throw new Error(getCurrentView().invalidPairMessage);
-  }
-
-  return { name, value };
+  return parseNameValuePair(text, {
+    kind: isCookieView() ? "cookie" : "storage"
+  });
 }
 
 async function importPair(pair) {
@@ -1235,99 +1054,6 @@ async function copyToolOutput() {
     resetCopyFeedback(elements.copyToolOutputButton);
     showStatus(error?.message || "Failed to copy.", "error");
   }
-}
-
-function showCopyFeedback(button) {
-  const existingState = copyFeedbackStates.get(button);
-  if (existingState) {
-    window.clearTimeout(existingState.timerId);
-  }
-
-  const originalState = existingState?.originalState || {
-    ariaLabel: button.getAttribute("aria-label"),
-    tooltip: button.hasAttribute("data-tooltip") ? button.dataset.tooltip : null
-  };
-
-  button.classList.add("is-copied");
-  button.setAttribute("aria-label", "Copied");
-  if (button.hasAttribute("data-tooltip")) {
-    button.dataset.tooltip = "Copied";
-  }
-
-  elements.copyAnnouncement.textContent = "";
-  window.requestAnimationFrame(() => {
-    elements.copyAnnouncement.textContent = "Copied to clipboard.";
-  });
-
-  const timerId = window.setTimeout(() => resetCopyFeedback(button), COPY_FEEDBACK_DURATION);
-  copyFeedbackStates.set(button, { originalState, timerId });
-}
-
-function resetCopyFeedback(button) {
-  const feedbackState = copyFeedbackStates.get(button);
-  if (!feedbackState) {
-    return;
-  }
-
-  window.clearTimeout(feedbackState.timerId);
-  button.classList.remove("is-copied");
-
-  if (feedbackState.originalState.ariaLabel === null) {
-    button.removeAttribute("aria-label");
-  } else {
-    button.setAttribute("aria-label", feedbackState.originalState.ariaLabel);
-  }
-
-  if (feedbackState.originalState.tooltip === null) {
-    button.removeAttribute("data-tooltip");
-  } else {
-    button.dataset.tooltip = feedbackState.originalState.tooltip;
-  }
-
-  copyFeedbackStates.delete(button);
-}
-
-async function writeClipboard(text) {
-  if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(text);
-    return;
-  }
-
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  textarea.setAttribute("readonly", "");
-  textarea.style.position = "fixed";
-  textarea.style.opacity = "0";
-  document.body.append(textarea);
-  textarea.select();
-  const copied = document.execCommand("copy");
-  textarea.remove();
-
-  if (!copied) {
-    throw new Error("Clipboard is unavailable.");
-  }
-}
-
-function normalizeValueToolMode(mode) {
-  return VALUE_TOOL_MODES.has(mode) ? mode : "none";
-}
-
-function normalizeColumnWidths(widths) {
-  if (!Array.isArray(widths)) {
-    return [...DEFAULT_COLUMN_WIDTHS];
-  }
-
-  return DEFAULT_COLUMN_WIDTHS.map((defaultWidth, index) => {
-    const width = Number(widths[index]);
-    if (!Number.isFinite(width)) {
-      return defaultWidth;
-    }
-    return clampColumnWidth(width, index);
-  });
-}
-
-function clampColumnWidth(width, index) {
-  return Math.min(Math.max(Math.round(width), MIN_COLUMN_WIDTHS[index]), MAX_COLUMN_WIDTH);
 }
 
 function applyColumnWidths() {
@@ -1454,107 +1180,19 @@ function renderHeader(url) {
 
 function renderTable() {
   const visibleRows = getVisibleRows();
-  const fragment = document.createDocumentFragment();
-
-  for (const row of visibleRows) {
-    const tr = document.createElement("tr");
-    tr.tabIndex = 0;
-    tr.dataset.itemId = row.id;
-    tr.dataset.cookieId = row.id;
-    tr.className = [
-      row.id === state.selectedId ? "is-selected" : "",
-      state.selectedIds.has(row.id) ? "is-checked" : ""
-    ].filter(Boolean).join(" ");
-    tr.addEventListener("click", () => selectItem(row.id));
-    tr.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        selectItem(row.id);
-      }
-    });
-
-    tr.append(
-      createSelectCell(row),
-      createCell(row.name, row.name),
-      createCell(row.value, row.value, "value-cell"),
-      createCell(row.domain, row.domain),
-      createCell(row.path, row.path),
-      createCell(row.expires, row.expires),
-      createFlagCell(row),
-      createCell(`${row.size} B`, `${row.size} bytes`)
-    );
-
-    fragment.append(tr);
-  }
-
-  elements.cookieTableBody.replaceChildren(fragment);
+  renderDataTable({
+    tableBody: elements.cookieTableBody,
+    rows: visibleRows,
+    selectedId: state.selectedId,
+    selectedIds: state.selectedIds,
+    onSelect: selectItem,
+    onToggle: toggleRowSelection
+  });
   elements.emptyState.textContent = state.emptyMessage;
   elements.emptyState.hidden = state.loading || visibleRows.length > 0;
   renderHeader(state.tab?.url);
   updateActionAvailability();
   updateSelectionSummary();
-}
-
-function createSelectCell(row) {
-  const td = document.createElement("td");
-  const checkbox = document.createElement("input");
-  td.className = "select-cell";
-  checkbox.type = "checkbox";
-  checkbox.checked = state.selectedIds.has(row.id);
-  checkbox.setAttribute("aria-label", `Select ${row.name}`);
-  checkbox.addEventListener("click", (event) => event.stopPropagation());
-  checkbox.addEventListener("change", () => toggleRowSelection(row.id, checkbox.checked));
-  td.append(checkbox);
-  return td;
-}
-
-function createCell(text, title = text, className = "") {
-  const td = document.createElement("td");
-  td.textContent = text || "";
-  td.title = title || "";
-
-  if (className) {
-    td.className = className;
-  }
-
-  return td;
-}
-
-function createFlagCell(row) {
-  const td = document.createElement("td");
-  const stack = document.createElement("span");
-  stack.className = "flag-stack";
-
-  const flags = [];
-  if (row.httpOnly) {
-    flags.push("Http");
-  }
-  if (row.secure) {
-    flags.push("Sec");
-  }
-  if (row.partitioned) {
-    flags.push("Part");
-  }
-
-  if (flags.length === 0) {
-    td.textContent = "-";
-    return td;
-  }
-
-  for (const flag of flags) {
-    const badge = document.createElement("span");
-    badge.className = "flag";
-    badge.textContent = flag;
-    badge.title = {
-      Http: "HttpOnly",
-      Sec: "Secure",
-      Part: "Partitioned"
-    }[flag];
-    stack.append(badge);
-  }
-
-  td.append(stack);
-  return td;
 }
 
 function getVisibleRows() {
@@ -2023,30 +1661,6 @@ async function clearHistory() {
   }
 }
 
-function renderHistory() {
-  if (!elements.historyList) {
-    return;
-  }
-
-  const visibleChanges = getVisibleRecentChanges();
-  updateHistoryBadge(syncUnreadHistory(visibleChanges));
-  const items = visibleChanges.map(createHistoryItem);
-  elements.historyList.replaceChildren(...items);
-  elements.historyList.hidden = visibleChanges.length === 0;
-  elements.historyEmpty.hidden = visibleChanges.length > 0;
-  elements.clearHistoryButton.disabled = visibleChanges.length === 0;
-
-  if (state.selectedHistoryId && !visibleChanges.some((change) => change.id === state.selectedHistoryId)) {
-    state.selectedHistoryId = "";
-    clearHistoryDetail();
-  }
-}
-
-function getVisibleRecentChanges() {
-  const itemKind = getHistoryItemKind();
-  return state.recentChanges.filter((change) => change.itemKind === itemKind);
-}
-
 function pruneUndoSnapshots() {
   const retainedIds = new Set(state.recentChanges.map((change) => change.id));
   for (const changeId of state.undoSnapshots.keys()) {
@@ -2076,196 +1690,6 @@ async function safelySaveRecentChangeSnapshots() {
   }
 }
 
-function syncUnreadHistory(visibleChanges) {
-  const allChangeIds = new Set(state.recentChanges.map((change) => change.id));
-  const visibleIds = new Set(visibleChanges.map((change) => change.id));
-
-  for (const changeId of state.unreadHistoryIds) {
-    if (!allChangeIds.has(changeId) || (visibleIds.has(changeId) && state.activeDetailView === "history")) {
-      state.unreadHistoryIds.delete(changeId);
-    }
-  }
-
-  return visibleChanges.filter((change) => state.unreadHistoryIds.has(change.id)).length;
-}
-
-function updateHistoryBadge(count) {
-  elements.historyCountBadge.hidden = count === 0;
-  elements.historyCountBadge.textContent = count > 9 ? "9+" : String(count);
-  updateHistoryButtonState(count);
-}
-
-function updateHistoryButtonState(unreadCount = null) {
-  const isHistoryView = state.activeDetailView === "history";
-  const visibleBadgeCount = elements.historyCountBadge.hidden ? 0 : elements.historyCountBadge.textContent;
-  const count = unreadCount === null ? visibleBadgeCount : unreadCount;
-  const label = isHistoryView
-    ? "Back to details"
-    : count
-      ? `${count} unread changes`
-      : "Recent changes";
-  elements.historyViewButton.title = label;
-  elements.historyViewButton.setAttribute("aria-label", label);
-}
-
-function createHistoryItem(change) {
-  const item = document.createElement("li");
-  const main = document.createElement("div");
-  const sub = document.createElement("div");
-  const name = document.createElement("span");
-  const time = document.createElement("time");
-  const scope = document.createElement("span");
-  const delta = document.createElement("span");
-  const detailButton = document.createElement("button");
-
-  item.dataset.changeId = change.id;
-  main.className = "history-main";
-  sub.className = "history-sub";
-  name.className = "history-name";
-  time.className = "history-time";
-  scope.className = "history-scope";
-  delta.className = "history-delta";
-  detailButton.type = "button";
-  detailButton.className = "history-detail-button";
-  detailButton.textContent = "Details";
-  detailButton.setAttribute("aria-controls", "historyDetail");
-  detailButton.setAttribute("aria-expanded", String(state.selectedHistoryId === change.id));
-  detailButton.addEventListener("click", () => showHistoryDetail(change.id));
-
-  name.textContent = change.name || getChangeItemLabel(change);
-  name.title = change.name || "";
-  time.textContent = formatHistoryTime(change.timestamp);
-  time.dateTime = new Date(change.timestamp).toISOString();
-
-  const location = getChangeLocation(change);
-  scope.textContent = location || "Unknown scope";
-  scope.title = location || "";
-  delta.textContent = `${formatBytes(change.beforeSize)} -> ${formatBytes(change.afterSize)}`;
-
-  main.append(name, time);
-  sub.append(scope, delta, detailButton);
-  if (state.undoSnapshots.has(change.id)) {
-    const undoButton = document.createElement("button");
-    undoButton.type = "button";
-    undoButton.className = "history-undo-button";
-    undoButton.textContent = "Undo";
-    undoButton.addEventListener("click", () => undoRecentChange(change.id));
-    sub.append(undoButton);
-  }
-  item.append(main, sub);
-
-  if (state.selectedHistoryId === change.id && !elements.historyDetail.hidden) {
-    item.classList.add("is-expanded");
-    item.append(elements.historyDetail);
-  }
-
-  return item;
-}
-
-function showHistoryDetail(changeId) {
-  const change = getVisibleRecentChanges().find((item) => item.id === changeId);
-  if (!change) {
-    clearHistoryDetail();
-    return;
-  }
-
-  setActiveDetailView("history");
-  const snapshot = state.undoSnapshots.get(change.id);
-  state.selectedHistoryId = change.id;
-  elements.historyDetailTitle.textContent = `${formatChangeAction(change.action)}: ${change.name || getChangeItemLabel(change)}`;
-  renderHistoryDetailGrid(change);
-  renderHistoryValueDetail(change, snapshot);
-  elements.historyDetail.hidden = false;
-  attachHistoryDetail(change.id);
-}
-
-function clearHistoryDetail() {
-  const expandedItem = elements.historyDetail.closest("li");
-  if (expandedItem) {
-    expandedItem.classList.remove("is-expanded");
-    expandedItem.querySelector(".history-detail-button")?.setAttribute("aria-expanded", "false");
-  }
-
-  state.selectedHistoryId = "";
-  elements.historyDetail.hidden = true;
-  elements.historyDetailTitle.textContent = "Change detail";
-  elements.historyDetailGrid.replaceChildren();
-  elements.historyBeforeValue.replaceChildren();
-  elements.historyAfterValue.replaceChildren();
-  elements.historyValueDetail.hidden = true;
-  elements.historyDetailNote.hidden = true;
-  elements.historyDetailNote.textContent = "";
-  elements.historyPanel.append(elements.historyDetail);
-}
-
-function attachHistoryDetail(changeId) {
-  const item = Array.from(elements.historyList.children)
-    .find((candidate) => candidate.dataset.changeId === changeId);
-  if (!item) {
-    return;
-  }
-
-  elements.historyList.querySelectorAll("li.is-expanded").forEach((candidate) => {
-    candidate.classList.remove("is-expanded");
-    candidate.querySelector(".history-detail-button")?.setAttribute("aria-expanded", "false");
-  });
-  item.classList.add("is-expanded");
-  item.querySelector(".history-detail-button")?.setAttribute("aria-expanded", "true");
-  item.append(elements.historyDetail);
-  item.scrollIntoView({ block: "nearest" });
-}
-
-function renderHistoryDetailGrid(change) {
-  const rows = isCookieChange(change) ? [
-    ["Action", formatChangeAction(change.action)],
-    ["Cookie", change.name || ""],
-    ["Domain", change.domain || ""],
-    ["Path", change.path || ""],
-    ...(change.hasExpirationDetails ? [
-      ["Before expiration", formatHistoryExpiration(change.beforeSession, change.beforeExpirationDate)],
-      ["After expiration", formatHistoryExpiration(change.afterSession, change.afterExpirationDate)]
-    ] : []),
-    ["Store", change.storeId || "Default"],
-    ["Host", change.host || ""],
-    ["Changed", formatFullHistoryTime(change.timestamp)],
-    ["Size", `${formatBytes(change.beforeSize)} -> ${formatBytes(change.afterSize)}`],
-    ["Cookie ID", change.cookieId || ""]
-  ] : [
-    ["Action", formatChangeAction(change.action)],
-    ["Key", change.name || ""],
-    ["Storage", getStorageTypeLabel(change.storageType)],
-    ["Origin", change.origin || ""],
-    ["Host", change.host || ""],
-    ["Changed", formatFullHistoryTime(change.timestamp)],
-    ["Size", `${formatBytes(change.beforeSize)} -> ${formatBytes(change.afterSize)}`],
-    ["Item ID", change.itemId || ""]
-  ];
-
-  const fragment = document.createDocumentFragment();
-  for (const [label, value] of rows) {
-    const group = document.createElement("div");
-    const term = document.createElement("dt");
-    const detail = document.createElement("dd");
-    term.textContent = label;
-    detail.textContent = value || "-";
-    detail.title = value || "";
-    group.append(term, detail);
-    fragment.append(group);
-  }
-
-  elements.historyDetailGrid.replaceChildren(fragment);
-}
-
-function formatHistoryExpiration(session, expirationDate) {
-  if (session) {
-    return "Session";
-  }
-  if (!Number.isFinite(expirationDate)) {
-    return "Unknown";
-  }
-  return new Date(expirationDate * 1000).toLocaleString();
-}
-
 function startCookieWatcher() {
   watchCookieChanges((changeInfo) => {
     if (
@@ -2285,14 +1709,6 @@ function startCookieWatcher() {
   });
 }
 
-async function getCurrentCookieStoreId(tab) {
-  try {
-    return await getCookieStoreIdForTab(tab.id);
-  } catch {
-    return "";
-  }
-}
-
 function suppressCookieWatcher(duration = 1500) {
   state.ignoreCookieChangesUntil = Date.now() + duration;
 }
@@ -2309,133 +1725,6 @@ function isWatchedCookie(cookie) {
   } catch {
     return false;
   }
-}
-
-function isCookieChange(change) {
-  return (change.itemKind || "cookie") === "cookie";
-}
-
-function getChangeItemLabel(change) {
-  return isCookieChange(change) ? "Cookie" : getStorageTypeLabel(change.storageType);
-}
-
-function getChangeLocation(change) {
-  if (isCookieChange(change)) {
-    return `${change.host || ""} ${change.domain || ""}${change.path || ""}`.trim();
-  }
-
-  return `${change.host || ""} ${change.origin || ""} ${getStorageTypeLabel(change.storageType)}`.trim();
-}
-
-function renderHistoryValueDetail(change, snapshot) {
-  if (snapshot && "beforeValue" in snapshot && "afterValue" in snapshot) {
-    renderValueDiff(elements.historyBeforeValue, elements.historyAfterValue, snapshot.beforeValue || "", snapshot.afterValue || "");
-    elements.historyValueDetail.hidden = false;
-    elements.historyDetailNote.hidden = true;
-    elements.historyDetailNote.textContent = "";
-    return;
-  }
-
-  elements.historyBeforeValue.replaceChildren();
-  elements.historyAfterValue.replaceChildren();
-  elements.historyValueDetail.hidden = true;
-  elements.historyDetailNote.hidden = false;
-  elements.historyDetailNote.textContent =
-    "Value snapshots are only available during the current browser session.";
-}
-
-function renderValueDiff(beforeElement, afterElement, beforeValue, afterValue) {
-  const diff = getSingleRangeDiff(beforeValue, afterValue);
-  beforeElement.replaceChildren(...createDiffNodes(beforeValue, diff.beforeStart, diff.beforeEnd, "diff-removed"));
-  afterElement.replaceChildren(...createDiffNodes(afterValue, diff.afterStart, diff.afterEnd, "diff-added"));
-}
-
-function getSingleRangeDiff(beforeValue, afterValue) {
-  const beforeLength = beforeValue.length;
-  const afterLength = afterValue.length;
-  let prefixLength = 0;
-
-  while (
-    prefixLength < beforeLength &&
-    prefixLength < afterLength &&
-    beforeValue[prefixLength] === afterValue[prefixLength]
-  ) {
-    prefixLength += 1;
-  }
-
-  let suffixLength = 0;
-  while (
-    suffixLength < beforeLength - prefixLength &&
-    suffixLength < afterLength - prefixLength &&
-    beforeValue[beforeLength - 1 - suffixLength] === afterValue[afterLength - 1 - suffixLength]
-  ) {
-    suffixLength += 1;
-  }
-
-  return {
-    beforeStart: prefixLength,
-    beforeEnd: beforeLength - suffixLength,
-    afterStart: prefixLength,
-    afterEnd: afterLength - suffixLength
-  };
-}
-
-function createDiffNodes(value, diffStart, diffEnd, className) {
-  if (diffStart === diffEnd) {
-    return [document.createTextNode(value)];
-  }
-
-  const nodes = [];
-  if (diffStart > 0) {
-    nodes.push(document.createTextNode(value.slice(0, diffStart)));
-  }
-
-  const mark = document.createElement("mark");
-  mark.className = className;
-  mark.textContent = value.slice(diffStart, diffEnd);
-  nodes.push(mark);
-
-  if (diffEnd < value.length) {
-    nodes.push(document.createTextNode(value.slice(diffEnd)));
-  }
-
-  return nodes;
-}
-
-function formatChangeAction(action) {
-  return {
-    edit: "Edit",
-    "import-create": "Import create",
-    "import-overwrite": "Import overwrite"
-  }[action] || "Change";
-}
-
-function formatHistoryTime(timestamp) {
-  if (!Number.isFinite(timestamp)) {
-    return "";
-  }
-
-  return new Intl.DateTimeFormat(undefined, {
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit"
-  }).format(new Date(timestamp));
-}
-
-function formatFullHistoryTime(timestamp) {
-  if (!Number.isFinite(timestamp)) {
-    return "";
-  }
-
-  return new Intl.DateTimeFormat(undefined, {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit"
-  }).format(new Date(timestamp));
 }
 
 function getSelectedRow() {
@@ -2492,48 +1781,4 @@ function setBusy(isBusy) {
 function setPermissionBanner(visible, message = "Site permission is required for this page.") {
   elements.permissionBanner.hidden = !visible;
   elements.permissionMessage.textContent = message;
-}
-
-function showStatus(message, type = "info") {
-  window.clearTimeout(statusTimerId);
-  window.clearTimeout(statusHideTimerId);
-  statusTimerId = 0;
-  statusHideTimerId = 0;
-  const normalizedType = Object.hasOwn(STATUS_DURATIONS, type) ? type : "info";
-  const duration = STATUS_DURATIONS[normalizedType];
-
-  elements.statusBar.hidden = false;
-  elements.statusMessage.setAttribute("role", normalizedType === "error" ? "alert" : "status");
-  elements.statusMessage.setAttribute("aria-live", normalizedType === "error" ? "assertive" : "polite");
-  elements.statusMessage.textContent = message;
-  elements.closeStatusButton.hidden = duration > 0;
-  elements.statusBar.className = `status-bar is-${normalizedType}`;
-
-  if (duration > 0) {
-    statusTimerId = window.setTimeout(clearStatus, duration);
-  }
-}
-
-function clearStatus() {
-  window.clearTimeout(statusTimerId);
-  window.clearTimeout(statusHideTimerId);
-  statusTimerId = 0;
-  statusHideTimerId = 0;
-
-  if (elements.statusBar.hidden) {
-    resetStatusElement();
-    return;
-  }
-
-  elements.closeStatusButton.hidden = true;
-  elements.statusBar.classList.add("is-leaving");
-  const exitDuration = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : STATUS_EXIT_DURATION;
-  statusHideTimerId = window.setTimeout(resetStatusElement, exitDuration);
-}
-
-function resetStatusElement() {
-  statusHideTimerId = 0;
-  elements.statusBar.hidden = true;
-  elements.statusMessage.textContent = "";
-  elements.statusBar.className = "status-bar";
 }
