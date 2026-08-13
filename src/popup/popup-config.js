@@ -59,8 +59,9 @@ export const DATA_VIEWS = {
   }
 };
 
-export const DEFAULT_COLUMN_WIDTHS = [115, 150, 130, 84, 116, 92, 58];
-export const MIN_COLUMN_WIDTHS = [76, 110, 104, 64, 102, 76, 54];
+export const COLUMN_WIDTHS_VERSION = 2;
+export const DEFAULT_COLUMN_WIDTHS = [150, 190, 130, 84, 116, 92, 58];
+export const MIN_COLUMN_WIDTHS = [96, 130, 104, 64, 102, 76, 54];
 export const COLUMN_CSS_VARS = [
   "--cookie-col-name",
   "--cookie-col-value",
@@ -87,6 +88,17 @@ export function normalizeColumnWidths(widths) {
     const width = Number(widths[index]);
     return Number.isFinite(width) ? clampColumnWidth(width, index) : defaultWidth;
   });
+}
+
+export function migrateColumnWidths(widths, version) {
+  const normalized = normalizeColumnWidths(widths);
+  if (!Array.isArray(widths) || Number(version) >= COLUMN_WIDTHS_VERSION) {
+    return normalized;
+  }
+
+  normalized[0] = Math.max(normalized[0], DEFAULT_COLUMN_WIDTHS[0]);
+  normalized[1] = Math.max(normalized[1], DEFAULT_COLUMN_WIDTHS[1]);
+  return normalized;
 }
 
 export function clampColumnWidth(width, index) {

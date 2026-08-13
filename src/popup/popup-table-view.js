@@ -1,4 +1,12 @@
-export function renderDataTable({ tableBody, rows, selectedId, selectedIds, onSelect, onToggle }) {
+export function renderDataTable({
+  tableBody,
+  rows,
+  selectedId,
+  selectedIds,
+  favoriteIds,
+  onSelect,
+  onToggle
+}) {
   const fragment = document.createDocumentFragment();
 
   for (const row of rows) {
@@ -12,6 +20,9 @@ export function renderDataTable({ tableBody, rows, selectedId, selectedIds, onSe
     ].filter(Boolean).join(" ");
     tr.addEventListener("click", () => onSelect(row.id));
     tr.addEventListener("keydown", (event) => {
+      if (event.target !== tr) {
+        return;
+      }
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         onSelect(row.id);
@@ -20,7 +31,7 @@ export function renderDataTable({ tableBody, rows, selectedId, selectedIds, onSe
 
     tr.append(
       createSelectCell(row, selectedIds, onToggle),
-      createCell(row.name, row.name),
+      createNameCell(row, favoriteIds),
       createCell(row.value, row.value, "value-cell"),
       createCell(row.domain, row.domain),
       createCell(row.path, row.path),
@@ -32,6 +43,30 @@ export function renderDataTable({ tableBody, rows, selectedId, selectedIds, onSe
   }
 
   tableBody.replaceChildren(fragment);
+}
+
+function createNameCell(row, favoriteIds) {
+  const td = document.createElement("td");
+  const favorite = favoriteIds.has(row.id);
+  const content = document.createElement("span");
+  const name = document.createElement("span");
+
+  td.className = "name-cell";
+  td.title = row.name || "";
+  content.className = "name-cell-content";
+  name.className = "name-cell-text";
+  name.textContent = row.name || "";
+  if (favorite) {
+    const indicator = document.createElement("span");
+    indicator.className = "favorite-indicator";
+    indicator.title = "Favorite";
+    indicator.setAttribute("aria-label", "Favorite");
+    indicator.innerHTML = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.5 1.1 6.3-5.6-3-5.6 3 1.1-6.3-4.6-4.5 6.3-.9Z" /></svg>';
+    content.append(indicator);
+  }
+  content.append(name);
+  td.append(content);
+  return td;
 }
 
 function createSelectCell(row, selectedIds, onToggle) {

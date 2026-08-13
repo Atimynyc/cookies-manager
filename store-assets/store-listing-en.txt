@@ -14,6 +14,7 @@ Main features
 - Edit an individual cookie value while preserving its domain, path, expiration, SameSite, Secure, and HttpOnly attributes.
 - Create or delete cookies, delete multiple selected cookies, and set values in batches.
 - View, create, edit, and remove Local Storage and Session Storage entries.
+- Favorite frequently used cookies and Local/Session Storage entries so they stay at the top of each list.
 - Switch the management target between HTTP/HTTPS tabs in the current browser window.
 - Import, export, and copy site data as JSON or name=value pairs.
 - Copy a cookie value, a name=value pair, or structured JSON with one action.
@@ -25,7 +26,7 @@ Main features
 
 Privacy
 
-Cookie Controller contains no advertising, analytics, or user tracking and does not require an account. Cookies and web storage data accessed by the extension are processed only on the user's device. They are not uploaded, sold, or shared with the developer or third-party servers. Interface preferences, templates explicitly saved by the user, and recent change records are stored in the browser's local extension storage and can be removed by clearing the extension data or uninstalling the extension.
+Cookie Controller contains no advertising, analytics, or user tracking and does not require an account. Cookies and web storage data accessed by the extension are processed only on the user's device. They are not uploaded, sold, or shared with the developer or third-party servers. Interface preferences, favorite site-data identifiers (which do not contain cookie or storage values), templates explicitly saved by the user, and recent change records are stored in the browser's local extension storage and can be removed by clearing the extension data or uninstalling the extension.
 
 Usage notes
 

@@ -382,7 +382,7 @@
               </tr>
               <tr>
                 <td>用户主动保存的内容</td>
-                <td>Cookie 模板、界面偏好和自动刷新设置</td>
+                <td>Cookie 模板、收藏的站点数据标识、界面偏好和自动刷新设置</td>
                 <td>在后续使用中恢复用户选择的插件配置和模板</td>
               </tr>
               <tr>
@@ -409,7 +409,7 @@
 
       <section class="policy-section">
         <h3>4. 本地存储和保留期限</h3>
-        <p>界面偏好、Cookie 模板和最近修改记录通过 <code>chrome.storage.local</code> 保存在用户的浏览器中，直到用户清除扩展数据、相关记录被替换，或用户卸载扩展。用于差异查看和撤销操作的完整修改前后值通过 <code>chrome.storage.session</code> 只保留在当前浏览器会话的内存中，关闭浏览器后会被丢弃。</p>
+        <p>界面偏好、收藏的站点数据标识（不包含 Cookie 或存储值）、Cookie 模板和最近修改记录通过 <code>chrome.storage.local</code> 保存在用户的浏览器中，直到用户清除扩展数据、相关记录被替换，或用户卸载扩展。用于差异查看和撤销操作的完整修改前后值通过 <code>chrome.storage.session</code> 只保留在当前浏览器会话的内存中，关闭浏览器后会被丢弃。</p>
         <p>扩展读取的 Cookie、Local Storage 和 Session Storage 原始内容不会自动复制到开发者服务器。用户对网站数据所做的修改将按照浏览器和目标网站本身的规则保留。</p>
       </section>
 
@@ -418,7 +418,7 @@
         <ul>
           <li><strong>cookies：</strong>读取、新增、修改、删除和监听用户所选网站的 Cookie。</li>
           <li><strong>tabs：</strong>识别、列出和切换当前窗口中的网站标签页，并在用户启用自动刷新后重新加载页面。</li>
-          <li><strong>storage：</strong>在浏览器本地保存界面偏好、模板和最近修改记录，并在当前浏览器会话内临时保存修改前后值。</li>
+          <li><strong>storage：</strong>在浏览器本地保存界面偏好、收藏标识、模板和最近修改记录，并在当前浏览器会话内临时保存修改前后值。</li>
           <li><strong>scripting：</strong>在用户所选标签页运行扩展包内置函数，以管理 Local Storage 和 Session Storage。</li>
           <li><strong>sidePanel：</strong>在 Chrome 侧边栏中提供同一套站点数据管理界面。</li>
           <li><strong>HTTP/HTTPS 主机权限：</strong>允许用户在其主动选择的任意 HTTP 或 HTTPS 网站上使用 Cookie 和网页存储管理功能。</li>
@@ -498,7 +498,7 @@
               </tr>
               <tr>
                 <td>User-saved content</td>
-                <td>Cookie templates, interface preferences, and automatic reload settings</td>
+                <td>Cookie templates, favorite site-data identifiers, interface preferences, and automatic reload settings</td>
                 <td>Restore extension settings and templates selected by the user</td>
               </tr>
               <tr>
@@ -525,7 +525,7 @@
 
       <section class="policy-section">
         <h3>4. Local storage and retention</h3>
-        <p>Interface preferences, cookie templates, and recent change records are stored in the user's browser through <code>chrome.storage.local</code> until the user clears extension data, the relevant records are replaced, or the extension is uninstalled. Complete before-and-after values needed for difference viewing and undo are stored only in browser-session memory through <code>chrome.storage.session</code> and are discarded when the browser session ends.</p>
+        <p>Interface preferences, favorite site-data identifiers (which do not contain cookie or storage values), cookie templates, and recent change records are stored in the user's browser through <code>chrome.storage.local</code> until the user clears extension data, the relevant records are replaced, or the extension is uninstalled. Complete before-and-after values needed for difference viewing and undo are stored only in browser-session memory through <code>chrome.storage.session</code> and are discarded when the browser session ends.</p>
         <p>Cookie, Local Storage, and Session Storage content read by the extension is not automatically copied to a developer server. Changes made by the user remain according to the rules of the browser and the target website.</p>
       </section>
 
@@ -534,7 +534,7 @@
         <ul>
           <li><strong>cookies:</strong> read, create, update, remove, and observe cookies for a user-selected website.</li>
           <li><strong>tabs:</strong> identify, list, and switch website tabs in the current window and reload a page when automatic reload is enabled.</li>
-          <li><strong>storage:</strong> save interface preferences, templates, and recent change records in local browser storage, and temporarily retain before-and-after values during the current browser session.</li>
+          <li><strong>storage:</strong> save interface preferences, favorite identifiers, templates, and recent change records in local browser storage, and temporarily retain before-and-after values during the current browser session.</li>
           <li><strong>scripting:</strong> run bundled extension functions in the user-selected tab to manage Local Storage and Session Storage.</li>
           <li><strong>sidePanel:</strong> provide the same site data management interface in the Chrome side panel.</li>
           <li><strong>HTTP/HTTPS host permissions:</strong> allow users to manage cookies and web storage on any HTTP or HTTPS website they explicitly select.</li>

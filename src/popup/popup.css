@@ -18,8 +18,8 @@
   --success-soft: #e7f6ee;
   --accent: #0b7b83;
   --focus: 0 0 0 3px rgba(18, 103, 214, 0.2);
-  --cookie-col-name: 115px;
-  --cookie-col-value: 150px;
+  --cookie-col-name: 150px;
+  --cookie-col-value: 190px;
   --cookie-col-domain: 130px;
   --cookie-col-path: 84px;
   --cookie-col-expires: 116px;
@@ -962,6 +962,38 @@ tbody tr:focus-visible td {
   font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
 }
 
+.name-cell-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.name-cell-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.favorite-indicator {
+  display: inline-flex;
+  flex: 0 0 16px;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 18px;
+  color: #c88700;
+}
+
+.favorite-indicator .icon {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
 .flag-stack {
   display: inline-flex;
   gap: 4px;
@@ -1047,6 +1079,10 @@ tbody tr:focus-visible td {
 }
 
 .editor-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 30px;
+  align-items: start;
+  gap: 0 8px;
   min-width: 0;
 }
 
@@ -1074,7 +1110,47 @@ tbody tr:focus-visible td {
   white-space: nowrap;
 }
 
+.editor-favorite-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  min-height: 30px;
+  border-color: var(--line);
+  padding: 0;
+  background: #ffffff;
+  color: #a0a9b8;
+}
+
+.editor-favorite-button:hover,
+.editor-favorite-button:focus-visible {
+  border-color: #e0bd62;
+  background: #fff6d9;
+  color: #9b6b00;
+}
+
+.editor-favorite-button.is-favorite {
+  border-color: #e0bd62;
+  background: #fff6d9;
+  color: #c88700;
+}
+
+.editor-favorite-button .icon {
+  width: 17px;
+  height: 17px;
+  fill: transparent;
+  stroke: currentColor;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.editor-favorite-button.is-favorite .icon {
+  fill: currentColor;
+}
+
 .chip-row {
+  grid-column: 1 / -1;
   display: flex;
   flex-wrap: wrap;
   gap: 5px;

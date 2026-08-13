@@ -1,10 +1,13 @@
 import { callChrome } from "./chrome-call.js";
+import { normalizeFavoriteItemIds } from "./favorites.js";
 
 const COOKIE_TEMPLATES_KEY = "cookieTemplates";
+export const FAVORITE_SITE_DATA_IDS_KEY = "favoriteSiteDataIds";
 const DEFAULT_PREFERENCES = {
   autoRefreshPage: false,
   valueToolMode: "none",
-  columnWidths: null
+  columnWidths: null,
+  columnWidthsVersion: 0
 };
 
 export async function getPreferences() {
@@ -13,6 +16,19 @@ export async function getPreferences() {
 
 export async function savePreferences(nextPreferences) {
   await callChrome("storage.local.set", nextPreferences);
+}
+
+export async function getFavoriteSiteDataIds() {
+  const result = await callChrome("storage.local.get", {
+    [FAVORITE_SITE_DATA_IDS_KEY]: []
+  });
+  return normalizeFavoriteItemIds(result[FAVORITE_SITE_DATA_IDS_KEY]);
+}
+
+export async function saveFavoriteSiteDataIds(itemIds) {
+  await callChrome("storage.local.set", {
+    [FAVORITE_SITE_DATA_IDS_KEY]: normalizeFavoriteItemIds(itemIds)
+  });
 }
 
 export async function getCookieTemplates() {

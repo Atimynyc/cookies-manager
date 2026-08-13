@@ -13,6 +13,7 @@ const fixturePath = path.join(projectRoot, "tests", "fixtures", "cookie-test-pag
 const artifactDir = path.join(projectRoot, "tests", "artifacts");
 const extensionPath = projectRoot;
 const runId = Date.now().toString(36);
+const favoritesOnly = process.argv.includes("--favorites-only");
 const jwt =
   "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VyIjoiZGV2Iiwicm9sZXMiOlsicWEiXX0.";
 
@@ -45,34 +46,41 @@ try {
   const popup = await openPopupForActiveTab(context, testPage, extensionId);
   await waitForPopupReady(popup, "127.0.0.1");
   await assertPopupListsSeededCookies(popup);
-  await assertUnselectedWorkspaceFillsContent(popup);
-  await assertWorkspaceNavigation(popup);
-  await assertTableActionsBelowList(popup);
-  await assertEditorActions(popup);
-  await assertValueTools(popup);
-  await assertStressLayout(popup);
-  await assertExportFlow(popup);
-  await assertColumnPreference(popup);
-  await assertTemplateFlow(popup);
-  await assertBatchFlow(popup, context, baseUrl);
-  await assertLiveCookieRefresh(popup, context, baseUrl);
-  await assertLocalStorageFlow(popup, testPage, runId);
-  await assertSessionStorageFlow(popup, testPage, runId);
-  await assertHistoryPartitioning(popup, runId);
-  await switchDataView(popup, "cookies");
-  await screenshot(popup, "milestone-4-popup-tools.png");
-  await assertEditFlow(popup, context, baseUrl);
-  await assertExpirationEditFlow(popup, context, baseUrl);
-  await assertImportFlow(popup, context, baseUrl);
-  await popup.locator("#historyViewButton").click();
-  await screenshot(popup, "milestone-4-popup-history.png");
-  await assertDeleteFlow(popup, context, baseUrl);
+  if (favoritesOnly) {
+    await assertFavoriteFlow(popup);
+    await assertDetailFavoriteControl(popup);
+  } else {
+    await assertUnselectedWorkspaceFillsContent(popup);
+    await assertFavoriteFlow(popup);
+    await assertDetailFavoriteControl(popup);
+    await assertWorkspaceNavigation(popup);
+    await assertTableActionsBelowList(popup);
+    await assertEditorActions(popup);
+    await assertValueTools(popup);
+    await assertStressLayout(popup);
+    await assertExportFlow(popup);
+    await assertColumnPreference(popup);
+    await assertTemplateFlow(popup);
+    await assertBatchFlow(popup, context, baseUrl);
+    await assertLiveCookieRefresh(popup, context, baseUrl);
+    await assertLocalStorageFlow(popup, testPage, runId);
+    await assertSessionStorageFlow(popup, testPage, runId);
+    await assertHistoryPartitioning(popup, runId);
+    await switchDataView(popup, "cookies");
+    await screenshot(popup, "milestone-4-popup-tools.png");
+    await assertEditFlow(popup, context, baseUrl);
+    await assertExpirationEditFlow(popup, context, baseUrl);
+    await assertImportFlow(popup, context, baseUrl);
+    await popup.locator("#historyViewButton").click();
+    await screenshot(popup, "milestone-4-popup-history.png");
+    await assertDeleteFlow(popup, context, baseUrl);
 
-  await popup.locator("#searchInput").fill("");
-  await popup.waitForFunction(() => document.querySelectorAll("#cookieTableBody tr").length >= 7);
-  await screenshot(popup, "milestone-4-popup-final.png");
-  await assertHistoryPersistsWithSessionSnapshots(popup, context, baseUrl, runId);
-  await assertSingleHistoryDetailLayout(popup, runId);
+    await popup.locator("#searchInput").fill("");
+    await popup.waitForFunction(() => document.querySelectorAll("#cookieTableBody tr").length >= 7);
+    await screenshot(popup, "milestone-4-popup-final.png");
+    await assertHistoryPersistsWithSessionSnapshots(popup, context, baseUrl, runId);
+    await assertSingleHistoryDetailLayout(popup, runId);
+  }
   console.log("extension acceptance ok");
 } finally {
   if (context) {
@@ -195,6 +203,88 @@ async function assertPopupListsSeededCookies(popup) {
   for (const expected of ["plain", "editable", "delete_me", "encoded", "jwt", "http_only"]) {
     assert.ok(names.includes(expected), `Expected popup list to include ${expected}. Got: ${names.join(", ")}`);
   }
+}
+
+async function assertFavoriteFlow(popup) {
+  const cases = [
+    ["cookies", "plain"],
+    ["localStorage", "local_plain"],
+    ["sessionStorage", "session_plain"]
+  ];
+
+  for (const [view, name] of cases) {
+    if (view !== "cookies") {
+      await switchDataView(popup, view);
+    }
+    await popup.locator("#searchInput").fill(name);
+    const firstRow = popup.locator("#cookieTableBody tr").first();
+    assert.equal(await firstRow.locator(".favorite-indicator").count(), 0);
+    assert.equal(await firstRow.locator(".favorite-button").count(), 0);
+    await firstRow.click();
+    assert.equal(await popup.locator("#editorFavoriteButton").getAttribute("aria-pressed"), "false");
+    await popup.locator("#editorFavoriteButton").click();
+    assert.equal(await popup.locator("#editorFavoriteButton").getAttribute("aria-pressed"), "true");
+    assert.equal(await popup.locator("#cookieTableBody tr").first()
+      .locator(".favorite-indicator").count(), 1);
+    await popup.locator("#searchInput").fill("");
+    assert.equal((await getTableNames(popup))[0], name);
+  }
+
+  await popup.reload({ waitUntil: "domcontentloaded" });
+  await waitForPopupReady(popup, "127.0.0.1");
+  assert.equal((await getTableNames(popup))[0], "plain");
+  assert.equal(await popup.locator("#cookieTableBody tr").first()
+    .locator(".favorite-indicator").count(), 1);
+
+  await switchDataView(popup, "localStorage");
+  assert.equal((await getTableNames(popup))[0], "local_plain");
+  await switchDataView(popup, "sessionStorage");
+  assert.equal((await getTableNames(popup))[0], "session_plain");
+  await switchDataView(popup, "cookies");
+  await popup.locator(".table-wrap").evaluate((element) => {
+    element.scrollLeft = 0;
+  });
+  await screenshot(popup, "milestone-4-popup-favorites.png");
+}
+
+async function assertDetailFavoriteControl(popup) {
+  await selectCookieBySearch(popup, "plain");
+  await popup.locator(".table-wrap").evaluate((element) => {
+    element.scrollLeft = 0;
+  });
+  assert.equal(await popup.locator("#editorFavoriteButton").getAttribute("aria-pressed"), "true");
+  const layout = await popup.evaluate(() => {
+    const header = document.querySelector(".editor-header").getBoundingClientRect();
+    const title = document.querySelector(".editor-title-block").getBoundingClientRect();
+    const button = document.querySelector("#editorFavoriteButton").getBoundingClientRect();
+    const table = document.querySelector(".table-wrap");
+    const selectWidth = document.querySelector(".select-column").getBoundingClientRect().width;
+    const nameWidth = document.querySelector("th:nth-child(2)").getBoundingClientRect().width;
+    const valueWidth = document.querySelector("th:nth-child(3)").getBoundingClientRect().width;
+    const domain = document.querySelector("th:nth-child(4)").getBoundingClientRect();
+    const tableRect = table.getBoundingClientRect();
+    const thirdFieldVisibleWidth = Math.max(0, tableRect.right - domain.left);
+    return {
+      detailFavoriteAtTopRight: button.right <= header.right + 1 && title.right <= button.left,
+      primaryColumnsUseViewport: selectWidth + nameWidth + valueWidth >= table.clientWidth,
+      thirdFieldVisibleWidth
+    };
+  });
+  assert.equal(layout.detailFavoriteAtTopRight, true, JSON.stringify(layout));
+  assert.equal(layout.primaryColumnsUseViewport, true, JSON.stringify(layout));
+  assert.ok(layout.thirdFieldVisibleWidth <= 2, JSON.stringify(layout));
+
+  await popup.locator("#editorFavoriteButton").click();
+  assert.equal(await popup.locator("#editorFavoriteButton").getAttribute("aria-pressed"), "false");
+  assert.equal(await popup.locator("#cookieTableBody tr").first()
+    .locator(".favorite-indicator").count(), 0);
+  await popup.locator("#editorFavoriteButton").click();
+  assert.equal(await popup.locator("#editorFavoriteButton").getAttribute("aria-pressed"), "true");
+  await popup.locator("#searchInput").fill("");
+  await popup.locator(".table-wrap").evaluate((element) => {
+    element.scrollLeft = 0;
+  });
+  await screenshot(popup, "milestone-4-popup-favorites.png");
 }
 
 async function assertUnselectedWorkspaceFillsContent(popup) {
@@ -1191,7 +1281,8 @@ async function assertColumnPreference(popup) {
   await popup.locator("th[data-column-index='0'] .column-resizer").press("ArrowRight");
   const widths = await readStorageValue(popup, "columnWidths");
   assert.ok(Array.isArray(widths));
-  assert.equal(widths[0], 127);
+  assert.equal(widths[0], 162);
+  assert.equal(await readStorageValue(popup, "columnWidthsVersion"), 2);
 }
 
 async function getTableNames(popup) {

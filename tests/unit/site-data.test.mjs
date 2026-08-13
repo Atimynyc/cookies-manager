@@ -13,6 +13,16 @@ import {
 import { parseNameValuePair } from "../../src/shared/pair-parser.js";
 import { normalizeCookieTemplates } from "../../src/shared/settings-store.js";
 import {
+  COLUMN_WIDTHS_VERSION,
+  DEFAULT_COLUMN_WIDTHS,
+  migrateColumnWidths
+} from "../../src/popup/popup-config.js";
+import {
+  makeFavoriteItemId,
+  normalizeFavoriteItemIds,
+  sortFavoriteRowsFirst
+} from "../../src/shared/favorites.js";
+import {
   classifySiteDataItem,
   createSiteDataPackage,
   parseSiteDataPackage,
@@ -126,6 +136,41 @@ test("normalizes locally stored cookie templates", () => {
     { label: "Valid", value: "one" },
     { label: "Missing value" }
   ]), [{ label: "Valid", value: "one" }]);
+});
+
+test("normalizes favorite site data identities", () => {
+  const cookieId = makeFavoriteItemId("cookies", "cookie-id");
+  const localId = makeFavoriteItemId("localStorage", "storage-id");
+
+  assert.equal(cookieId, "cookies:cookie-id");
+  assert.equal(localId, "localStorage:storage-id");
+  assert.deepEqual(normalizeFavoriteItemIds([cookieId, null, cookieId, "", localId]), [cookieId, localId]);
+  assert.throws(() => makeFavoriteItemId("unknown", "item-id"), /supported data view/);
+});
+
+test("puts favorites first while preserving the existing order within each group", () => {
+  const rows = [{ id: "a" }, { id: "b" }, { id: "c" }, { id: "d" }];
+  const favorites = new Set([
+    makeFavoriteItemId("localStorage", "b"),
+    makeFavoriteItemId("localStorage", "d")
+  ]);
+
+  assert.deepEqual(
+    sortFavoriteRowsFirst(rows, favorites, "localStorage").map((row) => row.id),
+    ["b", "d", "a", "c"]
+  );
+  assert.deepEqual(rows.map((row) => row.id), ["a", "b", "c", "d"]);
+});
+
+test("migrates legacy table widths to a two-field viewport layout", () => {
+  const legacyWidths = [127, 150, 130, 84, 116, 92, 58];
+  assert.deepEqual(migrateColumnWidths(legacyWidths, 0), DEFAULT_COLUMN_WIDTHS);
+
+  const customizedWidths = [120, 150, 150, 84, 116, 92, 58];
+  assert.deepEqual(
+    migrateColumnWidths(customizedWidths, COLUMN_WIDTHS_VERSION),
+    customizedWidths
+  );
 });
 
 test("executes every item in a batch and preserves partial failures", async () => {

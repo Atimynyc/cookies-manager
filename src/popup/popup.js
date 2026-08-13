@@ -19,12 +19,20 @@ import {
   saveRecentCookieChanges
 } from "../shared/history-store.js";
 import {
+  FAVORITE_SITE_DATA_IDS_KEY,
   getCookieTemplates,
+  getFavoriteSiteDataIds,
   getPreferences,
   normalizeCookieTemplates,
   saveCookieTemplates,
+  saveFavoriteSiteDataIds,
   savePreferences
 } from "../shared/settings-store.js";
+import {
+  makeFavoriteItemId,
+  normalizeFavoriteItemIds,
+  sortFavoriteRowsFirst
+} from "../shared/favorites.js";
 import {
   getCookieJson,
   getCookieSearchText,
@@ -53,10 +61,11 @@ import { getBatchOperationCounts } from "../shared/operation-result.js";
 import {
   clampColumnWidth,
   COLUMN_CSS_VARS,
+  COLUMN_WIDTHS_VERSION,
   DATA_VIEWS,
   DEFAULT_COLUMN_WIDTHS,
   MIN_COLUMN_WIDTHS,
-  normalizeColumnWidths,
+  migrateColumnWidths,
   normalizeValueToolMode,
   VALUE_TOOL_DEFINITIONS
 } from "./popup-config.js";
@@ -74,6 +83,7 @@ const state = {
   cookieStoreId: "",
   selectedId: "",
   selectedIds: new Set(),
+  favoriteItemIds: new Set(),
   searchQuery: "",
   autoRefreshPage: false,
   valueToolMode: "none",
@@ -127,6 +137,7 @@ const elements = {
   cookieEditor: document.querySelector("#cookieEditor"),
   editorName: document.querySelector("#editorName"),
   editorLocation: document.querySelector("#editorLocation"),
+  editorFavoriteButton: document.querySelector("#editorFavoriteButton"),
   editorChips: document.querySelector("#editorChips"),
   valueInput: document.querySelector("#valueInput"),
   expirationEditorCell: document.querySelector("#expirationEditorCell"),
@@ -216,11 +227,24 @@ async function initialize() {
     const preferences = await getPreferences();
     state.autoRefreshPage = Boolean(preferences.autoRefreshPage);
     state.valueToolMode = normalizeValueToolMode(preferences.valueToolMode);
-    state.columnWidths = normalizeColumnWidths(preferences.columnWidths);
+    state.columnWidths = migrateColumnWidths(
+      preferences.columnWidths,
+      preferences.columnWidthsVersion
+    );
     elements.autoRefreshToggle.checked = state.autoRefreshPage;
     elements.valueToolModeSelect.value = state.valueToolMode;
     updateRefreshControlState();
     applyColumnWidths();
+    if (Number(preferences.columnWidthsVersion) < COLUMN_WIDTHS_VERSION) {
+      try {
+        await savePreferences({
+          columnWidths: state.columnWidths,
+          columnWidthsVersion: COLUMN_WIDTHS_VERSION
+        });
+      } catch {
+        // The migrated widths are still applied for the current view.
+      }
+    }
   } catch {
     state.autoRefreshPage = false;
     state.valueToolMode = "none";
@@ -230,10 +254,14 @@ async function initialize() {
     applyColumnWidths();
   }
 
-  await loadCookieTemplates();
-  await loadRecentChanges();
+  await Promise.all([
+    loadCookieTemplates(),
+    loadFavoriteSiteDataIds(),
+    loadRecentChanges()
+  ]);
   await refreshData();
   startCookieWatcher();
+  startFavoriteWatcher();
 }
 
 function bindEvents() {
@@ -276,6 +304,12 @@ function bindEvents() {
   elements.expirationInput.addEventListener("change", handleExpirationChange);
   elements.resetButton.addEventListener("click", resetSelectedItem);
   elements.deleteButton.addEventListener("click", deleteSelectedItem);
+  elements.editorFavoriteButton.addEventListener("click", () => {
+    const row = getSelectedRow();
+    if (row) {
+      void toggleFavorite(row.id, !isFavorite(row.id));
+    }
+  });
   elements.copyValueButton.addEventListener("click", () => copySelected("value", elements.copyValueButton));
   elements.copyPairButton.addEventListener("click", () => copySelected("pair", elements.copyPairButton));
   elements.copyJsonButton.addEventListener("click", () => copySelected("json", elements.copyJsonButton));
@@ -1147,7 +1181,10 @@ function startColumnResize(event, index) {
   const onPointerUp = async () => {
     document.removeEventListener("pointermove", onPointerMove);
     document.removeEventListener("pointerup", onPointerUp);
-    await savePreferences({ columnWidths: state.columnWidths });
+    await savePreferences({
+      columnWidths: state.columnWidths,
+      columnWidthsVersion: COLUMN_WIDTHS_VERSION
+    });
   };
 
   document.addEventListener("pointermove", onPointerMove);
@@ -1169,7 +1206,10 @@ async function resizeColumnWithKeyboard(event, index) {
   event.preventDefault();
   state.columnWidths[index] = clampColumnWidth(state.columnWidths[index] + directions[event.key], index);
   applyColumnWidths();
-  await savePreferences({ columnWidths: state.columnWidths });
+  await savePreferences({
+    columnWidths: state.columnWidths,
+    columnWidthsVersion: COLUMN_WIDTHS_VERSION
+  });
 }
 
 function renderHeader(url) {
@@ -1180,11 +1220,15 @@ function renderHeader(url) {
 
 function renderTable() {
   const visibleRows = getVisibleRows();
+  const favoriteIds = new Set(visibleRows
+    .filter((row) => isFavorite(row.id))
+    .map((row) => row.id));
   renderDataTable({
     tableBody: elements.cookieTableBody,
     rows: visibleRows,
     selectedId: state.selectedId,
     selectedIds: state.selectedIds,
+    favoriteIds,
     onSelect: selectItem,
     onToggle: toggleRowSelection
   });
@@ -1196,12 +1240,74 @@ function renderTable() {
 }
 
 function getVisibleRows() {
-  if (!state.searchQuery) {
-    return state.rows;
+  let rows = state.rows;
+  if (state.searchQuery) {
+    const getSearchText = isCookieView() ? getCookieSearchText : getStorageSearchText;
+    rows = rows.filter((row) => getSearchText(row).includes(state.searchQuery));
   }
 
-  const getSearchText = isCookieView() ? getCookieSearchText : getStorageSearchText;
-  return state.rows.filter((row) => getSearchText(row).includes(state.searchQuery));
+  return sortFavoriteRowsFirst(rows, state.favoriteItemIds, state.dataView);
+}
+
+function isFavorite(itemId) {
+  return state.favoriteItemIds.has(makeFavoriteItemId(state.dataView, itemId));
+}
+
+async function toggleFavorite(itemId, favorite) {
+  const favoriteItemId = makeFavoriteItemId(state.dataView, itemId);
+  const previousFavorites = new Set(state.favoriteItemIds);
+
+  if (favorite) {
+    state.favoriteItemIds.add(favoriteItemId);
+  } else {
+    state.favoriteItemIds.delete(favoriteItemId);
+  }
+  renderTable();
+  updateEditorFavoriteButton();
+
+  try {
+    await saveFavoriteSiteDataIds([...state.favoriteItemIds]);
+  } catch {
+    state.favoriteItemIds = previousFavorites;
+    renderTable();
+    updateEditorFavoriteButton();
+    showStatus("Failed to update favorites.", "error");
+  }
+}
+
+async function loadFavoriteSiteDataIds() {
+  try {
+    state.favoriteItemIds = new Set(await getFavoriteSiteDataIds());
+  } catch {
+    state.favoriteItemIds = new Set();
+  }
+}
+
+function startFavoriteWatcher() {
+  if (!chrome.storage?.onChanged) {
+    return;
+  }
+
+  chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName !== "local" || !changes[FAVORITE_SITE_DATA_IDS_KEY]) {
+      return;
+    }
+
+    const nextFavoriteItemIds = new Set(normalizeFavoriteItemIds(
+      changes[FAVORITE_SITE_DATA_IDS_KEY].newValue
+    ));
+    if (areSetsEqual(state.favoriteItemIds, nextFavoriteItemIds)) {
+      return;
+    }
+
+    state.favoriteItemIds = nextFavoriteItemIds;
+    renderTable();
+    updateEditorFavoriteButton();
+  });
+}
+
+function areSetsEqual(a, b) {
+  return a.size === b.size && [...a].every((value) => b.has(value));
 }
 
 function selectItem(id) {
@@ -1280,6 +1386,7 @@ function renderSelectedItem() {
 
   elements.detailPlaceholder.hidden = hasSelection;
   elements.cookieEditor.hidden = !hasSelection;
+  updateEditorFavoriteButton();
 
   if (!row) {
     clearToolOutput();
@@ -1308,6 +1415,19 @@ function renderSelectedItem() {
   renderEditorChips(row);
   renderHistory();
   updateSelectionControls();
+}
+
+function updateEditorFavoriteButton() {
+  const row = getSelectedRow();
+  const favorite = Boolean(row && isFavorite(row.id));
+  const itemName = row?.name || "item";
+  const label = favorite ? `Remove ${itemName} from favorites` : `Favorite ${itemName}`;
+
+  elements.editorFavoriteButton.classList.toggle("is-favorite", favorite);
+  elements.editorFavoriteButton.setAttribute("aria-pressed", String(favorite));
+  elements.editorFavoriteButton.setAttribute("aria-label", label);
+  elements.editorFavoriteButton.title = label;
+  elements.editorFavoriteButton.disabled = !row;
 }
 
 function renderEditorChips(row) {
@@ -1759,13 +1879,14 @@ function setBusy(isBusy) {
     elements.valueToolModeSelect.disabled = true;
     elements.runToolButton.disabled = true;
     elements.copyToolOutputButton.disabled = true;
-  elements.clearHistoryButton.disabled = true;
-  elements.exportButton.disabled = true;
-  elements.importButton.disabled = true;
-  elements.batchEditButton.disabled = true;
-  elements.batchDeleteButton.disabled = true;
-  elements.saveTemplateButton.disabled = true;
-  elements.applyTemplateButton.disabled = true;
+    elements.clearHistoryButton.disabled = true;
+    elements.exportButton.disabled = true;
+    elements.importButton.disabled = true;
+    elements.batchEditButton.disabled = true;
+    elements.batchDeleteButton.disabled = true;
+    elements.saveTemplateButton.disabled = true;
+    elements.applyTemplateButton.disabled = true;
+    elements.editorFavoriteButton.disabled = true;
     return;
   }
 
@@ -1774,6 +1895,7 @@ function setBusy(isBusy) {
   });
   const hasSelection = Boolean(getSelectedRow());
   elements.deleteButton.disabled = !hasSelection;
+  updateEditorFavoriteButton();
   updateActionAvailability();
   updateSelectionControls();
 }

@@ -1,10 +1,11 @@
 
-# ![](assets/icon-128.png) cookies-manager
+# ![](assets/icon-48.png) cookies-manager
 Cookie Controller is a site data management tool for developers, testers, and advanced users. It lets you inspect and manage cookies, Local Storage, and Session Storage for the current page from a popup or the Chrome side panel, without opening the full developer tools.
 
 Main features
 
 - View cookies for the current page and quickly search by name, value, domain, or path.
+- Favorite frequently used cookies and Local/Session Storage entries so they stay at the top of each list.
 - Edit an individual cookie value or expiration time while preserving its domain, path, SameSite, Secure, and HttpOnly attributes.
 - Create or delete cookies, delete multiple selected cookies, and set values in batches.
 - View, create, edit, and remove Local Storage and Session Storage entries.
