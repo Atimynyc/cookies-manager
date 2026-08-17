@@ -26,6 +26,10 @@ export function getDisplayHost(value) {
   return url.host;
 }
 
+export function getSiteOrigin(value) {
+  return parseHttpUrl(value)?.origin || "";
+}
+
 export function getOriginPermissionPattern(value) {
   const url = parseHttpUrl(value);
   if (!url) {

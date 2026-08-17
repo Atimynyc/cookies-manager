@@ -232,14 +232,23 @@ async function assertFavoriteFlow(popup) {
 
   await popup.reload({ waitUntil: "domcontentloaded" });
   await waitForPopupReady(popup, "127.0.0.1");
+  assert.equal(await popup.evaluate(() => document.body.dataset.view), "sessionStorage");
+  assert.equal(await popup.locator("#editorName").innerText(), "session_plain");
+
+  await switchDataView(popup, "localStorage");
+  assert.equal(await popup.locator("#editorName").innerText(), "local_plain");
+  await switchDataView(popup, "cookies");
+  assert.equal(await popup.locator("#editorName").innerText(), "plain");
   assert.equal((await getTableNames(popup))[0], "plain");
   assert.equal(await popup.locator("#cookieTableBody tr").first()
     .locator(".favorite-indicator").count(), 1);
 
   await switchDataView(popup, "localStorage");
   assert.equal((await getTableNames(popup))[0], "local_plain");
+  assert.equal(await popup.locator("#editorName").innerText(), "local_plain");
   await switchDataView(popup, "sessionStorage");
   assert.equal((await getTableNames(popup))[0], "session_plain");
+  assert.equal(await popup.locator("#editorName").innerText(), "session_plain");
   await switchDataView(popup, "cookies");
   await popup.locator(".table-wrap").evaluate((element) => {
     element.scrollLeft = 0;

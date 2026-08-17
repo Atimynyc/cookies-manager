@@ -22,10 +22,13 @@ import {
   FAVORITE_SITE_DATA_IDS_KEY,
   getCookieTemplates,
   getFavoriteSiteDataIds,
+  getLastViewedSiteData,
   getPreferences,
+  normalizeLastViewedSiteData,
   normalizeCookieTemplates,
   saveCookieTemplates,
   saveFavoriteSiteDataIds,
+  saveLastViewedSiteData,
   savePreferences
 } from "../shared/settings-store.js";
 import {
@@ -53,7 +56,7 @@ import {
   createRecentChange,
   normalizeRecentChanges
 } from "../shared/recent-changes.js";
-import { getDisplayHost, isSupportedPageUrl } from "../shared/url.js";
+import { getDisplayHost, getSiteOrigin, isSupportedPageUrl } from "../shared/url.js";
 import { getAutoValueToolOutput } from "../shared/value-tools.js";
 import { parseNameValuePair } from "../shared/pair-parser.js";
 import { executeBatchOperation } from "../shared/batch-operations.js";
@@ -82,6 +85,8 @@ const state = {
   rows: [],
   cookieStoreId: "",
   selectedId: "",
+  siteOrigin: null,
+  rememberedSelectedIds: normalizeLastViewedSiteData(null).selectedIds,
   selectedIds: new Set(),
   favoriteItemIds: new Set(),
   searchQuery: "",
@@ -99,6 +104,8 @@ const state = {
   ignoreCookieChangesUntil: 0,
   loading: false
 };
+
+let lastViewedSavePromise = Promise.resolve();
 
 const elements = {
   hostLabel: document.querySelector("#hostLabel"),
@@ -361,14 +368,27 @@ function updateRefreshControlState() {
   elements.refreshButton.title = state.autoRefreshPage ? "Refresh data (page reload is on)" : "Refresh data";
 }
 
-async function setDataView(view) {
-  if (!DATA_VIEWS[view] || state.dataView === view) {
+async function restoreLastViewedSiteData(url) {
+  const siteOrigin = getSiteOrigin(url);
+  if (state.siteOrigin === siteOrigin) {
     return;
   }
 
-  state.dataView = view;
-  state.rows = [];
-  state.selectedId = "";
+  state.siteOrigin = siteOrigin;
+  let lastViewed = normalizeLastViewedSiteData(null);
+  try {
+    lastViewed = await getLastViewedSiteData(url);
+  } catch {
+    // A storage failure should not prevent the current site's data from loading.
+  }
+
+  if (state.siteOrigin !== siteOrigin) {
+    return;
+  }
+
+  state.dataView = lastViewed.activeDataView;
+  state.rememberedSelectedIds = { ...lastViewed.selectedIds };
+  state.selectedId = state.rememberedSelectedIds[state.dataView] || "";
   state.selectedIds.clear();
   state.searchQuery = "";
   elements.searchInput.value = "";
@@ -377,6 +397,46 @@ async function setDataView(view) {
   setActiveDetailView("details");
   renderViewChrome();
   renderHistory();
+}
+
+function rememberCurrentSelection() {
+  state.rememberedSelectedIds[state.dataView] = state.selectedId;
+  persistLastViewedSiteData();
+}
+
+function persistLastViewedSiteData() {
+  if (!state.siteOrigin) {
+    return;
+  }
+
+  const siteOrigin = state.siteOrigin;
+  const value = {
+    activeDataView: state.dataView,
+    selectedIds: { ...state.rememberedSelectedIds }
+  };
+  lastViewedSavePromise = lastViewedSavePromise
+    .catch(() => {})
+    .then(() => saveLastViewedSiteData(siteOrigin, value))
+    .catch(() => {});
+}
+
+async function setDataView(view) {
+  if (!DATA_VIEWS[view] || state.dataView === view) {
+    return;
+  }
+
+  state.dataView = view;
+  state.rows = [];
+  state.selectedId = state.rememberedSelectedIds[view] || "";
+  state.selectedIds.clear();
+  state.searchQuery = "";
+  elements.searchInput.value = "";
+  clearToolOutput();
+  clearHistoryDetail();
+  setActiveDetailView("details");
+  renderViewChrome();
+  renderHistory();
+  persistLastViewedSiteData();
   await refreshData();
 }
 
@@ -390,6 +450,7 @@ async function refreshData() {
     const tab = await getActiveTab();
     state.tab = tab;
     state.cookieStoreId = "";
+    await restoreLastViewedSiteData(tab?.url);
     await refreshSiteOptions(tab?.id);
     const view = getCurrentView();
 
@@ -411,6 +472,7 @@ async function refreshData() {
 
     if (state.selectedId && !state.rows.some((row) => row.id === state.selectedId)) {
       state.selectedId = "";
+      rememberCurrentSelection();
     }
     pruneSelectedIds();
 
@@ -462,6 +524,7 @@ async function switchToSelectedSite() {
 
   try {
     await activateTab(tabId);
+    state.siteOrigin = null;
     state.selectedId = "";
     state.selectedIds.clear();
     await refreshData();
@@ -574,6 +637,7 @@ async function deleteSelectedItem() {
       await removeStorageItem(state.tab.id, state.tab.url, getCurrentView().storageType, row.name);
     }
     state.selectedId = "";
+    rememberCurrentSelection();
     await refreshData();
 
     if (state.autoRefreshPage) {
@@ -654,6 +718,7 @@ async function batchDeleteSelected() {
     });
 
     state.selectedId = "";
+    rememberCurrentSelection();
     state.selectedIds = new Set(result.failed.map((entry) => entry.itemId));
     await refreshData();
     showBatchOperationStatus("Deleted", result);
@@ -758,6 +823,7 @@ async function importPairFromInput() {
     const importedRow = await importPair(pair);
     await safelyRecordImportChange(importedRow, pair.value, previousRow);
     state.selectedId = importedRow.id;
+    rememberCurrentSelection();
     await refreshData();
 
     if (state.autoRefreshPage) {
@@ -1313,6 +1379,7 @@ function areSetsEqual(a, b) {
 function selectItem(id) {
   const changed = state.selectedId !== id;
   state.selectedId = id;
+  rememberCurrentSelection();
   renderTable();
   renderSelectedItem();
 
@@ -1720,6 +1787,7 @@ async function undoRecentChange(changeId) {
         await removeStorageItem(state.tab.id, state.tab.url, snapshot.storageType, snapshot.key);
       }
       state.selectedId = "";
+      rememberCurrentSelection();
     } else {
       if (snapshot.itemKind === "cookie") {
         const restored = await setCookieValue(state.tab.url, snapshot.raw, snapshot.value);
@@ -1728,6 +1796,7 @@ async function undoRecentChange(changeId) {
         const restored = await setStorageValue(state.tab.id, state.tab.url, snapshot.storageType, snapshot.key, snapshot.value);
         state.selectedId = toStorageRow(restored).id;
       }
+      rememberCurrentSelection();
     }
 
     state.undoSnapshots.delete(changeId);

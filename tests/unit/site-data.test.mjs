@@ -11,7 +11,11 @@ import {
   getBatchOperationCounts
 } from "../../src/shared/operation-result.js";
 import { parseNameValuePair } from "../../src/shared/pair-parser.js";
-import { normalizeCookieTemplates } from "../../src/shared/settings-store.js";
+import {
+  getLastViewedSiteDataStorageKey,
+  normalizeCookieTemplates,
+  normalizeLastViewedSiteData
+} from "../../src/shared/settings-store.js";
 import {
   COLUMN_WIDTHS_VERSION,
   DEFAULT_COLUMN_WIDTHS,
@@ -136,6 +140,49 @@ test("normalizes locally stored cookie templates", () => {
     { label: "Valid", value: "one" },
     { label: "Missing value" }
   ]), [{ label: "Valid", value: "one" }]);
+});
+
+test("normalizes last viewed details for every site data view", () => {
+  assert.deepEqual(normalizeLastViewedSiteData({
+    activeDataView: "sessionStorage",
+    selectedIds: {
+      cookies: "cookie-id",
+      localStorage: "local-id",
+      sessionStorage: "session-id",
+      unknown: "ignored"
+    }
+  }), {
+    activeDataView: "sessionStorage",
+    selectedIds: {
+      cookies: "cookie-id",
+      localStorage: "local-id",
+      sessionStorage: "session-id"
+    }
+  });
+
+  assert.deepEqual(normalizeLastViewedSiteData({
+    activeDataView: "unknown",
+    selectedIds: { cookies: 123 }
+  }), {
+    activeDataView: "cookies",
+    selectedIds: {
+      cookies: "",
+      localStorage: "",
+      sessionStorage: ""
+    }
+  });
+});
+
+test("scopes last viewed details to the page origin", () => {
+  assert.equal(
+    getLastViewedSiteDataStorageKey("https://example.com/first?tab=one"),
+    getLastViewedSiteDataStorageKey("https://example.com/second")
+  );
+  assert.notEqual(
+    getLastViewedSiteDataStorageKey("https://example.com"),
+    getLastViewedSiteDataStorageKey("http://example.com")
+  );
+  assert.equal(getLastViewedSiteDataStorageKey("chrome://extensions"), "");
 });
 
 test("normalizes favorite site data identities", () => {
