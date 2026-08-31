@@ -25,7 +25,7 @@ export const DATA_VIEWS = {
     unsupportedMessage: "Only http:// and https:// pages support cookie operations.",
     readErrorMessage: "Failed to read cookies.",
     exportKey: "cookies",
-    pairLabel: "name=value",
+    pairLabel: "cookies",
     tableLabels: ["Name", "Value", "Domain", "Path", "Expires", "Flags", "Size"],
     metaLabels: ["Domain", "Path", "Expires", "SameSite", "Store", "Size"]
   },

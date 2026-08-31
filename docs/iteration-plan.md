@@ -1,7 +1,7 @@
 # Cookie Controller 后续迭代计划
 
 更新日期：2026-08-11  
-当前基线：v0.2.0
+当前基线：v0.3.0
 
 ## 1. 迭代背景
 
@@ -89,6 +89,8 @@
 
 ## 5. v0.3.0：数据包与配置组
 
+实现状态：已完成 JSON 数据包与 Cookie 专用 Netscape/cURL 格式的导入导出、差异预览、冲突策略、配置组、应用时变量、批量结果与会话内整批撤销。Import、Export 和 Profiles 作为表格工具栏的三个独立入口接入 Popup 和 Side Panel，避免重复的 Site Data 二级入口。
+
 ### 5.1 目标
 
 解决当前“可以全量导出，但只能单条导入”的不对称问题，并支持保存和重复应用一组站点状态。
@@ -120,7 +122,9 @@
 - 未知字段应忽略，未知 `schemaVersion` 应拒绝导入并给出明确提示。
 - 导出范围支持当前视图、选中项目和全部三类数据。
 - 支持复制到剪贴板和保存为 `.json` 文件。
-- 继续保留单条 `name=value` 快速导入入口。
+- UI 导出的 JSON 在 v1 数据包之外保留顶层 `url`、`host`、`type` 和 `count` 兼容字段。
+- Cookie 额外支持七列 Netscape/cURL cookie jar 的导入导出、`#HttpOnly_` 和会话 Cookie；该格式不表示 SameSite、Partitioned/CHIPS、Cookie store 或两类 Storage。
+- Import 入口内提供快速输入、JSON 数据包和 Netscape/cURL 三种方式；Cookie 快速输入使用独立 Name/Value 输入框并可动态增加多行，Storage 继续保留单条 `key=value` 入口。
 
 ### 5.3 批量导入流程
 
@@ -166,6 +170,7 @@
 ### 5.5 验收标准
 
 - Cookie、Local Storage、Session Storage 均可完成导出后再导入的往返操作。
+- Netscape/cURL Cookie 文件可完成导出、自动识别、预览、写入和整批撤销，并明确提示无法表示的高级属性。
 - 同名但 domain、path 或 partitionKey 不同的 Cookie 不会互相覆盖。
 - 无效 JSON、未知协议版本和缺少必需字段时不会修改目标站点。
 - 导入 100 个项目时界面保持可响应，并展示执行进度。

@@ -10,7 +10,7 @@ import {
   createBatchOperationResult,
   getBatchOperationCounts
 } from "../../src/shared/operation-result.js";
-import { parseNameValuePair } from "../../src/shared/pair-parser.js";
+import { createCookiePair, createStoragePair, parseNameValuePair } from "../../src/shared/pair-parser.js";
 import {
   getLastViewedSiteDataStorageKey,
   normalizeCookieTemplates,
@@ -34,6 +34,20 @@ import {
   serializeStorageItem,
   tryParseSiteDataPackage
 } from "../../src/shared/site-data-package.js";
+import {
+  buildSiteDataImportPreview,
+  planSiteDataImport
+} from "../../src/shared/site-data-import.js";
+import {
+  createSiteProfile,
+  normalizeSiteProfiles,
+  parseVariableCaptures,
+  resolveSiteProfileVariables
+} from "../../src/shared/site-profiles.js";
+import {
+  parseNetscapeCookieFile,
+  serializeNetscapeCookieFile
+} from "../../src/shared/netscape-cookies.js";
 
 test("parses cookie and storage name=value pairs without truncating values", () => {
   assert.deepEqual(parseNameValuePair("Cookie: token=a=b=c; Path=/"), { name: "token", value: "a=b=c" });
@@ -42,6 +56,10 @@ test("parses cookie and storage name=value pairs without truncating values", () 
     value: " enabled=true"
   });
   assert.throws(() => parseNameValuePair("bad name=value"), /Cookie name is invalid/);
+  assert.deepEqual(createCookiePair(" token ", "a=b;c"), { name: "token", value: "a=b;c" });
+  assert.throws(() => createCookiePair("bad name", "value"), /Cookie name is invalid/);
+  assert.deepEqual(createStoragePair(" feature ", "enabled=true"), { name: "feature", value: "enabled=true" });
+  assert.throws(() => createStoragePair(" ", "value"), /storage key/);
 });
 
 test("creates stable cookie and storage item identities", () => {
@@ -98,6 +116,96 @@ test("creates and parses a normalized v1 site data package", () => {
   });
   assert.equal(dataPackage.data.localStorage[0].origin, "https://example.com");
   assert.deepEqual(parseSiteDataPackage(JSON.stringify(dataPackage)), dataPackage);
+});
+
+test("parses cURL Netscape cookie jars into cookie-only site data packages", () => {
+  const dataPackage = parseNetscapeCookieFile([
+    "# Netscape HTTP Cookie File",
+    ".example.com\tTRUE\t/app\tTRUE\t1893456000\tpersistent\tvalue=1",
+    "#HttpOnly_example.com\tFALSE\t/\tFALSE\t0\tsession\tsecret",
+    ""
+  ].join("\n"), {
+    sourceUrl: "https://example.com/app",
+    storeId: "1",
+    exportedAt: "2026-08-26T00:00:00.000Z"
+  });
+
+  assert.deepEqual(dataPackage.data.localStorage, []);
+  assert.deepEqual(dataPackage.data.sessionStorage, []);
+  assert.deepEqual(dataPackage.data.cookies, [
+    {
+      name: "persistent",
+      value: "value=1",
+      domain: ".example.com",
+      path: "/app",
+      expirationDate: 1893456000,
+      session: false,
+      secure: true,
+      httpOnly: false,
+      storeId: "1",
+      hostOnly: false
+    },
+    {
+      name: "session",
+      value: "secret",
+      domain: "example.com",
+      path: "/",
+      session: true,
+      secure: false,
+      httpOnly: true,
+      storeId: "1",
+      hostOnly: true
+    }
+  ]);
+});
+
+test("serializes cookie-only packages as cURL-compatible Netscape jars", () => {
+  const text = serializeNetscapeCookieFile(createSiteDataPackage({
+    url: "https://example.com/",
+    cookies: [
+      cookieFixture({
+        name: "domain-cookie",
+        value: "a=b",
+        domain: ".example.com",
+        hostOnly: false,
+        httpOnly: true,
+        secure: true,
+        session: false,
+        expirationDate: 1893456000
+      }),
+      cookieFixture({
+        name: "host-cookie",
+        value: "",
+        domain: "example.com",
+        hostOnly: true,
+        session: true
+      })
+    ]
+  }));
+
+  assert.match(text, /^# Netscape HTTP Cookie File/m);
+  assert.match(text, /^#HttpOnly_\.example\.com\tTRUE\t\/\tTRUE\t1893456000\tdomain-cookie\ta=b$/m);
+  assert.match(text, /^example\.com\tFALSE\t\/\tFALSE\t0\thost-cookie\t$/m);
+  const roundTrip = parseNetscapeCookieFile(text, { sourceUrl: "https://example.com/", storeId: "0" });
+  assert.equal(roundTrip.data.cookies.length, 2);
+  assert.equal(roundTrip.data.cookies[0].httpOnly, true);
+  assert.equal(roundTrip.data.cookies[1].session, true);
+});
+
+test("rejects malformed and ambiguous Netscape cookie rows", () => {
+  const options = { sourceUrl: "https://example.com/" };
+  assert.throws(() => parseNetscapeCookieFile("# comments only", options), /No Netscape cookie rows/);
+  assert.throws(() => parseNetscapeCookieFile("example.com TRUE / FALSE 0 name value", options), /7 tab-separated/);
+  assert.throws(() => parseNetscapeCookieFile("example.com\tMAYBE\t/\tFALSE\t0\tname\tvalue", options), /TRUE or FALSE/);
+  assert.throws(() => parseNetscapeCookieFile("example.com\tFALSE\t/\tFALSE\t0\tname\tbad\u0000value", options), /cannot be represented/);
+  assert.throws(() => parseNetscapeCookieFile([
+    "example.com\tFALSE\t/\tFALSE\t0\tname\tone",
+    "example.com\tFALSE\t/\tFALSE\t0\tname\ttwo"
+  ].join("\n"), options), /Duplicate cookie/);
+  assert.throws(() => serializeNetscapeCookieFile(createSiteDataPackage({
+    url: "https://example.com/",
+    cookies: []
+  })), /does not contain any cookies/);
 });
 
 test("rejects invalid or unsupported packages without returning partial data", () => {
@@ -239,3 +347,194 @@ test("executes every item in a batch and preserves partial failures", async () =
   assert.equal(result.failed[0].error.message, "write failed");
   assert.equal(result.skipped[0].reason, "conflict");
 });
+
+test("previews value changes separately from cookie attribute conflicts", () => {
+  const dataPackage = createSiteDataPackage({
+    url: "https://example.com/app",
+    exportedAt: "2026-08-11T10:00:00.000Z",
+    cookies: [
+      cookieFixture({ name: "value-change", value: "after" }),
+      cookieFixture({ name: "attribute-change", value: "after", secure: true }),
+      cookieFixture({ name: "same", value: "same" }),
+      cookieFixture({ name: "scoped", value: "new-scope", path: "/app" })
+    ]
+  });
+  const current = {
+    cookies: [
+      cookieFixture({ name: "value-change", value: "before" }),
+      cookieFixture({ name: "attribute-change", value: "before", secure: false }),
+      cookieFixture({ name: "same", value: "same" }),
+      cookieFixture({ name: "scoped", value: "root", path: "/" })
+    ],
+    localStorage: [],
+    sessionStorage: []
+  };
+
+  const preview = buildSiteDataImportPreview(dataPackage, current, {
+    targetUrl: "https://example.com/target"
+  });
+
+  assert.deepEqual(preview.items.map((item) => [item.name, item.status]), [
+    ["value-change", "modified"],
+    ["attribute-change", "conflict"],
+    ["same", "same"],
+    ["scoped", "new"]
+  ]);
+  assert.equal(preview.counts.total, 4);
+});
+
+test("keeps same-name cookies with different domain, path, or partition key independent", () => {
+  const dataPackage = createSiteDataPackage({
+    url: "https://sub.example.com/",
+    cookies: [
+      cookieFixture({ name: "session", domain: "sub.example.com", path: "/" }),
+      cookieFixture({ name: "session", domain: ".example.com", path: "/app" }),
+      cookieFixture({
+        name: "session",
+        domain: "sub.example.com",
+        path: "/",
+        partitionKey: { topLevelSite: "https://top.example" }
+      })
+    ]
+  });
+  const preview = buildSiteDataImportPreview(dataPackage, {
+    cookies: [cookieFixture({ name: "session", domain: "sub.example.com", path: "/", value: "old" })],
+    localStorage: [],
+    sessionStorage: []
+  }, { targetUrl: "https://sub.example.com/" });
+
+  assert.deepEqual(preview.items.map((item) => item.status), ["modified", "new", "new"]);
+  assert.equal(new Set(preview.items.map((item) => item.itemId)).size, 3);
+});
+
+test("requires explicit cross-origin mapping and maps storage plus host cookies", () => {
+  const dataPackage = createSiteDataPackage({
+    url: "https://uat.example.test/page",
+    cookies: [cookieFixture({ domain: "uat.example.test", hostOnly: true })],
+    localStorage: [{ key: "flag", value: "uat" }]
+  });
+  const current = { cookies: [], localStorage: [], sessionStorage: [] };
+
+  const blocked = buildSiteDataImportPreview(dataPackage, current, {
+    targetUrl: "https://prod.example.test/page"
+  });
+  assert.equal(blocked.counts.unsupported, 2);
+
+  const mapped = buildSiteDataImportPreview(dataPackage, current, {
+    targetUrl: "https://prod.example.test/page",
+    mapSourceToTarget: true
+  });
+  assert.equal(mapped.counts.new, 2);
+  assert.equal(mapped.items[0].incoming.domain, "prod.example.test");
+  assert.equal(mapped.items[1].incoming.origin, "https://prod.example.test");
+});
+
+test("marks predictable browser-rejected cookie combinations as unsupported", () => {
+  const dataPackage = createSiteDataPackage({
+    url: "https://example.com/",
+    cookies: [
+      cookieFixture({ name: "same-site", sameSite: "no_restriction", secure: false }),
+      cookieFixture({ name: "expired", session: false, expirationDate: 1 })
+    ]
+  });
+  const preview = buildSiteDataImportPreview(dataPackage, {
+    cookies: [],
+    localStorage: [],
+    sessionStorage: []
+  }, { targetUrl: "https://example.com/" });
+
+  assert.equal(preview.counts.unsupported, 2);
+  assert.match(preview.items[0].reason, /require Secure/);
+  assert.match(preview.items[1].reason, /in the past/);
+});
+
+test("plans overwrite, skip, and add-only conflict strategies", () => {
+  const preview = {
+    items: [
+      { id: "new", status: "new", writeable: true },
+      { id: "modified", status: "modified", writeable: true },
+      { id: "conflict", status: "conflict", writeable: true },
+      { id: "same", status: "same", writeable: false, reason: "No changes." }
+    ]
+  };
+  const selectedIds = preview.items.map((item) => item.id);
+
+  assert.deepEqual(
+    planSiteDataImport(preview, { strategy: "overwrite", selectedIds }).write.map((item) => item.id),
+    ["new", "modified", "conflict"]
+  );
+  assert.deepEqual(
+    planSiteDataImport(preview, { strategy: "skip", selectedIds }).write.map((item) => item.id),
+    ["new"]
+  );
+  assert.deepEqual(
+    planSiteDataImport(preview, { strategy: "add-only", selectedIds }).write.map((item) => item.id),
+    ["new"]
+  );
+});
+
+test("creates profiles with prompt variables without persisting captured values", () => {
+  const dataPackage = createSiteDataPackage({
+    url: "https://example.com/",
+    cookies: [cookieFixture({ value: "user=42&mode=off" })],
+    localStorage: [{ key: "user", value: "42" }]
+  });
+  const variables = parseVariableCaptures("!userId=42\nmode=off");
+  const profile = createSiteProfile({
+    name: "QA account",
+    description: "Reusable state",
+    tags: "uat, account",
+    dataPackage,
+    variables
+  });
+  const serialized = JSON.stringify(profile);
+
+  assert.doesNotMatch(serialized, /capturedValue/);
+  assert.doesNotMatch(serialized, /user=42/);
+  assert.match(profile.dataPackage.data.cookies[0].value, /\$\{userId\}/);
+  assert.equal(profile.variables[0].promptOnApply, true);
+  assert.equal(Object.hasOwn(profile.variables[0], "defaultValue"), false);
+
+  const resolved = resolveSiteProfileVariables(profile, { userId: "108" });
+  assert.equal(resolved.data.cookies[0].value, "user=108&mode=off");
+  assert.equal(resolved.data.localStorage[0].value, "108");
+  assert.throws(() => resolveSiteProfileVariables(profile), /Enter a value for userId/);
+});
+
+test("ignores malformed stored profiles without hiding valid profiles", () => {
+  const valid = createSiteProfile({
+    name: "Valid",
+    dataPackage: createSiteDataPackage({ url: "https://example.com/" })
+  });
+  assert.deepEqual(normalizeSiteProfiles([{ name: "broken" }, valid]), [valid]);
+});
+
+test("reports batch progress while yielding between chunks", async () => {
+  const progress = [];
+  const result = await executeBatchOperation(
+    Array.from({ length: 25 }, (_, index) => ({ id: String(index) })),
+    async (item) => item.id,
+    {
+      yieldEvery: 10,
+      onProgress: ({ completed, total }) => progress.push([completed, total])
+    }
+  );
+  assert.equal(result.success.length, 25);
+  assert.deepEqual(progress.at(-1), [25, 25]);
+});
+
+function cookieFixture(overrides = {}) {
+  return {
+    name: "token",
+    value: "value",
+    domain: "example.com",
+    path: "/",
+    session: true,
+    secure: false,
+    httpOnly: false,
+    sameSite: "lax",
+    storeId: "0",
+    hostOnly: true,
+    ...overrides
+  };
+}

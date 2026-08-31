@@ -16,7 +16,9 @@ Cookie Controller 是一款面向开发者、测试人员和高级用户的站�
 - 查看、添加、修改和删除 Local Storage 与 Session Storage 数据。
 - 收藏常用的 Cookie、Local Storage 和 Session Storage 项，并在对应列表中置顶显示。
 - 在当前浏览器窗口的多个 HTTP/HTTPS 标签页之间快速切换管理目标。
-- 以 JSON 或 name=value 格式导入、导出和复制站点数据。
+- 将 Cookie、Local Storage 和 Session Storage 导出为版本化 JSON 数据包，并通过差异预览、冲突策略、逐项结果和整批撤销安全导入。
+- 以常用的 Netscape/cURL cookie jar 格式导入和导出 Cookie，兼容 HttpOnly 与会话 Cookie 约定；SameSite、Partitioned/CHIPS 和 Cookie store 元数据仅由 JSON 数据包保留。
+- 使用独立的 Name 与 Value 输入框快速导入一条或多条 Cookie；Storage 支持 key=value 单条导入。
 - 一键复制 Cookie 值、name=value 键值对或结构化 JSON。
 - 内置 URL 编码与解码、JSON 格式化与压缩、JWT Payload 解码工具。
 - 将常用值保存为本地模板，方便重复使用。

@@ -9,7 +9,7 @@ export function skipBatchOperation(reason) {
   return { status: "skipped", reason: String(reason || "Skipped") };
 }
 
-export async function executeBatchOperation(items, operate) {
+export async function executeBatchOperation(items, operate, { onProgress, yieldEvery = 10 } = {}) {
   if (!Array.isArray(items)) {
     throw new TypeError("Batch operation items must be an array.");
   }
@@ -18,7 +18,7 @@ export async function executeBatchOperation(items, operate) {
   }
 
   const result = createBatchOperationResult();
-  for (const item of items) {
+  for (const [index, item] of items.entries()) {
     try {
       const value = await operate(item);
       if (value?.status === "skipped") {
@@ -29,6 +29,18 @@ export async function executeBatchOperation(items, operate) {
     } catch (error) {
       addOperationFailure(result, item, error);
     }
+    onProgress?.({
+      completed: index + 1,
+      total: items.length,
+      result
+    });
+    if (yieldEvery > 0 && (index + 1) % yieldEvery === 0 && index + 1 < items.length) {
+      await yieldToHost();
+    }
   }
   return result;
+}
+
+function yieldToHost() {
+  return new Promise((resolve) => setTimeout(resolve, 0));
 }

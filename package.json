@@ -3,6 +3,7 @@
   "scripts": {
     "test": "node --test --test-isolation=none tests/unit/*.test.mjs",
     "test:acceptance": "node scripts/acceptance-extension.mjs",
+    "test:acceptance:v030": "node scripts/acceptance-extension.mjs --v030-only",
     "verify:m4": "node scripts/verify-milestone-4.mjs"
   },
   "devDependencies": {

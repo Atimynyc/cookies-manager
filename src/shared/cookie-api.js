@@ -59,26 +59,51 @@ export async function setCookieValue(url, cookie, value, overrides = {}) {
   const expirationDate = Object.hasOwn(overrides, "expirationDate")
     ? overrides.expirationDate
     : cookie.expirationDate;
+  return setCookieData(url, {
+    ...cookie,
+    ...overrides,
+    value,
+    session,
+    expirationDate
+  });
+}
+
+export async function setCookieData(url, cookie) {
+  if (!isSupportedPageUrl(url)) {
+    throw new Error("Only http:// and https:// pages support cookie operations.");
+  }
+
   const details = {
     url,
     name: cookie.name,
-    value,
-    path: cookie.path,
-    secure: cookie.secure,
-    httpOnly: cookie.httpOnly,
-    sameSite: cookie.sameSite,
-    storeId: cookie.storeId
+    value: String(cookie.value),
+    path: cookie.path || "/"
   };
+
+  for (const field of ["secure", "httpOnly"]) {
+    if (typeof cookie[field] === "boolean") {
+      details[field] = cookie[field];
+    }
+  }
+  if (typeof cookie.sameSite === "string" && cookie.sameSite) {
+    details.sameSite = cookie.sameSite;
+  }
+  if (typeof cookie.storeId === "string" && cookie.storeId) {
+    details.storeId = cookie.storeId;
+  }
 
   if (!cookie.hostOnly) {
     details.domain = cookie.domain;
   }
 
+  const session = Object.hasOwn(cookie, "session")
+    ? Boolean(cookie.session)
+    : !Number.isFinite(cookie.expirationDate);
   if (!session) {
-    if (!Number.isFinite(expirationDate)) {
+    if (!Number.isFinite(cookie.expirationDate)) {
       throw new Error("A persistent cookie requires a valid expiration date.");
     }
-    details.expirationDate = expirationDate;
+    details.expirationDate = cookie.expirationDate;
   }
 
   if (cookie.partitionKey) {

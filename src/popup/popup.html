@@ -151,11 +151,17 @@
                 <path d="M12 15V3" />
               </svg>
             </button>
-            <button class="table-action-button" id="importButton" type="button" aria-label="Import name=value" data-tooltip="Import name=value">
+            <button class="table-action-button" id="importButton" type="button" aria-label="Import" data-tooltip="Import">
               <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <path d="m17 8-5-5-5 5" />
                 <path d="M12 3v12" />
+              </svg>
+            </button>
+            <button class="table-action-button" id="profilesButton" type="button" aria-label="Profiles" data-tooltip="Profiles">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 5h18v14H3z" />
+                <path d="M3 9h18M10 13h4" />
               </svg>
             </button>
           </div>
@@ -386,6 +392,317 @@
           <button class="primary-button" id="templateDialogApplyButton" type="submit" value="apply">Apply</button>
         </div>
       </form>
+    </dialog>
+
+    <dialog class="app-dialog workbench-dialog" id="workbenchDialog" aria-labelledby="workbenchTitle">
+      <div class="workbench-shell">
+        <header class="workbench-header">
+          <div>
+            <h2 id="workbenchTitle">Import</h2>
+            <span id="workbenchTarget"></span>
+          </div>
+          <button class="workbench-close" id="workbenchCloseButton" type="button" aria-label="Close" title="Close">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </header>
+
+        <div class="workbench-body">
+          <section class="workbench-view" id="packageImportView" data-workbench-view="import">
+            <div class="package-source" id="packageImportSource">
+              <fieldset class="workbench-format-switch import-format-switch" id="packageImportFormatSwitch" aria-label="Import method">
+                <legend>Import method</legend>
+                <label><input type="radio" name="packageImportFormat" value="quick" checked> Quick entry</label>
+                <label><input type="radio" name="packageImportFormat" value="json"> JSON package</label>
+                <label id="netscapeImportFormatLabel"><input type="radio" name="packageImportFormat" value="netscape"> Netscape / cURL</label>
+              </fieldset>
+
+              <div class="quick-import-fields" id="quickImportFields">
+                <div class="quick-cookie-fields" id="quickEntryFields">
+                  <div class="cookie-import-header">
+                    <strong id="quickEntryTitle">Cookies</strong>
+                    <button class="cookie-import-add" id="quickEntryAddButton" type="button">Add</button>
+                  </div>
+                  <div class="cookie-import-columns" aria-hidden="true">
+                    <span id="quickEntryNameColumn">Name</span>
+                    <span id="quickEntryValueColumn">Value</span>
+                    <span></span>
+                  </div>
+                  <div class="cookie-import-rows" id="quickEntryRows"></div>
+                  <template id="quickEntryRowTemplate">
+                    <div class="cookie-import-row">
+                      <input class="cookie-import-name" type="text" autocomplete="off" spellcheck="false" placeholder="Cookie name">
+                      <input class="cookie-import-value" type="text" autocomplete="off" spellcheck="false" placeholder="Cookie value">
+                      <div class="cookie-import-row-actions">
+                        <button class="cookie-import-remove icon-button" type="button" aria-label="Remove cookie row" title="Remove cookie row">
+                          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+                <p class="workbench-feedback is-error" id="quickImportError" role="alert" hidden></p>
+                <div class="workbench-footer-actions">
+                  <button class="primary-button" id="quickImportButton" type="button">Import</button>
+                </div>
+              </div>
+
+              <div class="package-import-fields" id="packageImportFields" hidden>
+                <p class="workbench-format-note" id="packageImportFormatNote" hidden>Cookies only. Domains from the file must be valid for the current target.</p>
+                <label class="workbench-field" for="packageTextInput">
+                  <span id="packageInputLabel">Package JSON</span>
+                  <textarea id="packageTextInput" spellcheck="false" placeholder="Paste a site data package"></textarea>
+                </label>
+                <div class="workbench-inline-actions">
+                  <div class="package-file-dropzone" id="packageFileDropzone" aria-label="Choose or drop an import file">
+                    <input id="packageFileInput" type="file" accept="application/json,.json" hidden>
+                    <button id="choosePackageFileButton" type="button">Choose file</button>
+                    <span id="packageFileName">or drop a file here</span>
+                  </div>
+                  <button class="primary-button" id="previewPackageButton" type="button">Preview</button>
+                </div>
+                <p class="workbench-feedback is-error" id="packageInputError" role="alert" hidden></p>
+              </div>
+            </div>
+
+            <div class="package-preview" id="packagePreview" hidden>
+              <div class="package-preview-header">
+                <div>
+                  <strong id="packagePreviewSource"></strong>
+                  <span id="packagePreviewTarget"></span>
+                </div>
+                <button id="changePackageSourceButton" type="button">Change source</button>
+              </div>
+              <label class="mapping-toggle" id="packageMappingControl" hidden>
+                <input id="packageMappingToggle" type="checkbox">
+                <span>Map source origin to current target</span>
+              </label>
+              <div class="preview-counts" id="packagePreviewCounts"></div>
+              <div class="preview-toolbar">
+                <label>
+                  <input id="packageSelectAll" type="checkbox">
+                  <span id="packageSelectionCount">0 selected</span>
+                </label>
+                <label class="strategy-field" for="packageConflictStrategy">
+                  <span>Conflicts</span>
+                  <select id="packageConflictStrategy">
+                    <option value="overwrite">Overwrite</option>
+                    <option value="skip">Skip</option>
+                    <option value="add-only">Add only</option>
+                    <option value="individual">Individual</option>
+                  </select>
+                </label>
+              </div>
+              <div class="preview-list" id="packagePreviewList"></div>
+              <div class="workbench-footer-actions">
+                <button class="primary-button" id="applyPackageButton" type="button">Apply selected</button>
+              </div>
+            </div>
+
+            <div class="package-result" id="packageResult" hidden>
+              <div class="result-summary">
+                <strong id="packageResultTitle">Import complete</strong>
+                <span id="packageResultSummary"></span>
+              </div>
+              <progress id="packageProgress" max="1" value="0"></progress>
+              <div class="result-list" id="packageResultList"></div>
+              <div class="workbench-footer-actions">
+                <button id="undoPackageButton" type="button" hidden>Undo batch</button>
+                <button id="importAnotherButton" type="button">Import another</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="workbench-view" id="packageExportView" data-workbench-view="export" hidden>
+            <fieldset class="workbench-format-switch export-format-switch" id="packageExportFormatSwitch" aria-label="Export format">
+              <legend>Format</legend>
+              <label><input type="radio" name="packageExportFormat" value="json" checked> JSON package</label>
+              <label id="netscapeExportFormatLabel"><input type="radio" name="packageExportFormat" value="netscape"> Netscape / cURL</label>
+            </fieldset>
+            <fieldset class="option-group">
+              <legend>Export scope</legend>
+              <label><input id="currentExportScope" type="radio" name="exportScope" value="current" checked> <span id="currentExportScopeLabel">Current view(Cookies)</span></label>
+              <label><input id="selectedExportScope" type="radio" name="exportScope" value="selected"> <span>Selected items</span><span class="export-scope-count" id="selectedExportScopeCount">0</span></label>
+              <label><input id="allExportScope" type="radio" name="exportScope" value="all"> <span id="allExportScopeLabel">All site data</span></label>
+            </fieldset>
+            <section class="export-selection" id="exportSelectionPanel" aria-label="Select items to export" hidden>
+              <div class="export-selection-header">
+                <strong>Select items to export</strong>
+                <span id="exportSelectionCount">0 selected</span>
+                <button class="export-selection-toggle" id="exportSelectionToggleButton" type="button" aria-expanded="false">
+                  <span>Choose items</span>
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                </button>
+              </div>
+              <div id="exportSelectionBody" hidden>
+                <div class="export-selection-toolbar">
+                  <label>
+                    <input id="exportSelectAllCheckbox" type="checkbox">
+                    <span>Select all visible</span>
+                  </label>
+                  <input id="exportSelectionSearch" type="search" autocomplete="off" spellcheck="false" placeholder="Filter items" aria-label="Filter items to export">
+                </div>
+                <div class="export-selection-list" id="exportSelectionList"></div>
+                <p class="export-selection-empty" id="exportSelectionEmpty" hidden>No items in the current view</p>
+              </div>
+            </section>
+            <div class="workbench-field export-preview">
+              <div class="export-preview-header">
+                <label class="export-preview-heading" for="packageExportPreview">
+                  <span>Preview</span>
+                  <span class="export-preview-summary" id="packageExportSummary"></span>
+                </label>
+                <div class="export-preview-actions">
+                  <button class="icon-button export-preview-action" id="copyPackageButton" type="button" aria-label="Copy JSON" data-tooltip="Copy JSON">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <rect width="14" height="14" x="8" y="8" rx="2" />
+                      <path d="M16 8V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4" />
+                    </svg>
+                  </button>
+                  <button class="icon-button export-preview-action primary-button" id="savePackageButton" type="button" aria-label="Save JSON" data-tooltip="Save JSON">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <path d="m7 10 5 5 5-5" />
+                      <path d="M12 15V3" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <textarea id="packageExportPreview" readonly spellcheck="false" aria-label="Export preview">Preparing preview...</textarea>
+            </div>
+            <p class="workbench-feedback" id="packageExportFeedback" role="status" hidden></p>
+          </section>
+
+          <section class="workbench-view profiles-view" id="profilesView" data-workbench-view="profiles" hidden>
+            <div class="profiles-toolbar">
+              <div>
+                <div class="profiles-title-row">
+                  <strong>Site profiles</strong>
+                  <button class="profile-help-button" id="profileHelpButton" type="button" aria-label="How site profiles work" data-tooltip="How profiles work">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M9.1 9a3 3 0 1 1 5.8 1c0 2-2.9 2-2.9 4" />
+                      <path d="M12 17h.01" />
+                    </svg>
+                  </button>
+                </div>
+                <span id="profileCount">0 saved</span>
+              </div>
+              <button class="primary-button" id="newProfileButton" type="button">New profile</button>
+            </div>
+            <div class="profile-list" id="profileList"></div>
+            <div class="profile-empty" id="profileEmpty">No saved profiles</div>
+
+            <form class="profile-form" id="profileForm" hidden>
+              <div class="profile-form-grid">
+                <label class="workbench-field">
+                  <span>Name</span>
+                  <input id="profileNameInput" type="text" maxlength="80" required>
+                </label>
+                <label class="workbench-field">
+                  <span>Tags</span>
+                  <input id="profileTagsInput" type="text" maxlength="160" placeholder="uat, account-a">
+                </label>
+                <label class="workbench-field is-wide">
+                  <span>Description</span>
+                  <input id="profileDescriptionInput" type="text" maxlength="240">
+                </label>
+                <label class="workbench-field">
+                  <span>Capture</span>
+                  <select id="profileScopeSelect">
+                    <option value="current">Current view</option>
+                    <option value="selected">Selected items</option>
+                    <option value="all">All site data</option>
+                  </select>
+                </label>
+                <label class="workbench-field">
+                  <span>Default conflicts</span>
+                  <select id="profileStrategySelect">
+                    <option value="overwrite">Overwrite</option>
+                    <option value="skip">Skip</option>
+                    <option value="add-only">Add only</option>
+                    <option value="individual">Individual</option>
+                  </select>
+                </label>
+                <label class="workbench-field is-wide">
+                  <span>Variables</span>
+                  <textarea id="profileVariablesInput" spellcheck="false" placeholder="!userId=current-value&#10;grayFlag=off"></textarea>
+                </label>
+              </div>
+              <p class="workbench-feedback is-error" id="profileFormError" role="alert" hidden></p>
+              <div class="workbench-footer-actions">
+                <button id="cancelProfileButton" type="button">Cancel</button>
+                <button class="primary-button" type="submit">Save profile</button>
+              </div>
+            </form>
+
+            <div class="profile-apply" id="profileApplyPanel" hidden>
+              <div class="profile-apply-header">
+                <div>
+                  <strong id="profileApplyName"></strong>
+                  <span>Apply profile</span>
+                </div>
+                <button id="cancelProfileApplyButton" type="button">Cancel</button>
+              </div>
+              <div class="profile-variable-inputs" id="profileVariableInputs"></div>
+              <label class="mapping-toggle" id="profileMappingControl" hidden>
+                <input id="profileMappingToggle" type="checkbox">
+                <span>Map profile origin to current target</span>
+              </label>
+              <p class="workbench-feedback is-error" id="profileApplyError" role="alert" hidden></p>
+              <div class="workbench-footer-actions">
+                <button class="primary-button" id="previewProfileButton" type="button">Preview changes</button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <dialog class="app-dialog profile-help-dialog" id="profileHelpDialog" aria-labelledby="profileHelpTitle" aria-describedby="profileHelpIntro" tabindex="-1">
+        <form method="dialog">
+          <div class="app-dialog-body profile-help-body" id="profileHelpBody">
+            <div>
+              <h2 id="profileHelpTitle">How site profiles work</h2>
+              <p id="profileHelpIntro">A profile saves a reusable snapshot of Cookies, Local Storage, and Session Storage for a site.</p>
+            </div>
+
+            <section class="profile-help-section">
+              <h3>Create a profile</h3>
+              <ol>
+                <li>Open the site state you want to reuse, then select <strong>New profile</strong>.</li>
+                <li>Choose the capture scope: the current data view, selected items, or all site data.</li>
+                <li>Add optional variables, then save. Profiles stay in this browser unless you export them.</li>
+              </ol>
+            </section>
+
+            <section class="profile-help-section">
+              <h3>Variables</h3>
+              <p>Enter one captured value per line. Matching values in the saved data are replaced with a variable.</p>
+              <dl class="profile-help-examples">
+                <dt><code>userId=42</code></dt>
+                <dd>Prefills <code>42</code> when applying the profile.</dd>
+                <dt><code>!userId=42</code></dt>
+                <dd>Asks for the value every time and does not store <code>42</code> in the profile.</dd>
+              </dl>
+            </section>
+
+            <section class="profile-help-section">
+              <h3>Apply a profile</h3>
+              <ol>
+                <li>Select <strong>Apply</strong> and enter any requested variables.</li>
+                <li>For a different origin, explicitly enable origin mapping.</li>
+                <li>Preview the changes and conflict handling before applying them.</li>
+              </ol>
+            </section>
+          </div>
+          <div class="app-dialog-actions">
+            <button class="primary-button" id="profileHelpCloseButton" type="button">Close</button>
+          </div>
+        </form>
+      </dialog>
     </dialog>
   </body>
 </html>

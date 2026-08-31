@@ -1,10 +1,19 @@
 export function createDialogController(elements) {
-  function requestConfirmation({ title, message, detail = "" }) {
+  function requestConfirmation({
+    title,
+    message,
+    detail = "",
+    confirmLabel = "Delete",
+    danger = true
+  }) {
     const previouslyFocused = document.activeElement;
     elements.confirmDialogTitle.textContent = title;
     elements.confirmDialogMessage.textContent = message;
     elements.confirmDialogDetail.textContent = detail;
     elements.confirmDialogDetail.hidden = !detail;
+    elements.confirmDialogDeleteButton.textContent = confirmLabel;
+    elements.confirmDialogDeleteButton.classList.toggle("confirm-dialog-delete", danger);
+    elements.confirmDialogDeleteButton.classList.toggle("primary-button", !danger);
     elements.confirmDialog.returnValue = "cancel";
 
     return new Promise((resolve) => {

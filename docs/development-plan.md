@@ -574,6 +574,27 @@ MVP 完成时至少满足：
 - Storage 搜索、复制、导入导出和辅助解析工具可正常使用。
 - 特殊页面或缺少站点权限时能显示可理解的错误。
 
+### Milestone 7：数据包与配置组（v0.3.0）
+
+交付内容：
+
+- 版本化站点数据包的当前视图、选中项和全部数据导出。
+- JSON 文件或文本导入、写入前差异预览和逐项选择。
+- Cookie 专用 Netscape/cURL 七列格式导入导出，支持 `#HttpOnly_`、Unix 秒过期时间和会话 Cookie。
+- 覆盖、跳过、仅新增和逐项选择冲突策略。
+- Cookie、Local Storage、Session Storage 的统一批量进度、逐项结果和会话内整批撤销。
+- 配置组创建、重命名、复制、删除、导出和应用。
+- 相同 origin 默认约束、显式跨 origin 映射和应用时变量。
+
+验收：
+
+- 三类数据完成导出后导入的往返操作。
+- Netscape/cURL Cookie 文件可自动识别并完成预览、写入和整批撤销；界面明确说明不包含 SameSite、Partitioned/CHIPS 和 Cookie store。
+- 无效数据包不触发任何写入，同名不同作用域 Cookie 不会互相覆盖。
+- 部分失败显示准确项目和 Chrome API 原始原因。
+- 配置组与完整撤销数据仅按声明保存在浏览器本地或当前浏览器会话中。
+- Popup 和 Side Panel 的独立 Import、Export、Profiles 界面均通过 Playwright 截图检查。
+
 ## 10. 风险点与应对
 
 ### 10.1 权限过大导致用户不信任
@@ -636,7 +657,7 @@ MVP 完成时至少满足：
 - 插件名称使用中文还是英文？
 - 是否只面向内部团队使用，还是计划发布到 Chrome Web Store？
 - 第一版是否允许申请 `<all_urls>`，还是坚持最小权限策略？
-- 是否需要支持批量导入导出？
+- 批量导入导出已在 v0.3.0 完成；后续只评估完全同步和跨环境高级映射。
 - 是否需要给 Cookie value 做脱敏展示？
 - 是否需要给 Storage value 做脱敏展示？
 - 是否需要支持跨域 iframe 的 Local Storage / Session Storage？

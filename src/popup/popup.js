@@ -6,6 +6,7 @@ import {
   openSidePanel,
   reloadTab,
   removeCookie,
+  setCookieData,
   setCookiePair,
   setCookieValue,
   watchCookieChanges
@@ -58,9 +59,36 @@ import {
 } from "../shared/recent-changes.js";
 import { getDisplayHost, getSiteOrigin, isSupportedPageUrl } from "../shared/url.js";
 import { getAutoValueToolOutput } from "../shared/value-tools.js";
-import { parseNameValuePair } from "../shared/pair-parser.js";
+import { createCookiePair, createStoragePair } from "../shared/pair-parser.js";
 import { executeBatchOperation } from "../shared/batch-operations.js";
-import { getBatchOperationCounts } from "../shared/operation-result.js";
+import {
+  addOperationSkip,
+  createBatchOperationResult,
+  getBatchOperationCounts
+} from "../shared/operation-result.js";
+import {
+  createSiteDataPackage,
+  parseSiteDataPackage
+} from "../shared/site-data-package.js";
+import {
+  buildSiteDataImportPreview,
+  planSiteDataImport
+} from "../shared/site-data-import.js";
+import {
+  createSiteProfile,
+  duplicateSiteProfile,
+  renameSiteProfile,
+  resolveSiteProfileVariables
+} from "../shared/site-profiles.js";
+import {
+  getSiteProfiles,
+  saveSiteProfiles
+} from "../shared/site-profile-store.js";
+import {
+  clearLatestBatchSnapshot,
+  getLatestBatchSnapshot,
+  saveLatestBatchSnapshot
+} from "../shared/batch-snapshot-store.js";
 import {
   clampColumnWidth,
   COLUMN_CSS_VARS,
@@ -72,11 +100,16 @@ import {
   normalizeValueToolMode,
   VALUE_TOOL_DEFINITIONS
 } from "./popup-config.js";
-import { readSiteDataRows, resolveCookieStoreId } from "./popup-data-service.js";
+import {
+  readAllSiteDataRows,
+  readSiteDataRows,
+  resolveCookieStoreId
+} from "./popup-data-service.js";
 import { cancelDialogFromBackdrop, createDialogController } from "./popup-dialogs.js";
 import { createClipboardFeedback, createStatusController, writeClipboard } from "./popup-feedback.js";
 import { renderDataTable } from "./popup-table-view.js";
 import { createHistoryView } from "./popup-history-view.js";
+import { createSiteDataWorkbench } from "./popup-workbench.js";
 
 const state = {
   tab: null,
@@ -132,6 +165,7 @@ const elements = {
   batchDeleteButton: document.querySelector("#batchDeleteButton"),
   exportButton: document.querySelector("#exportButton"),
   importButton: document.querySelector("#importButton"),
+  profilesButton: document.querySelector("#profilesButton"),
   cookieTableBody: document.querySelector("#cookieTableBody"),
   loadingState: document.querySelector("#loadingState"),
   emptyState: document.querySelector("#emptyState"),
@@ -178,6 +212,7 @@ const elements = {
   confirmDialogTitle: document.querySelector("#confirmDialogTitle"),
   confirmDialogMessage: document.querySelector("#confirmDialogMessage"),
   confirmDialogDetail: document.querySelector("#confirmDialogDetail"),
+  confirmDialogDeleteButton: document.querySelector("#confirmDialogDeleteButton"),
   textInputDialog: document.querySelector("#textInputDialog"),
   textInputDialogForm: document.querySelector("#textInputDialogForm"),
   textInputDialogTitle: document.querySelector("#textInputDialogTitle"),
@@ -189,6 +224,7 @@ const elements = {
   templateDialogOptions: document.querySelector("#templateDialogOptions"),
   templateDialogFeedback: document.querySelector("#templateDialogFeedback"),
   templateDialogApplyButton: document.querySelector("#templateDialogApplyButton"),
+  workbenchDialog: document.querySelector("#workbenchDialog"),
   dialogCancelButtons: Array.from(document.querySelectorAll("[data-dialog-cancel]")),
   historyList: document.querySelector("#historyList"),
   historyEmpty: document.querySelector("#historyEmpty"),
@@ -203,10 +239,10 @@ const elements = {
   historyDetailNote: document.querySelector("#historyDetailNote")
 };
 
-const {
-  requestConfirmation: requestDeleteConfirmation,
-  requestTextInput
-} = createDialogController(elements);
+const dialogController = createDialogController(elements);
+const requestConfirmation = dialogController.requestConfirmation;
+const requestDeleteConfirmation = dialogController.requestConfirmation;
+const requestTextInput = dialogController.requestTextInput;
 const { showStatus, clearStatus } = createStatusController(elements);
 const { showCopyFeedback, resetCopyFeedback } = createClipboardFeedback(elements.copyAnnouncement);
 const {
@@ -220,6 +256,26 @@ const {
   getHistoryItemKind,
   onSelectHistoryView: () => setActiveDetailView("history"),
   onUndo: undoRecentChange
+});
+const workbench = createSiteDataWorkbench({
+  dialog: elements.workbenchDialog,
+  getContext: getWorkbenchContext,
+  onPreview: previewSiteDataPackage,
+  onApply: applySiteDataPackage,
+  onUndo: undoLatestSiteDataBatch,
+  onQuickImport: importQuickEntries,
+  onBuildPackage: buildSiteDataExportForScope,
+  onExportSelectionChange: updateExportSelection,
+  onCopy: writeClipboard,
+  onSaveJson: saveJsonFile,
+  onSaveText: saveTextFile,
+  onLoadProfiles: getSiteProfiles,
+  onCreateProfile: createProfileFromCurrentSite,
+  onRenameProfile: renameSavedProfile,
+  onDuplicateProfile: duplicateSavedProfile,
+  onDeleteProfile: deleteSavedProfile,
+  onExportProfile: exportSavedProfile,
+  onResolveProfile: resolveSiteProfileVariables
 });
 
 const popupParams = new URLSearchParams(location.search);
@@ -287,8 +343,9 @@ function bindEvents() {
   elements.selectAllCheckbox.addEventListener("change", toggleSelectAllVisible);
   elements.batchEditButton.addEventListener("click", batchEditSelected);
   elements.batchDeleteButton.addEventListener("click", batchDeleteSelected);
-  elements.exportButton.addEventListener("click", exportCurrentData);
-  elements.importButton.addEventListener("click", importPairFromInput);
+  elements.exportButton.addEventListener("click", () => workbench.open("export"));
+  elements.importButton.addEventListener("click", () => workbench.open("import"));
+  elements.profilesButton.addEventListener("click", () => workbench.open("profiles"));
   elements.searchInput.addEventListener("input", () => {
     state.searchQuery = elements.searchInput.value.trim().toLowerCase();
     renderTable();
@@ -335,7 +392,11 @@ function bindEvents() {
   });
   elements.clearHistoryButton.addEventListener("click", clearHistory);
   elements.closeHistoryDetailButton.addEventListener("click", clearHistoryDetail);
-  for (const dialog of [elements.confirmDialog, elements.textInputDialog, elements.templateDialog]) {
+  for (const dialog of [
+    elements.confirmDialog,
+    elements.textInputDialog,
+    elements.templateDialog
+  ]) {
     dialog.addEventListener("click", cancelDialogFromBackdrop);
   }
   for (const button of elements.dialogCancelButtons) {
@@ -779,60 +840,317 @@ async function copySelected(mode, feedbackButton) {
   }
 }
 
-async function exportCurrentData() {
-  if (!state.tab?.url || !isSupportedPageUrl(state.tab.url)) {
-    showStatus(`Open an http:// or https:// page before exporting ${getCurrentView().plural}.`, "error");
-    return;
-  }
-
-  const view = getCurrentView();
-  const payload = {
-    url: state.tab.url,
-    host: getDisplayHost(state.tab.url),
-    type: state.dataView,
-    exportedAt: new Date().toISOString(),
-    count: state.rows.length,
-    [view.exportKey]: state.rows.map((row) => row.raw)
+function getWorkbenchContext() {
+  return {
+    targetUrl: state.tab?.url || "",
+    targetLabel: state.tab?.url ? `${getDisplayHost(state.tab.url)} · ${getCurrentView().title}` : "No supported target",
+    currentViewLabel: getCurrentView().title,
+    currentKind: state.dataView,
+    currentCount: state.rows.length,
+    selectedCount: state.selectedIds.size,
+    selectedIds: [...state.selectedIds],
+    currentRows: state.rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      location: getRowLocation(row),
+      kind: state.dataView
+    })),
+    cookieStoreId: state.cookieStoreId
   };
-
-  try {
-    await writeClipboard(JSON.stringify(payload, null, 2));
-    showStatus(`Exported ${state.rows.length} ${state.rows.length === 1 ? view.singular : view.plural} to clipboard.`, "success");
-  } catch (error) {
-    showStatus(error?.message || `Failed to export ${view.plural}.`, "error");
-  }
 }
 
-async function importPairFromInput() {
+function updateExportSelection(ids) {
+  const availableIds = new Set(state.rows.map((row) => row.id));
+  state.selectedIds = new Set(ids.filter((id) => availableIds.has(id)));
+  renderTable();
+}
+
+async function buildSiteDataExportForScope(scope) {
+  const dataPackage = await buildSiteDataPackageForScope(scope);
+  const count = Object.values(dataPackage.data)
+    .reduce((total, items) => total + items.length, 0);
+  return {
+    ...dataPackage,
+    url: state.tab.url,
+    host: getDisplayHost(state.tab.url),
+    type: scope === "all" ? "siteData" : state.dataView,
+    count
+  };
+}
+
+async function buildSiteDataPackageForScope(scope) {
   if (!state.tab?.url || !isSupportedPageUrl(state.tab.url)) {
-    showStatus(`Open an http:// or https:// page before importing ${getCurrentView().plural}.`, "error");
-    return;
+    throw new Error("Open an HTTP or HTTPS page before exporting site data.");
   }
 
-  const pair = await requestImportPair();
-  if (!pair) {
-    return;
+  let rowsByKind;
+  if (scope === "all") {
+    rowsByKind = await readAllSiteDataRows(state.tab, state.cookieStoreId);
+  } else {
+    const rows = scope === "selected" ? getSelectedRows() : state.rows;
+    if (scope === "selected" && rows.length === 0) {
+      throw new Error("Select at least one item before exporting.");
+    }
+    rowsByKind = { cookies: [], localStorage: [], sessionStorage: [] };
+    rowsByKind[state.dataView] = rows;
   }
+
+  return createSiteDataPackage({
+    url: state.tab.url,
+    origin: getSiteOrigin(state.tab.url),
+    cookies: rowsByKind.cookies,
+    localStorage: rowsByKind.localStorage,
+    sessionStorage: rowsByKind.sessionStorage
+  });
+}
+
+async function previewSiteDataPackage(dataPackage, options) {
+  if (!state.tab?.url || !isSupportedPageUrl(state.tab.url)) {
+    throw new Error("Open an HTTP or HTTPS page before importing site data.");
+  }
+  const rows = await readAllSiteDataRows(state.tab, state.cookieStoreId);
+  return buildSiteDataImportPreview(parseSiteDataPackage(dataPackage), {
+    cookies: rows.cookies.map((row) => row.raw),
+    localStorage: rows.localStorage.map((row) => row.raw),
+    sessionStorage: rows.sessionStorage.map((row) => row.raw)
+  }, {
+    targetUrl: state.tab.url,
+    ...options
+  });
+}
+
+async function applySiteDataPackage(preview, { strategy, selectedIds, onProgress }) {
+  if (!state.tab?.url || !isSupportedPageUrl(state.tab.url)) {
+    throw new Error("The target page is no longer available.");
+  }
+
+  const plan = planSiteDataImport(preview, { strategy, selectedIds });
+  const result = createBatchOperationResult();
+  plan.skipped.forEach(({ item, reason }) => addOperationSkip(result, item, reason));
+  suppressCookieWatcher(Math.max(1500, plan.write.length * 30));
+
+  const executed = await executeBatchOperation(plan.write, writeImportedSiteDataItem, {
+    onProgress,
+    yieldEvery: 10
+  });
+  result.success.push(...executed.success);
+  result.failed.push(...executed.failed);
+
+  const entries = executed.success.map((entry, index) => ({
+    id: `${Date.now()}-${index}-${entry.item.id}`,
+    kind: entry.item.kind,
+    name: entry.item.name,
+    before: entry.item.current,
+    after: entry.value
+  }));
+  if (entries.length > 0) {
+    await saveLatestBatchSnapshot({
+      id: `${Date.now()}-site-data-import`,
+      createdAt: new Date().toISOString(),
+      targetUrl: state.tab.url,
+      targetOrigin: getSiteOrigin(state.tab.url),
+      tabId: state.tab.id,
+      entries
+    });
+  }
+
+  await refreshData();
+  if (state.autoRefreshPage && entries.length > 0) {
+    await reloadTab(state.tab.id);
+  }
+  showBatchImportStatus(result);
+  return { result, canUndo: entries.length > 0 };
+}
+
+async function writeImportedSiteDataItem(item) {
+  if (item.kind === "cookies") {
+    return setCookieData(state.tab.url, item.incoming);
+  }
+  const storageType = item.kind === "sessionStorage" ? "session" : "local";
+  return setStorageValue(
+    state.tab.id,
+    state.tab.url,
+    storageType,
+    item.incoming.key,
+    item.incoming.value
+  );
+}
+
+async function undoLatestSiteDataBatch({ onProgress } = {}) {
+  const snapshot = await getLatestBatchSnapshot();
+  if (!snapshot || snapshot.entries.length === 0) {
+    throw new Error("No import snapshot is available in this browser session.");
+  }
+  if (!state.tab?.url || snapshot.tabId !== state.tab.id || snapshot.targetOrigin !== getSiteOrigin(state.tab.url)) {
+    throw new Error("Return to the original target tab before undoing this import.");
+  }
+
+  suppressCookieWatcher(Math.max(1500, snapshot.entries.length * 30));
+  const entries = [...snapshot.entries].reverse();
+  const result = await executeBatchOperation(entries, undoImportedSiteDataItem, {
+    onProgress,
+    yieldEvery: 10
+  });
+  const failedIds = new Set(result.failed.map((entry) => entry.item.id));
+  const remainingEntries = snapshot.entries.filter((entry) => failedIds.has(entry.id));
+  if (remainingEntries.length > 0) {
+    await saveLatestBatchSnapshot({ ...snapshot, entries: remainingEntries });
+  } else {
+    await clearLatestBatchSnapshot();
+  }
+
+  await refreshData();
+  if (state.autoRefreshPage) {
+    await reloadTab(state.tab.id);
+  }
+  showStatus(
+    remainingEntries.length > 0
+      ? `Undo restored ${result.success.length} items; ${result.failed.length} failed.`
+      : `Undid ${result.success.length} imported items.`,
+    remainingEntries.length > 0 ? "error" : "success"
+  );
+  return { result, complete: remainingEntries.length === 0 };
+}
+
+async function undoImportedSiteDataItem(entry) {
+  if (entry.before) {
+    if (entry.kind === "cookies") {
+      return setCookieData(state.tab.url, entry.before);
+    }
+    return setStorageValue(
+      state.tab.id,
+      state.tab.url,
+      entry.kind === "sessionStorage" ? "session" : "local",
+      entry.before.key,
+      entry.before.value
+    );
+  }
+
+  if (entry.kind === "cookies") {
+    await removeCookie(state.tab.url, entry.after);
+  } else {
+    await removeStorageItem(
+      state.tab.id,
+      state.tab.url,
+      entry.kind === "sessionStorage" ? "session" : "local",
+      entry.after.key
+    );
+  }
+  return null;
+}
+
+function showBatchImportStatus(result) {
+  const counts = getBatchOperationCounts(result);
+  const summary = `${counts.success} written, ${counts.failed} failed, ${counts.skipped} skipped.`;
+  showStatus(summary, counts.failed ? "error" : counts.success ? "success" : "warning");
+}
+
+async function createProfileFromCurrentSite(options) {
+  const dataPackage = await buildSiteDataPackageForScope(options.scope);
+  const profile = createSiteProfile({
+    name: options.name,
+    description: options.description,
+    tags: options.tags,
+    dataPackage,
+    defaultConflictStrategy: options.defaultConflictStrategy,
+    variables: options.variables
+  });
+  const profiles = await getSiteProfiles();
+  return saveSiteProfiles([profile, ...profiles]);
+}
+
+async function renameSavedProfile(profile) {
+  const name = await requestTextInput({
+    title: "Rename profile",
+    fieldLabel: "Profile name",
+    initialValue: profile.name,
+    submitLabel: "Rename",
+    selectValue: true,
+    validate: (value) => {
+      const trimmed = value.trim();
+      if (!trimmed) {
+        throw new Error("Enter a profile name.");
+      }
+      return trimmed;
+    }
+  });
+  const profiles = await getSiteProfiles();
+  if (name === null) {
+    return profiles;
+  }
+  return saveSiteProfiles(profiles.map((item) => item.id === profile.id ? renameSiteProfile(item, name) : item));
+}
+
+async function duplicateSavedProfile(profile) {
+  const profiles = await getSiteProfiles();
+  return saveSiteProfiles([duplicateSiteProfile(profile), ...profiles]);
+}
+
+async function deleteSavedProfile(profile) {
+  const confirmed = await requestDeleteConfirmation({
+    title: "Delete profile?",
+    message: `"${profile.name}" will be permanently deleted.`,
+    detail: profile.source.origin
+  });
+  const profiles = await getSiteProfiles();
+  if (!confirmed) {
+    return profiles;
+  }
+  return saveSiteProfiles(profiles.filter((item) => item.id !== profile.id));
+}
+
+async function exportSavedProfile(profile) {
+  const fileName = `${profile.name.replace(/[^a-z0-9.-]+/gi, "-") || "site-profile"}.json`;
+  await saveJsonFile({ profileSchemaVersion: 1, profile }, fileName);
+}
+
+async function saveJsonFile(value, fileName) {
+  await saveTextFile(JSON.stringify(value, null, 2), fileName, "application/json");
+}
+
+async function saveTextFile(text, fileName, mimeType = "text/plain;charset=utf-8") {
+  const blob = new Blob([text], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  link.click();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function importQuickEntries(input) {
+  if (!state.tab?.url || !isSupportedPageUrl(state.tab.url)) {
+    throw new Error(`Open an http:// or https:// page before importing ${getCurrentView().plural}.`);
+  }
+
+  const pairs = validateQuickInputRows(input, isCookieView() ? "cookie" : "storage");
 
   setBusy(true);
   clearStatus();
-  suppressCookieWatcher();
+  suppressCookieWatcher(Math.max(1500, pairs.length * 30));
 
   try {
-    const previousRow = findLikelyImportedRow(pair.name);
-    const importedRow = await importPair(pair);
-    await safelyRecordImportChange(importedRow, pair.value, previousRow);
-    state.selectedId = importedRow.id;
-    rememberCurrentSelection();
+    const previousRows = new Map(pairs.map((pair) => [pair.name, findLikelyImportedRow(pair.name)]));
+    const result = await executeBatchOperation(pairs, async (pair) => {
+      const importedRow = await importPair(pair);
+      await safelyRecordImportChange(importedRow, pair.value, previousRows.get(pair.name));
+      return importedRow;
+    });
+    const lastImportedRow = result.success.at(-1)?.value;
+    if (lastImportedRow) {
+      state.selectedId = lastImportedRow.id;
+      rememberCurrentSelection();
+    }
     await refreshData();
 
-    if (state.autoRefreshPage) {
+    if (state.autoRefreshPage && result.success.length > 0) {
       await reloadTab(state.tab.id);
     }
 
-    showStatus(`Imported ${pair.name}.`, "success");
+    showImportStatus(pairs, result);
   } catch (error) {
     showStatus(error?.message || `Failed to import ${getCurrentView().singular}.`, "error");
+    throw error;
   } finally {
     setBusy(false);
   }
@@ -895,21 +1213,86 @@ async function applyCookieTemplate() {
     return;
   }
 
+  if (template.name && template.name !== row.name) {
+    const confirmed = await requestConfirmation({
+      title: "Apply to a different cookie?",
+      message: `This template was saved for "${template.name}", but "${row.name}" is selected.`,
+      detail: "Only the template value will be applied.",
+      confirmLabel: "Apply value",
+      danger: false
+    });
+    if (!confirmed) {
+      return;
+    }
+  }
+
   elements.valueInput.value = template.value;
   updateSaveState();
   updateAutoToolOutput();
   showStatus(`Applied template ${template.label}. Save to write it.`, "success");
 }
 
-function requestImportPair() {
+function validateQuickInputRows(rows, kind) {
+  const cookies = kind === "cookie";
+  const createPair = cookies ? createCookiePair : createStoragePair;
+  const nameLabel = cookies ? "Cookie name" : "Storage key";
+  const pairs = [];
+  const names = new Set();
+  for (const [index, row] of rows.entries()) {
+    const name = String(row?.name || "").trim();
+    const value = String(row?.value ?? "");
+    if (!name && !value) {
+      continue;
+    }
+    let pair;
+    try {
+      pair = createPair(name, value);
+    } catch (error) {
+      error.message = `Row ${index + 1}: ${error.message}`;
+      error.rowIndex = index;
+      throw error;
+    }
+    if (names.has(pair.name)) {
+      const error = new TypeError(`Row ${index + 1}: ${nameLabel} "${pair.name}" is duplicated.`);
+      error.rowIndex = index;
+      throw error;
+    }
+    names.add(pair.name);
+    pairs.push(pair);
+  }
+  if (pairs.length === 0) {
+    const error = new TypeError(`Enter at least one ${nameLabel.toLowerCase()}.`);
+    error.rowIndex = 0;
+    throw error;
+  }
+  return pairs;
+}
+
+function showImportStatus(pairs, result) {
+  const counts = getBatchOperationCounts(result);
+  if (pairs.length === 1) {
+    if (counts.success === 1) {
+      showStatus(`Imported ${pairs[0].name}.`, "success");
+    } else {
+      showStatus(
+        result.failed[0]?.error?.message || `Failed to import ${getCurrentView().singular}.`,
+        "error"
+      );
+    }
+    return;
+  }
+  if (counts.failed === 0) {
+    const view = getCurrentView();
+    showStatus(`Imported ${counts.success} ${counts.success === 1 ? view.singular : view.plural}.`, "success");
+    return;
+  }
   const view = getCurrentView();
-  return requestTextInput({
-    title: `Import ${view.singular}`,
-    fieldLabel: view.pairLabel,
-    placeholder: view.pairLabel,
-    submitLabel: "Import",
-    validate: parsePairText
-  });
+  const itemLabel = counts.success === 1 ? view.singular : view.plural;
+  const firstError = result.failed[0]?.error?.message;
+  showStatus(
+    `Imported ${counts.success} ${itemLabel}, ${counts.failed} failed.${firstError ? ` ${firstError}` : ""}`,
+    "error"
+  );
 }
 
 function requestTemplateSelection() {
@@ -1050,12 +1433,6 @@ async function loadCookieTemplates() {
   }
 }
 
-function parsePairText(text) {
-  return parseNameValuePair(text, {
-    kind: isCookieView() ? "cookie" : "storage"
-  });
-}
-
 async function importPair(pair) {
   if (isCookieView()) {
     const cookie = await setCookiePair(state.tab.url, pair.name, pair.value, state.cookieStoreId);
@@ -1179,9 +1556,8 @@ function renderViewChrome() {
     : "Search key, value, origin";
   elements.refreshButton.title = `Refresh ${view.plural}`;
   elements.refreshButton.setAttribute("aria-label", `Refresh ${view.plural}`);
-  const importLabel = `Import ${view.pairLabel}`;
-  elements.importButton.setAttribute("aria-label", importLabel);
-  elements.importButton.dataset.tooltip = importLabel;
+  elements.importButton.setAttribute("aria-label", "Import");
+  elements.importButton.dataset.tooltip = "Import";
   elements.detailsView.setAttribute("aria-label", `${view.title} editor`);
   elements.detailPlaceholder.textContent = `Select a ${view.singular}`;
   elements.expirationEditorCell.hidden = !cookieView;
@@ -1930,8 +2306,9 @@ function setLoading(isLoading) {
 
 function updateActionAvailability() {
   const supportedPage = Boolean(state.tab?.url && isSupportedPageUrl(state.tab.url));
-  elements.exportButton.disabled = state.loading || !supportedPage || state.rows.length === 0;
+  elements.exportButton.disabled = state.loading || !supportedPage;
   elements.importButton.disabled = state.loading || !supportedPage;
+  elements.profilesButton.disabled = state.loading || !supportedPage;
 }
 
 function setBusy(isBusy) {
@@ -1951,6 +2328,7 @@ function setBusy(isBusy) {
     elements.clearHistoryButton.disabled = true;
     elements.exportButton.disabled = true;
     elements.importButton.disabled = true;
+    elements.profilesButton.disabled = true;
     elements.batchEditButton.disabled = true;
     elements.batchDeleteButton.disabled = true;
     elements.saveTemplateButton.disabled = true;

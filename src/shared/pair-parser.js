@@ -20,11 +20,29 @@ export function parseNameValuePair(text, { kind = "cookie" } = {}) {
   const name = pair.slice(0, separatorIndex).trim();
   const value = pair.slice(separatorIndex + 1);
 
-  if (!name || (kind === "cookie" && /[\s;=]/.test(name))) {
-    throw new TypeError(kind === "cookie" ? "Cookie name is invalid." : "Storage key is invalid.");
+  if (kind === "cookie") {
+    return createCookiePair(name, value);
   }
+  return createStoragePair(name, value);
+}
 
-  return { name, value };
+export function createCookiePair(name, value = "") {
+  const normalizedName = String(name || "").trim();
+  if (!normalizedName) {
+    throw new TypeError("Enter a cookie name.");
+  }
+  if (/[\s;=]/.test(normalizedName)) {
+    throw new TypeError("Cookie name is invalid.");
+  }
+  return { name: normalizedName, value: String(value ?? "") };
+}
+
+export function createStoragePair(name, value = "") {
+  const normalizedName = String(name || "").trim();
+  if (!normalizedName) {
+    throw new TypeError("Enter a storage key.");
+  }
+  return { name: normalizedName, value: String(value ?? "") };
 }
 
 function getPairLabel(kind) {

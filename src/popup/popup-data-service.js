@@ -14,6 +14,15 @@ export async function readSiteDataRows(tab, dataView, cookieStoreId = "") {
   return items.map(toStorageRow).sort(compareStorageRows);
 }
 
+export async function readAllSiteDataRows(tab, cookieStoreId = "") {
+  const [cookies, localStorage, sessionStorage] = await Promise.all([
+    readSiteDataRows(tab, "cookies", cookieStoreId),
+    readSiteDataRows(tab, "localStorage", cookieStoreId),
+    readSiteDataRows(tab, "sessionStorage", cookieStoreId)
+  ]);
+  return { cookies, localStorage, sessionStorage };
+}
+
 export async function resolveCookieStoreId(tab) {
   if (!tab?.id) {
     return "";
