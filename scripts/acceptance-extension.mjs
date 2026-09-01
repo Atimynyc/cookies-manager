@@ -57,7 +57,7 @@ try {
     await assertFavoriteFlow(popup);
     await assertDetailFavoriteControl(popup);
     await assertWorkspaceNavigation(popup);
-    await assertTableActionsBelowList(popup);
+    await assertTableActionHierarchy(popup);
     await assertEditorActions(popup);
     await assertValueTools(popup);
     await assertStressLayout(popup);
@@ -585,54 +585,117 @@ async function assertEditorActions(popup) {
   await screenshot(popup, "milestone-4-popup-editor-actions.png");
 }
 
-async function assertTableActionsBelowList(popup) {
+async function assertTableActionHierarchy(popup) {
   const result = await popup.evaluate(() => {
     const tableWrapElement = document.querySelector(".table-wrap");
+    const globalToolbarElement = document.querySelector(".table-global-toolbar");
     const toolbarElement = document.querySelector(".table-toolbar");
+    const batchActionsElement = document.querySelector("#batchActions");
     const emptyStateElement = document.querySelector("#emptyState");
     const wasHidden = emptyStateElement.hidden;
     emptyStateElement.hidden = false;
 
     const tableWrap = tableWrapElement.getBoundingClientRect();
+    const globalToolbar = globalToolbarElement.getBoundingClientRect();
     const toolbar = toolbarElement.getBoundingClientRect();
     const emptyState = emptyStateElement.getBoundingClientRect();
     emptyStateElement.hidden = wasHidden;
 
     return {
-      actions: ["batchEditButton", "batchDeleteButton", "exportButton", "importButton", "profilesButton"].map((id) => {
+      globalActions: ["importButton", "exportButton", "profilesButton"].map((id) => {
         const button = document.querySelector(`#${id}`);
         return {
           hasIcon: Boolean(button.querySelector("svg.icon")),
           label: button.getAttribute("aria-label"),
+          parentClass: button.parentElement.className,
+          text: button.textContent.trim()
+        };
+      }),
+      batchActions: ["batchEditButton", "batchDeleteButton"].map((id) => {
+        const button = document.querySelector(`#${id}`);
+        return {
+          disabled: button.disabled,
+          hasIcon: Boolean(button.querySelector("svg.icon")),
+          label: button.getAttribute("aria-label"),
+          parentId: button.parentElement.id,
           text: button.textContent.trim(),
           tooltip: button.dataset.tooltip
         };
       }),
+      batchActionsHidden: batchActionsElement.hidden,
       layout: {
         emptyState: { bottom: emptyState.bottom, top: emptyState.top },
+        globalToolbar: {
+          bottom: globalToolbar.bottom,
+          clientWidth: globalToolbarElement.clientWidth,
+          scrollWidth: globalToolbarElement.scrollWidth,
+          top: globalToolbar.top
+        },
         tableWrap: { bottom: tableWrap.bottom, top: tableWrap.top },
-        toolbar: { bottom: toolbar.bottom, top: toolbar.top }
+        toolbar: {
+          bottom: toolbar.bottom,
+          clientWidth: toolbarElement.clientWidth,
+          scrollWidth: toolbarElement.scrollWidth,
+          top: toolbar.top
+        }
       }
     };
   });
 
-  assert.deepEqual(result.actions, [
-    { hasIcon: true, label: "Set value", text: "", tooltip: "Set value" },
-    { hasIcon: true, label: "Delete selected", text: "", tooltip: "Delete selected" },
-    { hasIcon: true, label: "Export", text: "", tooltip: "Export" },
-    { hasIcon: true, label: "Import", text: "", tooltip: "Import" },
-    { hasIcon: true, label: "Profiles", text: "", tooltip: "Profiles" }
+  assert.deepEqual(result.globalActions, [
+    { hasIcon: true, label: "Import", parentClass: "table-global-toolbar", text: "Import" },
+    { hasIcon: true, label: "Export", parentClass: "table-global-toolbar", text: "Export" },
+    { hasIcon: true, label: "Saved States", parentClass: "table-global-toolbar", text: "Saved States" }
   ]);
+  assert.deepEqual(result.batchActions, [
+    {
+      disabled: true,
+      hasIcon: true,
+      label: "Set value",
+      parentId: "batchActions",
+      text: "Set value",
+      tooltip: "Set value"
+    },
+    {
+      disabled: true,
+      hasIcon: true,
+      label: "Delete selected",
+      parentId: "batchActions",
+      text: "Delete",
+      tooltip: "Delete selected"
+    }
+  ]);
+  assert.equal(result.batchActionsHidden, true);
+  assert.ok(result.layout.tableWrap.top >= result.layout.globalToolbar.bottom - 1, JSON.stringify(result.layout));
   assert.ok(result.layout.toolbar.top >= result.layout.tableWrap.bottom - 1, JSON.stringify(result.layout));
   assert.ok(result.layout.emptyState.top >= result.layout.tableWrap.top + 33, JSON.stringify(result.layout));
   assert.ok(result.layout.emptyState.bottom <= result.layout.tableWrap.bottom + 1, JSON.stringify(result.layout));
+  assert.ok(
+    result.layout.globalToolbar.scrollWidth <= result.layout.globalToolbar.clientWidth + 1,
+    JSON.stringify(result.layout)
+  );
+  assert.ok(result.layout.toolbar.scrollWidth <= result.layout.toolbar.clientWidth + 1, JSON.stringify(result.layout));
+  await screenshot(popup, "v031-popup-main.png");
+
+  const firstRowCheckbox = popup.locator("#cookieTableBody .select-cell input").first();
+  await firstRowCheckbox.check();
+  await popup.locator("#batchActions").waitFor({ state: "visible" });
+  assert.equal(await popup.locator("#selectionCount").innerText(), "1 selected");
+  assert.equal(await popup.locator("#batchEditButton").isEnabled(), true);
+  assert.equal(await popup.locator("#batchDeleteButton").isEnabled(), true);
+  const selectedToolbarLayout = await popup.locator(".table-toolbar").evaluate((toolbar) => ({
+    clientWidth: toolbar.clientWidth,
+    scrollWidth: toolbar.scrollWidth
+  }));
+  assert.ok(
+    selectedToolbarLayout.scrollWidth <= selectedToolbarLayout.clientWidth + 1,
+    JSON.stringify(selectedToolbarLayout)
+  );
+  await screenshot(popup, "v031-popup-batch-actions.png");
 
   for (const [id, label] of [
     ["batchEditButton", "Set value"],
-    ["batchDeleteButton", "Delete selected"],
-    ["exportButton", "Export"],
-    ["importButton", "Import"],
-    ["profilesButton", "Profiles"]
+    ["batchDeleteButton", "Delete selected"]
   ]) {
     await popup.locator(`#${id}`).hover();
     await popup.waitForFunction((buttonId) => {
@@ -644,6 +707,10 @@ async function assertTableActionsBelowList(popup) {
     });
     assert.equal(tooltipContent, `"${label}"`);
   }
+
+  await firstRowCheckbox.uncheck();
+  await popup.locator("#batchActions").waitFor({ state: "hidden" });
+  assert.equal(await popup.locator("#selectionCount").innerText(), "0 selected");
 }
 
 async function assertExportFlow(popup) {
@@ -941,7 +1008,7 @@ async function assertV030WorkbenchFlow(popup, context, page, baseUrl, extensionI
   assert.ok(originalPlainValue);
   await popup.locator("#workbenchCloseButton").click();
   await popup.locator("#profilesButton").click();
-  assert.equal(await popup.locator("#workbenchTitle").innerText(), "Profiles");
+  assert.equal(await popup.locator("#workbenchTitle").innerText(), "Saved States");
   await assertProfileHelp(popup, "v030-profile-help.png");
   await popup.locator("#newProfileButton").click();
   await assertProfileCreateLayout(popup);
@@ -1096,14 +1163,15 @@ async function assertProfileCreateLayout(popup, { allowVerticalScroll = false } 
 
 async function assertProfileHelp(popup, artifactName) {
   const helpButton = popup.locator("#profileHelpButton");
-  assert.equal(await helpButton.getAttribute("aria-label"), "How site profiles work");
-  assert.equal(await helpButton.getAttribute("data-tooltip"), "How profiles work");
+  assert.equal(await helpButton.getAttribute("aria-label"), "How saved states work");
+  assert.equal(await helpButton.getAttribute("data-tooltip"), "How saved states work");
   await helpButton.click();
 
   const helpDialog = popup.locator("#profileHelpDialog");
   await helpDialog.waitFor({ state: "visible" });
   const helpText = await helpDialog.innerText();
-  assert.match(helpText, /Create a profile/);
+  assert.match(helpText, /Save the current state/);
+  assert.match(helpText, /Saved states stay in this browser unless you export them/);
   assert.match(helpText, /userId=42/);
   assert.match(helpText, /!userId=42/);
   assert.match(helpText, /does not store/);
@@ -1149,8 +1217,65 @@ async function assertSidePanelWorkbench(context, activePage, extensionId) {
   await sidePanel.reload({ waitUntil: "domcontentloaded" });
   await waitForPopupReady(sidePanel, "127.0.0.1");
   assert.equal(await sidePanel.evaluate(() => document.body.dataset.surface), "sidepanel");
-  await sidePanel.locator("#importButton").click();
   await sidePanel.setViewportSize({ width: 420, height: 800 });
+  const narrowMainLayout = await sidePanel.evaluate(() => {
+    const rect = (selector) => {
+      const value = document.querySelector(selector).getBoundingClientRect();
+      return { bottom: value.bottom, left: value.left, right: value.right, top: value.top };
+    };
+    return {
+      bodyWidth: document.body.getBoundingClientRect().width,
+      documentClientWidth: document.documentElement.clientWidth,
+      documentScrollWidth: document.documentElement.scrollWidth,
+      viewportWidth: innerWidth,
+      importButton: rect("#importButton"),
+      exportButton: rect("#exportButton"),
+      profilesButton: rect("#profilesButton"),
+      refreshControl: rect("#refreshControl"),
+      tablePane: rect(".table-pane"),
+      detailPane: rect(".detail-pane"),
+      topbar: rect(".topbar"),
+      sidePanelButtonDisplay: getComputedStyle(document.querySelector("#openSidePanelButton")).display,
+      globalToolbarClientWidth: document.querySelector(".table-global-toolbar").clientWidth,
+      globalToolbarScrollWidth: document.querySelector(".table-global-toolbar").scrollWidth
+    };
+  });
+  assert.ok(narrowMainLayout.bodyWidth <= narrowMainLayout.viewportWidth + 1, JSON.stringify(narrowMainLayout));
+  assert.ok(
+    narrowMainLayout.documentScrollWidth <= narrowMainLayout.documentClientWidth + 1,
+    JSON.stringify(narrowMainLayout)
+  );
+  assert.ok(narrowMainLayout.topbar.right <= narrowMainLayout.viewportWidth, JSON.stringify(narrowMainLayout));
+  assert.equal(narrowMainLayout.sidePanelButtonDisplay, "none", JSON.stringify(narrowMainLayout));
+  assert.ok(
+    narrowMainLayout.topbar.right - narrowMainLayout.refreshControl.right <= 13,
+    JSON.stringify(narrowMainLayout)
+  );
+  assert.ok(narrowMainLayout.tablePane.right <= narrowMainLayout.viewportWidth, JSON.stringify(narrowMainLayout));
+  assert.ok(narrowMainLayout.detailPane.right <= narrowMainLayout.viewportWidth, JSON.stringify(narrowMainLayout));
+  assert.ok(narrowMainLayout.detailPane.top >= narrowMainLayout.tablePane.bottom, JSON.stringify(narrowMainLayout));
+  assert.ok(
+    narrowMainLayout.globalToolbarScrollWidth <= narrowMainLayout.globalToolbarClientWidth + 1,
+    JSON.stringify(narrowMainLayout)
+  );
+  for (const action of ["importButton", "exportButton", "profilesButton"]) {
+    assert.ok(narrowMainLayout[action].left >= 0, JSON.stringify(narrowMainLayout));
+    assert.ok(narrowMainLayout[action].right <= narrowMainLayout.viewportWidth, JSON.stringify(narrowMainLayout));
+  }
+  await screenshot(sidePanel, "v031-sidepanel-main.png");
+  assert.equal(await sidePanel.locator("#batchActions").isHidden(), true);
+  const firstSidePanelCheckbox = sidePanel.locator("#cookieTableBody .select-cell input").first();
+  await firstSidePanelCheckbox.check();
+  await sidePanel.locator("#batchActions").waitFor({ state: "visible" });
+  const narrowBatchLayout = await sidePanel.locator(".table-toolbar").evaluate((toolbar) => ({
+    clientWidth: toolbar.clientWidth,
+    scrollWidth: toolbar.scrollWidth
+  }));
+  assert.ok(narrowBatchLayout.scrollWidth <= narrowBatchLayout.clientWidth + 1, JSON.stringify(narrowBatchLayout));
+  await screenshot(sidePanel, "v031-sidepanel-batch-actions.png");
+  await firstSidePanelCheckbox.uncheck();
+  await sidePanel.locator("#batchActions").waitFor({ state: "hidden" });
+  await sidePanel.locator("#importButton").click();
   const initialCookieImportLayout = await sidePanel.locator("#workbenchDialog").evaluate((dialog) => {
     const rect = dialog.getBoundingClientRect();
     const addRect = document.querySelector("#quickEntryAddButton").getBoundingClientRect();

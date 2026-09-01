@@ -160,6 +160,7 @@ const elements = {
   closeStatusButton: document.querySelector("#closeStatusButton"),
   copyAnnouncement: document.querySelector("#copyAnnouncement"),
   selectionCount: document.querySelector("#selectionCount"),
+  batchActions: document.querySelector("#batchActions"),
   selectAllCheckbox: document.querySelector("#selectAllCheckbox"),
   batchEditButton: document.querySelector("#batchEditButton"),
   batchDeleteButton: document.querySelector("#batchDeleteButton"),
@@ -279,7 +280,9 @@ const workbench = createSiteDataWorkbench({
 });
 
 const popupParams = new URLSearchParams(location.search);
-document.body.dataset.surface = popupParams.get("surface") === "sidepanel" ? "sidepanel" : "popup";
+const surface = popupParams.get("surface") === "sidepanel" ? "sidepanel" : "popup";
+document.documentElement.dataset.surface = surface;
+document.body.dataset.surface = surface;
 
 document.addEventListener("DOMContentLoaded", initialize);
 
@@ -1061,15 +1064,15 @@ async function createProfileFromCurrentSite(options) {
 
 async function renameSavedProfile(profile) {
   const name = await requestTextInput({
-    title: "Rename profile",
-    fieldLabel: "Profile name",
+    title: "Rename saved state",
+    fieldLabel: "Saved state name",
     initialValue: profile.name,
     submitLabel: "Rename",
     selectValue: true,
     validate: (value) => {
       const trimmed = value.trim();
       if (!trimmed) {
-        throw new Error("Enter a profile name.");
+        throw new Error("Enter a saved state name.");
       }
       return trimmed;
     }
@@ -1088,7 +1091,7 @@ async function duplicateSavedProfile(profile) {
 
 async function deleteSavedProfile(profile) {
   const confirmed = await requestDeleteConfirmation({
-    title: "Delete profile?",
+    title: "Delete saved state?",
     message: `"${profile.name}" will be permanently deleted.`,
     detail: profile.source.origin
   });
@@ -1802,6 +1805,7 @@ function updateSelectionSummary() {
   const visibleRows = getVisibleRows();
   const visibleSelectedCount = visibleRows.filter((row) => state.selectedIds.has(row.id)).length;
   elements.selectionCount.textContent = `${selectedCount} selected`;
+  elements.batchActions.hidden = selectedCount === 0;
   elements.batchEditButton.disabled = selectedCount === 0;
   elements.batchDeleteButton.disabled = selectedCount === 0;
   elements.selectAllCheckbox.checked = visibleRows.length > 0 && visibleSelectedCount === visibleRows.length;

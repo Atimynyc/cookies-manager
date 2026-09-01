@@ -105,6 +105,32 @@
 
       <section class="content">
         <section class="table-pane" aria-label="Cookie list">
+          <div class="table-global-toolbar" aria-label="Site data actions">
+            <button class="data-action-button" id="importButton" type="button" aria-label="Import">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <path d="m17 8-5-5-5 5" />
+                <path d="M12 3v12" />
+              </svg>
+              <span>Import</span>
+            </button>
+            <button class="data-action-button" id="exportButton" type="button" aria-label="Export">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <path d="m7 10 5 5 5-5" />
+                <path d="M12 15V3" />
+              </svg>
+              <span>Export</span>
+            </button>
+            <button class="data-action-button secondary-action-button" id="profilesButton" type="button" aria-label="Saved States">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 5h18v14H3z" />
+                <path d="M3 9h18M10 13h4" />
+              </svg>
+              <span>Saved States</span>
+            </button>
+          </div>
+
           <div class="table-wrap">
             <table>
               <thead>
@@ -130,40 +156,24 @@
 
           <div class="table-toolbar">
             <span class="selection-count" id="selectionCount">0 selected</span>
-            <button class="table-action-button" id="batchEditButton" type="button" aria-label="Set value" data-tooltip="Set value" disabled>
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 20h9" />
-                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
-              </svg>
-            </button>
-            <button class="table-action-button danger-button" id="batchDeleteButton" type="button" aria-label="Delete selected" data-tooltip="Delete selected" disabled>
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M3 6h18" />
-                <path d="M8 6V4h8v2" />
-                <path d="M19 6l-1 15H6L5 6" />
-                <path d="M10 11v6M14 11v6" />
-              </svg>
-            </button>
-            <button class="table-action-button" id="exportButton" type="button" aria-label="Export" data-tooltip="Export">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <path d="m7 10 5 5 5-5" />
-                <path d="M12 15V3" />
-              </svg>
-            </button>
-            <button class="table-action-button" id="importButton" type="button" aria-label="Import" data-tooltip="Import">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <path d="m17 8-5-5-5 5" />
-                <path d="M12 3v12" />
-              </svg>
-            </button>
-            <button class="table-action-button" id="profilesButton" type="button" aria-label="Profiles" data-tooltip="Profiles">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M3 5h18v14H3z" />
-                <path d="M3 9h18M10 13h4" />
-              </svg>
-            </button>
+            <div class="batch-actions" id="batchActions" aria-label="Selected item actions" hidden>
+              <button class="table-action-button batch-action-button" id="batchEditButton" type="button" aria-label="Set value" data-tooltip="Set value" disabled>
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                </svg>
+                <span>Set value</span>
+              </button>
+              <button class="table-action-button batch-action-button danger-button" id="batchDeleteButton" type="button" aria-label="Delete selected" data-tooltip="Delete selected" disabled>
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M3 6h18" />
+                  <path d="M8 6V4h8v2" />
+                  <path d="M19 6l-1 15H6L5 6" />
+                  <path d="M10 11v6M14 11v6" />
+                </svg>
+                <span>Delete</span>
+              </button>
+            </div>
           </div>
         </section>
 
@@ -580,8 +590,8 @@
             <div class="profiles-toolbar">
               <div>
                 <div class="profiles-title-row">
-                  <strong>Site profiles</strong>
-                  <button class="profile-help-button" id="profileHelpButton" type="button" aria-label="How site profiles work" data-tooltip="How profiles work">
+                  <strong>Saved states</strong>
+                  <button class="profile-help-button" id="profileHelpButton" type="button" aria-label="How saved states work" data-tooltip="How saved states work">
                     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="10" />
                       <path d="M9.1 9a3 3 0 1 1 5.8 1c0 2-2.9 2-2.9 4" />
@@ -591,10 +601,10 @@
                 </div>
                 <span id="profileCount">0 saved</span>
               </div>
-              <button class="primary-button" id="newProfileButton" type="button">New profile</button>
+              <button class="primary-button" id="newProfileButton" type="button">Save current state</button>
             </div>
             <div class="profile-list" id="profileList"></div>
-            <div class="profile-empty" id="profileEmpty">No saved profiles</div>
+            <div class="profile-empty" id="profileEmpty">No saved states</div>
 
             <form class="profile-form" id="profileForm" hidden>
               <div class="profile-form-grid">
@@ -635,7 +645,7 @@
               <p class="workbench-feedback is-error" id="profileFormError" role="alert" hidden></p>
               <div class="workbench-footer-actions">
                 <button id="cancelProfileButton" type="button">Cancel</button>
-                <button class="primary-button" type="submit">Save profile</button>
+                <button class="primary-button" type="submit">Save state</button>
               </div>
             </form>
 
@@ -643,14 +653,14 @@
               <div class="profile-apply-header">
                 <div>
                   <strong id="profileApplyName"></strong>
-                  <span>Apply profile</span>
+                  <span>Apply saved state</span>
                 </div>
                 <button id="cancelProfileApplyButton" type="button">Cancel</button>
               </div>
               <div class="profile-variable-inputs" id="profileVariableInputs"></div>
               <label class="mapping-toggle" id="profileMappingControl" hidden>
                 <input id="profileMappingToggle" type="checkbox">
-                <span>Map profile origin to current target</span>
+                <span>Map saved origin to current target</span>
               </label>
               <p class="workbench-feedback is-error" id="profileApplyError" role="alert" hidden></p>
               <div class="workbench-footer-actions">
@@ -665,16 +675,16 @@
         <form method="dialog">
           <div class="app-dialog-body profile-help-body" id="profileHelpBody">
             <div>
-              <h2 id="profileHelpTitle">How site profiles work</h2>
-              <p id="profileHelpIntro">A profile saves a reusable snapshot of Cookies, Local Storage, and Session Storage for a site.</p>
+              <h2 id="profileHelpTitle">How saved states work</h2>
+              <p id="profileHelpIntro">A saved state keeps a reusable set of Cookies, Local Storage, and Session Storage for a site.</p>
             </div>
 
             <section class="profile-help-section">
-              <h3>Create a profile</h3>
+              <h3>Save the current state</h3>
               <ol>
-                <li>Open the site state you want to reuse, then select <strong>New profile</strong>.</li>
+                <li>Open the site state you want to reuse, then select <strong>Save current state</strong>.</li>
                 <li>Choose the capture scope: the current data view, selected items, or all site data.</li>
-                <li>Add optional variables, then save. Profiles stay in this browser unless you export them.</li>
+                <li>Add optional variables, then save. Saved states stay in this browser unless you export them.</li>
               </ol>
             </section>
 
@@ -683,14 +693,14 @@
               <p>Enter one captured value per line. Matching values in the saved data are replaced with a variable.</p>
               <dl class="profile-help-examples">
                 <dt><code>userId=42</code></dt>
-                <dd>Prefills <code>42</code> when applying the profile.</dd>
+                <dd>Prefills <code>42</code> when applying the saved state.</dd>
                 <dt><code>!userId=42</code></dt>
-                <dd>Asks for the value every time and does not store <code>42</code> in the profile.</dd>
+                <dd>Asks for the value every time and does not store <code>42</code> in the saved state.</dd>
               </dl>
             </section>
 
             <section class="profile-help-section">
-              <h3>Apply a profile</h3>
+              <h3>Apply a saved state</h3>
               <ol>
                 <li>Select <strong>Apply</strong> and enter any requested variables.</li>
                 <li>For a different origin, explicitly enable origin mapping.</li>

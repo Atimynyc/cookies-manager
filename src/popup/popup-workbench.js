@@ -163,7 +163,7 @@ export function createSiteDataWorkbench({
     elements.workbenchTitle.textContent = {
       import: "Import",
       export: "Export",
-      profiles: "Profiles"
+      profiles: "Saved States"
     }[normalized];
     for (const view of elements.views) {
       view.hidden = view.dataset.workbenchView !== normalized;
@@ -853,7 +853,7 @@ export function createSiteDataWorkbench({
       hideProfileForm();
       renderProfiles();
     } catch (error) {
-      setFeedback(elements.profileFormError, error?.message || "Failed to save profile.");
+      setFeedback(elements.profileFormError, error?.message || "Failed to save state.");
     } finally {
       setBusy(false);
     }
@@ -986,7 +986,7 @@ export function createSiteDataWorkbench({
       setView("import");
       await refreshPreview();
     } catch (error) {
-      setFeedback(elements.profileApplyError, error?.message || "Failed to prepare profile.");
+      setFeedback(elements.profileApplyError, error?.message || "Failed to prepare saved state.");
     } finally {
       setBusy(false);
     }
