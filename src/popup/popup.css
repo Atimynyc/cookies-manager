@@ -1013,7 +1013,7 @@ tbody tr:focus-visible td {
 .name-cell-content {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
 }
 
@@ -1025,21 +1025,18 @@ tbody tr:focus-visible td {
 
 .favorite-indicator {
   display: inline-flex;
-  flex: 0 0 16px;
+  flex: 0 0 20px;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 18px;
-  color: #c88700;
+  width: 20px;
+  height: 20px;
 }
 
-.favorite-indicator .icon {
-  width: 15px;
-  height: 15px;
-  fill: currentColor;
-  stroke: currentColor;
-  stroke-linejoin: round;
-  stroke-width: 1.8;
+.favorite-indicator .favorite-brand-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
 }
 
 .flag-stack {
@@ -1168,33 +1165,40 @@ tbody tr:focus-visible td {
   border-color: var(--line);
   padding: 0;
   background: #ffffff;
-  color: #a0a9b8;
 }
 
 .editor-favorite-button:hover,
 .editor-favorite-button:focus-visible {
-  border-color: #e0bd62;
-  background: #fff6d9;
-  color: #9b6b00;
+  border-color: #d8ad68;
+  background: #fff8e8;
 }
 
 .editor-favorite-button.is-favorite {
-  border-color: #e0bd62;
-  background: #fff6d9;
-  color: #c88700;
+  border-color: #d8a655;
+  background: #fff4d8;
 }
 
-.editor-favorite-button .icon {
-  width: 17px;
-  height: 17px;
-  fill: transparent;
-  stroke: currentColor;
-  stroke-linejoin: round;
-  stroke-width: 1.8;
+.editor-favorite-button .favorite-brand-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  filter: grayscale(1);
+  opacity: 0.4;
+  transform: scale(0.92);
+  transition: filter 120ms ease, opacity 120ms ease, transform 120ms ease;
 }
 
-.editor-favorite-button.is-favorite .icon {
-  fill: currentColor;
+.editor-favorite-button:hover .favorite-brand-icon,
+.editor-favorite-button:focus-visible .favorite-brand-icon {
+  filter: none;
+  opacity: 0.78;
+}
+
+.editor-favorite-button.is-favorite .favorite-brand-icon {
+  filter: none;
+  opacity: 1;
+  transform: scale(1);
 }
 
 .chip-row {

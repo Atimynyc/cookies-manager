@@ -226,10 +226,26 @@ async function assertFavoriteFlow(popup) {
     assert.equal(await firstRow.locator(".favorite-button").count(), 0);
     await firstRow.click();
     assert.equal(await popup.locator("#editorFavoriteButton").getAttribute("aria-pressed"), "false");
+    assert.equal(await popup.locator("#editorFavoriteButton svg").count(), 0);
+    assert.match(
+      await popup.locator("#editorFavoriteButton .favorite-brand-icon").getAttribute("src"),
+      /assets\/icon-32\.png$/
+    );
+    assert.equal(
+      await popup.locator("#editorFavoriteButton .favorite-brand-icon")
+        .evaluate((icon) => icon.complete && icon.naturalWidth > 0),
+      true
+    );
     await popup.locator("#editorFavoriteButton").click();
     assert.equal(await popup.locator("#editorFavoriteButton").getAttribute("aria-pressed"), "true");
-    assert.equal(await popup.locator("#cookieTableBody tr").first()
-      .locator(".favorite-indicator").count(), 1);
+    const favoriteIndicator = popup.locator("#cookieTableBody tr").first().locator(".favorite-indicator");
+    assert.equal(await favoriteIndicator.count(), 1);
+    assert.equal(await favoriteIndicator.locator("svg").count(), 0);
+    assert.match(await favoriteIndicator.locator(".favorite-brand-icon").getAttribute("src"), /assets\/icon-16\.png$/);
+    await popup.waitForFunction(() => {
+      const icon = document.querySelector("#cookieTableBody tr .favorite-indicator .favorite-brand-icon");
+      return icon?.complete && icon.naturalWidth > 0;
+    });
     await popup.locator("#searchInput").fill("");
     assert.equal((await getTableNames(popup))[0], name);
   }
@@ -258,6 +274,7 @@ async function assertFavoriteFlow(popup) {
     element.scrollLeft = 0;
   });
   await screenshot(popup, "milestone-4-popup-favorites.png");
+  await screenshot(popup, "v031-branded-favorites.png");
 }
 
 async function assertDetailFavoriteControl(popup) {

@@ -58,10 +58,16 @@ function createNameCell(row, favoriteIds) {
   name.textContent = row.name || "";
   if (favorite) {
     const indicator = document.createElement("span");
+    const icon = document.createElement("img");
     indicator.className = "favorite-indicator";
     indicator.title = "Favorite";
     indicator.setAttribute("aria-label", "Favorite");
-    indicator.innerHTML = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.5 1.1 6.3-5.6-3-5.6 3 1.1-6.3-4.6-4.5 6.3-.9Z" /></svg>';
+    icon.className = "favorite-brand-icon";
+    icon.src = "../../assets/icon-16.png";
+    icon.alt = "";
+    icon.width = 20;
+    icon.height = 20;
+    indicator.append(icon);
     content.append(indicator);
   }
   content.append(name);

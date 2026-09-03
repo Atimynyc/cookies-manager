@@ -229,6 +229,7 @@
 - 表格上方设置独立的全局操作区，直接展示 Import、Export 和 Saved States。
 - 表格底部只保留选择摘要和批量操作，批量按钮根据选择状态出现。
 - Side Panel 已打开时隐藏重复的 Side Panel 入口，并将刷新控件固定在顶部右侧。
+- 收藏状态使用插件自身的 Cookie 图标，未收藏时弱化显示，收藏后恢复品牌色。
 - Import、Export 的复杂步骤继续使用现有大 Dialog；Side Panel 提供更大空间，但不作为寻找功能的前置步骤。
 - Popup 优先展示 Name、Value、Expires/Type 和 Flags；完整作用域与高级属性继续在详情区展示，列裁剪需结合现有可调整列宽能力逐步验证。
 - 编辑器按照 Name/作用域、Value、过期时间、操作按钮、其他属性的顺序保持清晰层级。
