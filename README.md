@@ -17,7 +17,6 @@ Main features
 - Quickly import one or more Cookies with separate Name and Value fields; Storage keeps the lightweight key=value entry point.
 - Copy a cookie value, a name=value pair, or structured JSON with one action.
 - Use built-in URL encode/decode, JSON format/compact, and JWT payload decoding tools.
-- Save frequently used values as local templates for reuse.
 - Review recent changes and before/after differences, and undo changes during the current browser session.
 - Optionally reload the page automatically after a change.
 - Use the extension from either its popup or the Chrome side panel.
@@ -38,14 +37,13 @@ Cookie Controller 是一款面向开发者、测试人员和高级用户的站�
 - 使用独立的 Name 与 Value 输入框快速导入一条或多条 Cookie；Storage 继续保留轻量的 key=value 入口。
 - 一键复制 Cookie 值、name=value 键值对或结构化 JSON。
 - 内置 URL 编码与解码、JSON 格式化与压缩、JWT Payload 解码工具。
-- 将常用值保存为本地模板，方便重复使用。
 - 查看最近的修改记录和修改前后差异，并在当前操作会话中撤销变更。
 - 可选自动刷新页面，让修改后的站点状态立即生效。
 - 同时支持扩展弹出窗口和 Chrome 侧边栏模式。
 
 Development
 
-- Run `npm test` for the unit-test baseline covering parsing, identifiers, package validation, conflicts, batch results, templates, and recent-change normalization.
+- Run `npm test` for the unit-test baseline covering parsing, identifiers, package validation, conflicts, batch results, favorites, and recent-change normalization.
 - Run `npm run test:acceptance` for the full Chrome extension workflow.
 - Run `npm run test:acceptance:v030` for the focused data-package and saved-state workflow.
 - The versioned site data interchange contract is documented in `docs/site-data-package-v1.md`.

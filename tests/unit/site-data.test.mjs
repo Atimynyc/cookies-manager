@@ -13,7 +13,6 @@ import {
 import { createCookiePair, createStoragePair, parseNameValuePair } from "../../src/shared/pair-parser.js";
 import {
   getLastViewedSiteDataStorageKey,
-  normalizeCookieTemplates,
   normalizeLastViewedSiteData
 } from "../../src/shared/settings-store.js";
 import {
@@ -240,14 +239,6 @@ test("aggregates success, failure and skipped batch operation results", () => {
     code: "COOKIE_WRITE_FAILED"
   });
   assert.deepEqual(getBatchOperationCounts(result), { success: 1, failed: 1, skipped: 1, total: 3 });
-});
-
-test("normalizes locally stored cookie templates", () => {
-  assert.deepEqual(normalizeCookieTemplates([
-    null,
-    { label: "Valid", value: "one" },
-    { label: "Missing value" }
-  ]), [{ label: "Valid", value: "one" }]);
 });
 
 test("normalizes last viewed details for every site data view", () => {

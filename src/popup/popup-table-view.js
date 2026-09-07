@@ -1,3 +1,5 @@
+import { classifyValueType } from "../shared/value-tools.js";
+
 export function renderDataTable({
   tableBody,
   rows,
@@ -32,7 +34,7 @@ export function renderDataTable({
     tr.append(
       createSelectCell(row, selectedIds, onToggle),
       createNameCell(row, favoriteIds),
-      createCell(row.value, row.value, "value-cell"),
+      createValueCell(row.value),
       createCell(row.domain, row.domain),
       createCell(row.path, row.path),
       createCell(row.expires, row.expires),
@@ -43,6 +45,35 @@ export function renderDataTable({
   }
 
   tableBody.replaceChildren(fragment);
+}
+
+function createValueCell(value) {
+  const text = String(value ?? "");
+  const type = classifyValueType(text);
+  const td = document.createElement("td");
+  const content = document.createElement("span");
+  const valueText = document.createElement("span");
+
+  td.className = "value-cell";
+  td.title = text;
+  content.className = "value-cell-content";
+  valueText.className = "value-cell-text";
+  valueText.textContent = text;
+
+  if (type) {
+    const label = type === "jwt" ? "JWT value" : "JSON value";
+    const indicator = document.createElement("span");
+    indicator.className = `value-type-indicator value-type-${type}`;
+    indicator.textContent = type === "jwt" ? "JWT" : "{}";
+    indicator.title = label;
+    indicator.setAttribute("role", "img");
+    indicator.setAttribute("aria-label", label);
+    content.append(indicator);
+  }
+
+  content.append(valueText);
+  td.append(content);
+  return td;
 }
 
 function createNameCell(row, favoriteIds) {

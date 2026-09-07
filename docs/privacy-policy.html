@@ -341,14 +341,14 @@
     <article id="zh-CN" class="language-section" lang="zh-CN">
       <div class="language-heading">
         <h2>隐私权政策</h2>
-        <p class="updated">生效及最后更新日期：2026 年 8 月 25 日</p>
+        <p class="updated">生效及最后更新日期：2026 年 9 月 3 日</p>
       </div>
 
       <p class="summary">Cookie Controller 在用户设备本地处理站点数据，不运营数据收集服务器，不包含广告、统计分析或用户跟踪功能，也不会出售或共享用户数据。</p>
 
       <section class="policy-section">
         <h3>1. 适用范围</h3>
-        <p>本政策适用于 Cookie Controller Chrome 扩展。该扩展的单一用途是帮助用户查看和管理其主动选择网站的 Cookie、Local Storage 和 Session Storage。搜索、复制、批量操作、导入导出、值处理工具、模板、配置组、修改历史和撤销功能均用于支持这一用途。</p>
+        <p>本政策适用于 Cookie Controller Chrome 扩展。该扩展的单一用途是帮助用户查看和管理其主动选择网站的 Cookie、Local Storage 和 Session Storage。搜索、复制、批量操作、导入导出、值处理工具、配置组、修改历史和撤销功能均用于支持这一用途。</p>
         <p>本政策不适用于用户通过该扩展管理的第三方网站。相关网站如何处理数据由其各自的隐私政策决定。</p>
       </section>
 
@@ -382,8 +382,8 @@
               </tr>
               <tr>
                 <td>用户主动保存的内容</td>
-                <td>Cookie 模板、站点配置组、收藏的站点数据标识、界面偏好和自动刷新设置</td>
-                <td>在后续使用中恢复用户主动保存的插件设置、模板和站点配置组</td>
+                <td>站点配置组、收藏的站点数据标识、界面偏好和自动刷新设置</td>
+                <td>在后续使用中恢复用户主动保存的插件设置和站点配置组</td>
               </tr>
               <tr>
                 <td>修改记录</td>
@@ -409,7 +409,7 @@
 
       <section class="policy-section">
         <h3>4. 本地存储和保留期限</h3>
-        <p>界面偏好、收藏的站点数据标识（不包含 Cookie 或存储值）、Cookie 模板、用户主动创建的站点配置组和最近修改记录通过 <code>chrome.storage.local</code> 保存在用户的浏览器中，直到用户清除扩展数据、删除相关记录，或用户卸载扩展。配置组可能包含用户明确选择保存的 Cookie 或网页存储值；标记为应用时输入的变量只保存占位符，不保存捕获值或应用时输入值。用于差异查看和批量撤销的完整修改前后值通过 <code>chrome.storage.session</code> 只保留在当前浏览器会话中，关闭浏览器后会被丢弃。</p>
+        <p>界面偏好、收藏的站点数据标识（不包含 Cookie 或存储值）、用户主动创建的站点配置组和最近修改记录通过 <code>chrome.storage.local</code> 保存在用户的浏览器中，直到用户清除扩展数据、删除相关记录，或用户卸载扩展。配置组可能包含用户明确选择保存的 Cookie 或网页存储值；标记为应用时输入的变量只保存占位符，不保存捕获值或应用时输入值。旧版本保存的 Cookie 模板数据在升级时不会被主动删除，可能继续保留在浏览器本地；当前版本不读取这些数据，也不提供模板使用或管理入口。用于差异查看和批量撤销的完整修改前后值通过 <code>chrome.storage.session</code> 只保留在当前浏览器会话中，关闭浏览器后会被丢弃。</p>
         <p>扩展读取的 Cookie、Local Storage 和 Session Storage 原始内容不会自动复制到开发者服务器。用户对网站数据所做的修改将按照浏览器和目标网站本身的规则保留。</p>
       </section>
 
@@ -418,7 +418,7 @@
         <ul>
           <li><strong>cookies：</strong>读取、新增、修改、删除和监听用户所选网站的 Cookie。</li>
           <li><strong>tabs：</strong>识别、列出和切换当前窗口中的网站标签页，并在用户启用自动刷新后重新加载页面。</li>
-          <li><strong>storage：</strong>在浏览器本地保存界面偏好、收藏标识、模板、用户创建的站点配置组和最近修改记录，并在当前浏览器会话内临时保存修改前后值。</li>
+          <li><strong>storage：</strong>在浏览器本地保存界面偏好、收藏标识、用户创建的站点配置组和最近修改记录，并在当前浏览器会话内临时保存修改前后值。</li>
           <li><strong>scripting：</strong>在用户所选标签页运行扩展包内置函数，以管理 Local Storage 和 Session Storage。</li>
           <li><strong>sidePanel：</strong>在 Chrome 侧边栏中提供同一套站点数据管理界面。</li>
           <li><strong>HTTP/HTTPS 主机权限：</strong>允许用户在其主动选择的任意 HTTP 或 HTTPS 网站上使用 Cookie 和网页存储管理功能。</li>
@@ -457,14 +457,14 @@
     <article id="en" class="language-section" lang="en">
       <div class="language-heading">
         <h2>Privacy Policy</h2>
-        <p class="updated">Effective and last updated: August 25, 2026</p>
+        <p class="updated">Effective and last updated: September 3, 2026</p>
       </div>
 
       <p class="summary">Cookie Controller processes site data locally on the user's device. It operates no data collection server, contains no advertising, analytics, or user tracking, and does not sell or share user data.</p>
 
       <section class="policy-section">
         <h3>1. Scope</h3>
-        <p>This policy applies to the Cookie Controller Chrome extension. The extension has one purpose: helping users inspect and manage cookies, Local Storage, and Session Storage for websites they explicitly select. Search, copy, batch actions, import/export, value tools, templates, site profiles, change history, and undo support that purpose.</p>
+        <p>This policy applies to the Cookie Controller Chrome extension. The extension has one purpose: helping users inspect and manage cookies, Local Storage, and Session Storage for websites they explicitly select. Search, copy, batch actions, import/export, value tools, site profiles, change history, and undo support that purpose.</p>
         <p>This policy does not apply to third-party websites managed through the extension. Their handling of data is governed by their own privacy policies.</p>
       </section>
 
@@ -498,8 +498,8 @@
               </tr>
               <tr>
                 <td>User-saved content</td>
-                <td>Cookie templates, site profiles, favorite site-data identifiers, interface preferences, and automatic reload settings</td>
-                <td>Restore extension settings, templates, and site profiles explicitly saved by the user</td>
+                <td>Site profiles, favorite site-data identifiers, interface preferences, and automatic reload settings</td>
+                <td>Restore extension settings and site profiles explicitly saved by the user</td>
               </tr>
               <tr>
                 <td>Change records</td>
@@ -525,7 +525,7 @@
 
       <section class="policy-section">
         <h3>4. Local storage and retention</h3>
-        <p>Interface preferences, favorite site-data identifiers (which do not contain cookie or storage values), cookie templates, site profiles explicitly created by the user, and recent change records are stored in the user's browser through <code>chrome.storage.local</code> until the user clears extension data, deletes the relevant records, or uninstalls the extension. Site profiles may contain cookie or web storage values the user explicitly chooses to save; variables marked for apply-time input retain only placeholders, not captured or entered values. Complete before-and-after values needed for difference viewing and batch undo are stored only through <code>chrome.storage.session</code> for the current browser session and are discarded when that session ends.</p>
+        <p>Interface preferences, favorite site-data identifiers (which do not contain cookie or storage values), site profiles explicitly created by the user, and recent change records are stored in the user's browser through <code>chrome.storage.local</code> until the user clears extension data, deletes the relevant records, or uninstalls the extension. Site profiles may contain cookie or web storage values the user explicitly chooses to save; variables marked for apply-time input retain only placeholders, not captured or entered values. Cookie template data saved by an older version is not actively deleted during an upgrade and may remain in local browser storage; the current version does not read that data or provide template use or management controls. Complete before-and-after values needed for difference viewing and batch undo are stored only through <code>chrome.storage.session</code> for the current browser session and are discarded when that session ends.</p>
         <p>Cookie, Local Storage, and Session Storage content read by the extension is not automatically copied to a developer server. Changes made by the user remain according to the rules of the browser and the target website.</p>
       </section>
 
@@ -534,7 +534,7 @@
         <ul>
           <li><strong>cookies:</strong> read, create, update, remove, and observe cookies for a user-selected website.</li>
           <li><strong>tabs:</strong> identify, list, and switch website tabs in the current window and reload a page when automatic reload is enabled.</li>
-          <li><strong>storage:</strong> save interface preferences, favorite identifiers, templates, user-created site profiles, and recent change records in local browser storage, and temporarily retain before-and-after values during the current browser session.</li>
+          <li><strong>storage:</strong> save interface preferences, favorite identifiers, user-created site profiles, and recent change records in local browser storage, and temporarily retain before-and-after values during the current browser session.</li>
           <li><strong>scripting:</strong> run bundled extension functions in the user-selected tab to manage Local Storage and Session Storage.</li>
           <li><strong>sidePanel:</strong> provide the same site data management interface in the Chrome side panel.</li>
           <li><strong>HTTP/HTTPS host permissions:</strong> allow users to manage cookies and web storage on any HTTP or HTTPS website they explicitly select.</li>

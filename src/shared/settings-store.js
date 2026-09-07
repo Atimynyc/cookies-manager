@@ -2,7 +2,6 @@ import { callChrome } from "./chrome-call.js";
 import { normalizeFavoriteItemIds } from "./favorites.js";
 import { getSiteOrigin } from "./url.js";
 
-const COOKIE_TEMPLATES_KEY = "cookieTemplates";
 export const FAVORITE_SITE_DATA_IDS_KEY = "favoriteSiteDataIds";
 export const LAST_VIEWED_SITE_DATA_KEY_PREFIX = "lastViewedSiteData:";
 const SITE_DATA_VIEWS = ["cookies", "localStorage", "sessionStorage"];
@@ -72,27 +71,4 @@ export async function saveLastViewedSiteData(url, value) {
   await callChrome("storage.local.set", {
     [storageKey]: normalizeLastViewedSiteData(value)
   });
-}
-
-export async function getCookieTemplates() {
-  const result = await callChrome("storage.local.get", {
-    [COOKIE_TEMPLATES_KEY]: []
-  });
-  return normalizeCookieTemplates(result[COOKIE_TEMPLATES_KEY]);
-}
-
-export async function saveCookieTemplates(templates) {
-  await callChrome("storage.local.set", {
-    [COOKIE_TEMPLATES_KEY]: normalizeCookieTemplates(templates)
-  });
-}
-
-export function normalizeCookieTemplates(templates, limit = 12) {
-  if (!Array.isArray(templates)) {
-    return [];
-  }
-
-  return templates
-    .filter((template) => template && typeof template.label === "string" && typeof template.value === "string")
-    .slice(0, limit);
 }

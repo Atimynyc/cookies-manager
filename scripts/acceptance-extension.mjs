@@ -47,6 +47,7 @@ try {
   const popup = await openPopupForActiveTab(context, testPage, extensionId);
   await waitForPopupReady(popup, "127.0.0.1");
   await assertPopupListsSeededCookies(popup);
+  await assertValueTypeIndicators(popup);
   if (favoritesOnly) {
     await assertFavoriteFlow(popup);
     await assertDetailFavoriteControl(popup);
@@ -59,12 +60,12 @@ try {
     await assertWorkspaceNavigation(popup);
     await assertTableActionHierarchy(popup);
     await assertEditorActions(popup);
+    await assertTemplateFeatureRemoved(popup);
     await assertValueTools(popup);
     await assertStressLayout(popup);
     await assertExportFlow(popup);
     await assertV030WorkbenchFlow(popup, context, testPage, baseUrl, extensionId);
     await assertColumnPreference(popup);
-    await assertTemplateFlow(popup);
     await assertBatchFlow(popup, context, baseUrl);
     await assertLiveCookieRefresh(popup, context, baseUrl);
     await assertLocalStorageFlow(popup, testPage, runId);
@@ -209,6 +210,23 @@ async function assertPopupListsSeededCookies(popup) {
   }
 }
 
+async function assertValueTypeIndicators(popup) {
+  const valuesByName = await popup.locator("#cookieTableBody tr").evaluateAll((rows) => Object.fromEntries(
+    rows.map((row) => {
+      const name = row.querySelector(".name-cell-text")?.textContent || "";
+      const value = row.querySelector(".value-cell-text")?.textContent || "";
+      const marker = row.querySelector(".value-type-indicator")?.getAttribute("aria-label") || null;
+      return [name, { value, marker }];
+    })
+  ));
+
+  assert.equal(valuesByName.plain?.marker, null);
+  assert.equal(valuesByName.encoded?.marker, "JSON value");
+  assert.equal(valuesByName.encoded?.value, "%7B%22ok%22%3Atrue%2C%22from%22%3A%22playwright%22%7D");
+  assert.equal(valuesByName.jwt?.marker, "JWT value");
+  assert.equal(valuesByName.jwt?.value, jwt);
+}
+
 async function assertFavoriteFlow(popup) {
   const cases = [
     ["cookies", "plain"],
@@ -226,6 +244,12 @@ async function assertFavoriteFlow(popup) {
     assert.equal(await firstRow.locator(".favorite-button").count(), 0);
     await firstRow.click();
     assert.equal(await popup.locator("#editorFavoriteButton").getAttribute("aria-pressed"), "false");
+    const favoriteButton = popup.locator("#editorFavoriteButton");
+    const initialLabel = `Favorite ${name}`;
+    const favoriteLabel = `Remove ${name} from favorites`;
+    const tooltip = view === "cookies" ? `My favorite cookie ${name}` : initialLabel;
+    assert.equal(await favoriteButton.getAttribute("aria-label"), initialLabel);
+    assert.equal(await favoriteButton.getAttribute("title"), tooltip);
     assert.equal(await popup.locator("#editorFavoriteButton svg").count(), 0);
     assert.match(
       await popup.locator("#editorFavoriteButton .favorite-brand-icon").getAttribute("src"),
@@ -236,8 +260,13 @@ async function assertFavoriteFlow(popup) {
         .evaluate((icon) => icon.complete && icon.naturalWidth > 0),
       true
     );
-    await popup.locator("#editorFavoriteButton").click();
-    assert.equal(await popup.locator("#editorFavoriteButton").getAttribute("aria-pressed"), "true");
+    await favoriteButton.click();
+    assert.equal(await favoriteButton.getAttribute("aria-pressed"), "true");
+    assert.equal(await favoriteButton.getAttribute("aria-label"), favoriteLabel);
+    assert.equal(
+      await favoriteButton.getAttribute("title"),
+      view === "cookies" ? `My favorite cookie ${name}` : favoriteLabel
+    );
     const favoriteIndicator = popup.locator("#cookieTableBody tr").first().locator(".favorite-indicator");
     assert.equal(await favoriteIndicator.count(), 1);
     assert.equal(await favoriteIndicator.locator("svg").count(), 0);
@@ -600,6 +629,32 @@ async function assertEditorActions(popup) {
   await popup.waitForFunction(() => document.querySelector("#statusBar")?.hidden === true);
   assert.equal(await popup.locator("#statusBar").isHidden(), true);
   await screenshot(popup, "milestone-4-popup-editor-actions.png");
+}
+
+async function assertTemplateFeatureRemoved(popup) {
+  const legacyTemplates = [{
+    id: `legacy-${runId}`,
+    label: "Legacy template",
+    name: "plain",
+    value: `legacy-${runId}`
+  }];
+  await popup.evaluate(async (templates) => {
+    await chrome.storage.local.set({ cookieTemplates: templates });
+  }, legacyTemplates);
+
+  await popup.reload();
+  await waitForPopupReady(popup, "127.0.0.1");
+  await selectCookieBySearch(popup, "plain");
+
+  for (const selector of ["#saveTemplateButton", "#applyTemplateButton", "#templateDialog"]) {
+    assert.equal(await popup.locator(selector).count(), 0, `${selector} should not exist.`);
+  }
+
+  const storedTemplates = await popup.evaluate(async () => {
+    const result = await chrome.storage.local.get({ cookieTemplates: [] });
+    return result.cookieTemplates;
+  });
+  assert.deepEqual(storedTemplates, legacyTemplates);
 }
 
 async function assertTableActionHierarchy(popup) {
@@ -1395,73 +1450,6 @@ async function assertSidePanelWorkbench(context, activePage, extensionId) {
   await screenshot(sidePanel, "v030-sidepanel-profile-create-empty.png");
   await sidePanel.close();
   await activePage.bringToFront();
-}
-
-async function assertTemplateFlow(popup) {
-  await selectCookieBySearch(popup, "plain");
-  await popup.locator("#saveTemplateButton").click();
-  const saveTemplateDialogLayout = await getDialogLayout(popup, "#textInputDialog");
-  assert.ok(saveTemplateDialogLayout.width <= 440, JSON.stringify(saveTemplateDialogLayout));
-  assert.ok(saveTemplateDialogLayout.height <= 240, JSON.stringify(saveTemplateDialogLayout));
-  assert.equal(await popup.locator("#textInputDialogTitle").textContent(), "Save template");
-  assert.equal(await popup.locator("#textInputDialogInput").inputValue(), "plain");
-  await screenshot(popup, "milestone-4-popup-save-template-dialog.png");
-  await popup.locator("#textInputDialogInput").fill("   ");
-  await popup.locator("#textInputDialogSubmitButton").click();
-  assert.equal(await popup.locator("#textInputDialogError").isHidden(), false);
-  await popup.locator("#textInputDialogInput").fill(`Plain template ${runId}`);
-  await popup.locator("#textInputDialogSubmitButton").click();
-  await waitForStatus(popup, "Saved template");
-
-  await popup.locator("#saveTemplateButton").click();
-  await submitTextInput(popup, `Temporary template ${runId}`);
-  await waitForStatus(popup, "Saved template");
-
-  await selectCookieBySearch(popup, "editable");
-  await popup.locator("#applyTemplateButton").click();
-  const templateDialogLayout = await getDialogLayout(popup, "#templateDialog");
-  assert.ok(templateDialogLayout.width <= 460, JSON.stringify(templateDialogLayout));
-  assert.ok(templateDialogLayout.height <= 420, JSON.stringify(templateDialogLayout));
-  assert.equal(await popup.locator(".template-option").count(), 2);
-  assert.equal(await popup.locator(".template-option-delete").count(), 2);
-  assert.match(await popup.locator(".template-option").first().innerText(), new RegExp(`Temporary template ${runId}`));
-  await screenshot(popup, "milestone-4-popup-template-dialog.png");
-
-  await popup.locator(".template-option-delete").first().click();
-  assert.equal(await popup.locator("#confirmDialogTitle").textContent(), "Delete template?");
-  assert.match(await popup.locator("#confirmDialogMessage").textContent(), new RegExp(`Temporary template ${runId}`));
-  await popup.keyboard.press("Escape");
-  await popup.locator("#confirmDialog").waitFor({ state: "hidden" });
-  assert.equal(await popup.locator(".template-option").count(), 2);
-
-  await popup.locator(".template-option-delete").first().click();
-  await acceptDeleteConfirmation(popup);
-  await popup.waitForFunction(() => document.querySelectorAll(".template-option").length === 1);
-  assert.match(await popup.locator("#templateDialogFeedback").textContent(), /Deleted template/);
-  const storedTemplates = await popup.evaluate(async () => {
-    const result = await chrome.storage.local.get({ cookieTemplates: [] });
-    return result.cookieTemplates;
-  });
-  assert.equal(storedTemplates.length, 1);
-  assert.doesNotMatch(storedTemplates[0].label, /Temporary template/);
-
-  await popup.locator("#templateDialogApplyButton").click();
-  await popup.locator("#confirmDialog").waitFor({ state: "visible" });
-  assert.equal(await popup.locator("#confirmDialogTitle").textContent(), "Apply to a different cookie?");
-  assert.match(await popup.locator("#confirmDialogMessage").textContent(), /plain.*editable/);
-  assert.equal(await popup.locator("#confirmDialogDeleteButton").textContent(), "Apply value");
-  await popup.locator("#confirmDialogDeleteButton").click();
-  await waitForStatus(popup, "Applied template");
-  const value = await popup.locator("#valueInput").inputValue();
-  assert.match(value, new RegExp(`hello-world-${runId}`));
-  await popup.locator("#resetButton").click();
-
-  await popup.locator("#applyTemplateButton").click();
-  await popup.locator(".template-option-delete").click();
-  await acceptDeleteConfirmation(popup);
-  await popup.locator("#templateDialog").waitFor({ state: "hidden" });
-  await waitForStatus(popup, "Deleted template");
-  assert.equal(await popup.locator("#applyTemplateButton").isDisabled(), true);
 }
 
 async function assertBatchFlow(popup, context, baseUrl) {

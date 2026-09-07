@@ -18,6 +18,28 @@ export function compactJsonValue(value) {
   return JSON.stringify(parseJsonCandidate(value));
 }
 
+export function classifyValueType(value) {
+  const source = String(value ?? "").trim();
+  if (!source) {
+    return null;
+  }
+
+  if (isJwtCandidate(source)) {
+    return "jwt";
+  }
+
+  try {
+    const parsed = parseJsonCandidate(source);
+    if (parsed !== null && typeof parsed === "object") {
+      return "json";
+    }
+  } catch {
+    // Plain values do not need a type marker.
+  }
+
+  return null;
+}
+
 const AUTO_VALUE_TOOL_DEFINITIONS = [
   {
     mode: "jwt",
@@ -108,6 +130,29 @@ export function decodeJwtPayload(value) {
   } catch {
     throw new Error("JWT payload could not be decoded.");
   }
+}
+
+function isJwtCandidate(value) {
+  const token = value.replace(/^Bearer\s+/i, "");
+  const parts = token.split(".");
+  if (parts.length !== 3 || !parts[0] || !parts[1]) {
+    return false;
+  }
+  if (!parts.every((part) => /^[A-Za-z0-9_-]*$/.test(part))) {
+    return false;
+  }
+
+  try {
+    const header = JSON.parse(decodeBase64Url(parts[0]));
+    const payload = JSON.parse(decodeBase64Url(parts[1]));
+    return isJsonObject(header) && isJsonObject(payload);
+  } catch {
+    return false;
+  }
+}
+
+function isJsonObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 function decodeBase64Url(value) {

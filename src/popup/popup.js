@@ -21,13 +21,10 @@ import {
 } from "../shared/history-store.js";
 import {
   FAVORITE_SITE_DATA_IDS_KEY,
-  getCookieTemplates,
   getFavoriteSiteDataIds,
   getLastViewedSiteData,
   getPreferences,
   normalizeLastViewedSiteData,
-  normalizeCookieTemplates,
-  saveCookieTemplates,
   saveFavoriteSiteDataIds,
   saveLastViewedSiteData,
   savePreferences
@@ -126,7 +123,6 @@ const state = {
   autoRefreshPage: false,
   valueToolMode: "none",
   columnWidths: [...DEFAULT_COLUMN_WIDTHS],
-  cookieTemplates: [],
   recentChanges: [],
   undoSnapshots: new Map(),
   unreadHistoryIds: new Set(),
@@ -204,8 +200,6 @@ const elements = {
   copyValueButton: document.querySelector("#copyValueButton"),
   copyPairButton: document.querySelector("#copyPairButton"),
   copyJsonButton: document.querySelector("#copyJsonButton"),
-  saveTemplateButton: document.querySelector("#saveTemplateButton"),
-  applyTemplateButton: document.querySelector("#applyTemplateButton"),
   resetButton: document.querySelector("#resetButton"),
   deleteButton: document.querySelector("#deleteButton"),
   saveButton: document.querySelector("#saveButton"),
@@ -221,10 +215,6 @@ const elements = {
   textInputDialogInput: document.querySelector("#textInputDialogInput"),
   textInputDialogError: document.querySelector("#textInputDialogError"),
   textInputDialogSubmitButton: document.querySelector("#textInputDialogSubmitButton"),
-  templateDialog: document.querySelector("#templateDialog"),
-  templateDialogOptions: document.querySelector("#templateDialogOptions"),
-  templateDialogFeedback: document.querySelector("#templateDialogFeedback"),
-  templateDialogApplyButton: document.querySelector("#templateDialogApplyButton"),
   workbenchDialog: document.querySelector("#workbenchDialog"),
   dialogCancelButtons: Array.from(document.querySelectorAll("[data-dialog-cancel]")),
   historyList: document.querySelector("#historyList"),
@@ -241,7 +231,6 @@ const elements = {
 };
 
 const dialogController = createDialogController(elements);
-const requestConfirmation = dialogController.requestConfirmation;
 const requestDeleteConfirmation = dialogController.requestConfirmation;
 const requestTextInput = dialogController.requestTextInput;
 const { showStatus, clearStatus } = createStatusController(elements);
@@ -321,7 +310,6 @@ async function initialize() {
   }
 
   await Promise.all([
-    loadCookieTemplates(),
     loadFavoriteSiteDataIds(),
     loadRecentChanges()
   ]);
@@ -380,8 +368,6 @@ function bindEvents() {
   elements.copyValueButton.addEventListener("click", () => copySelected("value", elements.copyValueButton));
   elements.copyPairButton.addEventListener("click", () => copySelected("pair", elements.copyPairButton));
   elements.copyJsonButton.addEventListener("click", () => copySelected("json", elements.copyJsonButton));
-  elements.saveTemplateButton.addEventListener("click", saveSelectedTemplate);
-  elements.applyTemplateButton.addEventListener("click", applyCookieTemplate);
   elements.valueToolModeSelect.addEventListener("change", async () => {
     state.valueToolMode = normalizeValueToolMode(elements.valueToolModeSelect.value);
     await savePreferences({ valueToolMode: state.valueToolMode });
@@ -397,8 +383,7 @@ function bindEvents() {
   elements.closeHistoryDetailButton.addEventListener("click", clearHistoryDetail);
   for (const dialog of [
     elements.confirmDialog,
-    elements.textInputDialog,
-    elements.templateDialog
+    elements.textInputDialog
   ]) {
     dialog.addEventListener("click", cancelDialogFromBackdrop);
   }
@@ -1159,82 +1144,6 @@ async function importQuickEntries(input) {
   }
 }
 
-async function saveSelectedTemplate() {
-  const row = getSelectedRow();
-  if (!row || !isCookieView()) {
-    showStatus("Select a cookie before saving a template.", "error");
-    return;
-  }
-
-  const label = await requestTextInput({
-    title: "Save template",
-    fieldLabel: "Template name",
-    initialValue: row.name,
-    submitLabel: "Save",
-    selectValue: true,
-    validate: (value) => {
-      const trimmedValue = value.trim();
-      if (!trimmedValue) {
-        throw new Error("Enter a template name.");
-      }
-      return trimmedValue;
-    }
-  });
-  if (label === null) {
-    return;
-  }
-
-  const template = {
-    id: `${Date.now()}-${row.name}`,
-    label,
-    name: row.name,
-    value: elements.valueInput.value,
-    domain: row.domain,
-    path: row.path,
-    createdAt: Date.now()
-  };
-
-  state.cookieTemplates = normalizeCookieTemplates([template, ...state.cookieTemplates]);
-  await saveCookieTemplates(state.cookieTemplates);
-  showStatus(`Saved template ${template.label}.`, "success");
-}
-
-async function applyCookieTemplate() {
-  const row = getSelectedRow();
-  if (!row || !isCookieView()) {
-    showStatus("Select a cookie before applying a template.", "error");
-    return;
-  }
-
-  if (state.cookieTemplates.length === 0) {
-    showStatus("No cookie templates have been saved yet.", "error");
-    return;
-  }
-
-  const template = await requestTemplateSelection();
-  if (!template) {
-    return;
-  }
-
-  if (template.name && template.name !== row.name) {
-    const confirmed = await requestConfirmation({
-      title: "Apply to a different cookie?",
-      message: `This template was saved for "${template.name}", but "${row.name}" is selected.`,
-      detail: "Only the template value will be applied.",
-      confirmLabel: "Apply value",
-      danger: false
-    });
-    if (!confirmed) {
-      return;
-    }
-  }
-
-  elements.valueInput.value = template.value;
-  updateSaveState();
-  updateAutoToolOutput();
-  showStatus(`Applied template ${template.label}. Save to write it.`, "success");
-}
-
 function validateQuickInputRows(rows, kind) {
   const cookies = kind === "cookie";
   const createPair = cookies ? createCookiePair : createStoragePair;
@@ -1296,144 +1205,6 @@ function showImportStatus(pairs, result) {
     `Imported ${counts.success} ${itemLabel}, ${counts.failed} failed.${firstError ? ` ${firstError}` : ""}`,
     "error"
   );
-}
-
-function requestTemplateSelection() {
-  const previouslyFocused = document.activeElement;
-  elements.templateDialog.returnValue = "cancel";
-  setTemplateDialogFeedback();
-  renderTemplateOptions();
-
-  return new Promise((resolve) => {
-    elements.templateDialog.addEventListener("close", () => {
-      const selected = elements.templateDialogOptions.querySelector('input[name="cookieTemplate"]:checked');
-      const template = elements.templateDialog.returnValue === "apply"
-        ? state.cookieTemplates[Number(selected?.value)]
-        : null;
-      if (previouslyFocused instanceof HTMLElement) {
-        previouslyFocused.focus();
-      }
-      resolve(template || null);
-    }, { once: true });
-    elements.templateDialog.showModal();
-    elements.templateDialogOptions.querySelector("input")?.focus();
-  });
-}
-
-function renderTemplateOptions(selectedTemplate = state.cookieTemplates[0]) {
-  elements.templateDialogOptions.replaceChildren();
-
-  state.cookieTemplates.forEach((template, index) => {
-    const row = document.createElement("div");
-    row.className = "template-option-row";
-
-    const option = document.createElement("label");
-    option.className = "template-option";
-
-    const input = document.createElement("input");
-    input.type = "radio";
-    input.name = "cookieTemplate";
-    input.value = String(index);
-    input.checked = template === selectedTemplate;
-
-    const copy = document.createElement("span");
-    copy.className = "template-option-copy";
-    const label = document.createElement("span");
-    label.className = "template-option-label";
-    label.textContent = template.label;
-    const source = document.createElement("span");
-    source.className = "template-option-source";
-    source.textContent = template.name;
-    copy.append(label, source);
-    option.append(input, copy);
-
-    const deleteButton = document.createElement("button");
-    deleteButton.className = "template-option-delete danger-button";
-    deleteButton.type = "button";
-    deleteButton.title = `Delete ${template.label}`;
-    deleteButton.setAttribute("aria-label", `Delete template ${template.label}`);
-    deleteButton.append(createTemplateDeleteIcon());
-    deleteButton.addEventListener("click", () => deleteCookieTemplate(template));
-
-    row.append(option, deleteButton);
-    elements.templateDialogOptions.append(row);
-  });
-
-  elements.templateDialogApplyButton.disabled = state.cookieTemplates.length === 0;
-}
-
-function createTemplateDeleteIcon() {
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("class", "icon");
-  svg.setAttribute("viewBox", "0 0 24 24");
-  svg.setAttribute("aria-hidden", "true");
-
-  for (const pathData of ["M3 6h18", "M8 6V4h8v2", "M19 6l-1 15H6L5 6", "M10 11v6M14 11v6"]) {
-    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", pathData);
-    svg.append(path);
-  }
-  return svg;
-}
-
-async function deleteCookieTemplate(template) {
-  const confirmed = await requestDeleteConfirmation({
-    title: "Delete template?",
-    message: `"${template.label}" will be permanently deleted.`,
-    detail: template.name
-  });
-  if (!confirmed) {
-    return;
-  }
-
-  const selectedIndex = Number(
-    elements.templateDialogOptions.querySelector('input[name="cookieTemplate"]:checked')?.value
-  );
-  const selectedTemplate = state.cookieTemplates[selectedIndex];
-  const templateIndex = state.cookieTemplates.indexOf(template);
-  const nextTemplates = state.cookieTemplates.filter((_, index) => index !== templateIndex);
-  const deleteButtons = Array.from(elements.templateDialogOptions.querySelectorAll(".template-option-delete"));
-  deleteButtons.forEach((button) => {
-    button.disabled = true;
-  });
-  elements.templateDialogApplyButton.disabled = true;
-
-  try {
-    await saveCookieTemplates(nextTemplates);
-    state.cookieTemplates = nextTemplates;
-    updateSelectionControls();
-
-    if (nextTemplates.length === 0) {
-      elements.templateDialog.close("cancel");
-      showStatus(`Deleted template ${template.label}.`, "success");
-      return;
-    }
-
-    const nextSelectedTemplate = selectedTemplate === template ? nextTemplates[0] : selectedTemplate;
-    renderTemplateOptions(nextSelectedTemplate);
-    setTemplateDialogFeedback(`Deleted template ${template.label}.`);
-    elements.templateDialogOptions.querySelector('input[name="cookieTemplate"]:checked')?.focus();
-  } catch (error) {
-    deleteButtons.forEach((button) => {
-      button.disabled = false;
-    });
-    elements.templateDialogApplyButton.disabled = false;
-    setTemplateDialogFeedback(error?.message || "Failed to delete template.", "error");
-  }
-}
-
-function setTemplateDialogFeedback(message = "", type = "success") {
-  elements.templateDialogFeedback.textContent = message;
-  elements.templateDialogFeedback.hidden = !message;
-  elements.templateDialogFeedback.classList.toggle("is-error", type === "error");
-}
-
-async function loadCookieTemplates() {
-  try {
-    state.cookieTemplates = await getCookieTemplates();
-  } catch {
-    state.cookieTemplates = [];
-  }
 }
 
 async function importPair(pair) {
@@ -1869,11 +1640,12 @@ function updateEditorFavoriteButton() {
   const favorite = Boolean(row && isFavorite(row.id));
   const itemName = row?.name || "item";
   const label = favorite ? `Remove ${itemName} from favorites` : `Favorite ${itemName}`;
+  const tooltip = isCookieView() ? `My favorite cookie ${itemName}` : label;
 
   elements.editorFavoriteButton.classList.toggle("is-favorite", favorite);
   elements.editorFavoriteButton.setAttribute("aria-pressed", String(favorite));
   elements.editorFavoriteButton.setAttribute("aria-label", label);
-  elements.editorFavoriteButton.title = label;
+  elements.editorFavoriteButton.title = tooltip;
   elements.editorFavoriteButton.disabled = !row;
 }
 
@@ -2031,8 +1803,6 @@ function updateSelectionControls() {
   elements.copyJsonButton.disabled = !hasSelection;
   elements.copyToolOutputButton.disabled = !state.toolOutputText;
   elements.clearHistoryButton.disabled = getVisibleRecentChanges().length === 0;
-  elements.saveTemplateButton.disabled = !hasSelection || !isCookieView();
-  elements.applyTemplateButton.disabled = !hasSelection || !isCookieView() || state.cookieTemplates.length === 0;
   updateSaveState();
 }
 
@@ -2335,8 +2105,6 @@ function setBusy(isBusy) {
     elements.profilesButton.disabled = true;
     elements.batchEditButton.disabled = true;
     elements.batchDeleteButton.disabled = true;
-    elements.saveTemplateButton.disabled = true;
-    elements.applyTemplateButton.disabled = true;
     elements.editorFavoriteButton.disabled = true;
     return;
   }
