@@ -5,20 +5,9 @@ import {
   hasSitePermission,
   openSidePanel,
   reloadTab,
-  removeCookie,
-  setCookieData,
   setCookiePair,
-  setCookieValue,
   watchCookieChanges
 } from "../shared/cookie-api.js";
-import {
-  clearRecentChangeSnapshots,
-  clearRecentCookieChanges,
-  getRecentChangeSnapshots,
-  getRecentCookieChanges,
-  saveRecentChangeSnapshots,
-  saveRecentCookieChanges
-} from "../shared/history-store.js";
 import {
   FAVORITE_SITE_DATA_IDS_KEY,
   getFavoriteSiteDataIds,
@@ -40,9 +29,7 @@ import {
   toCookieRow
 } from "../shared/cookie-format.js";
 import {
-  removeStorageItem,
-  setStoragePair,
-  setStorageValue
+  setStoragePair
 } from "../shared/storage-api.js";
 import {
   getStorageJson,
@@ -50,42 +37,13 @@ import {
   getStorageTypeLabel,
   toStorageRow
 } from "../shared/storage-format.js";
-import {
-  createRecentChange,
-  normalizeRecentChanges
-} from "../shared/recent-changes.js";
 import { getDisplayHost, getSiteOrigin, isSupportedPageUrl } from "../shared/url.js";
 import { getAutoValueToolOutput } from "../shared/value-tools.js";
 import { createCookiePair, createStoragePair } from "../shared/pair-parser.js";
 import { executeBatchOperation } from "../shared/batch-operations.js";
 import {
-  addOperationSkip,
-  createBatchOperationResult,
   getBatchOperationCounts
 } from "../shared/operation-result.js";
-import {
-  createSiteDataPackage,
-  parseSiteDataPackage
-} from "../shared/site-data-package.js";
-import {
-  buildSiteDataImportPreview,
-  planSiteDataImport
-} from "../shared/site-data-import.js";
-import {
-  createSiteProfile,
-  duplicateSiteProfile,
-  renameSiteProfile,
-  resolveSiteProfileVariables
-} from "../shared/site-profiles.js";
-import {
-  getSiteProfiles,
-  saveSiteProfiles
-} from "../shared/site-profile-store.js";
-import {
-  clearLatestBatchSnapshot,
-  getLatestBatchSnapshot,
-  saveLatestBatchSnapshot
-} from "../shared/batch-snapshot-store.js";
 import {
   clampColumnWidth,
   COLUMN_CSS_VARS,
@@ -98,7 +56,6 @@ import {
   VALUE_TOOL_DEFINITIONS
 } from "./popup-config.js";
 import {
-  readAllSiteDataRows,
   readSiteDataRows,
   resolveCookieStoreId
 } from "./popup-data-service.js";
@@ -107,6 +64,10 @@ import { createClipboardFeedback, createStatusController, writeClipboard } from 
 import { renderDataTable } from "./popup-table-view.js";
 import { createHistoryView } from "./popup-history-view.js";
 import { createSiteDataWorkbench } from "./popup-workbench.js";
+import { createPopupSiteDataController } from "./popup-site-data-controller.js";
+import { saveJsonFile, saveTextFile } from "./popup-downloads.js";
+import { createPopupHistoryController } from "./popup-history-controller.js";
+import { createPopupItemActionsController } from "./popup-item-actions-controller.js";
 
 const state = {
   tab: null,
@@ -235,37 +196,88 @@ const requestDeleteConfirmation = dialogController.requestConfirmation;
 const requestTextInput = dialogController.requestTextInput;
 const { showStatus, clearStatus } = createStatusController(elements);
 const { showCopyFeedback, resetCopyFeedback } = createClipboardFeedback(elements.copyAnnouncement);
+let historyController;
+const historyView = createHistoryView({
+  state,
+  elements,
+  getHistoryItemKind,
+  onSelectHistoryView: () => setActiveDetailView("history"),
+  onUndo: (changeId) => historyController.undoRecentChange(changeId)
+});
 const {
   clearHistoryDetail,
   getVisibleRecentChanges,
   renderHistory,
   updateHistoryButtonState
-} = createHistoryView({
+} = historyView;
+historyController = createPopupHistoryController({
+  state,
+  getCurrentView,
+  getHistoryItemKind,
+  rememberCurrentSelection,
+  clearHistoryDetail,
+  renderHistory,
+  refreshData,
+  suppressCookieWatcher,
+  setBusy,
+  showStatus,
+  clearStatus
+});
+const itemActions = createPopupItemActionsController({
   state,
   elements,
-  getHistoryItemKind,
-  onSelectHistoryView: () => setActiveDetailView("history"),
-  onUndo: undoRecentChange
+  getCurrentView,
+  isCookieView,
+  getSelectedRow,
+  getSelectedRows,
+  getExpirationDraft,
+  hasSelectedItemChanges,
+  getRowLocation,
+  getRowJson,
+  populateExpirationEditor,
+  updateSaveState,
+  updateAutoToolOutput,
+  rememberCurrentSelection,
+  refreshData,
+  recordRecentChange: historyController.recordRecentChange,
+  suppressCookieWatcher,
+  requestDeleteConfirmation,
+  requestTextInput,
+  setBusy,
+  showStatus,
+  clearStatus,
+  writeClipboard,
+  showCopyFeedback,
+  resetCopyFeedback
+});
+const siteDataController = createPopupSiteDataController({
+  state,
+  getSelectedRows,
+  refreshData,
+  suppressCookieWatcher,
+  showStatus,
+  requestDeleteConfirmation,
+  requestTextInput
 });
 const workbench = createSiteDataWorkbench({
   dialog: elements.workbenchDialog,
   getContext: getWorkbenchContext,
-  onPreview: previewSiteDataPackage,
-  onApply: applySiteDataPackage,
-  onUndo: undoLatestSiteDataBatch,
+  onPreview: siteDataController.previewPackage,
+  onApply: siteDataController.applyPackage,
+  onUndo: siteDataController.undoLatestBatch,
   onQuickImport: importQuickEntries,
-  onBuildPackage: buildSiteDataExportForScope,
+  onBuildPackage: siteDataController.buildExportForScope,
   onExportSelectionChange: updateExportSelection,
   onCopy: writeClipboard,
   onSaveJson: saveJsonFile,
   onSaveText: saveTextFile,
-  onLoadProfiles: getSiteProfiles,
-  onCreateProfile: createProfileFromCurrentSite,
-  onRenameProfile: renameSavedProfile,
-  onDuplicateProfile: duplicateSavedProfile,
-  onDeleteProfile: deleteSavedProfile,
-  onExportProfile: exportSavedProfile,
-  onResolveProfile: resolveSiteProfileVariables
+  onLoadProfiles: siteDataController.getProfiles,
+  onCreateProfile: siteDataController.createProfileFromCurrentSite,
+  onRenameProfile: siteDataController.renameSavedProfile,
+  onDuplicateProfile: siteDataController.duplicateSavedProfile,
+  onDeleteProfile: siteDataController.deleteSavedProfile,
+  onExportProfile: siteDataController.exportSavedProfile,
+  onResolveProfile: siteDataController.resolveProfileVariables
 });
 
 const popupParams = new URLSearchParams(location.search);
@@ -311,7 +323,7 @@ async function initialize() {
 
   await Promise.all([
     loadFavoriteSiteDataIds(),
-    loadRecentChanges()
+    historyController.loadRecentChanges()
   ]);
   await refreshData();
   startCookieWatcher();
@@ -332,8 +344,8 @@ function bindEvents() {
   elements.requestPermissionButton.addEventListener("click", refreshData);
   elements.closeStatusButton.addEventListener("click", clearStatus);
   elements.selectAllCheckbox.addEventListener("change", toggleSelectAllVisible);
-  elements.batchEditButton.addEventListener("click", batchEditSelected);
-  elements.batchDeleteButton.addEventListener("click", batchDeleteSelected);
+  elements.batchEditButton.addEventListener("click", itemActions.batchEditSelected);
+  elements.batchDeleteButton.addEventListener("click", itemActions.batchDeleteSelected);
   elements.exportButton.addEventListener("click", () => workbench.open("export"));
   elements.importButton.addEventListener("click", () => workbench.open("import"));
   elements.profilesButton.addEventListener("click", () => workbench.open("profiles"));
@@ -346,7 +358,7 @@ function bindEvents() {
     updateRefreshControlState();
     await savePreferences({ autoRefreshPage: state.autoRefreshPage });
   });
-  elements.cookieEditor.addEventListener("submit", saveSelectedItem);
+  elements.cookieEditor.addEventListener("submit", itemActions.saveSelectedItem);
   elements.valueInput.addEventListener("input", () => {
     updateSaveState();
     updateAutoToolOutput();
@@ -357,17 +369,17 @@ function bindEvents() {
   };
   elements.expirationInput.addEventListener("input", handleExpirationChange);
   elements.expirationInput.addEventListener("change", handleExpirationChange);
-  elements.resetButton.addEventListener("click", resetSelectedItem);
-  elements.deleteButton.addEventListener("click", deleteSelectedItem);
+  elements.resetButton.addEventListener("click", itemActions.resetSelectedItem);
+  elements.deleteButton.addEventListener("click", itemActions.deleteSelectedItem);
   elements.editorFavoriteButton.addEventListener("click", () => {
     const row = getSelectedRow();
     if (row) {
       void toggleFavorite(row.id, !isFavorite(row.id));
     }
   });
-  elements.copyValueButton.addEventListener("click", () => copySelected("value", elements.copyValueButton));
-  elements.copyPairButton.addEventListener("click", () => copySelected("pair", elements.copyPairButton));
-  elements.copyJsonButton.addEventListener("click", () => copySelected("json", elements.copyJsonButton));
+  elements.copyValueButton.addEventListener("click", () => itemActions.copySelected("value", elements.copyValueButton));
+  elements.copyPairButton.addEventListener("click", () => itemActions.copySelected("pair", elements.copyPairButton));
+  elements.copyJsonButton.addEventListener("click", () => itemActions.copySelected("json", elements.copyJsonButton));
   elements.valueToolModeSelect.addEventListener("change", async () => {
     state.valueToolMode = normalizeValueToolMode(elements.valueToolModeSelect.value);
     await savePreferences({ valueToolMode: state.valueToolMode });
@@ -379,7 +391,7 @@ function bindEvents() {
   elements.historyViewButton.addEventListener("click", () => {
     setActiveDetailView(state.activeDetailView === "history" ? "details" : "history");
   });
-  elements.clearHistoryButton.addEventListener("click", clearHistory);
+  elements.clearHistoryButton.addEventListener("click", historyController.clearHistory);
   elements.closeHistoryDetailButton.addEventListener("click", clearHistoryDetail);
   for (const dialog of [
     elements.confirmDialog,
@@ -614,220 +626,6 @@ async function safeHasSitePermission(url) {
   }
 }
 
-async function saveSelectedItem(event) {
-  event.preventDefault();
-
-  const row = getSelectedRow();
-  if (!row || !state.tab?.url) {
-    return;
-  }
-
-  const nextValue = elements.valueInput.value;
-  const expiration = isCookieView() ? getExpirationDraft() : null;
-  if (!hasSelectedItemChanges(row)) {
-    return;
-  }
-
-  if (isCookieView() && !expiration) {
-    elements.expirationInput.reportValidity();
-    return;
-  }
-
-  setBusy(true);
-  clearStatus();
-  suppressCookieWatcher();
-
-  try {
-    let savedCookie = null;
-    if (isCookieView()) {
-      savedCookie = await setCookieValue(state.tab.url, row.raw, nextValue, expiration);
-    } else {
-      await setStorageValue(state.tab.id, state.tab.url, getCurrentView().storageType, row.name, nextValue);
-    }
-    await safelyRecordRecentChange(row, nextValue, { savedCookie });
-    state.selectedId = row.id;
-    await refreshData();
-
-    if (state.autoRefreshPage) {
-      await reloadTab(state.tab.id);
-    }
-
-    showStatus(`Saved ${row.name}.`, "success");
-  } catch (error) {
-    showStatus(error?.message || `Failed to save ${getCurrentView().singular}.`, "error");
-  } finally {
-    setBusy(false);
-  }
-}
-
-async function deleteSelectedItem() {
-  const row = getSelectedRow();
-  if (!row || !state.tab?.url) {
-    return;
-  }
-
-  const confirmed = await requestDeleteConfirmation({
-    title: `Delete ${getCurrentView().singular}?`,
-    message: `"${row.name}" will be permanently deleted.`,
-    detail: getRowLocation(row)
-  });
-  if (!confirmed) {
-    return;
-  }
-
-  setBusy(true);
-  clearStatus();
-  suppressCookieWatcher();
-
-  try {
-    if (isCookieView()) {
-      await removeCookie(state.tab.url, row.raw);
-    } else {
-      await removeStorageItem(state.tab.id, state.tab.url, getCurrentView().storageType, row.name);
-    }
-    state.selectedId = "";
-    rememberCurrentSelection();
-    await refreshData();
-
-    if (state.autoRefreshPage) {
-      await reloadTab(state.tab.id);
-    }
-
-    showStatus(`Deleted ${row.name}.`, "success");
-  } catch (error) {
-    showStatus(error?.message || `Failed to delete ${getCurrentView().singular}.`, "error");
-  } finally {
-    setBusy(false);
-  }
-}
-
-async function batchEditSelected() {
-  const selectedRows = getSelectedRows();
-  if (selectedRows.length === 0 || !state.tab?.url) {
-    return;
-  }
-
-  const nextValue = await requestTextInput({
-    title: "Set value",
-    fieldLabel: `Value for ${selectedRows.length} selected ${getCurrentView().plural}`,
-    submitLabel: "Set value"
-  });
-  if (nextValue === null) {
-    return;
-  }
-
-  setBusy(true);
-  clearStatus();
-  suppressCookieWatcher();
-
-  try {
-    const result = await executeBatchOperation(selectedRows, async (row) => {
-      if (isCookieView()) {
-        await setCookieValue(state.tab.url, row.raw, nextValue);
-      } else {
-        await setStorageValue(state.tab.id, state.tab.url, getCurrentView().storageType, row.name, nextValue);
-      }
-      await safelyRecordRecentChange(row, nextValue);
-    });
-
-    await refreshData();
-    showBatchOperationStatus("Updated", result);
-  } catch (error) {
-    showStatus(error?.message || `Failed to update selected ${getCurrentView().plural}.`, "error");
-  } finally {
-    setBusy(false);
-  }
-}
-
-async function batchDeleteSelected() {
-  const selectedRows = getSelectedRows();
-  if (selectedRows.length === 0 || !state.tab?.url) {
-    return;
-  }
-
-  const confirmed = await requestDeleteConfirmation({
-    title: `Delete selected ${getCurrentView().plural}?`,
-    message: `${selectedRows.length} selected ${getCurrentView().plural} will be permanently deleted.`
-  });
-  if (!confirmed) {
-    return;
-  }
-
-  setBusy(true);
-  clearStatus();
-  suppressCookieWatcher();
-
-  try {
-    const result = await executeBatchOperation(selectedRows, async (row) => {
-      if (isCookieView()) {
-        await removeCookie(state.tab.url, row.raw);
-      } else {
-        await removeStorageItem(state.tab.id, state.tab.url, getCurrentView().storageType, row.name);
-      }
-    });
-
-    state.selectedId = "";
-    rememberCurrentSelection();
-    state.selectedIds = new Set(result.failed.map((entry) => entry.itemId));
-    await refreshData();
-    showBatchOperationStatus("Deleted", result);
-  } catch (error) {
-    showStatus(error?.message || `Failed to delete selected ${getCurrentView().plural}.`, "error");
-  } finally {
-    setBusy(false);
-  }
-}
-
-function showBatchOperationStatus(action, result) {
-  const counts = getBatchOperationCounts(result);
-  if (counts.failed === 0 && counts.skipped === 0) {
-    showStatus(`${action} ${counts.success} selected ${getCurrentView().plural}.`, "success");
-    return;
-  }
-
-  const summary = [
-    `${action} ${counts.success}`,
-    counts.failed ? `${counts.failed} failed` : "",
-    counts.skipped ? `${counts.skipped} skipped` : ""
-  ].filter(Boolean).join(", ");
-  const firstError = result.failed[0]?.error?.message;
-  showStatus(`${summary}.${firstError ? ` ${firstError}` : ""}`, counts.failed ? "error" : "warning");
-}
-
-function resetSelectedItem() {
-  const row = getSelectedRow();
-  if (!row) {
-    return;
-  }
-
-  elements.valueInput.value = row.value;
-  populateExpirationEditor(row);
-  updateSaveState();
-  updateAutoToolOutput();
-}
-
-async function copySelected(mode, feedbackButton) {
-  const row = getSelectedRow();
-  if (!row) {
-    return;
-  }
-
-  const text = {
-    value: row.value,
-    pair: `${row.name}=${row.value}`,
-    json: getRowJson(row)
-  }[mode];
-
-  try {
-    await writeClipboard(text);
-    clearStatus();
-    showCopyFeedback(feedbackButton);
-  } catch (error) {
-    resetCopyFeedback(feedbackButton);
-    showStatus(error?.message || "Failed to copy.", "error");
-  }
-}
-
 function getWorkbenchContext() {
   return {
     targetUrl: state.tab?.url || "",
@@ -853,259 +651,6 @@ function updateExportSelection(ids) {
   renderTable();
 }
 
-async function buildSiteDataExportForScope(scope) {
-  const dataPackage = await buildSiteDataPackageForScope(scope);
-  const count = Object.values(dataPackage.data)
-    .reduce((total, items) => total + items.length, 0);
-  return {
-    ...dataPackage,
-    url: state.tab.url,
-    host: getDisplayHost(state.tab.url),
-    type: scope === "all" ? "siteData" : state.dataView,
-    count
-  };
-}
-
-async function buildSiteDataPackageForScope(scope) {
-  if (!state.tab?.url || !isSupportedPageUrl(state.tab.url)) {
-    throw new Error("Open an HTTP or HTTPS page before exporting site data.");
-  }
-
-  let rowsByKind;
-  if (scope === "all") {
-    rowsByKind = await readAllSiteDataRows(state.tab, state.cookieStoreId);
-  } else {
-    const rows = scope === "selected" ? getSelectedRows() : state.rows;
-    if (scope === "selected" && rows.length === 0) {
-      throw new Error("Select at least one item before exporting.");
-    }
-    rowsByKind = { cookies: [], localStorage: [], sessionStorage: [] };
-    rowsByKind[state.dataView] = rows;
-  }
-
-  return createSiteDataPackage({
-    url: state.tab.url,
-    origin: getSiteOrigin(state.tab.url),
-    cookies: rowsByKind.cookies,
-    localStorage: rowsByKind.localStorage,
-    sessionStorage: rowsByKind.sessionStorage
-  });
-}
-
-async function previewSiteDataPackage(dataPackage, options) {
-  if (!state.tab?.url || !isSupportedPageUrl(state.tab.url)) {
-    throw new Error("Open an HTTP or HTTPS page before importing site data.");
-  }
-  const rows = await readAllSiteDataRows(state.tab, state.cookieStoreId);
-  return buildSiteDataImportPreview(parseSiteDataPackage(dataPackage), {
-    cookies: rows.cookies.map((row) => row.raw),
-    localStorage: rows.localStorage.map((row) => row.raw),
-    sessionStorage: rows.sessionStorage.map((row) => row.raw)
-  }, {
-    targetUrl: state.tab.url,
-    ...options
-  });
-}
-
-async function applySiteDataPackage(preview, { strategy, selectedIds, onProgress }) {
-  if (!state.tab?.url || !isSupportedPageUrl(state.tab.url)) {
-    throw new Error("The target page is no longer available.");
-  }
-
-  const plan = planSiteDataImport(preview, { strategy, selectedIds });
-  const result = createBatchOperationResult();
-  plan.skipped.forEach(({ item, reason }) => addOperationSkip(result, item, reason));
-  suppressCookieWatcher(Math.max(1500, plan.write.length * 30));
-
-  const executed = await executeBatchOperation(plan.write, writeImportedSiteDataItem, {
-    onProgress,
-    yieldEvery: 10
-  });
-  result.success.push(...executed.success);
-  result.failed.push(...executed.failed);
-
-  const entries = executed.success.map((entry, index) => ({
-    id: `${Date.now()}-${index}-${entry.item.id}`,
-    kind: entry.item.kind,
-    name: entry.item.name,
-    before: entry.item.current,
-    after: entry.value
-  }));
-  if (entries.length > 0) {
-    await saveLatestBatchSnapshot({
-      id: `${Date.now()}-site-data-import`,
-      createdAt: new Date().toISOString(),
-      targetUrl: state.tab.url,
-      targetOrigin: getSiteOrigin(state.tab.url),
-      tabId: state.tab.id,
-      entries
-    });
-  }
-
-  await refreshData();
-  if (state.autoRefreshPage && entries.length > 0) {
-    await reloadTab(state.tab.id);
-  }
-  showBatchImportStatus(result);
-  return { result, canUndo: entries.length > 0 };
-}
-
-async function writeImportedSiteDataItem(item) {
-  if (item.kind === "cookies") {
-    return setCookieData(state.tab.url, item.incoming);
-  }
-  const storageType = item.kind === "sessionStorage" ? "session" : "local";
-  return setStorageValue(
-    state.tab.id,
-    state.tab.url,
-    storageType,
-    item.incoming.key,
-    item.incoming.value
-  );
-}
-
-async function undoLatestSiteDataBatch({ onProgress } = {}) {
-  const snapshot = await getLatestBatchSnapshot();
-  if (!snapshot || snapshot.entries.length === 0) {
-    throw new Error("No import snapshot is available in this browser session.");
-  }
-  if (!state.tab?.url || snapshot.tabId !== state.tab.id || snapshot.targetOrigin !== getSiteOrigin(state.tab.url)) {
-    throw new Error("Return to the original target tab before undoing this import.");
-  }
-
-  suppressCookieWatcher(Math.max(1500, snapshot.entries.length * 30));
-  const entries = [...snapshot.entries].reverse();
-  const result = await executeBatchOperation(entries, undoImportedSiteDataItem, {
-    onProgress,
-    yieldEvery: 10
-  });
-  const failedIds = new Set(result.failed.map((entry) => entry.item.id));
-  const remainingEntries = snapshot.entries.filter((entry) => failedIds.has(entry.id));
-  if (remainingEntries.length > 0) {
-    await saveLatestBatchSnapshot({ ...snapshot, entries: remainingEntries });
-  } else {
-    await clearLatestBatchSnapshot();
-  }
-
-  await refreshData();
-  if (state.autoRefreshPage) {
-    await reloadTab(state.tab.id);
-  }
-  showStatus(
-    remainingEntries.length > 0
-      ? `Undo restored ${result.success.length} items; ${result.failed.length} failed.`
-      : `Undid ${result.success.length} imported items.`,
-    remainingEntries.length > 0 ? "error" : "success"
-  );
-  return { result, complete: remainingEntries.length === 0 };
-}
-
-async function undoImportedSiteDataItem(entry) {
-  if (entry.before) {
-    if (entry.kind === "cookies") {
-      return setCookieData(state.tab.url, entry.before);
-    }
-    return setStorageValue(
-      state.tab.id,
-      state.tab.url,
-      entry.kind === "sessionStorage" ? "session" : "local",
-      entry.before.key,
-      entry.before.value
-    );
-  }
-
-  if (entry.kind === "cookies") {
-    await removeCookie(state.tab.url, entry.after);
-  } else {
-    await removeStorageItem(
-      state.tab.id,
-      state.tab.url,
-      entry.kind === "sessionStorage" ? "session" : "local",
-      entry.after.key
-    );
-  }
-  return null;
-}
-
-function showBatchImportStatus(result) {
-  const counts = getBatchOperationCounts(result);
-  const summary = `${counts.success} written, ${counts.failed} failed, ${counts.skipped} skipped.`;
-  showStatus(summary, counts.failed ? "error" : counts.success ? "success" : "warning");
-}
-
-async function createProfileFromCurrentSite(options) {
-  const dataPackage = await buildSiteDataPackageForScope(options.scope);
-  const profile = createSiteProfile({
-    name: options.name,
-    description: options.description,
-    tags: options.tags,
-    dataPackage,
-    defaultConflictStrategy: options.defaultConflictStrategy,
-    variables: options.variables
-  });
-  const profiles = await getSiteProfiles();
-  return saveSiteProfiles([profile, ...profiles]);
-}
-
-async function renameSavedProfile(profile) {
-  const name = await requestTextInput({
-    title: "Rename saved state",
-    fieldLabel: "Saved state name",
-    initialValue: profile.name,
-    submitLabel: "Rename",
-    selectValue: true,
-    validate: (value) => {
-      const trimmed = value.trim();
-      if (!trimmed) {
-        throw new Error("Enter a saved state name.");
-      }
-      return trimmed;
-    }
-  });
-  const profiles = await getSiteProfiles();
-  if (name === null) {
-    return profiles;
-  }
-  return saveSiteProfiles(profiles.map((item) => item.id === profile.id ? renameSiteProfile(item, name) : item));
-}
-
-async function duplicateSavedProfile(profile) {
-  const profiles = await getSiteProfiles();
-  return saveSiteProfiles([duplicateSiteProfile(profile), ...profiles]);
-}
-
-async function deleteSavedProfile(profile) {
-  const confirmed = await requestDeleteConfirmation({
-    title: "Delete saved state?",
-    message: `"${profile.name}" will be permanently deleted.`,
-    detail: profile.source.origin
-  });
-  const profiles = await getSiteProfiles();
-  if (!confirmed) {
-    return profiles;
-  }
-  return saveSiteProfiles(profiles.filter((item) => item.id !== profile.id));
-}
-
-async function exportSavedProfile(profile) {
-  const fileName = `${profile.name.replace(/[^a-z0-9.-]+/gi, "-") || "site-profile"}.json`;
-  await saveJsonFile({ profileSchemaVersion: 1, profile }, fileName);
-}
-
-async function saveJsonFile(value, fileName) {
-  await saveTextFile(JSON.stringify(value, null, 2), fileName, "application/json");
-}
-
-async function saveTextFile(text, fileName, mimeType = "text/plain;charset=utf-8") {
-  const blob = new Blob([text], { type: mimeType });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = fileName;
-  link.click();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
 async function importQuickEntries(input) {
   if (!state.tab?.url || !isSupportedPageUrl(state.tab.url)) {
     throw new Error(`Open an http:// or https:// page before importing ${getCurrentView().plural}.`);
@@ -1121,7 +666,7 @@ async function importQuickEntries(input) {
     const previousRows = new Map(pairs.map((pair) => [pair.name, findLikelyImportedRow(pair.name)]));
     const result = await executeBatchOperation(pairs, async (pair) => {
       const importedRow = await importPair(pair);
-      await safelyRecordImportChange(importedRow, pair.value, previousRows.get(pair.name));
+      await historyController.recordImportChange(importedRow, pair.value, previousRows.get(pair.name));
       return importedRow;
     });
     const lastImportedRow = result.success.at(-1)?.value;
@@ -1806,227 +1351,12 @@ function updateSelectionControls() {
   updateSaveState();
 }
 
-async function loadRecentChanges() {
-  try {
-    state.recentChanges = normalizeRecentChanges(await getRecentCookieChanges());
-  } catch {
-    state.recentChanges = [];
-  }
-
-  try {
-    const snapshots = await getRecentChangeSnapshots();
-    state.undoSnapshots = new Map(
-      Object.entries(snapshots).filter(([changeId, snapshot]) => changeId && snapshot && typeof snapshot === "object")
-    );
-    pruneUndoSnapshots();
-  } catch {
-    state.undoSnapshots = new Map();
-  }
-
-  renderHistory();
-}
-
-async function safelyRecordRecentChange(row, nextValue, { savedCookie = null } = {}) {
-  try {
-    const itemKind = getHistoryItemKind();
-    const afterCookie = savedCookie || row.raw;
-    const recordOptions = { itemKind };
-    if (itemKind === "cookie") {
-      Object.assign(recordOptions, {
-        beforeSession: Boolean(row.raw?.session),
-        beforeExpirationDate: row.raw?.expirationDate,
-        afterSession: Boolean(afterCookie?.session),
-        afterExpirationDate: afterCookie?.expirationDate
-      });
-    }
-
-    const record = createRecentChange(
-      row,
-      nextValue,
-      getDisplayHost(state.tab?.url),
-      Date.now(),
-      recordOptions
-    );
-    const snapshot = {
-      itemKind,
-      raw: row.raw,
-      storageType: row.type || getCurrentView().storageType,
-      key: row.name,
-      value: row.value,
-      beforeValue: row.value,
-      afterValue: nextValue
-    };
-    if (itemKind === "cookie") {
-      Object.assign(snapshot, {
-        beforeSession: Boolean(row.raw?.session),
-        beforeExpirationDate: row.raw?.expirationDate,
-        afterSession: Boolean(afterCookie?.session),
-        afterExpirationDate: afterCookie?.expirationDate
-      });
-    }
-    state.undoSnapshots.set(record.id, snapshot);
-    state.unreadHistoryIds.add(record.id);
-    state.recentChanges = normalizeRecentChanges([record, ...state.recentChanges]);
-    renderHistory();
-    await saveRecentHistory();
-  } catch {
-    // Saving should not fail because local history could not be updated.
-  }
-}
-
-async function safelyRecordImportChange(row, nextValue, previousRow) {
-  try {
-    const record = createRecentChange(row, nextValue, getDisplayHost(state.tab?.url), Date.now(), {
-      action: previousRow ? "import-overwrite" : "import-create",
-      itemKind: getHistoryItemKind(),
-      beforeSize: previousRow?.size || 0
-    });
-
-    state.undoSnapshots.set(record.id, previousRow
-      ? {
-          itemKind: getHistoryItemKind(),
-          raw: previousRow.raw,
-          storageType: previousRow.type || getCurrentView().storageType,
-          key: previousRow.name,
-          value: previousRow.value,
-          beforeValue: previousRow.value,
-          afterValue: nextValue
-        }
-      : {
-          itemKind: getHistoryItemKind(),
-          raw: row.raw,
-          storageType: row.type || getCurrentView().storageType,
-          key: row.name,
-          beforeValue: "",
-          afterValue: nextValue,
-          deleteOnUndo: true
-        });
-    state.unreadHistoryIds.add(record.id);
-    state.recentChanges = normalizeRecentChanges([record, ...state.recentChanges]);
-    renderHistory();
-    await saveRecentHistory();
-  } catch {
-    // Importing should not fail because local history could not be updated.
-  }
-}
-
 function getHistoryItemKind() {
   return {
     cookies: "cookie",
     localStorage: "localStorage",
     sessionStorage: "sessionStorage"
   }[state.dataView] || "cookie";
-}
-
-async function undoRecentChange(changeId) {
-  const snapshot = state.undoSnapshots.get(changeId);
-  if (!snapshot || !state.tab?.url) {
-    showStatus("This change can no longer be undone in this browser session.", "error");
-    return;
-  }
-
-  setBusy(true);
-  clearStatus();
-  suppressCookieWatcher();
-
-  try {
-    if (snapshot.deleteOnUndo) {
-      if (snapshot.itemKind === "cookie") {
-        await removeCookie(state.tab.url, snapshot.raw);
-      } else {
-        await removeStorageItem(state.tab.id, state.tab.url, snapshot.storageType, snapshot.key);
-      }
-      state.selectedId = "";
-      rememberCurrentSelection();
-    } else {
-      if (snapshot.itemKind === "cookie") {
-        const restored = await setCookieValue(state.tab.url, snapshot.raw, snapshot.value);
-        state.selectedId = toCookieRow(restored).id;
-      } else {
-        const restored = await setStorageValue(state.tab.id, state.tab.url, snapshot.storageType, snapshot.key, snapshot.value);
-        state.selectedId = toStorageRow(restored).id;
-      }
-      rememberCurrentSelection();
-    }
-
-    state.undoSnapshots.delete(changeId);
-    state.unreadHistoryIds.delete(changeId);
-    if (state.selectedHistoryId === changeId) {
-      clearHistoryDetail();
-    }
-    renderHistory();
-    await safelySaveRecentChangeSnapshots();
-    await refreshData();
-
-    if (state.autoRefreshPage) {
-      await reloadTab(state.tab.id);
-    }
-
-    showStatus("Undid the selected change.", "success");
-  } catch (error) {
-    showStatus(error?.message || "Failed to undo change.", "error");
-  } finally {
-    setBusy(false);
-  }
-}
-
-async function clearHistory() {
-  try {
-    const itemKind = getHistoryItemKind();
-    const clearedIds = new Set(
-      state.recentChanges
-        .filter((change) => change.itemKind === itemKind)
-        .map((change) => change.id)
-    );
-    state.recentChanges = state.recentChanges.filter((change) => change.itemKind !== itemKind);
-    clearedIds.forEach((changeId) => {
-      state.undoSnapshots.delete(changeId);
-      state.unreadHistoryIds.delete(changeId);
-    });
-    if (state.recentChanges.length === 0) {
-      await Promise.all([
-        clearRecentCookieChanges(),
-        clearRecentChangeSnapshots()
-      ]);
-    } else {
-      await saveRecentHistory();
-    }
-    state.selectedHistoryId = "";
-    clearHistoryDetail();
-    renderHistory();
-    showStatus(`${getCurrentView().title} history cleared.`, "success");
-  } catch (error) {
-    showStatus(error?.message || "Failed to clear recent changes.", "error");
-  }
-}
-
-function pruneUndoSnapshots() {
-  const retainedIds = new Set(state.recentChanges.map((change) => change.id));
-  for (const changeId of state.undoSnapshots.keys()) {
-    if (!retainedIds.has(changeId)) {
-      state.undoSnapshots.delete(changeId);
-    }
-  }
-}
-
-function serializeUndoSnapshots() {
-  pruneUndoSnapshots();
-  return Object.fromEntries(state.undoSnapshots);
-}
-
-async function saveRecentHistory() {
-  await Promise.all([
-    saveRecentCookieChanges(state.recentChanges),
-    saveRecentChangeSnapshots(serializeUndoSnapshots())
-  ]);
-}
-
-async function safelySaveRecentChangeSnapshots() {
-  try {
-    await saveRecentChangeSnapshots(serializeUndoSnapshots());
-  } catch {
-    // Undo should not fail because its session snapshot could not be removed.
-  }
 }
 
 function startCookieWatcher() {

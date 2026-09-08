@@ -1,11 +1,10 @@
 import { parseSiteDataPackage } from "../shared/site-data-package.js";
-import { parseVariableCaptures } from "../shared/site-profiles.js";
 import {
-  NETSCAPE_COOKIE_FILE_MIME_TYPE,
-  parseNetscapeCookieFile,
-  serializeNetscapeCookieFile
+  parseNetscapeCookieFile
 } from "../shared/netscape-cookies.js";
 import { cancelDialogFromBackdrop } from "./popup-dialogs.js";
+import { createSiteDataExportView } from "./popup-export-view.js";
+import { createSavedStatesView } from "./popup-saved-states-view.js";
 
 const STATUS_LABELS = {
   new: "New",
@@ -46,14 +45,32 @@ export function createSiteDataWorkbench({
     dataPackage: null,
     preview: null,
     selectedIds: new Set(),
-    profiles: [],
-    profileMode: "list",
-    applyingProfile: null,
-    busy: false,
-    exportPreviewRequest: 0,
-    exportSelectionExpanded: false,
-    exportSelectionIds: new Set()
+    busy: false
   };
+
+  const exportView = createSiteDataExportView({
+    dialog,
+    getContext,
+    setWorkbenchBusy: setBusy,
+    onBuildPackage,
+    onExportSelectionChange,
+    onCopy,
+    onSaveJson,
+    onSaveText
+  });
+
+  const savedStatesView = createSavedStatesView({
+    dialog,
+    getContext,
+    setBusy,
+    onLoadProfiles,
+    onCreateProfile,
+    onRenameProfile,
+    onDuplicateProfile,
+    onDeleteProfile,
+    onExportProfile,
+    onPrepareProfile: prepareProfile
+  });
 
   bindEvents();
 
@@ -61,44 +78,26 @@ export function createSiteDataWorkbench({
     const context = getContext();
     elements.workbenchTarget.textContent = context.targetLabel;
     elements.workbenchTarget.title = context.targetLabel;
-    elements.profileScopeSelect.querySelector('option[value="selected"]').disabled = context.selectedCount === 0;
     if (initialView === "import") {
       setFormat(elements.packageImportFormatInputs, "quick");
       resetQuickImport();
       showPackageSource();
       elements.packageImportView.scrollTop = 0;
     }
-    if (initialView === "export") {
-      state.exportSelectionIds = new Set(context.selectedIds || []);
-      state.exportSelectionExpanded = false;
-      elements.exportSelectionSearch.value = "";
-      setFormat(elements.packageExportFormatInputs, "json");
-      elements.currentExportScope.checked = true;
-      setFeedback(elements.packageExportFeedback);
-    }
     updateQuickImportContext();
     updateImportFormat();
-    updateExportFormat();
-    updateExportSelectionPanel();
-    updateExportSummary();
-    state.profileMode = "list";
     setView(initialView);
     dialog.showModal();
     if (initialView === "import") {
       focusQuickImport();
     }
     if (initialView === "export") {
-      void updateExportPreview();
+      exportView.open();
     }
     if (initialView !== "profiles") {
       return;
     }
-    try {
-      state.profiles = await onLoadProfiles();
-    } catch {
-      state.profiles = [];
-    }
-    renderProfiles();
+    await savedStatesView.open();
   }
 
   function bindEvents() {
@@ -125,37 +124,6 @@ export function createSiteDataWorkbench({
     elements.applyPackageButton.addEventListener("click", applyPreview);
     elements.importAnotherButton.addEventListener("click", resetImport);
     elements.undoPackageButton.addEventListener("click", undoBatch);
-    for (const radio of elements.exportScopeInputs) {
-      radio.addEventListener("change", () => {
-        if (radio.value === "selected") {
-          state.exportSelectionExpanded = false;
-        }
-        updateExportSelectionPanel();
-        updateExportSummary();
-        void updateExportPreview();
-      });
-    }
-    elements.exportSelectionToggleButton.addEventListener("click", toggleExportSelectionPanel);
-    for (const input of elements.packageExportFormatInputs) {
-      input.addEventListener("change", () => {
-        updateExportFormat();
-        updateExportSelectionPanel();
-        void updateExportPreview();
-      });
-    }
-    elements.exportSelectionSearch.addEventListener("input", renderExportSelectionList);
-    elements.exportSelectAllCheckbox.addEventListener("change", toggleAllExportSelection);
-    elements.exportSelectionList.addEventListener("change", toggleExportSelectionItem);
-    elements.copyPackageButton.addEventListener("click", () => exportPackage("copy"));
-    elements.savePackageButton.addEventListener("click", () => exportPackage("save"));
-    elements.profileHelpButton.addEventListener("click", showProfileHelp);
-    elements.profileHelpCloseButton.addEventListener("click", () => elements.profileHelpDialog.close("close"));
-    elements.profileHelpDialog.addEventListener("click", cancelDialogFromBackdrop);
-    elements.newProfileButton.addEventListener("click", showProfileForm);
-    elements.cancelProfileButton.addEventListener("click", hideProfileForm);
-    elements.profileForm.addEventListener("submit", createProfile);
-    elements.cancelProfileApplyButton.addEventListener("click", hideProfileApply);
-    elements.previewProfileButton.addEventListener("click", previewProfile);
   }
 
   function setView(view) {
@@ -598,416 +566,19 @@ export function createSiteDataWorkbench({
     }
   }
 
-  function updateExportFormat() {
-    const cookies = getContext().currentKind === "cookies";
-    let netscape = getExportFormat() === "netscape";
-    if (!cookies && netscape) {
-      setFormat(elements.packageExportFormatInputs, "json");
-      netscape = false;
-    }
-    elements.netscapeExportFormatLabel.hidden = !cookies;
-    elements.packageExportFormatSwitch.classList.toggle("is-storage", !cookies);
-    updateExportScopeAvailability();
-    elements.allExportScopeLabel.textContent = netscape ? "All cookies" : "All site data";
-    setButtonLabel(elements.copyPackageButton, netscape ? "Copy Netscape" : "Copy JSON");
-    setButtonLabel(elements.savePackageButton, netscape ? "Save cookies.txt" : "Save JSON");
-    setFeedback(elements.packageExportFeedback);
-    updateExportSummary();
-  }
-
-  function updateExportScopeAvailability() {
-    const context = getContext();
-    const netscape = getExportFormat() === "netscape";
-    const currentIsCookies = context.currentKind === "cookies";
-    const currentViewLabel = {
-      cookies: "Cookies",
-      localStorage: "Local Storage",
-      sessionStorage: "Session Storage"
-    }[context.currentKind] || context.currentViewLabel;
-    elements.currentExportScopeLabel.textContent = `Current view(${currentViewLabel})`;
-    elements.currentExportScope.disabled = netscape && !currentIsCookies;
-    elements.selectedExportScope.disabled = netscape && !currentIsCookies;
-    if (netscape && !currentIsCookies && getExportScope() !== "all") {
-      elements.allExportScope.checked = true;
-    }
-  }
-
-  function updateExportSelectionPanel() {
-    const visible = getExportScope() === "selected";
-    elements.exportSelectionPanel.hidden = !visible;
-    elements.exportSelectionBody.hidden = !visible || !state.exportSelectionExpanded;
-    elements.exportSelectionToggleButton.setAttribute("aria-expanded", String(visible && state.exportSelectionExpanded));
-    elements.exportSelectionToggleButton.querySelector("span").textContent = state.exportSelectionExpanded
-      ? "Hide items"
-      : "Choose items";
-    elements.selectedExportScopeCount.textContent = String(getSelectedExportRows().length);
-    if (visible) {
-      renderExportSelectionList();
-    }
-  }
-
-  function toggleExportSelectionPanel() {
-    state.exportSelectionExpanded = !state.exportSelectionExpanded;
-    updateExportSelectionPanel();
-    if (state.exportSelectionExpanded) {
-      elements.exportSelectionSearch.focus();
-    }
-  }
-
-  function renderExportSelectionList() {
-    if (elements.exportSelectionPanel.hidden) {
-      return;
-    }
-
-    const rows = getFilteredExportRows();
-    const allRows = getContext().currentRows || [];
-    const selectedRows = getSelectedExportRows();
-    elements.exportSelectionCount.textContent = `${selectedRows.length} of ${allRows.length} selected`;
-    elements.exportSelectAllCheckbox.checked = rows.length > 0 && rows.every((row) => state.exportSelectionIds.has(row.id));
-    elements.exportSelectAllCheckbox.indeterminate = rows.some((row) => state.exportSelectionIds.has(row.id)) && !elements.exportSelectAllCheckbox.checked;
-    elements.exportSelectionList.replaceChildren(...rows.map(createExportSelectionItem));
-    elements.exportSelectionEmpty.hidden = rows.length > 0;
-  }
-
-  function getFilteredExportRows() {
-    const rows = getContext().currentRows || [];
-    const query = elements.exportSelectionSearch.value.trim().toLowerCase();
-    if (!query) {
-      return rows;
-    }
-    return rows.filter((row) => `${row.name} ${row.location} ${row.kind}`.toLowerCase().includes(query));
-  }
-
-  function getSelectedExportRows() {
-    const rows = getContext().currentRows || [];
-    return rows.filter((row) => state.exportSelectionIds.has(row.id));
-  }
-
-  function createExportSelectionItem(row) {
-    const label = document.createElement("label");
-    const checkbox = document.createElement("input");
-    const copy = document.createElement("span");
-    const name = document.createElement("strong");
-    const location = document.createElement("span");
-    const kind = document.createElement("span");
-
-    label.className = "export-selection-item";
-    label.dataset.exportId = row.id;
-    checkbox.type = "checkbox";
-    checkbox.checked = state.exportSelectionIds.has(row.id);
-    checkbox.dataset.exportId = row.id;
-    checkbox.setAttribute("aria-label", `Select ${row.name}`);
-    copy.className = "export-selection-item-copy";
-    name.textContent = row.name || "(unnamed)";
-    location.textContent = row.location || "";
-    kind.className = "export-selection-item-kind";
-    kind.textContent = KIND_LABELS[row.kind] || row.kind || "Item";
-    copy.append(name, location);
-    label.append(checkbox, copy, kind);
-    return label;
-  }
-
-  function toggleExportSelectionItem(event) {
-    const input = event.target.closest("input[data-export-id]");
-    if (!input) {
-      return;
-    }
-    setExportSelection(input.dataset.exportId, input.checked);
-  }
-
-  function toggleAllExportSelection() {
-    const checked = elements.exportSelectAllCheckbox.checked;
-    getFilteredExportRows().forEach((row) => setExportSelectionValue(row.id, checked));
-    notifyExportSelectionChange();
-    updateExportSelectionPanel();
-    updateExportSummary();
-    void updateExportPreview();
-  }
-
-  function setExportSelection(id, selected) {
-    setExportSelectionValue(id, selected);
-    notifyExportSelectionChange();
-    updateExportSelectionPanel();
-    updateExportSummary();
-    void updateExportPreview();
-  }
-
-  function setExportSelectionValue(id, selected) {
-    if (selected) {
-      state.exportSelectionIds.add(id);
-    } else {
-      state.exportSelectionIds.delete(id);
-    }
-  }
-
-  function notifyExportSelectionChange() {
-    onExportSelectionChange?.([...state.exportSelectionIds]);
-  }
-
-  function updateExportSummary() {
-    const context = getContext();
-    const scope = getExportScope();
-    const netscape = getExportFormat() === "netscape";
-    const summary = netscape
-      ? {
-        current: `${context.currentCount} cookies in the current view`,
-        selected: `${context.selectedCount} selected cookies`,
-        all: "All cookies for the current target"
-      }[scope] + ". SameSite, Partitioned/CHIPS, and Cookie store are not represented."
-      : {
-        current: `${context.currentCount} ${context.currentViewLabel.toLowerCase()} in the current view`,
-        selected: `${context.selectedCount} selected ${context.currentViewLabel.toLowerCase()}`,
-        all: "Cookies, Local Storage, and Session Storage for the current target"
-    }[scope];
-    elements.packageExportSummary.textContent = summary;
-    elements.packageExportSummary.title = summary;
-  }
-
-  async function updateExportPreview() {
-    const requestId = ++state.exportPreviewRequest;
-    const format = getExportFormat();
-    elements.packageExportPreview.value = "Preparing preview...";
-    try {
-      setBusy(true);
-      const dataPackage = await onBuildPackage(getExportScope());
-      if (requestId !== state.exportPreviewRequest) {
-        return;
-      }
-      elements.packageExportPreview.value = serializeExport(dataPackage, format);
-    } catch (error) {
-      if (requestId === state.exportPreviewRequest) {
-        elements.packageExportPreview.value = error?.message || "Failed to build export preview.";
-      }
-    } finally {
-      if (requestId === state.exportPreviewRequest) {
-        setBusy(false);
-      }
-    }
-  }
-
-  async function exportPackage(mode) {
-    setBusy(true);
-    setFeedback(elements.packageExportFeedback);
-    try {
-      const dataPackage = await onBuildPackage(getExportScope());
-      const netscape = getExportFormat() === "netscape";
-      const text = serializeExport(dataPackage, getExportFormat());
-      const count = netscape ? dataPackage.data.cookies.length : countPackageItems(dataPackage);
-      if (mode === "copy") {
-        await onCopy(text);
-        setFeedback(elements.packageExportFeedback, `Copied ${count} ${netscape ? "cookies" : "items"}.`, "success");
-      } else {
-        if (netscape) {
-          await onSaveText(text, createNetscapeFileName(dataPackage), NETSCAPE_COOKIE_FILE_MIME_TYPE);
-        } else {
-          await onSaveJson(dataPackage, createPackageFileName(dataPackage));
-        }
-        setFeedback(elements.packageExportFeedback, `Saved ${count} ${netscape ? "cookies" : "items"}.`, "success");
-      }
-    } catch (error) {
-      setFeedback(elements.packageExportFeedback, error?.message || "Failed to export site data.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  function showProfileForm() {
-    state.applyingProfile = null;
-    elements.profileForm.reset();
-    elements.profileScopeSelect.value = getContext().selectedCount > 0 ? "selected" : "current";
-    setFeedback(elements.profileFormError);
-    setProfileMode("create");
-    elements.profileNameInput.focus();
-  }
-
-  function showProfileHelp() {
-    const previouslyFocused = document.activeElement;
-    elements.profileHelpBody.scrollTop = 0;
-    elements.profileHelpDialog.addEventListener("close", () => {
-      if (previouslyFocused instanceof HTMLElement) {
-        previouslyFocused.focus();
-      }
-    }, { once: true });
-    elements.profileHelpDialog.showModal();
-    elements.profileHelpDialog.focus();
-  }
-
-  function hideProfileForm() {
-    setProfileMode("list");
-  }
-
-  async function createProfile(event) {
-    event.preventDefault();
-    setFeedback(elements.profileFormError);
-    setBusy(true);
-    try {
-      const variables = parseVariableCaptures(elements.profileVariablesInput.value);
-      state.profiles = await onCreateProfile({
-        name: elements.profileNameInput.value,
-        description: elements.profileDescriptionInput.value,
-        tags: elements.profileTagsInput.value,
-        scope: elements.profileScopeSelect.value,
-        defaultConflictStrategy: elements.profileStrategySelect.value,
-        variables
-      });
-      hideProfileForm();
-      renderProfiles();
-    } catch (error) {
-      setFeedback(elements.profileFormError, error?.message || "Failed to save state.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  function renderProfiles() {
-    elements.profileCount.textContent = `${state.profiles.length} saved`;
-    elements.profileList.replaceChildren(...state.profiles.map(createProfileItem));
-    setProfileMode(state.profileMode);
-  }
-
-  function setProfileMode(mode) {
-    state.profileMode = mode;
-    const editing = mode !== "list";
-    elements.profileList.hidden = editing || state.profiles.length === 0;
-    elements.profileEmpty.hidden = editing || state.profiles.length > 0;
-    elements.profileForm.hidden = mode !== "create";
-    elements.profileApplyPanel.hidden = mode !== "apply";
-  }
-
-  function createProfileItem(profile) {
-    const row = document.createElement("article");
-    row.className = "profile-item";
-    const copy = document.createElement("div");
-    copy.className = "profile-item-copy";
-    const name = document.createElement("strong");
-    name.textContent = profile.name;
-    const description = document.createElement("span");
-    description.textContent = profile.description || profile.source.origin;
-    description.title = description.textContent;
-    copy.append(name, description);
-    if (profile.tags.length > 0) {
-      const tags = document.createElement("span");
-      tags.className = "profile-tags";
-      tags.textContent = profile.tags.join(" · ");
-      copy.append(tags);
-    }
-    const actions = document.createElement("div");
-    actions.className = "profile-item-actions";
-    actions.append(
-      profileButton("Apply", () => showProfileApply(profile), "primary-button"),
-      profileButton("Rename", () => updateProfileList(onRenameProfile(profile))),
-      profileButton("Copy", () => updateProfileList(onDuplicateProfile(profile))),
-      profileButton("Export", () => exportProfile(profile)),
-      profileButton("Delete", () => updateProfileList(onDeleteProfile(profile)), "danger-button")
-    );
-    row.append(copy, actions);
-    return row;
-  }
-
-  function profileButton(label, listener, className = "") {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.textContent = label;
-    button.className = className;
-    button.addEventListener("click", listener);
-    return button;
-  }
-
-  async function updateProfileList(promise) {
-    setBusy(true);
-    try {
-      const profiles = await promise;
-      if (profiles) {
-        state.profiles = profiles;
-        renderProfiles();
-      }
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function exportProfile(profile) {
-    setBusy(true);
-    try {
-      await onExportProfile(profile);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  function showProfileApply(profile) {
-    state.applyingProfile = profile;
-    elements.profileApplyName.textContent = profile.name;
-    elements.profileVariableInputs.replaceChildren(...profile.variables.map((variable) => {
-      const label = document.createElement("label");
-      label.className = "workbench-field";
-      const title = document.createElement("span");
-      title.textContent = variable.name;
-      const input = document.createElement("input");
-      input.name = variable.name;
-      input.type = variable.promptOnApply ? "password" : "text";
-      input.value = variable.promptOnApply ? "" : variable.defaultValue;
-      input.autocomplete = "off";
-      input.required = variable.promptOnApply;
-      label.append(title, input);
-      return label;
-    }));
-    const crossOrigin = profile.source.origin !== new URL(getContext().targetUrl).origin;
-    elements.profileMappingControl.hidden = !crossOrigin;
-    elements.profileMappingToggle.checked = false;
-    setFeedback(elements.profileApplyError);
-    setProfileMode("apply");
-    elements.profileVariableInputs.querySelector("input")?.focus();
-  }
-
-  function hideProfileApply() {
-    state.applyingProfile = null;
-    setProfileMode("list");
-  }
-
-  async function previewProfile() {
-    const profile = state.applyingProfile;
-    if (!profile) {
-      return;
-    }
-    const inputs = Object.fromEntries(
-      Array.from(elements.profileVariableInputs.querySelectorAll("input")).map((input) => [input.name, input.value])
-    );
-    setFeedback(elements.profileApplyError);
-    setBusy(true);
-    try {
-      state.dataPackage = await onResolveProfile(profile, inputs);
-      elements.packageConflictStrategy.value = profile.defaultConflictStrategy;
-      elements.packageMappingToggle.checked = elements.profileMappingToggle.checked;
-      setFormat(elements.packageImportFormatInputs, "json");
-      updateImportFormat();
-      elements.packageTextInput.value = JSON.stringify(state.dataPackage, null, 2);
-      hideProfileApply();
-      setView("import");
-      await refreshPreview();
-    } catch (error) {
-      setFeedback(elements.profileApplyError, error?.message || "Failed to prepare saved state.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  function getExportScope() {
-    return elements.exportScopeInputs.find((input) => input.checked)?.value || "current";
+  async function prepareProfile(profile, inputs, mapSourceToTarget) {
+    state.dataPackage = await onResolveProfile(profile, inputs);
+    elements.packageConflictStrategy.value = profile.defaultConflictStrategy;
+    elements.packageMappingToggle.checked = mapSourceToTarget;
+    setFormat(elements.packageImportFormatInputs, "json");
+    updateImportFormat();
+    elements.packageTextInput.value = JSON.stringify(state.dataPackage, null, 2);
+    setView("import");
+    await refreshPreview();
   }
 
   function getImportFormat() {
     return getFormat(elements.packageImportFormatInputs);
-  }
-
-  function getExportFormat() {
-    return getFormat(elements.packageExportFormatInputs);
-  }
-
-  function serializeExport(dataPackage, format) {
-    return format === "netscape"
-      ? serializeNetscapeCookieFile(dataPackage)
-      : JSON.stringify(dataPackage, null, 2);
   }
 
   function setBusy(busy) {
@@ -1019,7 +590,6 @@ export function createSiteDataWorkbench({
       button.disabled = busy;
     }
     if (!busy) {
-      updateExportScopeAvailability();
       updateApplyState();
     }
   }
@@ -1077,55 +647,7 @@ function getElements(dialog) {
     packageResultList: byId("packageResultList"),
     undoPackageButton: byId("undoPackageButton"),
     importAnotherButton: byId("importAnotherButton"),
-    selectedExportScope: byId("selectedExportScope"),
-    currentExportScope: byId("currentExportScope"),
-    currentExportScopeLabel: byId("currentExportScopeLabel"),
-    allExportScope: byId("allExportScope"),
-    allExportScopeLabel: byId("allExportScopeLabel"),
-    exportScopeInputs: Array.from(dialog.querySelectorAll('input[name="exportScope"]')),
-    packageExportFormatInputs: Array.from(dialog.querySelectorAll('input[name="packageExportFormat"]')),
-    packageExportFormatSwitch: byId("packageExportFormatSwitch"),
-    netscapeImportFormatLabel: byId("netscapeImportFormatLabel"),
-    netscapeExportFormatLabel: byId("netscapeExportFormatLabel"),
-    packageExportSummary: byId("packageExportSummary"),
-    packageExportPreview: byId("packageExportPreview"),
-    exportSelectionPanel: byId("exportSelectionPanel"),
-    exportSelectionBody: byId("exportSelectionBody"),
-    exportSelectionToggleButton: byId("exportSelectionToggleButton"),
-    exportSelectionCount: byId("exportSelectionCount"),
-    selectedExportScopeCount: byId("selectedExportScopeCount"),
-    exportSelectionSearch: byId("exportSelectionSearch"),
-    exportSelectAllCheckbox: byId("exportSelectAllCheckbox"),
-    exportSelectionList: byId("exportSelectionList"),
-    exportSelectionEmpty: byId("exportSelectionEmpty"),
-    copyPackageButton: byId("copyPackageButton"),
-    savePackageButton: byId("savePackageButton"),
-    packageExportFeedback: byId("packageExportFeedback"),
-    profileCount: byId("profileCount"),
-    profileHelpButton: byId("profileHelpButton"),
-    profileHelpDialog: byId("profileHelpDialog"),
-    profileHelpBody: byId("profileHelpBody"),
-    profileHelpCloseButton: byId("profileHelpCloseButton"),
-    newProfileButton: byId("newProfileButton"),
-    profileList: byId("profileList"),
-    profileEmpty: byId("profileEmpty"),
-    profileForm: byId("profileForm"),
-    profileNameInput: byId("profileNameInput"),
-    profileTagsInput: byId("profileTagsInput"),
-    profileDescriptionInput: byId("profileDescriptionInput"),
-    profileScopeSelect: byId("profileScopeSelect"),
-    profileStrategySelect: byId("profileStrategySelect"),
-    profileVariablesInput: byId("profileVariablesInput"),
-    profileFormError: byId("profileFormError"),
-    cancelProfileButton: byId("cancelProfileButton"),
-    profileApplyPanel: byId("profileApplyPanel"),
-    profileApplyName: byId("profileApplyName"),
-    profileVariableInputs: byId("profileVariableInputs"),
-    profileMappingControl: byId("profileMappingControl"),
-    profileMappingToggle: byId("profileMappingToggle"),
-    profileApplyError: byId("profileApplyError"),
-    cancelProfileApplyButton: byId("cancelProfileApplyButton"),
-    previewProfileButton: byId("previewProfileButton")
+    netscapeImportFormatLabel: byId("netscapeImportFormatLabel")
   };
 }
 
@@ -1135,27 +657,8 @@ function setFeedback(element, message = "", type = "error") {
   element.classList.toggle("is-error", type === "error");
 }
 
-function setButtonLabel(button, label) {
-  button.setAttribute("aria-label", label);
-  button.dataset.tooltip = label;
-}
-
 function isFileDrag(event) {
   return Array.from(event.dataTransfer?.types || []).includes("Files");
-}
-
-function countPackageItems(dataPackage) {
-  return Object.values(dataPackage.data).reduce((count, items) => count + items.length, 0);
-}
-
-function createPackageFileName(dataPackage) {
-  const host = new URL(dataPackage.source.url).hostname.replace(/[^a-z0-9.-]+/gi, "-");
-  return `${host}-site-data-${new Date().toISOString().slice(0, 10)}.json`;
-}
-
-function createNetscapeFileName(dataPackage) {
-  const host = new URL(dataPackage.source.url).hostname.replace(/[^a-z0-9.-]+/gi, "-");
-  return `${host}-cookies-${new Date().toISOString().slice(0, 10)}.txt`;
 }
 
 function getFormat(inputs) {
