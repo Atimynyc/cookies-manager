@@ -20,19 +20,19 @@ export function renderDataTable({
       row.id === selectedId ? "is-selected" : "",
       selectedIds.has(row.id) ? "is-checked" : ""
     ].filter(Boolean).join(" ");
-    tr.addEventListener("click", () => onSelect(row.id));
+    tr.addEventListener("click", () => onSelect(row.id, tr));
     tr.addEventListener("keydown", (event) => {
       if (event.target !== tr) {
         return;
       }
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        onSelect(row.id);
+        onSelect(row.id, tr);
       }
     });
 
     tr.append(
-      createSelectCell(row, selectedIds, onToggle),
+      createSelectCell(row, selectedIds, onToggle, tr),
       createNameCell(row, favoriteIds),
       createValueCell(row.value),
       createCell(row.domain, row.domain),
@@ -106,7 +106,7 @@ function createNameCell(row, favoriteIds) {
   return td;
 }
 
-function createSelectCell(row, selectedIds, onToggle) {
+function createSelectCell(row, selectedIds, onToggle, rowElement) {
   const td = document.createElement("td");
   const checkbox = document.createElement("input");
   td.className = "select-cell";
@@ -114,7 +114,7 @@ function createSelectCell(row, selectedIds, onToggle) {
   checkbox.checked = selectedIds.has(row.id);
   checkbox.setAttribute("aria-label", `Select ${row.name}`);
   checkbox.addEventListener("click", (event) => event.stopPropagation());
-  checkbox.addEventListener("change", () => onToggle(row.id, checkbox.checked));
+  checkbox.addEventListener("change", () => onToggle(row.id, checkbox.checked, rowElement));
   td.append(checkbox);
   return td;
 }

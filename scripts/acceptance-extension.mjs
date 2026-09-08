@@ -44,8 +44,10 @@ try {
   await testPage.goto(`${baseUrl}/cookie-test-page.html?seed=${runId}`);
   await waitForCookie(context, baseUrl, "plain");
 
+  const popupModuleRequests = trackPopupModuleRequests(context);
   const popup = await openPopupForActiveTab(context, testPage, extensionId);
   await waitForPopupReady(popup, "127.0.0.1");
+  await assertWorkbenchLoadsLazily(popup, popupModuleRequests);
   await assertPopupListsSeededCookies(popup);
   await assertValueTypeIndicators(popup);
   if (favoritesOnly) {
@@ -85,6 +87,7 @@ try {
     await screenshot(popup, "milestone-4-popup-final.png");
     await assertHistoryPersistsWithSessionSnapshots(popup, context, baseUrl, runId);
     await assertSingleHistoryDetailLayout(popup, runId);
+    await assertLargeCookieSelectionStaysLocal(popup, context, baseUrl);
   }
   console.log("extension acceptance ok");
 } finally {
@@ -200,6 +203,42 @@ async function waitForPopupReady(popup, expectedHost) {
     const label = document.querySelector("#hostLabel");
     return label?.textContent?.includes(host);
   }, expectedHost);
+}
+
+function trackPopupModuleRequests(browserContext) {
+  const requestedPaths = [];
+  browserContext.on("request", (request) => {
+    const url = new URL(request.url());
+    if (url.protocol === "chrome-extension:" && url.pathname.startsWith("/src/popup/")) {
+      requestedPaths.push(url.pathname);
+    }
+  });
+  return requestedPaths;
+}
+
+async function assertWorkbenchLoadsLazily(popup, requestedPaths) {
+  const modulePaths = [
+    "/src/popup/popup-workbench.js",
+    "/src/popup/popup-site-data-controller.js",
+    "/src/popup/popup-export-view.js",
+    "/src/popup/popup-saved-states-view.js",
+    "/src/popup/popup-downloads.js"
+  ];
+  const getLoadedModules = () => modulePaths.filter((modulePath) => requestedPaths.includes(modulePath));
+
+  assert.deepEqual(
+    getLoadedModules(),
+    [],
+    "Workbench modules should not load during Popup startup."
+  );
+
+  await popup.locator("#importButton").click();
+  await popup.locator("#workbenchDialog").waitFor({ state: "visible" });
+  const dynamicEntryPaths = modulePaths.slice(0, 2);
+  assert.deepEqual(getLoadedModules().slice(0, 2), dynamicEntryPaths);
+
+  await popup.locator("#workbenchCloseButton").click();
+  await popup.locator("#workbenchDialog").waitFor({ state: "hidden" });
 }
 
 async function assertPopupListsSeededCookies(popup) {
@@ -750,7 +789,14 @@ async function assertTableActionHierarchy(popup) {
   await screenshot(popup, "v031-popup-main.png");
 
   const firstRowCheckbox = popup.locator("#cookieTableBody .select-cell input").first();
+  await firstRowCheckbox.evaluate((checkbox) => {
+    checkbox.closest("tr").dataset.selectionRenderMarker = "preserved";
+  });
   await firstRowCheckbox.check();
+  assert.equal(
+    await firstRowCheckbox.evaluate((checkbox) => checkbox.closest("tr").dataset.selectionRenderMarker),
+    "preserved"
+  );
   await popup.locator("#batchActions").waitFor({ state: "visible" });
   assert.equal(await popup.locator("#selectionCount").innerText(), "1 selected");
   assert.equal(await popup.locator("#batchEditButton").isEnabled(), true);
@@ -781,6 +827,10 @@ async function assertTableActionHierarchy(popup) {
   }
 
   await firstRowCheckbox.uncheck();
+  assert.equal(
+    await firstRowCheckbox.evaluate((checkbox) => checkbox.closest("tr").dataset.selectionRenderMarker),
+    "preserved"
+  );
   await popup.locator("#batchActions").waitFor({ state: "hidden" });
   assert.equal(await popup.locator("#selectionCount").innerText(), "0 selected");
 }
@@ -1865,9 +1915,50 @@ async function assertSingleHistoryDetailLayout(popup, seed) {
   await screenshot(popup, "milestone-4-popup-history-detail-single.png");
 }
 
+async function assertLargeCookieSelectionStaysLocal(popup, browserContext, baseUrl) {
+  await switchDataView(popup, "cookies");
+  await popup.locator("#searchInput").fill("");
+  const bulkCookies = Array.from({ length: 140 }, (_, index) => ({
+    url: baseUrl,
+    name: `selection_perf_${String(index).padStart(3, "0")}`,
+    value: `value-${index}`
+  }));
+  await browserContext.addCookies(bulkCookies);
+  const expectedCount = (await browserContext.cookies(baseUrl))
+    .filter((cookie) => cookie.name.startsWith("selection_perf_"))
+    .length;
+
+  await popup.locator("#refreshButton").click();
+  await popup.waitForFunction((count) => {
+    return document.querySelectorAll("#cookieTableBody tr").length >= count;
+  }, expectedCount);
+
+  const row = popup.locator("#cookieTableBody tr")
+    .filter({ hasText: "selection_perf_000" });
+  const checkbox = row.locator(".select-cell input");
+  await checkbox.evaluate((input) => {
+    input.closest("tr").dataset.selectionRenderMarker = "preserved";
+  });
+  await checkbox.check();
+  assert.equal(
+    await checkbox.evaluate((input) => input.closest("tr").dataset.selectionRenderMarker),
+    "preserved"
+  );
+  await checkbox.uncheck();
+  assert.equal(
+    await checkbox.evaluate((input) => input.closest("tr").dataset.selectionRenderMarker),
+    "preserved"
+  );
+  await row.click();
+  assert.equal(await row.getAttribute("data-selection-render-marker"), "preserved");
+  assert.equal(await row.evaluate((element) => element.classList.contains("is-selected")), true);
+  assert.equal(await popup.locator("#editorName").innerText(), "selection_perf_000");
+}
+
 async function assertLocalStorageFlow(popup, page, seed) {
   await switchDataView(popup, "localStorage");
   await waitForPopupReady(popup, "127.0.0.1");
+  assert.equal(await popup.locator("#loadingState").innerText(), "Reading local storage");
   await assertCurrentExportScopeLabel(popup, "Current view(Local Storage)");
   assert.equal(await popup.locator("#importButton").getAttribute("aria-label"), "Import");
   assert.equal(await popup.locator("#importButton").getAttribute("data-tooltip"), "Import");
@@ -1948,6 +2039,7 @@ async function assertLocalStorageFlow(popup, page, seed) {
 async function assertSessionStorageFlow(popup, page, seed) {
   await switchDataView(popup, "sessionStorage");
   await waitForPopupReady(popup, "127.0.0.1");
+  assert.equal(await popup.locator("#loadingState").innerText(), "Reading session storage");
   await assertCurrentExportScopeLabel(popup, "Current view(Session Storage)");
   await popup.locator("#importButton").click();
   await popup.locator("#workbenchDialog").waitFor({ state: "visible" });

@@ -63,9 +63,6 @@ import { cancelDialogFromBackdrop, createDialogController } from "./popup-dialog
 import { createClipboardFeedback, createStatusController, writeClipboard } from "./popup-feedback.js";
 import { renderDataTable } from "./popup-table-view.js";
 import { createHistoryView } from "./popup-history-view.js";
-import { createSiteDataWorkbench } from "./popup-workbench.js";
-import { createPopupSiteDataController } from "./popup-site-data-controller.js";
-import { saveJsonFile, saveTextFile } from "./popup-downloads.js";
 import { createPopupHistoryController } from "./popup-history-controller.js";
 import { createPopupItemActionsController } from "./popup-item-actions-controller.js";
 
@@ -96,6 +93,8 @@ const state = {
 };
 
 let lastViewedSavePromise = Promise.resolve();
+let workbenchPromise = null;
+let workbenchOpening = false;
 
 const elements = {
   hostLabel: document.querySelector("#hostLabel"),
@@ -250,35 +249,6 @@ const itemActions = createPopupItemActionsController({
   showCopyFeedback,
   resetCopyFeedback
 });
-const siteDataController = createPopupSiteDataController({
-  state,
-  getSelectedRows,
-  refreshData,
-  suppressCookieWatcher,
-  showStatus,
-  requestDeleteConfirmation,
-  requestTextInput
-});
-const workbench = createSiteDataWorkbench({
-  dialog: elements.workbenchDialog,
-  getContext: getWorkbenchContext,
-  onPreview: siteDataController.previewPackage,
-  onApply: siteDataController.applyPackage,
-  onUndo: siteDataController.undoLatestBatch,
-  onQuickImport: importQuickEntries,
-  onBuildPackage: siteDataController.buildExportForScope,
-  onExportSelectionChange: updateExportSelection,
-  onCopy: writeClipboard,
-  onSaveJson: saveJsonFile,
-  onSaveText: saveTextFile,
-  onLoadProfiles: siteDataController.getProfiles,
-  onCreateProfile: siteDataController.createProfileFromCurrentSite,
-  onRenameProfile: siteDataController.renameSavedProfile,
-  onDuplicateProfile: siteDataController.duplicateSavedProfile,
-  onDeleteProfile: siteDataController.deleteSavedProfile,
-  onExportProfile: siteDataController.exportSavedProfile,
-  onResolveProfile: siteDataController.resolveProfileVariables
-});
 
 const popupParams = new URLSearchParams(location.search);
 const surface = popupParams.get("surface") === "sidepanel" ? "sidepanel" : "popup";
@@ -290,6 +260,18 @@ document.addEventListener("DOMContentLoaded", initialize);
 async function initialize() {
   bindEvents();
 
+  const historyPromise = historyController.loadRecentChanges();
+  await Promise.all([
+    loadPreferences(),
+    loadFavoriteSiteDataIds()
+  ]);
+  await refreshData();
+  await historyPromise;
+  startCookieWatcher();
+  startFavoriteWatcher();
+}
+
+async function loadPreferences() {
   try {
     const preferences = await getPreferences();
     state.autoRefreshPage = Boolean(preferences.autoRefreshPage);
@@ -303,14 +285,12 @@ async function initialize() {
     updateRefreshControlState();
     applyColumnWidths();
     if (Number(preferences.columnWidthsVersion) < COLUMN_WIDTHS_VERSION) {
-      try {
-        await savePreferences({
-          columnWidths: state.columnWidths,
-          columnWidthsVersion: COLUMN_WIDTHS_VERSION
-        });
-      } catch {
+      void savePreferences({
+        columnWidths: state.columnWidths,
+        columnWidthsVersion: COLUMN_WIDTHS_VERSION
+      }).catch(() => {
         // The migrated widths are still applied for the current view.
-      }
+      });
     }
   } catch {
     state.autoRefreshPage = false;
@@ -320,14 +300,6 @@ async function initialize() {
     updateRefreshControlState();
     applyColumnWidths();
   }
-
-  await Promise.all([
-    loadFavoriteSiteDataIds(),
-    historyController.loadRecentChanges()
-  ]);
-  await refreshData();
-  startCookieWatcher();
-  startFavoriteWatcher();
 }
 
 function bindEvents() {
@@ -346,9 +318,9 @@ function bindEvents() {
   elements.selectAllCheckbox.addEventListener("change", toggleSelectAllVisible);
   elements.batchEditButton.addEventListener("click", itemActions.batchEditSelected);
   elements.batchDeleteButton.addEventListener("click", itemActions.batchDeleteSelected);
-  elements.exportButton.addEventListener("click", () => workbench.open("export"));
-  elements.importButton.addEventListener("click", () => workbench.open("import"));
-  elements.profilesButton.addEventListener("click", () => workbench.open("profiles"));
+  elements.exportButton.addEventListener("click", () => void openWorkbench("export"));
+  elements.importButton.addEventListener("click", () => void openWorkbench("import"));
+  elements.profilesButton.addEventListener("click", () => void openWorkbench("profiles"));
   elements.searchInput.addEventListener("input", () => {
     state.searchQuery = elements.searchInput.value.trim().toLowerCase();
     renderTable();
@@ -511,11 +483,17 @@ async function refreshData() {
     const tab = await getActiveTab();
     state.tab = tab;
     state.cookieStoreId = "";
-    await restoreLastViewedSiteData(tab?.url);
-    await refreshSiteOptions(tab?.id);
+    renderHeader(tab?.url);
+
+    const supportedPage = Boolean(tab?.url && isSupportedPageUrl(tab.url));
+    const [, , cookieStoreId] = await Promise.all([
+      restoreLastViewedSiteData(tab?.url),
+      refreshSiteOptions(tab?.id),
+      supportedPage ? resolveCookieStoreId(tab) : Promise.resolve("")
+    ]);
     const view = getCurrentView();
 
-    if (!tab?.url || !isSupportedPageUrl(tab.url)) {
+    if (!supportedPage) {
       state.rows = [];
       state.selectedId = "";
       state.emptyMessage = "This page is not supported";
@@ -526,8 +504,7 @@ async function refreshData() {
       return;
     }
 
-    renderHeader(tab.url);
-    state.cookieStoreId = await resolveCookieStoreId(tab);
+    state.cookieStoreId = cookieStoreId;
     state.rows = await readSiteDataRows(tab, state.dataView, state.cookieStoreId);
     state.emptyMessage = view.emptyMessage;
 
@@ -547,6 +524,72 @@ async function refreshData() {
     await handleReadError(error);
   } finally {
     setLoading(false);
+  }
+}
+
+async function getWorkbench() {
+  if (!workbenchPromise) {
+    workbenchPromise = Promise.all([
+      import("./popup-workbench.js"),
+      import("./popup-site-data-controller.js"),
+      import("./popup-downloads.js")
+    ]).then(([
+      { createSiteDataWorkbench },
+      { createPopupSiteDataController },
+      { saveJsonFile, saveTextFile }
+    ]) => {
+      const siteDataController = createPopupSiteDataController({
+        state,
+        getSelectedRows,
+        refreshData,
+        suppressCookieWatcher,
+        showStatus,
+        requestDeleteConfirmation,
+        requestTextInput
+      });
+
+      return createSiteDataWorkbench({
+        dialog: elements.workbenchDialog,
+        getContext: getWorkbenchContext,
+        onPreview: siteDataController.previewPackage,
+        onApply: siteDataController.applyPackage,
+        onUndo: siteDataController.undoLatestBatch,
+        onQuickImport: importQuickEntries,
+        onBuildPackage: siteDataController.buildExportForScope,
+        onExportSelectionChange: updateExportSelection,
+        onCopy: writeClipboard,
+        onSaveJson: saveJsonFile,
+        onSaveText: saveTextFile,
+        onLoadProfiles: siteDataController.getProfiles,
+        onCreateProfile: siteDataController.createProfileFromCurrentSite,
+        onRenameProfile: siteDataController.renameSavedProfile,
+        onDuplicateProfile: siteDataController.duplicateSavedProfile,
+        onDeleteProfile: siteDataController.deleteSavedProfile,
+        onExportProfile: siteDataController.exportSavedProfile,
+        onResolveProfile: siteDataController.resolveProfileVariables
+      });
+    }).catch((error) => {
+      workbenchPromise = null;
+      throw error;
+    });
+  }
+
+  return workbenchPromise;
+}
+
+async function openWorkbench(view) {
+  if (workbenchOpening) {
+    return;
+  }
+
+  workbenchOpening = true;
+  try {
+    const workbench = await getWorkbench();
+    await workbench.open(view);
+  } catch (error) {
+    showStatus(error?.message || "Failed to open site data tools.", "error");
+  } finally {
+    workbenchOpening = false;
   }
 }
 
@@ -870,6 +913,7 @@ function renderViewChrome() {
   const view = getCurrentView();
   const cookieView = isCookieView();
   document.body.dataset.view = state.dataView;
+  elements.loadingState.textContent = view.loadingMessage;
   elements.searchInput.placeholder = isCookieView()
     ? "Search name, value, domain, path"
     : "Search key, value, origin";
@@ -997,7 +1041,7 @@ function renderTable() {
   elements.emptyState.hidden = state.loading || visibleRows.length > 0;
   renderHeader(state.tab?.url);
   updateActionAvailability();
-  updateSelectionSummary();
+  updateSelectionSummary(visibleRows);
 }
 
 function getVisibleRows() {
@@ -1071,11 +1115,18 @@ function areSetsEqual(a, b) {
   return a.size === b.size && [...a].every((value) => b.has(value));
 }
 
-function selectItem(id) {
+function selectItem(id, rowElement) {
   const changed = state.selectedId !== id;
   state.selectedId = id;
   rememberCurrentSelection();
-  renderTable();
+
+  if (!rowElement?.isConnected || rowElement.dataset.itemId !== id) {
+    renderTable();
+  } else if (changed) {
+    elements.cookieTableBody.querySelector("tr.is-selected")?.classList.remove("is-selected");
+    rowElement.classList.add("is-selected");
+  }
+
   renderSelectedItem();
 
   if (changed) {
@@ -1084,13 +1135,20 @@ function selectItem(id) {
   }
 }
 
-function toggleRowSelection(id, selected) {
+function toggleRowSelection(id, selected, rowElement) {
   if (selected) {
     state.selectedIds.add(id);
   } else {
     state.selectedIds.delete(id);
   }
-  renderTable();
+
+  if (!rowElement?.isConnected || rowElement.dataset.itemId !== id) {
+    renderTable();
+    return;
+  }
+
+  rowElement.classList.toggle("is-checked", selected);
+  updateSelectionSummary();
 }
 
 function toggleSelectAllVisible() {
@@ -1116,16 +1174,20 @@ function getSelectedRows() {
   return state.rows.filter((row) => state.selectedIds.has(row.id));
 }
 
-function updateSelectionSummary() {
+function updateSelectionSummary(visibleRows = null) {
   const selectedCount = state.selectedIds.size;
-  const visibleRows = getVisibleRows();
-  const visibleSelectedCount = visibleRows.filter((row) => state.selectedIds.has(row.id)).length;
+  const visibleRowCount = visibleRows
+    ? visibleRows.length
+    : elements.cookieTableBody.rows.length;
+  const visibleSelectedCount = visibleRows
+    ? visibleRows.filter((row) => state.selectedIds.has(row.id)).length
+    : elements.cookieTableBody.querySelectorAll(".select-cell input:checked").length;
   elements.selectionCount.textContent = `${selectedCount} selected`;
   elements.batchActions.hidden = selectedCount === 0;
   elements.batchEditButton.disabled = selectedCount === 0;
   elements.batchDeleteButton.disabled = selectedCount === 0;
-  elements.selectAllCheckbox.checked = visibleRows.length > 0 && visibleSelectedCount === visibleRows.length;
-  elements.selectAllCheckbox.indeterminate = visibleSelectedCount > 0 && visibleSelectedCount < visibleRows.length;
+  elements.selectAllCheckbox.checked = visibleRowCount > 0 && visibleSelectedCount === visibleRowCount;
+  elements.selectAllCheckbox.indeterminate = visibleSelectedCount > 0 && visibleSelectedCount < visibleRowCount;
 }
 
 function setActiveDetailView(view) {
