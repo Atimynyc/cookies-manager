@@ -133,7 +133,8 @@ export function createPopupItemActionsController({
     const nextValue = await requestTextInput({
       title: "Set value",
       fieldLabel: `Value for ${selectedRows.length} selected ${getCurrentView().plural}`,
-      submitLabel: "Set value"
+      submitLabel: "Set value",
+      selection: getSelectionReview(selectedRows)
     });
     if (nextValue === null) {
       return;
@@ -170,7 +171,9 @@ export function createPopupItemActionsController({
 
     const confirmed = await requestDeleteConfirmation({
       title: `Delete selected ${getCurrentView().plural}?`,
-      message: `${selectedRows.length} selected ${getCurrentView().plural} will be permanently deleted.`
+      message: `${selectedRows.length} selected ${getCurrentView().plural} will be permanently deleted.`,
+      confirmLabel: `Delete ${selectedRows.length}`,
+      selection: getSelectionReview(selectedRows)
     });
     if (!confirmed) {
       return;
@@ -215,6 +218,16 @@ export function createPopupItemActionsController({
     ].filter(Boolean).join(", ");
     const firstError = result.failed[0]?.error?.message;
     showStatus(`${summary}.${firstError ? ` ${firstError}` : ""}`, counts.failed ? "error" : "warning");
+  }
+
+  function getSelectionReview(rows) {
+    return {
+      label: getCurrentView().plural,
+      rows: rows.map((row) => ({
+        name: row.name,
+        location: getRowLocation(row)
+      }))
+    };
   }
 
   function resetSelectedItem() {

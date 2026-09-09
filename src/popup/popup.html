@@ -160,7 +160,12 @@
           <div class="empty-state" id="emptyState" hidden>No cookies for this page</div>
 
           <div class="table-toolbar">
-            <span class="selection-count" id="selectionCount">0 selected</span>
+            <button class="selection-count" id="selectionCount" type="button" aria-controls="cookieTableBody" aria-pressed="false" title="Show selected items" disabled>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 5h16l-6 7v5l-4 2v-7Z" />
+              </svg>
+              <span id="selectionCountLabel">0 selected</span>
+            </button>
             <div class="batch-actions" id="batchActions" aria-label="Selected item actions" hidden>
               <button class="table-action-button batch-action-button" id="batchEditButton" type="button" aria-label="Set value" data-tooltip="Set value" disabled>
                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -370,6 +375,13 @@
           <h2 id="confirmDialogTitle">Delete item?</h2>
           <p id="confirmDialogMessage"></p>
           <p class="confirm-dialog-detail" id="confirmDialogDetail" hidden></p>
+          <details class="dialog-selection-review" data-selection-review hidden>
+            <summary>
+              <span data-selection-review-label>Selected items</span>
+              <span class="dialog-selection-review-count" data-selection-review-count>0</span>
+            </summary>
+            <ul data-selection-review-list></ul>
+          </details>
         </div>
         <div class="app-dialog-actions">
           <button id="confirmDialogCancelButton" type="button" data-dialog-cancel autofocus>Cancel</button>
@@ -382,6 +394,13 @@
       <form id="textInputDialogForm" method="dialog">
         <div class="app-dialog-body">
           <h2 id="textInputDialogTitle">Enter value</h2>
+          <details class="dialog-selection-review" data-selection-review hidden>
+            <summary>
+              <span data-selection-review-label>Selected items</span>
+              <span class="dialog-selection-review-count" data-selection-review-count>0</span>
+            </summary>
+            <ul data-selection-review-list></ul>
+          </details>
           <label class="dialog-field" for="textInputDialogInput">
             <span id="textInputDialogFieldLabel">Value</span>
             <input id="textInputDialogInput" type="text" autocomplete="off" spellcheck="false">

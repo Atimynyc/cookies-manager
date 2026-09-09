@@ -78,6 +78,8 @@ const state = {
   selectedIds: new Set(),
   favoriteItemIds: new Set(),
   searchQuery: "",
+  selectedOnly: false,
+  selectedSearchQuery: "",
   autoRefreshPage: false,
   valueToolMode: "none",
   columnWidths: [...DEFAULT_COLUMN_WIDTHS],
@@ -124,6 +126,7 @@ const elements = {
   closeStatusButton: document.querySelector("#closeStatusButton"),
   copyAnnouncement: document.querySelector("#copyAnnouncement"),
   selectionCount: document.querySelector("#selectionCount"),
+  selectionCountLabel: document.querySelector("#selectionCountLabel"),
   batchActions: document.querySelector("#batchActions"),
   selectAllCheckbox: document.querySelector("#selectAllCheckbox"),
   batchEditButton: document.querySelector("#batchEditButton"),
@@ -332,13 +335,19 @@ function bindEvents() {
   elements.requestPermissionButton.addEventListener("click", refreshData);
   elements.closeStatusButton.addEventListener("click", clearStatus);
   elements.selectAllCheckbox.addEventListener("change", toggleSelectAllVisible);
+  elements.selectionCount.addEventListener("click", toggleSelectedOnly);
   elements.batchEditButton.addEventListener("click", itemActions.batchEditSelected);
   elements.batchDeleteButton.addEventListener("click", itemActions.batchDeleteSelected);
   elements.exportButton.addEventListener("click", () => void openWorkbench("export"));
   elements.importButton.addEventListener("click", () => void openWorkbench("import"));
   elements.profilesButton.addEventListener("click", () => void openWorkbench("profiles"));
   elements.searchInput.addEventListener("input", () => {
-    state.searchQuery = elements.searchInput.value.trim().toLowerCase();
+    const query = elements.searchInput.value.trim().toLowerCase();
+    if (state.selectedOnly) {
+      state.selectedSearchQuery = query;
+    } else {
+      state.searchQuery = query;
+    }
     renderTable();
   });
   elements.autoRefreshToggle.addEventListener("change", async () => {
@@ -522,6 +531,8 @@ async function restoreLastViewedSiteData(url) {
   state.selectedId = state.rememberedSelectedIds[state.dataView] || "";
   state.selectedIds.clear();
   state.searchQuery = "";
+  state.selectedOnly = false;
+  state.selectedSearchQuery = "";
   elements.searchInput.value = "";
   clearToolOutput();
   clearHistoryDetail();
@@ -561,6 +572,8 @@ async function setDataView(view) {
   state.selectedId = state.rememberedSelectedIds[view] || "";
   state.selectedIds.clear();
   state.searchQuery = "";
+  state.selectedOnly = false;
+  state.selectedSearchQuery = "";
   elements.searchInput.value = "";
   clearToolOutput();
   clearHistoryDetail();
@@ -730,6 +743,7 @@ async function switchToSelectedSite() {
     state.siteOrigin = null;
     state.selectedId = "";
     state.selectedIds.clear();
+    resetSelectedOnly();
     await refreshData();
   } catch (error) {
     showStatus(error?.message || "Failed to switch site.", "error");
@@ -1014,8 +1028,8 @@ function renderViewChrome() {
   document.body.dataset.view = state.dataView;
   elements.loadingState.textContent = view.loadingMessage;
   elements.searchInput.placeholder = isCookieView()
-    ? "Search name, value, domain, path"
-    : "Search key, value, origin";
+    ? state.selectedOnly ? "Search selected cookies" : "Search name, value, domain, path"
+    : state.selectedOnly ? "Search selected items" : "Search key, value, origin";
   elements.refreshButton.title = `Refresh ${view.plural}`;
   elements.refreshButton.setAttribute("aria-label", `Refresh ${view.plural}`);
   elements.importButton.setAttribute("aria-label", "Import");
@@ -1140,6 +1154,9 @@ function renderSiteIcon(tab) {
 }
 
 function renderTable() {
+  if (state.selectedOnly && state.selectedIds.size === 0) {
+    resetSelectedOnly();
+  }
   const visibleRows = getVisibleRows();
   const favoriteIds = new Set(visibleRows
     .filter((row) => isFavorite(row.id))
@@ -1162,9 +1179,14 @@ function renderTable() {
 
 function getVisibleRows() {
   let rows = state.rows;
-  if (state.searchQuery) {
+  if (state.selectedOnly) {
+    rows = rows.filter((row) => state.selectedIds.has(row.id));
+  }
+
+  const query = state.selectedOnly ? state.selectedSearchQuery : state.searchQuery;
+  if (query) {
     const getSearchText = isCookieView() ? getCookieSearchText : getStorageSearchText;
-    rows = rows.filter((row) => getSearchText(row).includes(state.searchQuery));
+    rows = rows.filter((row) => getSearchText(row).includes(query));
   }
 
   return sortFavoriteRowsFirst(rows, state.favoriteItemIds, state.dataView);
@@ -1258,13 +1280,35 @@ function toggleRowSelection(id, selected, rowElement) {
     state.selectedIds.delete(id);
   }
 
-  if (!rowElement?.isConnected || rowElement.dataset.itemId !== id) {
+  if (state.selectedOnly || !rowElement?.isConnected || rowElement.dataset.itemId !== id) {
     renderTable();
     return;
   }
 
   rowElement.classList.toggle("is-checked", selected);
   updateSelectionSummary();
+}
+
+function toggleSelectedOnly() {
+  if (state.selectedIds.size === 0) {
+    return;
+  }
+
+  state.selectedOnly = !state.selectedOnly;
+  state.selectedSearchQuery = "";
+  elements.searchInput.value = state.selectedOnly ? "" : state.searchQuery;
+  renderViewChrome();
+  renderTable();
+}
+
+function resetSelectedOnly() {
+  if (!state.selectedOnly && !state.selectedSearchQuery) {
+    return;
+  }
+  state.selectedOnly = false;
+  state.selectedSearchQuery = "";
+  elements.searchInput.value = state.searchQuery;
+  renderViewChrome();
 }
 
 function toggleSelectAllVisible() {
@@ -1298,7 +1342,11 @@ function updateSelectionSummary(visibleRows = null) {
   const visibleSelectedCount = visibleRows
     ? visibleRows.filter((row) => state.selectedIds.has(row.id)).length
     : elements.cookieTableBody.querySelectorAll(".select-cell input:checked").length;
-  elements.selectionCount.textContent = `${selectedCount} selected`;
+  const hiddenSelectedCount = Math.max(0, selectedCount - visibleSelectedCount);
+  elements.selectionCountLabel.textContent = `${selectedCount} selected${hiddenSelectedCount ? ` · ${hiddenSelectedCount} hidden` : ""}`;
+  elements.selectionCount.disabled = selectedCount === 0;
+  elements.selectionCount.setAttribute("aria-pressed", String(state.selectedOnly));
+  elements.selectionCount.title = state.selectedOnly ? "Show all items" : "Show selected items";
   elements.batchActions.hidden = selectedCount === 0;
   elements.batchEditButton.disabled = selectedCount === 0;
   elements.batchDeleteButton.disabled = selectedCount === 0;

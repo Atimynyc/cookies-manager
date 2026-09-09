@@ -872,6 +872,7 @@ async function assertTableActionHierarchy(popup) {
   );
   await popup.locator("#batchActions").waitFor({ state: "visible" });
   assert.equal(await popup.locator("#selectionCount").innerText(), "1 selected");
+  assert.equal(await popup.locator("#selectionCount").getAttribute("aria-pressed"), "false");
   assert.equal(await popup.locator("#batchEditButton").isEnabled(), true);
   assert.equal(await popup.locator("#batchDeleteButton").isEnabled(), true);
   const selectedToolbarLayout = await popup.locator(".table-toolbar").evaluate((toolbar) => ({
@@ -906,6 +907,20 @@ async function assertTableActionHierarchy(popup) {
   );
   await popup.locator("#batchActions").waitFor({ state: "hidden" });
   assert.equal(await popup.locator("#selectionCount").innerText(), "0 selected");
+
+  await firstRowCheckbox.check();
+  await popup.locator("#searchInput").fill("__selected_item_is_hidden__");
+  assert.equal(await popup.locator("#selectionCount").innerText(), "1 selected · 1 hidden");
+  const searchBeforeSelectedOnly = await popup.locator("#searchInput").inputValue();
+  await popup.locator("#selectionCount").click();
+  assert.equal(await popup.locator("#selectionCount").getAttribute("aria-pressed"), "true");
+  assert.equal(await popup.locator("#searchInput").inputValue(), "");
+  assert.equal(await popup.locator("#cookieTableBody tr").count(), 1);
+  await popup.locator("#selectionCount").click();
+  assert.equal(await popup.locator("#selectionCount").getAttribute("aria-pressed"), "false");
+  assert.equal(await popup.locator("#searchInput").inputValue(), searchBeforeSelectedOnly);
+  await popup.locator("#searchInput").fill("");
+  await firstRowCheckbox.uncheck();
 }
 
 async function assertExportFlow(popup) {
@@ -1597,8 +1612,11 @@ async function assertBatchFlow(popup, context, baseUrl) {
   await popup.locator("#batchEditButton").click();
   const setValueDialogLayout = await getDialogLayout(popup, "#textInputDialog");
   assert.ok(setValueDialogLayout.width <= 440, JSON.stringify(setValueDialogLayout));
-  assert.ok(setValueDialogLayout.height <= 240, JSON.stringify(setValueDialogLayout));
+  assert.ok(setValueDialogLayout.height <= 360, JSON.stringify(setValueDialogLayout));
   assert.equal(await popup.locator("#textInputDialogTitle").textContent(), "Set value");
+  assert.equal(await popup.locator("#textInputDialog [data-selection-review-list] li").count(), 2);
+  assert.match(await popup.locator("#textInputDialog [data-selection-review]").innerText(), /batch_one_/);
+  assert.match(await popup.locator("#textInputDialog [data-selection-review]").innerText(), /127\.0\.0\.1\//);
   await screenshot(popup, "milestone-4-popup-set-value-dialog.png");
   await submitTextInput(popup, `batch-updated-${runId}`);
   await waitForStatus(popup, "Updated 2 selected cookies.");
@@ -1609,6 +1627,8 @@ async function assertBatchFlow(popup, context, baseUrl) {
 
   await popup.locator("#selectAllCheckbox").check();
   await popup.locator("#batchDeleteButton").click();
+  assert.equal(await popup.locator("#confirmDialog [data-selection-review-list] li").count(), 2);
+  assert.equal(await popup.locator("#confirmDialogDeleteButton").textContent(), "Delete 2");
   await acceptDeleteConfirmation(popup);
   await waitForStatus(popup, "Deleted 2 selected cookies.");
 
