@@ -56,12 +56,14 @@ try {
   if (favoritesOnly) {
     await assertFavoriteFlow(popup);
     await assertDetailFavoriteControl(popup);
+    await assertNameSort(popup);
   } else if (v030Only) {
     await assertV030WorkbenchFlow(popup, context, testPage, baseUrl, extensionId);
   } else {
     await assertUnselectedWorkspaceFillsContent(popup);
     await assertFavoriteFlow(popup);
     await assertDetailFavoriteControl(popup);
+    await assertNameSort(popup);
     await assertWorkspaceNavigation(popup);
     await assertTableActionHierarchy(popup);
     await assertEditorActions(popup);
@@ -294,15 +296,19 @@ async function assertValueTypeIndicators(popup) {
     rows.map((row) => {
       const name = row.querySelector(".name-cell-text")?.textContent || "";
       const value = row.querySelector(".value-cell-text")?.textContent || "";
-      const marker = row.querySelector(".value-type-indicator")?.getAttribute("aria-label") || null;
-      return [name, { value, marker }];
+      const indicator = row.querySelector(".value-type-indicator");
+      const marker = indicator?.getAttribute("aria-label") || null;
+      const markerText = indicator?.textContent || null;
+      return [name, { value, marker, markerText }];
     })
   ));
 
   assert.equal(valuesByName.plain?.marker, null);
   assert.equal(valuesByName.encoded?.marker, "JSON value");
+  assert.equal(valuesByName.encoded?.markerText, "JSON");
   assert.equal(valuesByName.encoded?.value, "%7B%22ok%22%3Atrue%2C%22from%22%3A%22playwright%22%7D");
   assert.equal(valuesByName.jwt?.marker, "JWT value");
+  assert.equal(valuesByName.jwt?.markerText, "JWT");
   assert.equal(valuesByName.jwt?.value, jwt);
 }
 
@@ -425,6 +431,49 @@ async function assertDetailFavoriteControl(popup) {
   await screenshot(popup, "milestone-4-popup-favorites.png");
 }
 
+async function assertNameSort(popup) {
+  const cases = [
+    ["cookies", "Name", "plain"],
+    ["localStorage", "Key", "local_plain"],
+    ["sessionStorage", "Key", "session_plain"]
+  ];
+
+  for (const [view, label, favoriteName] of cases) {
+    await switchDataView(popup, view);
+    assert.equal(await popup.locator("#nameSortLabel").textContent(), label);
+    assert.equal(await popup.locator(".name-sort-header").getAttribute("aria-sort"), "none");
+
+    await popup.locator("#nameSortButton").click();
+    assert.equal(await popup.locator(".name-sort-header").getAttribute("aria-sort"), "ascending");
+    await assertNameSortOrder(popup, "ascending", favoriteName);
+
+    await popup.locator("#nameSortButton").click();
+    assert.equal(await popup.locator(".name-sort-header").getAttribute("aria-sort"), "descending");
+    await assertNameSortOrder(popup, "descending", favoriteName);
+  }
+
+  await switchDataView(popup, "cookies");
+}
+
+async function assertNameSortOrder(popup, direction, favoriteName) {
+  const entries = await popup.locator("#cookieTableBody tr").evaluateAll((rows) => rows.map((row) => ({
+    favorite: Boolean(row.querySelector(".favorite-indicator")),
+    name: row.querySelector(".name-cell-text")?.textContent || ""
+  })));
+  const firstRegularIndex = entries.findIndex((entry) => !entry.favorite);
+  const favoriteNames = entries.filter((entry) => entry.favorite).map((entry) => entry.name);
+  const regularNames = entries.filter((entry) => !entry.favorite).map((entry) => entry.name);
+  const sortNames = (names) => [...names].sort((a, b) => {
+    const comparison = a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+    return direction === "descending" ? -comparison : comparison;
+  });
+
+  assert.equal(entries[0]?.name, favoriteName);
+  assert.equal(entries.slice(firstRegularIndex).some((entry) => entry.favorite), false);
+  assert.deepEqual(favoriteNames, sortNames(favoriteNames));
+  assert.deepEqual(regularNames, sortNames(regularNames));
+}
+
 async function assertUnselectedWorkspaceFillsContent(popup) {
   const layout = await popup.evaluate(() => {
     const app = document.querySelector(".app-shell");
@@ -454,6 +503,18 @@ async function assertUnselectedWorkspaceFillsContent(popup) {
 
 async function assertValueTools(popup) {
   await selectCookieBySearch(popup, "encoded");
+  assert.equal(await popup.locator("#valueViewSwitch").isHidden(), false);
+  assert.equal(await popup.locator("#valueViewLabel").textContent(), "Raw");
+  assert.equal(await popup.locator("#valueInput").isVisible(), true);
+  assert.equal(await popup.locator("#toolOutput").isHidden(), true);
+
+  await popup.locator("#valueViewToggleButton").click();
+  await expectToolOutput(popup, '"ok": true');
+  assert.equal(await popup.locator("#valueViewLabel").textContent(), "Formatted JSON");
+  await popup.locator("#valueViewToggleButton").click();
+  assert.equal(await popup.locator("#valueViewLabel").textContent(), "Raw");
+  assert.equal(await popup.locator("#valueInput").isVisible(), true);
+
   await runValueTool(popup, "urlDecode");
   await expectToolOutput(popup, '"ok":true');
 
@@ -465,13 +526,73 @@ async function assertValueTools(popup) {
 
   await runValueTool(popup, "urlEncode");
   await expectToolOutput(popup, "%257B%2522ok%2522%253Atrue");
+  assert.equal(await popup.locator("#valueToolsButton > span").textContent(), "Tools");
+  assert.equal(await popup.locator("#valueToolsButton .value-tools-chevron").isVisible(), true);
+
+  await selectCookieBySearch(popup, "plain");
+  assert.equal(await popup.locator("#valueViewSwitch").isHidden(), true);
+  const initialToolAlignment = await popup.evaluate(() => {
+    const workspace = document.querySelector(".value-workspace").getBoundingClientRect();
+    const button = document.querySelector("#valueToolsButton").getBoundingClientRect();
+    return workspace.right - button.right;
+  });
+  assert.ok(initialToolAlignment >= 4 && initialToolAlignment <= 7, initialToolAlignment);
+  await popup.locator("#valueInput").fill("hello world");
+  assert.equal(await popup.locator("#valueViewToggleButton").isDisabled(), true);
+  await runValueTool(popup, "urlEncode");
+  await expectToolOutput(popup, "hello%20world");
+  assert.equal(await popup.locator("#valueViewToggleButton").isEnabled(), true);
+  assert.equal(await popup.locator("#valueViewSwitch").isHidden(), false);
+  const resultToolAlignment = await popup.evaluate(() => {
+    const workspace = document.querySelector(".value-workspace").getBoundingClientRect();
+    const button = document.querySelector("#valueToolsButton").getBoundingClientRect();
+    return workspace.right - button.right;
+  });
+  assert.equal(resultToolAlignment, initialToolAlignment);
+  const valueTypography = await popup.evaluate(() => {
+    const valueStyle = getComputedStyle(document.querySelector("#valueInput"));
+    const resultStyle = getComputedStyle(document.querySelector("#toolOutputBody"));
+    return {
+      fontFamily: [valueStyle.fontFamily, resultStyle.fontFamily],
+      fontSize: [valueStyle.fontSize, resultStyle.fontSize],
+      lineHeight: [valueStyle.lineHeight, resultStyle.lineHeight]
+    };
+  });
+  assert.deepEqual(valueTypography.fontSize, ["12px", "12px"]);
+  assert.deepEqual(valueTypography.lineHeight, ["18px", "18px"]);
+  await popup.locator("#valueViewToggleButton").click();
+  assert.equal(await popup.locator("#valueViewLabel").textContent(), "Raw");
+  await popup.locator("#resetButton").click();
+
+  const defaultValueWorkspaceHeight = await popup.locator(".value-workspace").evaluate((element) => element.getBoundingClientRect().height);
+  await popup.locator("#valueInput").fill(Array.from({ length: 18 }, (_, index) => `line-${index}`).join("\n"));
+  const expandedValueWorkspaceHeight = await popup.locator(".value-workspace").evaluate((element) => element.getBoundingClientRect().height);
+  assert.ok(expandedValueWorkspaceHeight > defaultValueWorkspaceHeight, JSON.stringify({ defaultValueWorkspaceHeight, expandedValueWorkspaceHeight }));
+  const editorScrollState = await popup.locator("#cookieEditor").evaluate((element) => ({
+    maxScrollTop: element.scrollHeight - element.clientHeight,
+    scrollTop: element.scrollTop
+  }));
+  assert.ok(editorScrollState.maxScrollTop > 0, JSON.stringify(editorScrollState));
+  const retainedScrollTop = Math.min(80, editorScrollState.maxScrollTop);
+  await popup.locator("#cookieEditor").evaluate((element, scrollTop) => {
+    element.scrollTop = scrollTop;
+  }, retainedScrollTop);
+  await popup.evaluate(() => window.dispatchEvent(new Event("resize")));
+  assert.equal(await popup.locator("#cookieEditor").evaluate((element) => element.scrollTop), retainedScrollTop);
+  await popup.locator("#valueInput").fill("hello");
+  const compactValueWorkspaceHeight = await popup.locator(".value-workspace").evaluate((element) => element.getBoundingClientRect().height);
+  assert.equal(compactValueWorkspaceHeight, defaultValueWorkspaceHeight);
+  await popup.locator("#resetButton").click();
 
   await selectCookieBySearch(popup, "jwt");
   await runValueTool(popup, "jwt");
   await expectToolOutput(popup, '"user": "dev"');
+  assert.equal(await popup.locator("#useToolOutputButton").count(), 0);
 
   const storedMode = await readStorageValue(popup, "valueToolMode");
   assert.equal(storedMode, "jwt");
+  assert.equal(await popup.locator("#valueToolModeSelect").count(), 0);
+  assert.equal(await popup.locator("#runToolButton").count(), 0);
 }
 
 async function assertStressLayout(popup) {
@@ -487,18 +608,9 @@ async function assertStressLayout(popup) {
     document.querySelector("#editorName").textContent = "access-token";
     document.querySelector("#editorLocation").textContent = "bytebase.z-trip.cn/";
     document.querySelector("#valueInput").value = longValue;
-    document.querySelector("#valueToolModeSelect").value = "jwt";
-    document.querySelector("#toolOutputTitle").textContent = "JWT payload";
-    document.querySelector("#toolOutputBody").textContent = JSON.stringify({
-      user: "bytebase-tester",
-      roles: ["admin", "operator", "reader", "billing"],
-      scope: "bb.user.access.prod",
-      exp: 1781494805,
-      iat: 1780890005
-    }, null, 2);
-    document.querySelector("#toolOutput").hidden = false;
     document.querySelector(".detail-pane").scrollTop = 0;
   });
+  await runValueTool(popup, "jwt");
 
   const layout = await popup.evaluate(() => {
     const selectors = {
@@ -508,11 +620,12 @@ async function assertStressLayout(popup) {
       tablePane: ".table-pane",
       detailPane: ".detail-pane",
       valueField: ".value-field",
+      valueWorkspace: ".value-workspace",
       valueInput: "#valueInput",
-      utilityActions: ".utility-actions",
       toolOutput: "#toolOutput",
+      valueWorkspaceFooter: ".value-workspace-footer",
       metaGrid: ".meta-grid",
-      runButton: "#runToolButton",
+      valueToolsButton: "#valueToolsButton",
       historyButton: "#historyViewButton"
     };
     const rects = Object.fromEntries(Object.entries(selectors).map(([name, selector]) => {
@@ -526,7 +639,7 @@ async function assertStressLayout(popup) {
         width: rect.width
       }];
     }));
-    const ordered = [rects.valueField, rects.utilityActions, rects.toolOutput, rects.metaGrid];
+    const ordered = [rects.valueField, rects.metaGrid];
 
     return {
       rects,
@@ -534,27 +647,30 @@ async function assertStressLayout(popup) {
         const previous = ordered[index - 1];
         return !previous || previous.bottom <= rect.top + 1;
       }),
-      runButtonInsideUtilityRow:
-        rects.runButton.left >= rects.utilityActions.left &&
-        rects.runButton.right <= rects.utilityActions.right + 1 &&
-        rects.runButton.top >= rects.utilityActions.top &&
-        rects.runButton.bottom <= rects.utilityActions.bottom + 1,
+      toolButtonBelowValue:
+        rects.valueToolsButton.top >= rects.toolOutput.bottom - 1 &&
+        rects.valueToolsButton.bottom <= rects.valueWorkspaceFooter.bottom + 1,
       topbarInsideApp:
         rects.historyButton.right <= rects.app.right + 1 &&
         rects.historyButton.left >= rects.app.left,
       panesDoNotOverlap: rects.tablePane.right <= rects.detailPane.left + 1,
       detailChildrenInsidePane:
-        rects.valueInput.right <= rects.detailPane.right + 1 &&
         rects.toolOutput.right <= rects.detailPane.right + 1 &&
-        rects.utilityActions.right <= rects.detailPane.right + 1
+        rects.valueWorkspaceFooter.right <= rects.detailPane.right + 1,
+      resultReusesValueWorkspace:
+        rects.toolOutput.left >= rects.valueWorkspace.left &&
+        rects.toolOutput.right <= rects.valueWorkspace.right + 1 &&
+        rects.toolOutput.top >= rects.valueWorkspace.top &&
+        rects.toolOutput.bottom <= rects.valueWorkspaceFooter.top + 1
     };
   });
 
   assert.equal(layout.orderedVertically, true, JSON.stringify(layout.rects, null, 2));
-  assert.equal(layout.runButtonInsideUtilityRow, true, JSON.stringify(layout.rects, null, 2));
+  assert.equal(layout.toolButtonBelowValue, true, JSON.stringify(layout.rects, null, 2));
   assert.equal(layout.topbarInsideApp, true, JSON.stringify(layout.rects, null, 2));
   assert.equal(layout.panesDoNotOverlap, true, JSON.stringify(layout.rects, null, 2));
   assert.equal(layout.detailChildrenInsidePane, true, JSON.stringify(layout.rects, null, 2));
+  assert.equal(layout.resultReusesValueWorkspace, true, JSON.stringify(layout.rects, null, 2));
   await screenshot(popup, "milestone-4-popup-layout-stress.png");
 }
 
@@ -633,6 +749,9 @@ async function assertEditorActions(popup) {
     }),
     "copyControl,resetButton,deleteButton,saveButton"
   );
+  assert.equal(await popup.locator(".value-workspace-footer #valueToolsButton svg.icon").count(), 2);
+  assert.equal(await popup.locator("#valueToolsButton").getAttribute("aria-label"), "Value tools");
+  assert.equal(await popup.locator("#valueToolsButton").getAttribute("data-icon"), "wrench");
   assert.equal(await popup.locator(".copy-row").count(), 0);
   assert.equal(await popup.locator("#copyMenu [role=menuitemradio]").count(), 3);
   assert.deepEqual(
@@ -2228,8 +2347,8 @@ async function switchDataView(popup, view) {
 }
 
 async function runValueTool(popup, mode) {
-  await popup.locator("#valueToolModeSelect").selectOption(mode);
-  await popup.locator("#runToolButton").click();
+  await popup.locator("#valueToolsButton").click();
+  await popup.locator(`#valueToolsMenu [data-value-tool="${mode}"]`).click();
 }
 
 async function assertColumnPreference(popup) {
@@ -2248,7 +2367,8 @@ async function getTableNames(popup) {
 
 async function expectToolOutput(popup, expectedText) {
   await popup.waitForFunction((text) => {
-    return document.querySelector("#toolOutputBody")?.textContent?.includes(text);
+    const output = document.querySelector("#toolOutput");
+    return output?.hidden === false && output.textContent?.includes(text);
   }, expectedText);
 }
 

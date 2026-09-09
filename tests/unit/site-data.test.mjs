@@ -23,7 +23,8 @@ import {
 import {
   makeFavoriteItemId,
   normalizeFavoriteItemIds,
-  sortFavoriteRowsFirst
+  sortFavoriteRowsFirst,
+  sortRowsByName
 } from "../../src/shared/favorites.js";
 import {
   classifySiteDataItem,
@@ -306,6 +307,30 @@ test("puts favorites first while preserving the existing order within each group
     ["b", "d", "a", "c"]
   );
   assert.deepEqual(rows.map((row) => row.id), ["a", "b", "c", "d"]);
+});
+
+test("sorts names in both directions before keeping favorites pinned", () => {
+  const rows = [
+    { id: "c", name: "charlie" },
+    { id: "a", name: "alpha" },
+    { id: "d", name: "delta" },
+    { id: "b", name: "beta" }
+  ];
+  const favorites = new Set([
+    makeFavoriteItemId("localStorage", "b"),
+    makeFavoriteItemId("localStorage", "d")
+  ]);
+
+  assert.deepEqual(
+    sortFavoriteRowsFirst(sortRowsByName(rows, "ascending"), favorites, "localStorage")
+      .map((row) => row.name),
+    ["beta", "delta", "alpha", "charlie"]
+  );
+  assert.deepEqual(
+    sortFavoriteRowsFirst(sortRowsByName(rows, "descending"), favorites, "localStorage")
+      .map((row) => row.name),
+    ["delta", "beta", "charlie", "alpha"]
+  );
 });
 
 test("migrates legacy table widths to a two-field viewport layout", () => {

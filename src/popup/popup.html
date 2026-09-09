@@ -143,7 +143,17 @@
                   <th class="select-column" scope="col">
                     <input id="selectAllCheckbox" type="checkbox" aria-label="Select all visible rows">
                   </th>
-                  <th scope="col" data-column-index="0">Name</th>
+                  <th class="name-sort-header" scope="col" data-column-index="0" aria-sort="none">
+                    <button class="column-sort-button" id="nameSortButton" type="button" aria-label="Sort Name ascending" title="Sort Name ascending">
+                      <span id="nameSortLabel">Name</span>
+                      <svg class="icon sort-neutral-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m3 8 4-4 4 4M7 4v16M21 16l-4 4-4-4M17 20V4" />
+                      </svg>
+                      <svg class="icon sort-direction-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 19V5M7 10l5-5 5 5" />
+                      </svg>
+                    </button>
+                  </th>
                   <th scope="col" data-column-index="1">Value</th>
                   <th scope="col" data-column-index="2">Domain</th>
                   <th scope="col" data-column-index="3">Path</th>
@@ -269,41 +279,83 @@
                       </button>
                     </div>
                   </div>
-                  <textarea id="valueInput" spellcheck="false"></textarea>
-                </div>
-
-                <section class="utility-panel" aria-label="Cookie value tools">
-                  <div class="utility-actions">
-                    <label class="tool-mode-field">
-                      <span>Tool</span>
-                      <select id="valueToolModeSelect">
-                        <option value="none">Choose a helper</option>
-                        <option value="urlDecode">URL decode</option>
-                        <option value="urlEncode">URL encode</option>
-                        <option value="jsonFormat">Format JSON</option>
-                        <option value="jsonCompact">Compact JSON</option>
-                        <option value="jwt">JWT payload</option>
-                      </select>
-                    </label>
-                    <button id="runToolButton" type="button">Run</button>
-                  </div>
-
-                  <div class="tool-output" id="toolOutput" hidden>
-                    <div class="tool-output-header">
-                      <span id="toolOutputTitle">Output</span>
-                      <button class="copy-feedback-button" id="copyToolOutputButton" type="button" aria-label="Copy tool output">
-                        Copy
-                        <span class="copy-success-feedback" aria-hidden="true">
-                          <svg class="icon" viewBox="0 0 24 24">
-                            <path d="m5 12 4 4L19 6" />
+                  <div class="value-workspace">
+                    <textarea id="valueInput" spellcheck="false"></textarea>
+                    <section class="tool-output" id="toolOutput" aria-live="polite" hidden>
+                      <pre id="toolOutputBody"></pre>
+                    </section>
+                    <div class="value-workspace-footer">
+                      <div class="value-view-switch" id="valueViewSwitch" hidden>
+                        <button id="valueViewToggleButton" type="button" aria-label="Show result" disabled>
+                          <span id="valueViewLabel">Raw</span>
+                          <svg class="icon" id="valueViewToggleIcon" viewBox="0 0 24 24" aria-hidden="true" hidden>
+                            <path d="M8 3 4 7l4 4M4 7h16" />
+                            <path d="m16 21 4-4-4-4M20 17H4" />
                           </svg>
-                          <span>Copied</span>
-                        </span>
-                      </button>
+                        </button>
+                      </div>
+                      <div class="value-workspace-actions">
+                        <div class="tool-output-actions" id="toolOutputActions" hidden>
+                          <button class="editor-action-button copy-feedback-button" id="copyToolOutputButton" type="button" aria-label="Copy result" data-tooltip="Copy result">
+                            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                              <rect width="14" height="14" x="8" y="8" rx="2" />
+                              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                            </svg>
+                            <span class="copy-success-feedback" aria-hidden="true">
+                              <svg class="icon" viewBox="0 0 24 24">
+                                <path d="m5 12 4 4L19 6" />
+                              </svg>
+                              <span class="copy-feedback-label">Copied</span>
+                            </span>
+                          </button>
+                        </div>
+                        <div class="value-tools-control" id="valueToolsControl">
+                          <button class="value-tools-button" id="valueToolsButton" type="button" title="Value tools" aria-label="Value tools" data-icon="wrench" aria-haspopup="menu" aria-controls="valueToolsMenu" aria-expanded="false">
+                            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.2-3.2a6 6 0 0 1-7.4 7.4L6.1 21.1a2.1 2.1 0 0 1-3-3l7.6-7.6A6 6 0 0 1 18.1 3l-3.2 3.3Z" />
+                            </svg>
+                            <span>Tools</span>
+                            <svg class="icon value-tools-chevron" viewBox="0 0 24 24" aria-hidden="true">
+                              <path d="m7 10 5 5 5-5" />
+                            </svg>
+                          </button>
+                          <div class="value-tools-menu" id="valueToolsMenu" role="menu" aria-label="Value tools" hidden>
+                            <button type="button" role="menuitemradio" data-value-tool="urlDecode" aria-checked="false">
+                              <svg class="icon value-tool-check" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="m5 12 4 4L19 6" />
+                              </svg>
+                              <span>URL decode</span>
+                            </button>
+                            <button type="button" role="menuitemradio" data-value-tool="urlEncode" aria-checked="false">
+                              <svg class="icon value-tool-check" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="m5 12 4 4L19 6" />
+                              </svg>
+                              <span>URL encode</span>
+                            </button>
+                            <button type="button" role="menuitemradio" data-value-tool="jsonFormat" aria-checked="false">
+                              <svg class="icon value-tool-check" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="m5 12 4 4L19 6" />
+                              </svg>
+                              <span>Format JSON</span>
+                            </button>
+                            <button type="button" role="menuitemradio" data-value-tool="jsonCompact" aria-checked="false">
+                              <svg class="icon value-tool-check" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="m5 12 4 4L19 6" />
+                              </svg>
+                              <span>Compact JSON</span>
+                            </button>
+                            <button type="button" role="menuitemradio" data-value-tool="jwt" aria-checked="false">
+                              <svg class="icon value-tool-check" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="m5 12 4 4L19 6" />
+                              </svg>
+                              <span>JWT payload</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <pre id="toolOutputBody"></pre>
                   </div>
-                </section>
+                </div>
 
                 <dl class="meta-grid">
                   <div>

@@ -21,7 +21,8 @@ import {
 import {
   makeFavoriteItemId,
   normalizeFavoriteItemIds,
-  sortFavoriteRowsFirst
+  sortFavoriteRowsFirst,
+  sortRowsByName
 } from "../shared/favorites.js";
 import {
   getCookieJson,
@@ -80,6 +81,11 @@ const state = {
   searchQuery: "",
   selectedOnly: false,
   selectedSearchQuery: "",
+  nameSortDirections: {
+    cookies: "none",
+    localStorage: "none",
+    sessionStorage: "none"
+  },
   autoRefreshPage: false,
   valueToolMode: "none",
   columnWidths: [...DEFAULT_COLUMN_WIDTHS],
@@ -88,7 +94,9 @@ const state = {
   unreadHistoryIds: new Set(),
   selectedHistoryId: "",
   activeDetailView: "details",
+  activeValueView: "raw",
   toolOutputText: "",
+  toolOutputTitle: "",
   emptyMessage: "No cookies for this page",
   ignoreCookieChangesUntil: 0,
   loading: false
@@ -99,6 +107,10 @@ const COPY_MODES = Object.freeze({
   pair: "Copy name=value",
   json: "Copy JSON"
 });
+
+const VALUE_WORKSPACE_DEFAULT_HEIGHT = 146;
+const VALUE_WORKSPACE_FOOTER_HEIGHT = 34;
+const VALUE_WORKSPACE_MAX_HEIGHT = 360;
 
 let lastViewedSavePromise = Promise.resolve();
 let workbenchPromise = null;
@@ -134,6 +146,9 @@ const elements = {
   exportButton: document.querySelector("#exportButton"),
   importButton: document.querySelector("#importButton"),
   profilesButton: document.querySelector("#profilesButton"),
+  nameSortHeader: document.querySelector(".name-sort-header"),
+  nameSortButton: document.querySelector("#nameSortButton"),
+  nameSortLabel: document.querySelector("#nameSortLabel"),
   cookieTableBody: document.querySelector("#cookieTableBody"),
   loadingState: document.querySelector("#loadingState"),
   emptyState: document.querySelector("#emptyState"),
@@ -149,13 +164,20 @@ const elements = {
   editorFavoriteButton: document.querySelector("#editorFavoriteButton"),
   editorChips: document.querySelector("#editorChips"),
   valueInput: document.querySelector("#valueInput"),
+  valueWorkspace: document.querySelector(".value-workspace"),
+  valueViewSwitch: document.querySelector("#valueViewSwitch"),
+  valueViewLabel: document.querySelector("#valueViewLabel"),
+  valueViewToggleButton: document.querySelector("#valueViewToggleButton"),
+  valueViewToggleIcon: document.querySelector("#valueViewToggleIcon"),
   expirationEditorCell: document.querySelector("#expirationEditorCell"),
   expirationInput: document.querySelector("#expirationInput"),
-  valueToolModeSelect: document.querySelector("#valueToolModeSelect"),
-  runToolButton: document.querySelector("#runToolButton"),
+  valueToolsControl: document.querySelector("#valueToolsControl"),
+  valueToolsButton: document.querySelector("#valueToolsButton"),
+  valueToolsMenu: document.querySelector("#valueToolsMenu"),
+  valueToolButtons: Array.from(document.querySelectorAll("#valueToolsMenu [data-value-tool]")),
   toolOutput: document.querySelector("#toolOutput"),
-  toolOutputTitle: document.querySelector("#toolOutputTitle"),
   toolOutputBody: document.querySelector("#toolOutputBody"),
+  toolOutputActions: document.querySelector("#toolOutputActions"),
   copyToolOutputButton: document.querySelector("#copyToolOutputButton"),
   metaDomainLabel: document.querySelector("#metaDomainLabel"),
   metaDomain: document.querySelector("#metaDomain"),
@@ -247,6 +269,7 @@ const itemActions = createPopupItemActionsController({
   getRowLocation,
   getRowJson,
   populateExpirationEditor,
+  updateValueWorkspaceHeight,
   updateSaveState,
   updateAutoToolOutput,
   rememberCurrentSelection,
@@ -294,7 +317,7 @@ async function loadPreferences() {
       preferences.columnWidthsVersion
     );
     elements.autoRefreshToggle.checked = state.autoRefreshPage;
-    elements.valueToolModeSelect.value = state.valueToolMode;
+    updateValueToolControl();
     updateRefreshControlState();
     applyColumnWidths();
     if (Number(preferences.columnWidthsVersion) < COLUMN_WIDTHS_VERSION) {
@@ -310,6 +333,7 @@ async function loadPreferences() {
     state.valueToolMode = "none";
     state.columnWidths = [...DEFAULT_COLUMN_WIDTHS];
     elements.autoRefreshToggle.checked = false;
+    updateValueToolControl();
     updateRefreshControlState();
     applyColumnWidths();
   }
@@ -336,6 +360,7 @@ function bindEvents() {
   elements.closeStatusButton.addEventListener("click", clearStatus);
   elements.selectAllCheckbox.addEventListener("change", toggleSelectAllVisible);
   elements.selectionCount.addEventListener("click", toggleSelectedOnly);
+  elements.nameSortButton.addEventListener("click", toggleNameSort);
   elements.batchEditButton.addEventListener("click", itemActions.batchEditSelected);
   elements.batchDeleteButton.addEventListener("click", itemActions.batchDeleteSelected);
   elements.exportButton.addEventListener("click", () => void openWorkbench("export"));
@@ -357,9 +382,11 @@ function bindEvents() {
   });
   elements.cookieEditor.addEventListener("submit", itemActions.saveSelectedItem);
   elements.valueInput.addEventListener("input", () => {
+    updateValueWorkspaceHeight();
     updateSaveState();
     updateAutoToolOutput();
   });
+  window.addEventListener("resize", updateValueWorkspaceHeight);
   const handleExpirationChange = () => {
     updateExpirationValidity();
     updateSaveState();
@@ -381,13 +408,17 @@ function bindEvents() {
   for (const button of elements.copyModeButtons) {
     button.addEventListener("click", () => selectCopyMode(button.dataset.copyMode));
   }
-  elements.valueToolModeSelect.addEventListener("change", async () => {
-    state.valueToolMode = normalizeValueToolMode(elements.valueToolModeSelect.value);
-    await savePreferences({ valueToolMode: state.valueToolMode });
-    updateAutoToolOutput();
-    updateToolState();
+  elements.valueToolsButton.addEventListener("click", () => {
+    setValueToolsMenuOpen(elements.valueToolsMenu.hidden);
   });
-  elements.runToolButton.addEventListener("click", runSelectedValueTool);
+  elements.valueToolsButton.addEventListener("keydown", handleValueToolsButtonKeydown);
+  elements.valueToolsMenu.addEventListener("keydown", handleValueToolsMenuKeydown);
+  for (const button of elements.valueToolButtons) {
+    button.addEventListener("click", () => selectValueTool(button.dataset.valueTool));
+  }
+  elements.valueViewToggleButton.addEventListener("click", () => {
+    setActiveValueView(state.activeValueView === "result" ? "raw" : "result");
+  });
   elements.copyToolOutputButton.addEventListener("click", copyToolOutput);
   elements.historyViewButton.addEventListener("click", () => {
     setActiveDetailView(state.activeDetailView === "history" ? "details" : "history");
@@ -410,12 +441,18 @@ function bindEvents() {
     if (!elements.copyControl.contains(event.target)) {
       setCopyMenuOpen(false);
     }
+    if (!elements.valueToolsControl.contains(event.target)) {
+      setValueToolsMenuOpen(false);
+    }
   });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       if (!elements.copyMenu.hidden) {
         setCopyMenuOpen(false);
         elements.copyMenuButton.focus();
+      } else if (!elements.valueToolsMenu.hidden) {
+        setValueToolsMenuOpen(false);
+        elements.valueToolsButton.focus();
       } else if (!elements.refreshMenu.hidden) {
         setRefreshMenuOpen(false);
         elements.refreshMenuButton.focus();
@@ -423,6 +460,7 @@ function bindEvents() {
     }
   });
   updateCopyControl();
+  updateValueToolControl();
   initializeColumnResizers();
 }
 
@@ -492,6 +530,73 @@ function handleCopyMenuKeydown(event) {
     elements.copyModeButtons[event.key === "Home" ? 0 : elements.copyModeButtons.length - 1].focus();
   } else if (event.key === "Tab") {
     setCopyMenuOpen(false);
+  }
+}
+
+function selectValueTool(mode) {
+  const nextMode = normalizeValueToolMode(mode);
+  if (nextMode === "none") {
+    return;
+  }
+
+  state.valueToolMode = nextMode;
+  updateValueToolControl();
+  setValueToolsMenuOpen(false);
+  void savePreferences({ valueToolMode: state.valueToolMode }).catch(() => {
+    // The selected tool still runs even if its preference cannot be saved.
+  });
+  runSelectedValueTool(nextMode);
+}
+
+function updateValueToolControl() {
+  for (const button of elements.valueToolButtons) {
+    button.setAttribute("aria-checked", String(button.dataset.valueTool === state.valueToolMode));
+  }
+}
+
+function setValueToolsMenuOpen(open, focusTarget = "selected") {
+  const nextOpen = Boolean(open) && !elements.valueToolsButton.disabled;
+  elements.valueToolsMenu.hidden = !nextOpen;
+  elements.valueToolsButton.setAttribute("aria-expanded", String(nextOpen));
+  if (!nextOpen) {
+    return;
+  }
+
+  const selectedButton = elements.valueToolButtons.find(
+    (button) => button.dataset.valueTool === state.valueToolMode
+  );
+  const target = focusTarget === "last"
+    ? elements.valueToolButtons.at(-1)
+    : selectedButton || elements.valueToolButtons[0];
+  target?.focus();
+}
+
+function handleValueToolsButtonKeydown(event) {
+  if (event.key !== "ArrowDown" && event.key !== "ArrowUp") {
+    return;
+  }
+
+  event.preventDefault();
+  setValueToolsMenuOpen(true, event.key === "ArrowUp" ? "last" : "selected");
+}
+
+function handleValueToolsMenuKeydown(event) {
+  const currentIndex = elements.valueToolButtons.indexOf(document.activeElement);
+  const directions = {
+    ArrowDown: 1,
+    ArrowUp: -1
+  };
+
+  if (Object.hasOwn(directions, event.key)) {
+    event.preventDefault();
+    const nextIndex = (currentIndex + directions[event.key] + elements.valueToolButtons.length)
+      % elements.valueToolButtons.length;
+    elements.valueToolButtons[nextIndex].focus();
+  } else if (event.key === "Home" || event.key === "End") {
+    event.preventDefault();
+    elements.valueToolButtons[event.key === "Home" ? 0 : elements.valueToolButtons.length - 1].focus();
+  } else if (event.key === "Tab") {
+    setValueToolsMenuOpen(false);
   }
 }
 
@@ -935,15 +1040,14 @@ function findLikelyImportedRow(name) {
   ) || null;
 }
 
-function runSelectedValueTool() {
+function runSelectedValueTool(mode = state.valueToolMode) {
   const row = getSelectedRow();
   if (!row) {
     return;
   }
 
-  const definition = VALUE_TOOL_DEFINITIONS[state.valueToolMode];
+  const definition = VALUE_TOOL_DEFINITIONS[mode];
   if (!definition) {
-    showStatus("Choose a value helper first.", "error");
     return;
   }
 
@@ -953,7 +1057,7 @@ function runSelectedValueTool() {
       text: definition.run(elements.valueInput.value)
     };
 
-    showToolOutput(result.title, result.text);
+    showToolOutput(result.title, result.text, true);
     showStatus(`${result.title} ready.`, "success");
   } catch (error) {
     clearToolOutput();
@@ -961,12 +1065,15 @@ function runSelectedValueTool() {
   }
 }
 
-function showToolOutput(title, text) {
+function showToolOutput(title, text, activate = false) {
   state.toolOutputText = text;
-  elements.toolOutputTitle.textContent = title;
+  state.toolOutputTitle = title;
   elements.toolOutputBody.textContent = text;
-  elements.toolOutput.hidden = false;
+  elements.toolOutput.setAttribute("aria-label", title);
+  elements.valueViewToggleButton.disabled = false;
+  elements.valueViewToggleIcon.hidden = false;
   elements.copyToolOutputButton.disabled = !text;
+  setActiveValueView(activate ? "result" : "raw");
 }
 
 function updateAutoToolOutput() {
@@ -987,10 +1094,49 @@ function updateAutoToolOutput() {
 
 function clearToolOutput() {
   state.toolOutputText = "";
-  elements.toolOutputTitle.textContent = "Output";
+  state.toolOutputTitle = "";
   elements.toolOutputBody.textContent = "";
-  elements.toolOutput.hidden = true;
+  elements.valueViewToggleButton.disabled = true;
+  elements.valueViewToggleIcon.hidden = true;
+  elements.valueViewToggleButton.removeAttribute("title");
+  elements.valueViewToggleButton.setAttribute("aria-label", "Show result");
   elements.copyToolOutputButton.disabled = true;
+  setActiveValueView("raw");
+}
+
+function setActiveValueView(view) {
+  const showResult = view === "result" && Boolean(state.toolOutputText);
+  state.activeValueView = showResult ? "result" : "raw";
+  elements.valueViewSwitch.hidden = !state.toolOutputText;
+  elements.valueInput.hidden = showResult;
+  elements.toolOutput.hidden = !showResult;
+  elements.toolOutputActions.hidden = !showResult;
+  elements.valueWorkspace.classList.toggle("is-result", showResult);
+  if (!showResult) {
+    updateValueWorkspaceHeight();
+  }
+  elements.valueViewLabel.textContent = showResult ? state.toolOutputTitle : "Raw";
+  if (state.toolOutputText) {
+    const nextViewLabel = showResult ? "raw value" : state.toolOutputTitle;
+    elements.valueViewToggleButton.title = `Show ${nextViewLabel}`;
+    elements.valueViewToggleButton.setAttribute("aria-label", `Show ${nextViewLabel}`);
+  }
+}
+
+function updateValueWorkspaceHeight() {
+  if (elements.valueInput.hidden) {
+    return;
+  }
+
+  const editorScrollTop = elements.cookieEditor.scrollTop;
+  elements.valueWorkspace.style.height = `${VALUE_WORKSPACE_DEFAULT_HEIGHT}px`;
+  const requiredHeight = elements.valueInput.scrollHeight + VALUE_WORKSPACE_FOOTER_HEIGHT;
+  const nextHeight = Math.min(
+    VALUE_WORKSPACE_MAX_HEIGHT,
+    Math.max(VALUE_WORKSPACE_DEFAULT_HEIGHT, requiredHeight)
+  );
+  elements.valueWorkspace.style.height = `${nextHeight}px`;
+  elements.cookieEditor.scrollTop = editorScrollTop;
 }
 
 async function copyToolOutput() {
@@ -1048,17 +1194,22 @@ function renderViewChrome() {
   document.querySelectorAll("th[data-column-index]").forEach((header) => {
     const index = Number(header.dataset.columnIndex);
     const handle = header.querySelector(".column-resizer");
-    header.childNodes.forEach((node) => {
-      if (node !== handle) {
-        node.remove();
-      }
-    });
-    header.insertBefore(document.createTextNode(view.tableLabels[index]), handle || null);
+    if (index === 0) {
+      elements.nameSortLabel.textContent = view.tableLabels[index];
+    } else {
+      header.childNodes.forEach((node) => {
+        if (node !== handle) {
+          node.remove();
+        }
+      });
+      header.insertBefore(document.createTextNode(view.tableLabels[index]), handle || null);
+    }
     if (handle) {
       handle.title = `Resize ${view.tableLabels[index]} column`;
       handle.setAttribute("aria-label", `Resize ${view.tableLabels[index]} column`);
     }
   });
+  updateNameSortControl();
 
   [
     elements.metaDomainLabel,
@@ -1189,7 +1340,32 @@ function getVisibleRows() {
     rows = rows.filter((row) => getSearchText(row).includes(query));
   }
 
+  const sortDirection = state.nameSortDirections[state.dataView];
+  if (sortDirection !== "none") {
+    rows = sortRowsByName(rows, sortDirection);
+  }
+
   return sortFavoriteRowsFirst(rows, state.favoriteItemIds, state.dataView);
+}
+
+function toggleNameSort() {
+  const currentDirection = state.nameSortDirections[state.dataView];
+  state.nameSortDirections[state.dataView] = currentDirection === "ascending"
+    ? "descending"
+    : "ascending";
+  updateNameSortControl();
+  renderTable();
+}
+
+function updateNameSortControl() {
+  const label = getCurrentView().tableLabels[0];
+  const direction = state.nameSortDirections[state.dataView];
+  const nextDirection = direction === "ascending" ? "descending" : "ascending";
+  const actionLabel = `Sort ${label} ${nextDirection}`;
+  elements.nameSortHeader.setAttribute("aria-sort", direction);
+  elements.nameSortLabel.textContent = label;
+  elements.nameSortButton.title = actionLabel;
+  elements.nameSortButton.setAttribute("aria-label", actionLabel);
 }
 
 function isFavorite(itemId) {
@@ -1373,12 +1549,12 @@ function renderSelectedItem() {
   const row = getSelectedRow();
   const hasSelection = Boolean(row);
 
+  clearToolOutput();
   elements.detailPlaceholder.hidden = hasSelection;
   elements.cookieEditor.hidden = !hasSelection;
   updateEditorFavoriteButton();
 
   if (!row) {
-    clearToolOutput();
     renderHistory();
     updateSelectionControls();
     return;
@@ -1391,6 +1567,7 @@ function renderSelectedItem() {
   elements.valueInput.value = row.value;
   populateExpirationEditor(row);
   updateAutoToolOutput();
+  updateValueWorkspaceHeight();
   elements.metaDomain.textContent = row.domain;
   elements.metaDomain.title = row.domain;
   elements.metaPath.textContent = row.path;
@@ -1562,8 +1739,13 @@ function updateSaveState() {
 
 function updateToolState() {
   const hasSelection = Boolean(getSelectedRow());
-  elements.valueToolModeSelect.disabled = !hasSelection;
-  elements.runToolButton.disabled = !hasSelection || state.valueToolMode === "none";
+  const hasOutput = Boolean(state.toolOutputText);
+  elements.valueToolsButton.disabled = !hasSelection;
+  elements.valueViewToggleButton.disabled = !hasSelection || !hasOutput;
+  elements.copyToolOutputButton.disabled = !hasOutput;
+  if (!hasSelection) {
+    setValueToolsMenuOpen(false);
+  }
 }
 
 function updateSelectionControls() {
@@ -1574,7 +1756,6 @@ function updateSelectionControls() {
   if (!hasSelection) {
     setCopyMenuOpen(false);
   }
-  elements.copyToolOutputButton.disabled = !state.toolOutputText;
   elements.clearHistoryButton.disabled = getVisibleRecentChanges().length === 0;
   updateSaveState();
 }
@@ -1654,8 +1835,9 @@ function setBusy(isBusy) {
     elements.copyButton.disabled = true;
     elements.copyMenuButton.disabled = true;
     setCopyMenuOpen(false);
-    elements.valueToolModeSelect.disabled = true;
-    elements.runToolButton.disabled = true;
+    elements.valueToolsButton.disabled = true;
+    setValueToolsMenuOpen(false);
+    elements.valueViewToggleButton.disabled = true;
     elements.copyToolOutputButton.disabled = true;
     elements.clearHistoryButton.disabled = true;
     elements.exportButton.disabled = true;

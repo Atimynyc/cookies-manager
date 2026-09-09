@@ -64,7 +64,7 @@ function createValueCell(value) {
     const label = type === "jwt" ? "JWT value" : "JSON value";
     const indicator = document.createElement("span");
     indicator.className = `value-type-indicator value-type-${type}`;
-    indicator.textContent = type === "jwt" ? "JWT" : "{}";
+    indicator.textContent = type === "jwt" ? "JWT" : "JSON";
     indicator.title = label;
     indicator.setAttribute("role", "img");
     indicator.setAttribute("aria-label", label);

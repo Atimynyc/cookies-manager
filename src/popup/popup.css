@@ -956,6 +956,71 @@ td {
   white-space: nowrap;
 }
 
+.name-sort-header {
+  padding: 0;
+}
+
+.column-sort-button {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  padding: 0 14px 0 8px;
+  background: transparent;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  text-align: left;
+  text-transform: inherit;
+}
+
+.column-sort-button:hover,
+.column-sort-button:focus-visible {
+  background: var(--interactive-overlay);
+  color: var(--text);
+}
+
+.column-sort-button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.column-sort-button .icon {
+  flex: 0 0 13px;
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.sort-direction-icon {
+  display: none;
+}
+
+.name-sort-header[aria-sort="ascending"] .sort-neutral-icon,
+.name-sort-header[aria-sort="descending"] .sort-neutral-icon {
+  display: none;
+}
+
+.name-sort-header[aria-sort="ascending"] .sort-direction-icon,
+.name-sort-header[aria-sort="descending"] .sort-direction-icon {
+  display: block;
+}
+
+.name-sort-header[aria-sort="descending"] .sort-direction-icon {
+  transform: rotate(180deg);
+}
+
 .select-column,
 td.select-cell {
   width: var(--cookie-col-select);
@@ -1084,10 +1149,10 @@ tbody tr:focus-visible td {
 
 .value-type-indicator {
   display: inline-flex;
-  flex: 0 0 22px;
+  flex: 0 0 30px;
   align-items: center;
   justify-content: center;
-  width: 22px;
+  width: 30px;
   height: 18px;
   border: 1px solid;
   border-radius: 4px;
@@ -1101,7 +1166,7 @@ tbody tr:focus-visible td {
   border-color: var(--accent-border);
   background: var(--accent-soft-strong);
   color: var(--accent-text);
-  font-size: 11px;
+  font-size: 9px;
 }
 
 .value-type-jwt {
@@ -1346,11 +1411,70 @@ tbody tr:focus-visible td {
   min-height: 32px;
 }
 
+.value-view-switch {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 5px;
+}
+
+.value-view-switch[hidden] {
+  display: none;
+}
+
+.value-view-switch button {
+  display: inline-flex;
+  min-width: 0;
+  min-height: 26px;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--text);
+}
+
+.value-view-switch button:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.value-view-switch button:not(:disabled) {
+  padding: 0 6px;
+  color: var(--primary);
+}
+
+.value-view-switch button:not(:disabled):hover,
+.value-view-switch button:not(:disabled):focus-visible {
+  background: var(--primary-soft);
+}
+
+.value-view-switch button > span {
+  overflow: hidden;
+  max-width: 112px;
+  min-width: 0;
+  font-size: 10px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.value-view-switch .icon {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
 .editor-actions {
   display: flex;
   flex: 0 0 auto;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .copy-control {
@@ -1443,6 +1567,100 @@ tbody tr:focus-visible td {
 }
 
 .copy-menu button[aria-checked="true"] .copy-menu-check {
+  opacity: 1;
+}
+
+.value-tools-control {
+  position: relative;
+}
+
+.value-tools-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 26px;
+  padding: 0 7px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.value-tools-button .icon {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.value-tools-button .value-tools-chevron {
+  width: 12px;
+  height: 12px;
+  transition: transform 120ms ease;
+}
+
+.value-tools-button[aria-expanded="true"] {
+  border-color: var(--primary-border);
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.value-tools-button[aria-expanded="true"] .value-tools-chevron {
+  transform: rotate(180deg);
+}
+
+.value-tools-menu {
+  position: absolute;
+  z-index: 20;
+  bottom: calc(100% + 6px);
+  right: 0;
+  display: grid;
+  width: 174px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  padding: 4px;
+  box-shadow: var(--shadow-menu);
+}
+
+.value-tools-menu[hidden] {
+  display: none;
+}
+
+.value-tools-menu button {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  min-height: 32px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  padding: 0 8px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.value-tools-menu button:hover,
+.value-tools-menu button:focus-visible {
+  background: var(--surface-hover);
+}
+
+.value-tools-menu .value-tool-check {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: var(--primary);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
+  opacity: 0;
+}
+
+.value-tools-menu button[aria-checked="true"] .value-tool-check {
   opacity: 1;
 }
 
@@ -1550,13 +1768,30 @@ tbody tr:focus-visible td {
   content: "Copied";
 }
 
-.value-field textarea {
+.value-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) 34px;
+  height: 146px;
+  max-height: 360px;
   min-width: 0;
-  height: 112px;
-  min-height: 96px;
-  resize: none;
   border: 1px solid var(--line);
   border-radius: 6px;
+  background: var(--control-bg);
+}
+
+.value-field textarea,
+.tool-output {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.value-field textarea {
+  resize: none;
+  border: 0;
+  border-radius: 5px 5px 0 0;
   padding: 9px;
   color: var(--text);
   background: var(--control-bg);
@@ -1568,102 +1803,68 @@ tbody tr:focus-visible td {
   scrollbar-gutter: stable;
 }
 
-.utility-panel {
-  display: grid;
-  gap: 7px;
-  min-width: 0;
-}
-
-.utility-actions {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 58px;
-  align-items: end;
-  gap: 6px;
-}
-
-.tool-mode-field {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 4px;
-  min-width: 0;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.tool-mode-field select {
-  width: 100%;
-  min-width: 0;
-  height: 32px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--control-bg);
-  color: var(--text);
-  padding: 0 8px;
-  text-transform: none;
-}
-
-.utility-actions button {
-  width: 58px;
-  height: 32px;
-  min-width: 0;
-  padding: 0 7px;
-  font-size: 11px;
-  font-weight: 700;
-  white-space: nowrap;
+.value-field textarea[hidden] {
+  display: none;
 }
 
 .tool-output {
-  min-width: 0;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--control-bg);
+  display: grid;
+  overflow: hidden;
 }
 
 .tool-output[hidden] {
   display: none;
 }
 
-.tool-output-header {
+.value-workspace-footer {
   display: flex;
+  grid-column: 1;
+  grid-row: 2;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  min-height: 30px;
-  border-bottom: 1px solid var(--line);
-  padding: 0 6px 0 9px;
+  min-width: 0;
+  border-top: 1px solid var(--line);
+  padding: 0 5px 0 9px;
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
 }
 
-.tool-output-header span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.tool-output-header button {
+.value-workspace-actions {
+  display: flex;
   flex: 0 0 auto;
-  width: 58px;
-  min-height: 24px;
-  padding: 0 8px;
-  font-size: 11px;
-  text-transform: none;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+}
+
+.tool-output-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 5px;
+}
+
+.tool-output-actions[hidden] {
+  display: none;
+}
+
+.tool-output-actions .editor-action-button {
+  width: 28px;
+  height: 26px;
+  min-height: 26px;
 }
 
 .tool-output pre {
-  max-height: 86px;
+  min-width: 0;
+  min-height: 0;
   margin: 0;
   overflow: auto;
   scrollbar-gutter: stable;
   padding: 8px 9px;
   color: var(--text);
   font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-  font-size: 11px;
-  line-height: 1.45;
+  font-size: 12px;
+  line-height: 1.5;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   word-break: break-word;

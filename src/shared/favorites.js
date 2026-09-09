@@ -30,3 +30,18 @@ export function sortFavoriteRowsFirst(rows, favoriteItemIds, dataView) {
     .sort((a, b) => Number(b.favorite) - Number(a.favorite) || a.index - b.index)
     .map(({ row }) => row);
 }
+
+export function sortRowsByName(rows, direction = "ascending") {
+  const multiplier = direction === "descending" ? -1 : 1;
+
+  return rows
+    .map((row, index) => ({ row, index }))
+    .sort((a, b) => (
+      multiplier * String(a.row.name || "").localeCompare(
+        String(b.row.name || ""),
+        undefined,
+        { numeric: true, sensitivity: "base" }
+      ) || a.index - b.index
+    ))
+    .map(({ row }) => row);
+}

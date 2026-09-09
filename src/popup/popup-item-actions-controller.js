@@ -238,6 +238,7 @@ export function createPopupItemActionsController({
 
     elements.valueInput.value = row.value;
     populateExpirationEditor(row);
+    updateValueWorkspaceHeight();
     updateSaveState();
     updateAutoToolOutput();
   }
