@@ -10,6 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, "..");
 const fixturePath = path.join(projectRoot, "tests", "fixtures", "cookie-test-page.html");
+const faviconPath = path.join(projectRoot, "assets", "icon-16.png");
 const artifactDir = path.join(projectRoot, "tests", "artifacts");
 const extensionPath = projectRoot;
 const runId = Date.now().toString(36);
@@ -47,6 +48,8 @@ try {
   const popupModuleRequests = trackPopupModuleRequests(context);
   const popup = await openPopupForActiveTab(context, testPage, extensionId);
   await waitForPopupReady(popup, "127.0.0.1");
+  await assertSiteIcon(popup);
+  await assertThemeSystem(popup);
   await assertWorkbenchLoadsLazily(popup, popupModuleRequests);
   await assertPopupListsSeededCookies(popup);
   await assertValueTypeIndicators(popup);
@@ -103,13 +106,19 @@ try {
 }
 
 async function startCookieServer() {
-  const html = await readFile(fixturePath);
+  const [html, favicon] = await Promise.all([
+    readFile(fixturePath),
+    readFile(faviconPath)
+  ]);
   const serverInstance = createServer((request, response) => {
     const url = new URL(request.url || "/", "http://127.0.0.1");
 
     if (url.pathname === "/favicon.ico") {
-      response.writeHead(204);
-      response.end();
+      response.writeHead(200, {
+        "content-type": "image/png",
+        "cache-control": "no-store"
+      });
+      response.end(favicon);
       return;
     }
 
@@ -203,6 +212,37 @@ async function waitForPopupReady(popup, expectedHost) {
     const label = document.querySelector("#hostLabel");
     return label?.textContent?.includes(host);
   }, expectedHost);
+}
+
+async function assertSiteIcon(popup) {
+  const icon = popup.locator("#siteIcon");
+  await icon.waitFor({ state: "visible", timeout: 10000 });
+  assert.equal(await icon.getAttribute("alt"), "");
+  assert.equal(await icon.evaluate((element) => element.complete && element.naturalWidth > 0), true);
+}
+
+async function assertThemeSystem(popup) {
+  assert.equal(await popup.locator("html").getAttribute("data-theme"), "light");
+
+  await popup.evaluate(() => globalThis.cookieControllerTheme.setActiveTabIncognito(true));
+  const incognitoColors = await popup.evaluate(() => ({
+    colorScheme: getComputedStyle(document.documentElement).colorScheme,
+    background: getComputedStyle(document.body).backgroundColor,
+    panel: getComputedStyle(document.querySelector(".topbar")).backgroundColor,
+    control: getComputedStyle(document.querySelector("#searchInput")).backgroundColor,
+    text: getComputedStyle(document.body).color
+  }));
+  assert.deepEqual(incognitoColors, {
+    colorScheme: "dark",
+    background: "rgb(32, 33, 36)",
+    panel: "rgb(41, 42, 45)",
+    control: "rgb(48, 49, 52)",
+    text: "rgb(232, 234, 237)"
+  });
+  await screenshot(popup, "v032-incognito-theme.png");
+
+  await popup.evaluate(() => globalThis.cookieControllerTheme.setActiveTabIncognito(false));
+  assert.equal(await popup.evaluate(() => getComputedStyle(document.body).backgroundColor), "rgb(247, 248, 251)");
 }
 
 function trackPopupModuleRequests(browserContext) {
@@ -527,29 +567,18 @@ async function assertWorkspaceNavigation(popup) {
     const search = document.querySelector(".search-field").getBoundingClientRect();
     const history = document.querySelector("#historyViewButton").getBoundingClientRect();
     const refresh = document.querySelector("#refreshControl").getBoundingClientRect();
-    const siteSelect = document.querySelector("#siteSelect");
-    const siteSelectRect = siteSelect.getBoundingClientRect();
-    const dataSwitchRect = document.querySelector(".data-switch").getBoundingClientRect();
-    const siteSelectStyle = getComputedStyle(siteSelect);
     const detailPane = document.querySelector(".detail-pane").getBoundingClientRect();
     const detailContent = document.querySelector(".detail-content").getBoundingClientRect();
     return {
       historyBesideSearch: search.right <= history.left + 1 && Math.abs(search.top - history.top) <= 1,
       refreshAboveSearch: refresh.bottom <= search.top,
-      siteAlignedWithControls:
-        Math.abs(siteSelectRect.top - dataSwitchRect.top) <= 1 &&
-        Math.abs(siteSelectRect.bottom - dataSwitchRect.bottom) <= 1,
-      siteTextClearsArrow:
-        siteSelectStyle.appearance === "none" &&
-        Number.parseFloat(siteSelectStyle.paddingRight) >= 32 &&
-        siteSelectStyle.textOverflow === "ellipsis",
+      siteSwitchDisplay: getComputedStyle(document.querySelector(".site-switch")).display,
       detailUsesFullPane: detailContent.left - detailPane.left <= 2
     };
   });
   assert.equal(layout.historyBesideSearch, true, JSON.stringify(layout));
   assert.equal(layout.refreshAboveSearch, true, JSON.stringify(layout));
-  assert.equal(layout.siteAlignedWithControls, true, JSON.stringify(layout));
-  assert.equal(layout.siteTextClearsArrow, true, JSON.stringify(layout));
+  assert.equal(layout.siteSwitchDisplay, "none", JSON.stringify(layout));
   assert.equal(layout.detailUsesFullPane, true, JSON.stringify(layout));
 
   await popup.locator("#refreshMenuButton").click();
@@ -575,7 +604,7 @@ async function assertEditorActions(popup) {
   await selectCookieBySearch(popup, "plain");
   const actions = await popup.evaluate(() => {
     const valueInput = document.querySelector("#valueInput");
-    return ["copyValueButton", "resetButton", "deleteButton", "saveButton"].map((id) => {
+    return ["copyButton", "resetButton", "deleteButton", "saveButton"].map((id) => {
       const button = document.querySelector(`#${id}`);
       const defaultText = Array.from(button.childNodes)
         .filter((node) => !(node instanceof Element && node.matches(".copy-success-feedback")))
@@ -599,32 +628,56 @@ async function assertEditorActions(popup) {
     { beforeValue: true, hasIcon: true, label: "Save", text: "", tooltip: "Save" }
   ]);
   assert.equal(
-    await popup.locator(".editor-actions > button").evaluateAll((buttons) => buttons.map((button) => button.id).join(",")),
-    "copyValueButton,resetButton,deleteButton,saveButton"
+    await popup.locator(".editor-actions").evaluate((container) => {
+      return Array.from(container.children).map((element) => element.id).join(",");
+    }),
+    "copyControl,resetButton,deleteButton,saveButton"
   );
-  assert.equal(await popup.locator(".copy-row > button").count(), 2);
+  assert.equal(await popup.locator(".copy-row").count(), 0);
+  assert.equal(await popup.locator("#copyMenu [role=menuitemradio]").count(), 3);
+  assert.deepEqual(
+    await popup.locator("#copyMenu [role=menuitemradio]").evaluateAll((buttons) => buttons.map((button) => ({
+      checked: button.getAttribute("aria-checked"),
+      label: button.textContent.trim(),
+      mode: button.dataset.copyMode
+    }))),
+    [
+      { checked: "true", label: "Copy value", mode: "value" },
+      { checked: "false", label: "Copy name=value", mode: "pair" },
+      { checked: "false", label: "Copy JSON", mode: "json" }
+    ]
+  );
 
-  await popup.locator("#copyValueButton").hover();
+  await popup.locator("#copyButton").hover();
   await popup.waitForFunction(() => {
-    const button = document.querySelector("#copyValueButton");
+    const button = document.querySelector("#copyButton");
     return getComputedStyle(button, "::after").opacity === "1";
   });
-  const tooltipContent = await popup.locator("#copyValueButton").evaluate((button) => {
+  const tooltipContent = await popup.locator("#copyButton").evaluate((button) => {
     return getComputedStyle(button, "::after").content;
   });
   assert.equal(tooltipContent, '"Copy value"');
+
+  await popup.evaluate(() => {
+    window.__copyFeedbackWriteText = navigator.clipboard.writeText;
+    window.__editorCopiedTexts = [];
+    navigator.clipboard.writeText = async (text) => {
+      window.__editorCopiedTexts.push(text);
+    };
+  });
 
   const contentBeforeCopy = await popup.locator(".content").evaluate((content) => {
     const rect = content.getBoundingClientRect();
     return { bottom: rect.bottom, top: rect.top };
   });
-  await popup.locator("#copyValueButton").click();
-  await popup.waitForFunction(() => document.querySelector("#copyValueButton")?.classList.contains("is-copied"));
+  await popup.locator("#copyButton").click();
+  await popup.waitForFunction(() => document.querySelector("#copyButton")?.classList.contains("is-copied"));
   const copiedState = await popup.evaluate(() => {
-    const button = document.querySelector("#copyValueButton");
+    const button = document.querySelector("#copyButton");
     const contentRect = document.querySelector(".content").getBoundingClientRect();
     return {
       ariaLabel: button.getAttribute("aria-label"),
+      copiedText: window.__editorCopiedTexts.at(-1),
       contentBottom: contentRect.bottom,
       contentTop: contentRect.top,
       statusHidden: document.querySelector("#statusBar").hidden,
@@ -635,39 +688,59 @@ async function assertEditorActions(popup) {
   assert.equal(copiedState.ariaLabel, "Copied");
   assert.equal(copiedState.tooltip, "Copied");
   assert.equal(copiedState.tooltipContent, '"Copied"');
+  assert.equal(copiedState.copiedText, `hello-world-${runId}`);
   assert.equal(copiedState.statusHidden, true);
   assert.equal(copiedState.contentTop, contentBeforeCopy.top);
   assert.equal(copiedState.contentBottom, contentBeforeCopy.bottom);
-  await popup.locator("#copyValueButton").click();
-  await popup.waitForFunction(() => document.querySelector("#copyValueButton")?.getAttribute("aria-label") === "Copied");
+  await popup.locator("#copyButton").click();
+  await popup.waitForFunction(() => document.querySelector("#copyButton")?.getAttribute("aria-label") === "Copied");
   await screenshot(popup, "milestone-4-popup-copy-feedback.png");
 
-  await popup.waitForFunction(() => !document.querySelector("#copyValueButton")?.classList.contains("is-copied"));
-  assert.equal(await popup.locator("#copyValueButton").getAttribute("aria-label"), "Copy value");
-  assert.equal(await popup.locator("#copyValueButton").getAttribute("data-tooltip"), "Copy value");
+  await popup.waitForFunction(() => !document.querySelector("#copyButton")?.classList.contains("is-copied"));
+  assert.equal(await popup.locator("#copyButton").getAttribute("aria-label"), "Copy value");
+  assert.equal(await popup.locator("#copyButton").getAttribute("data-tooltip"), "Copy value");
 
-  await popup.locator("#copyPairButton").click();
-  await popup.waitForFunction(() => document.querySelector("#copyPairButton")?.classList.contains("is-copied"));
-  assert.equal((await popup.locator("#copyPairButton .copy-success-feedback").textContent()).trim(), "Copied");
+  await popup.locator("#copyMenuButton").focus();
+  await popup.locator("#copyMenuButton").press("ArrowDown");
+  assert.equal(await popup.locator("#copyMenu").isVisible(), true);
+  assert.equal(await popup.locator("#copyMenuButton").getAttribute("aria-expanded"), "true");
+  assert.equal(await popup.evaluate(() => document.activeElement?.dataset.copyMode), "value");
+  await popup.keyboard.press("ArrowDown");
+  assert.equal(await popup.evaluate(() => document.activeElement?.dataset.copyMode), "pair");
+  await popup.keyboard.press("Enter");
+  await popup.waitForFunction(() => document.querySelector("#copyButton")?.dataset.copyMode === "pair");
+  assert.equal(await popup.locator("#copyMenu").isHidden(), true);
+  assert.equal(await popup.locator("#copyMenuButton").getAttribute("aria-expanded"), "false");
+  assert.equal(await popup.evaluate(() => window.__editorCopiedTexts.at(-1)), `plain=hello-world-${runId}`);
+  assert.equal(await popup.locator('#copyMenu [data-copy-mode="pair"]').getAttribute("aria-checked"), "true");
+
+  await popup.locator("#copyButton").click();
+  await popup.waitForFunction(() => window.__editorCopiedTexts.length >= 4);
+  assert.equal(await popup.evaluate(() => window.__editorCopiedTexts.at(-1)), `plain=hello-world-${runId}`);
 
   await popup.evaluate(() => {
-    window.__copyFeedbackWriteText = navigator.clipboard.writeText;
     navigator.clipboard.writeText = async () => {
       throw new Error("Clipboard denied.");
     };
   });
-  await popup.locator("#copyJsonButton").click();
+  await popup.locator("#copyMenuButton").click();
+  await popup.locator('#copyMenu [data-copy-mode="json"]').click();
   await waitForStatus(popup, "Clipboard denied.");
-  assert.equal(await popup.locator("#copyJsonButton").evaluate((button) => button.classList.contains("is-copied")), false);
+  assert.equal(await popup.locator("#copyButton").evaluate((button) => button.classList.contains("is-copied")), false);
+  assert.equal(await popup.locator("#copyButton").getAttribute("data-copy-mode"), "json");
+  assert.equal(await popup.locator("#copyButton").getAttribute("aria-label"), "Copy JSON");
   assert.equal(await popup.locator("#closeStatusButton").isHidden(), false);
   await popup.evaluate(() => {
     navigator.clipboard.writeText = window.__copyFeedbackWriteText;
     delete window.__copyFeedbackWriteText;
+    delete window.__editorCopiedTexts;
   });
   await popup.locator("#closeStatusButton").click();
   await popup.waitForFunction(() => document.querySelector("#statusBar")?.hidden === true);
   assert.equal(await popup.locator("#statusBar").isHidden(), true);
+  await popup.locator("#copyMenuButton").click();
   await screenshot(popup, "milestone-4-popup-editor-actions.png");
+  await popup.locator("#copyMenuButton").click();
 }
 
 async function assertTemplateFeatureRemoved(popup) {
@@ -1340,6 +1413,7 @@ async function assertSidePanelWorkbench(context, activePage, extensionId) {
   await waitForPopupReady(sidePanel, "127.0.0.1");
   assert.equal(await sidePanel.evaluate(() => document.body.dataset.surface), "sidepanel");
   await sidePanel.setViewportSize({ width: 420, height: 800 });
+  assert.equal(await sidePanel.locator(".site-switch").isVisible(), true);
   const narrowMainLayout = await sidePanel.evaluate(() => {
     const rect = (selector) => {
       const value = document.querySelector(selector).getBoundingClientRect();

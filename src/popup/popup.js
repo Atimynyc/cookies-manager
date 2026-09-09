@@ -92,12 +92,20 @@ const state = {
   loading: false
 };
 
+const COPY_MODES = Object.freeze({
+  value: "Copy value",
+  pair: "Copy name=value",
+  json: "Copy JSON"
+});
+
 let lastViewedSavePromise = Promise.resolve();
 let workbenchPromise = null;
 let workbenchOpening = false;
+let selectedCopyMode = "value";
 
 const elements = {
   hostLabel: document.querySelector("#hostLabel"),
+  siteIcon: document.querySelector("#siteIcon"),
   cookieCount: document.querySelector("#cookieCount"),
   siteSelect: document.querySelector("#siteSelect"),
   dataViewButtons: Array.from(document.querySelectorAll(".data-switch button[data-view]")),
@@ -157,9 +165,11 @@ const elements = {
   metaStoreLabel: document.querySelector("#metaStoreLabel"),
   metaStore: document.querySelector("#metaStore"),
   metaSize: document.querySelector("#metaSize"),
-  copyValueButton: document.querySelector("#copyValueButton"),
-  copyPairButton: document.querySelector("#copyPairButton"),
-  copyJsonButton: document.querySelector("#copyJsonButton"),
+  copyControl: document.querySelector("#copyControl"),
+  copyButton: document.querySelector("#copyButton"),
+  copyMenuButton: document.querySelector("#copyMenuButton"),
+  copyMenu: document.querySelector("#copyMenu"),
+  copyModeButtons: Array.from(document.querySelectorAll("#copyMenu [data-copy-mode]")),
   resetButton: document.querySelector("#resetButton"),
   deleteButton: document.querySelector("#deleteButton"),
   saveButton: document.querySelector("#saveButton"),
@@ -303,6 +313,12 @@ async function loadPreferences() {
 }
 
 function bindEvents() {
+  elements.siteIcon.addEventListener("load", () => {
+    elements.siteIcon.hidden = false;
+  });
+  elements.siteIcon.addEventListener("error", () => {
+    elements.siteIcon.hidden = true;
+  });
   for (const button of elements.dataViewButtons) {
     button.addEventListener("click", () => setDataView(button.dataset.view));
   }
@@ -349,9 +365,13 @@ function bindEvents() {
       void toggleFavorite(row.id, !isFavorite(row.id));
     }
   });
-  elements.copyValueButton.addEventListener("click", () => itemActions.copySelected("value", elements.copyValueButton));
-  elements.copyPairButton.addEventListener("click", () => itemActions.copySelected("pair", elements.copyPairButton));
-  elements.copyJsonButton.addEventListener("click", () => itemActions.copySelected("json", elements.copyJsonButton));
+  elements.copyButton.addEventListener("click", copyUsingSelectedMode);
+  elements.copyMenuButton.addEventListener("click", () => setCopyMenuOpen(elements.copyMenu.hidden));
+  elements.copyMenuButton.addEventListener("keydown", handleCopyMenuButtonKeydown);
+  elements.copyMenu.addEventListener("keydown", handleCopyMenuKeydown);
+  for (const button of elements.copyModeButtons) {
+    button.addEventListener("click", () => selectCopyMode(button.dataset.copyMode));
+  }
   elements.valueToolModeSelect.addEventListener("change", async () => {
     state.valueToolMode = normalizeValueToolMode(elements.valueToolModeSelect.value);
     await savePreferences({ valueToolMode: state.valueToolMode });
@@ -378,14 +398,92 @@ function bindEvents() {
     if (!elements.refreshControl.contains(event.target)) {
       setRefreshMenuOpen(false);
     }
-  });
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !elements.refreshMenu.hidden) {
-      setRefreshMenuOpen(false);
-      elements.refreshMenuButton.focus();
+    if (!elements.copyControl.contains(event.target)) {
+      setCopyMenuOpen(false);
     }
   });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      if (!elements.copyMenu.hidden) {
+        setCopyMenuOpen(false);
+        elements.copyMenuButton.focus();
+      } else if (!elements.refreshMenu.hidden) {
+        setRefreshMenuOpen(false);
+        elements.refreshMenuButton.focus();
+      }
+    }
+  });
+  updateCopyControl();
   initializeColumnResizers();
+}
+
+function copyUsingSelectedMode() {
+  void itemActions.copySelected(selectedCopyMode, elements.copyButton);
+}
+
+function selectCopyMode(mode) {
+  if (!Object.hasOwn(COPY_MODES, mode)) {
+    return;
+  }
+
+  resetCopyFeedback(elements.copyButton);
+  selectedCopyMode = mode;
+  updateCopyControl();
+  setCopyMenuOpen(false);
+  copyUsingSelectedMode();
+}
+
+function updateCopyControl() {
+  const label = COPY_MODES[selectedCopyMode];
+  elements.copyButton.dataset.copyMode = selectedCopyMode;
+  elements.copyButton.dataset.tooltip = label;
+  elements.copyButton.setAttribute("aria-label", label);
+  for (const button of elements.copyModeButtons) {
+    button.setAttribute("aria-checked", String(button.dataset.copyMode === selectedCopyMode));
+  }
+}
+
+function setCopyMenuOpen(open, focusTarget = "selected") {
+  const nextOpen = Boolean(open) && !elements.copyMenuButton.disabled;
+  elements.copyMenu.hidden = !nextOpen;
+  elements.copyMenuButton.setAttribute("aria-expanded", String(nextOpen));
+  if (!nextOpen) {
+    return;
+  }
+
+  const target = focusTarget === "last"
+    ? elements.copyModeButtons.at(-1)
+    : elements.copyModeButtons.find((button) => button.dataset.copyMode === selectedCopyMode);
+  target?.focus();
+}
+
+function handleCopyMenuButtonKeydown(event) {
+  if (event.key !== "ArrowDown" && event.key !== "ArrowUp") {
+    return;
+  }
+
+  event.preventDefault();
+  setCopyMenuOpen(true, event.key === "ArrowUp" ? "last" : "selected");
+}
+
+function handleCopyMenuKeydown(event) {
+  const currentIndex = elements.copyModeButtons.indexOf(document.activeElement);
+  const directions = {
+    ArrowDown: 1,
+    ArrowUp: -1
+  };
+
+  if (Object.hasOwn(directions, event.key)) {
+    event.preventDefault();
+    const nextIndex = (currentIndex + directions[event.key] + elements.copyModeButtons.length)
+      % elements.copyModeButtons.length;
+    elements.copyModeButtons[nextIndex].focus();
+  } else if (event.key === "Home" || event.key === "End") {
+    event.preventDefault();
+    elements.copyModeButtons[event.key === "Home" ? 0 : elements.copyModeButtons.length - 1].focus();
+  } else if (event.key === "Tab") {
+    setCopyMenuOpen(false);
+  }
 }
 
 function setRefreshMenuOpen(open) {
@@ -482,8 +580,9 @@ async function refreshData() {
   try {
     const tab = await getActiveTab();
     state.tab = tab;
+    globalThis.cookieControllerTheme?.setActiveTabIncognito(tab?.incognito);
     state.cookieStoreId = "";
-    renderHeader(tab?.url);
+    renderHeader(tab);
 
     const supportedPage = Boolean(tab?.url && isSupportedPageUrl(tab.url));
     const [, , cookieStoreId] = await Promise.all([
@@ -497,7 +596,7 @@ async function refreshData() {
       state.rows = [];
       state.selectedId = "";
       state.emptyMessage = "This page is not supported";
-      renderHeader(tab?.url);
+      renderHeader(tab);
       renderTable();
       renderSelectedItem();
       showStatus(view.unsupportedMessage, "error");
@@ -1017,10 +1116,27 @@ async function resizeColumnWithKeyboard(event, index) {
   });
 }
 
-function renderHeader(url) {
+function renderHeader(tab) {
   const view = getCurrentView();
-  elements.hostLabel.textContent = getDisplayHost(url);
+  elements.hostLabel.textContent = getDisplayHost(tab?.url);
   elements.cookieCount.textContent = `${state.rows.length} ${state.rows.length === 1 ? view.singular : view.plural}`;
+  renderSiteIcon(tab);
+}
+
+function renderSiteIcon(tab) {
+  const faviconUrl = typeof tab?.favIconUrl === "string" ? tab.favIconUrl.trim() : "";
+  if (elements.siteIcon.dataset.source === faviconUrl) {
+    return;
+  }
+
+  elements.siteIcon.dataset.source = faviconUrl;
+  elements.siteIcon.hidden = true;
+  if (!faviconUrl) {
+    elements.siteIcon.removeAttribute("src");
+    return;
+  }
+
+  elements.siteIcon.src = faviconUrl;
 }
 
 function renderTable() {
@@ -1039,7 +1155,7 @@ function renderTable() {
   });
   elements.emptyState.textContent = state.emptyMessage;
   elements.emptyState.hidden = state.loading || visibleRows.length > 0;
-  renderHeader(state.tab?.url);
+  renderHeader(state.tab);
   updateActionAvailability();
   updateSelectionSummary(visibleRows);
 }
@@ -1405,9 +1521,11 @@ function updateToolState() {
 function updateSelectionControls() {
   const hasSelection = Boolean(getSelectedRow());
   elements.deleteButton.disabled = !hasSelection;
-  elements.copyValueButton.disabled = !hasSelection;
-  elements.copyPairButton.disabled = !hasSelection;
-  elements.copyJsonButton.disabled = !hasSelection;
+  elements.copyButton.disabled = !hasSelection;
+  elements.copyMenuButton.disabled = !hasSelection;
+  if (!hasSelection) {
+    setCopyMenuOpen(false);
+  }
   elements.copyToolOutputButton.disabled = !state.toolOutputText;
   elements.clearHistoryButton.disabled = getVisibleRecentChanges().length === 0;
   updateSaveState();
@@ -1485,9 +1603,9 @@ function setBusy(isBusy) {
     elements.saveButton.disabled = true;
     elements.deleteButton.disabled = true;
     elements.resetButton.disabled = true;
-    elements.copyValueButton.disabled = true;
-    elements.copyPairButton.disabled = true;
-    elements.copyJsonButton.disabled = true;
+    elements.copyButton.disabled = true;
+    elements.copyMenuButton.disabled = true;
+    setCopyMenuOpen(false);
     elements.valueToolModeSelect.disabled = true;
     elements.runToolButton.disabled = true;
     elements.copyToolOutputButton.disabled = true;

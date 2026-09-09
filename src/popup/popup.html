@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Cookie Controller</title>
+    <script src="./popup-theme.js"></script>
+    <link rel="stylesheet" href="./popup-themes.css">
     <link rel="stylesheet" href="./popup.css">
     <script type="module" src="./popup.js"></script>
   </head>
@@ -11,7 +13,10 @@
     <main class="app-shell">
       <header class="topbar">
         <section class="site-summary" aria-label="Current page">
-          <div class="site-host" id="hostLabel">Loading page</div>
+          <div class="site-title">
+            <img class="site-icon" id="siteIcon" alt="" width="16" height="16" hidden>
+            <div class="site-host" id="hostLabel">Loading page</div>
+          </div>
           <div class="site-count" id="cookieCount">0 cookies</div>
         </section>
 
@@ -198,18 +203,45 @@
                   <div class="value-field-header">
                     <label for="valueInput">Value</label>
                     <div class="editor-actions" aria-label="Editor actions">
-                      <button class="editor-action-button copy-feedback-button" id="copyValueButton" type="button" aria-label="Copy value" data-tooltip="Copy value">
-                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                          <rect width="14" height="14" x="8" y="8" rx="2" />
-                          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-                        </svg>
-                        <span class="copy-success-feedback" aria-hidden="true">
-                          <svg class="icon" viewBox="0 0 24 24">
-                            <path d="m5 12 4 4L19 6" />
+                      <div class="copy-control" id="copyControl">
+                        <button class="editor-action-button copy-feedback-button copy-primary-button" id="copyButton" type="button" aria-label="Copy value" data-tooltip="Copy value" data-copy-mode="value">
+                          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <rect width="14" height="14" x="8" y="8" rx="2" />
+                            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
                           </svg>
-                          <span class="copy-feedback-label">Copied</span>
-                        </span>
-                      </button>
+                          <span class="copy-success-feedback" aria-hidden="true">
+                            <svg class="icon" viewBox="0 0 24 24">
+                              <path d="m5 12 4 4L19 6" />
+                            </svg>
+                            <span class="copy-feedback-label">Copied</span>
+                          </span>
+                        </button>
+                        <button class="copy-menu-button" id="copyMenuButton" type="button" aria-label="Choose copy format" aria-haspopup="menu" aria-controls="copyMenu" aria-expanded="false">
+                          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="m7 10 5 5 5-5" />
+                          </svg>
+                        </button>
+                        <div class="copy-menu" id="copyMenu" role="menu" aria-label="Copy format" hidden>
+                          <button type="button" role="menuitemradio" data-copy-mode="value" aria-checked="true">
+                            <svg class="icon copy-menu-check" viewBox="0 0 24 24" aria-hidden="true">
+                              <path d="m5 12 4 4L19 6" />
+                            </svg>
+                            <span>Copy value</span>
+                          </button>
+                          <button type="button" role="menuitemradio" data-copy-mode="pair" aria-checked="false">
+                            <svg class="icon copy-menu-check" viewBox="0 0 24 24" aria-hidden="true">
+                              <path d="m5 12 4 4L19 6" />
+                            </svg>
+                            <span>Copy name=value</span>
+                          </button>
+                          <button type="button" role="menuitemradio" data-copy-mode="json" aria-checked="false">
+                            <svg class="icon copy-menu-check" viewBox="0 0 24 24" aria-hidden="true">
+                              <path d="m5 12 4 4L19 6" />
+                            </svg>
+                            <span>Copy JSON</span>
+                          </button>
+                        </div>
+                      </div>
                       <button class="editor-action-button" id="resetButton" type="button" aria-label="Reset" data-tooltip="Reset">
                         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                           <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
@@ -298,26 +330,6 @@
                   </div>
                 </dl>
 
-                <div class="copy-row">
-                  <button class="copy-feedback-button" id="copyPairButton" type="button" aria-label="Copy name=value">
-                    Copy name=value
-                    <span class="copy-success-feedback" aria-hidden="true">
-                      <svg class="icon" viewBox="0 0 24 24">
-                        <path d="m5 12 4 4L19 6" />
-                      </svg>
-                      <span>Copied</span>
-                    </span>
-                  </button>
-                  <button class="copy-feedback-button" id="copyJsonButton" type="button" aria-label="Copy JSON">
-                    Copy JSON
-                    <span class="copy-success-feedback" aria-hidden="true">
-                      <svg class="icon" viewBox="0 0 24 24">
-                        <path d="m5 12 4 4L19 6" />
-                      </svg>
-                      <span>Copied</span>
-                    </span>
-                  </button>
-                </div>
               </form>
             </section>
 
