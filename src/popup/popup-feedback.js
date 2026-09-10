@@ -4,7 +4,7 @@ const STATUS_DURATIONS = {
   success: 2000,
   info: 3000,
   warning: 5000,
-  error: 0
+  error: 3000
 };
 
 export function createStatusController({ statusBar, statusMessage, closeStatusButton }) {
@@ -20,7 +20,7 @@ export function createStatusController({ statusBar, statusMessage, closeStatusBu
     statusMessage.setAttribute("role", normalizedType === "error" ? "alert" : "status");
     statusMessage.setAttribute("aria-live", normalizedType === "error" ? "assertive" : "polite");
     statusMessage.textContent = message;
-    closeStatusButton.hidden = duration > 0;
+    closeStatusButton.hidden = duration > 0 && normalizedType !== "error";
     statusBar.className = `status-bar is-${normalizedType}`;
 
     if (duration > 0) {

@@ -665,12 +665,12 @@ body[data-surface="popup"] .site-switch {
 @keyframes status-enter {
   from {
     opacity: 0;
-    transform: translateY(-6px);
+    transform: translateX(105%);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
 }
 
@@ -681,7 +681,7 @@ body[data-surface="popup"] .site-switch {
 @keyframes status-exit {
   to {
     opacity: 0;
-    transform: translateY(-4px);
+    transform: translateX(105%);
   }
 }
 
@@ -1489,6 +1489,15 @@ tbody tr:focus-visible td {
   border-radius: 6px 0 0 6px;
 }
 
+.copy-control.is-result {
+  grid-template-columns: 30px;
+  width: 30px;
+}
+
+.copy-control.is-result .copy-primary-button {
+  border-radius: 6px;
+}
+
 .copy-menu-button {
   display: inline-flex;
   align-items: center;
@@ -1500,6 +1509,10 @@ tbody tr:focus-visible td {
   border-radius: 0 6px 6px 0;
   padding: 0;
   color: var(--muted);
+}
+
+.copy-menu-button[hidden] {
+  display: none;
 }
 
 .copy-menu-button .icon {
@@ -1835,23 +1848,6 @@ tbody tr:focus-visible td {
   align-items: center;
   gap: 5px;
   margin-left: auto;
-}
-
-.tool-output-actions {
-  display: flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 5px;
-}
-
-.tool-output-actions[hidden] {
-  display: none;
-}
-
-.tool-output-actions .editor-action-button {
-  width: 28px;
-  height: 26px;
-  min-height: 26px;
 }
 
 .tool-output pre {

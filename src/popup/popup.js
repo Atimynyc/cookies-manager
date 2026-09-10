@@ -177,8 +177,6 @@ const elements = {
   valueToolButtons: Array.from(document.querySelectorAll("#valueToolsMenu [data-value-tool]")),
   toolOutput: document.querySelector("#toolOutput"),
   toolOutputBody: document.querySelector("#toolOutputBody"),
-  toolOutputActions: document.querySelector("#toolOutputActions"),
-  copyToolOutputButton: document.querySelector("#copyToolOutputButton"),
   metaDomainLabel: document.querySelector("#metaDomainLabel"),
   metaDomain: document.querySelector("#metaDomain"),
   metaPathLabel: document.querySelector("#metaPathLabel"),
@@ -419,7 +417,6 @@ function bindEvents() {
   elements.valueViewToggleButton.addEventListener("click", () => {
     setActiveValueView(state.activeValueView === "result" ? "raw" : "result");
   });
-  elements.copyToolOutputButton.addEventListener("click", copyToolOutput);
   elements.historyViewButton.addEventListener("click", () => {
     setActiveDetailView(state.activeDetailView === "history" ? "details" : "history");
   });
@@ -465,6 +462,11 @@ function bindEvents() {
 }
 
 function copyUsingSelectedMode() {
+  if (state.activeValueView === "result" && state.toolOutputText) {
+    void copyToolOutput();
+    return;
+  }
+
   void itemActions.copySelected(selectedCopyMode, elements.copyButton);
 }
 
@@ -481,8 +483,15 @@ function selectCopyMode(mode) {
 }
 
 function updateCopyControl() {
-  const label = COPY_MODES[selectedCopyMode];
-  elements.copyButton.dataset.copyMode = selectedCopyMode;
+  resetCopyFeedback(elements.copyButton);
+  const showResult = state.activeValueView === "result" && Boolean(state.toolOutputText);
+  const label = showResult ? "Copy result" : COPY_MODES[selectedCopyMode];
+  elements.copyControl.classList.toggle("is-result", showResult);
+  elements.copyMenuButton.hidden = showResult;
+  if (showResult) {
+    setCopyMenuOpen(false);
+  }
+  elements.copyButton.dataset.copyMode = showResult ? "result" : selectedCopyMode;
   elements.copyButton.dataset.tooltip = label;
   elements.copyButton.setAttribute("aria-label", label);
   for (const button of elements.copyModeButtons) {
@@ -1072,7 +1081,6 @@ function showToolOutput(title, text, activate = false) {
   elements.toolOutput.setAttribute("aria-label", title);
   elements.valueViewToggleButton.disabled = false;
   elements.valueViewToggleIcon.hidden = false;
-  elements.copyToolOutputButton.disabled = !text;
   setActiveValueView(activate ? "result" : "raw");
 }
 
@@ -1100,7 +1108,6 @@ function clearToolOutput() {
   elements.valueViewToggleIcon.hidden = true;
   elements.valueViewToggleButton.removeAttribute("title");
   elements.valueViewToggleButton.setAttribute("aria-label", "Show result");
-  elements.copyToolOutputButton.disabled = true;
   setActiveValueView("raw");
 }
 
@@ -1110,8 +1117,8 @@ function setActiveValueView(view) {
   elements.valueViewSwitch.hidden = !state.toolOutputText;
   elements.valueInput.hidden = showResult;
   elements.toolOutput.hidden = !showResult;
-  elements.toolOutputActions.hidden = !showResult;
   elements.valueWorkspace.classList.toggle("is-result", showResult);
+  updateCopyControl();
   if (!showResult) {
     updateValueWorkspaceHeight();
   }
@@ -1147,9 +1154,9 @@ async function copyToolOutput() {
   try {
     await writeClipboard(state.toolOutputText);
     clearStatus();
-    showCopyFeedback(elements.copyToolOutputButton);
+    showCopyFeedback(elements.copyButton);
   } catch (error) {
-    resetCopyFeedback(elements.copyToolOutputButton);
+    resetCopyFeedback(elements.copyButton);
     showStatus(error?.message || "Failed to copy.", "error");
   }
 }
@@ -1742,7 +1749,6 @@ function updateToolState() {
   const hasOutput = Boolean(state.toolOutputText);
   elements.valueToolsButton.disabled = !hasSelection;
   elements.valueViewToggleButton.disabled = !hasSelection || !hasOutput;
-  elements.copyToolOutputButton.disabled = !hasOutput;
   if (!hasSelection) {
     setValueToolsMenuOpen(false);
   }
@@ -1838,7 +1844,6 @@ function setBusy(isBusy) {
     elements.valueToolsButton.disabled = true;
     setValueToolsMenuOpen(false);
     elements.valueViewToggleButton.disabled = true;
-    elements.copyToolOutputButton.disabled = true;
     elements.clearHistoryButton.disabled = true;
     elements.exportButton.disabled = true;
     elements.importButton.disabled = true;

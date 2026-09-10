@@ -503,6 +503,8 @@ async function assertUnselectedWorkspaceFillsContent(popup) {
 
 async function assertValueTools(popup) {
   await selectCookieBySearch(popup, "encoded");
+  assert.equal(await popup.locator("#copyToolOutputButton").count(), 0);
+  assert.equal(await popup.locator(".tool-output-actions").count(), 0);
   assert.equal(await popup.locator("#valueViewSwitch").isHidden(), false);
   assert.equal(await popup.locator("#valueViewLabel").textContent(), "Raw");
   assert.equal(await popup.locator("#valueInput").isVisible(), true);
@@ -539,10 +541,27 @@ async function assertValueTools(popup) {
   assert.ok(initialToolAlignment >= 4 && initialToolAlignment <= 7, initialToolAlignment);
   await popup.locator("#valueInput").fill("hello world");
   assert.equal(await popup.locator("#valueViewToggleButton").isDisabled(), true);
+  await popup.locator("#copyMenuButton").click();
+  await popup.locator('#copyMenu [data-copy-mode="pair"]').click();
+  await popup.waitForFunction(() => document.querySelector("#copyButton")?.dataset.copyMode === "pair");
+  await popup.evaluate(() => {
+    window.__valueToolWriteText = navigator.clipboard.writeText;
+    window.__valueToolCopiedTexts = [];
+    navigator.clipboard.writeText = async (text) => {
+      window.__valueToolCopiedTexts.push(text);
+    };
+  });
   await runValueTool(popup, "urlEncode");
   await expectToolOutput(popup, "hello%20world");
   assert.equal(await popup.locator("#valueViewToggleButton").isEnabled(), true);
   assert.equal(await popup.locator("#valueViewSwitch").isHidden(), false);
+  assert.equal(await popup.locator("#copyButton").getAttribute("aria-label"), "Copy result");
+  assert.equal(await popup.locator("#copyButton").getAttribute("data-tooltip"), "Copy result");
+  assert.equal(await popup.locator("#copyButton").getAttribute("data-copy-mode"), "result");
+  assert.equal(await popup.locator("#copyMenuButton").isHidden(), true);
+  assert.equal(await popup.locator("#copyControl").evaluate((control) => control.classList.contains("is-result")), true);
+  await popup.locator("#copyButton").click();
+  await popup.waitForFunction(() => window.__valueToolCopiedTexts.at(-1) === "hello%20world");
   const resultToolAlignment = await popup.evaluate(() => {
     const workspace = document.querySelector(".value-workspace").getBoundingClientRect();
     const button = document.querySelector("#valueToolsButton").getBoundingClientRect();
@@ -562,6 +581,16 @@ async function assertValueTools(popup) {
   assert.deepEqual(valueTypography.lineHeight, ["18px", "18px"]);
   await popup.locator("#valueViewToggleButton").click();
   assert.equal(await popup.locator("#valueViewLabel").textContent(), "Raw");
+  assert.equal(await popup.locator("#copyMenuButton").isVisible(), true);
+  assert.equal(await popup.locator("#copyButton").getAttribute("data-copy-mode"), "pair");
+  assert.equal(await popup.locator("#copyButton").getAttribute("aria-label"), "Copy name=value");
+  assert.equal(await popup.locator("#copyButton").getAttribute("data-tooltip"), "Copy name=value");
+  assert.equal(await popup.locator("#copyControl").evaluate((control) => control.classList.contains("is-result")), false);
+  await popup.evaluate(() => {
+    navigator.clipboard.writeText = window.__valueToolWriteText;
+    delete window.__valueToolWriteText;
+    delete window.__valueToolCopiedTexts;
+  });
   await popup.locator("#resetButton").click();
 
   const defaultValueWorkspaceHeight = await popup.locator(".value-workspace").evaluate((element) => element.getBoundingClientRect().height);
@@ -587,6 +616,13 @@ async function assertValueTools(popup) {
   await selectCookieBySearch(popup, "jwt");
   await runValueTool(popup, "jwt");
   await expectToolOutput(popup, '"user": "dev"');
+  await popup.locator("#valueInput").fill("not-a-jwt");
+  await runValueTool(popup, "jwt");
+  await waitForStatus(popup, "JWT payload could not be decoded.");
+  assert.equal(await popup.locator("#closeStatusButton").isHidden(), false);
+  await popup.waitForFunction(() => document.querySelector("#statusBar")?.hidden === true);
+  assert.equal(await popup.locator("#statusMessage").textContent(), "");
+  await popup.locator("#resetButton").click();
   assert.equal(await popup.locator("#useToolOutputButton").count(), 0);
 
   const storedMode = await readStorageValue(popup, "valueToolMode");
