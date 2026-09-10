@@ -47,9 +47,19 @@ Development
 - Run `npm test` for the unit-test baseline covering parsing, identifiers, package validation, conflicts, batch results, favorites, and recent-change normalization.
 - Run `npm run test:acceptance` for the full Chrome extension workflow.
 - Run `npm run test:acceptance:v032` for target isolation, editor drafts, history undo, and Saved States capacity regressions.
+- Run `npm run test:acceptance:v033` for operation recovery, worker interruption, concurrent writes, retry, undo conflicts, and result views.
 - Run `npm run test:acceptance:v030` for the focused data-package and saved-state workflow.
 - The versioned site data interchange contract is documented in `docs/site-data-package-v1.md`.
 - Acceptance screenshots are written to `.tmp/` by default. Set `ACCEPTANCE_ARTIFACT_DIR` to choose another artifact directory for the full workflow.
+
+v0.3.3 operation reliability
+
+- Edits, deletions and imports share a background operation journal. Accepted tasks survive closing the extension surface; worker restarts reconcile interrupted writes before continuing.
+- History > Operations retains batch results and per-item errors, supports retrying failed items and conflict-checked undo, and lets you remove completed records.
+- Storage checks the expected value inside the target page before writing. Cookie operations verify identity and attributes before and after writing; Chrome does not provide atomic Cookie compare-and-set.
+- Favorites and Saved States use coordinated incremental updates across extension surfaces. Journal capacity errors reject new writes without removing older records.
+- Full values and recovery data stay in browser session storage. Restarting the browser or reloading the extension ends that recovery session; local summaries remain available. Older history entries without a complete operation journal are view-only.
+- Implementation details and verification: [v0.3.3 release notes](docs/release-notes-v0.3.3.md).
 
 v0.3.2 stability
 

@@ -6,6 +6,7 @@
     "test:acceptance": "node scripts/acceptance-extension.mjs",
     "test:acceptance:v030": "node scripts/acceptance-extension.mjs --v030-only",
     "test:acceptance:v032": "node scripts/acceptance-v032.mjs",
+    "test:acceptance:v033": "node scripts/acceptance-v033.mjs",
     "verify:m4": "node scripts/verify-milestone-4.mjs"
   },
   "devDependencies": {

@@ -19,6 +19,11 @@ export function createHistoryView({
     elements.historyList.replaceChildren(...visibleChanges.map(createHistoryItem));
     elements.historyList.hidden = visibleChanges.length === 0;
     elements.historyEmpty.hidden = visibleChanges.length > 0;
+    if (state.historyMode === "operations") {
+      elements.historyList.hidden = true;
+      elements.historyEmpty.hidden = true;
+      elements.historyDetail.hidden = true;
+    }
     elements.clearHistoryButton.disabled = Boolean(state.busy || state.loading || visibleChanges.length === 0);
 
     if (state.selectedHistoryId && !visibleChanges.some((change) => change.id === state.selectedHistoryId)) {
@@ -322,6 +327,7 @@ function createDiffNodes(value, diffStart, diffEnd, className) {
 function formatChangeAction(action) {
   return {
     edit: "Edit",
+    delete: "Delete",
     "import-create": "Import create",
     "import-overwrite": "Import overwrite"
   }[action] || "Change";

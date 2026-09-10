@@ -4,7 +4,6 @@ import {
   getWindowHttpTabs,
   hasSitePermission,
   openSidePanel,
-  setCookiePair,
   watchCookieChanges
 } from "../shared/cookie-api.js";
 import {
@@ -13,7 +12,7 @@ import {
   getLastViewedSiteData,
   getPreferences,
   normalizeLastViewedSiteData,
-  saveFavoriteSiteDataIds,
+  setFavoriteSiteDataId,
   saveLastViewedSiteData,
   savePreferences
 } from "../shared/settings-store.js";
@@ -29,9 +28,6 @@ import {
   toCookieRow
 } from "../shared/cookie-format.js";
 import {
-  setStoragePair
-} from "../shared/storage-api.js";
-import {
   getStorageJson,
   getStorageSearchText,
   getStorageTypeLabel,
@@ -40,7 +36,9 @@ import {
 import { getDisplayHost, getSiteOrigin, isSupportedPageUrl } from "../shared/url.js";
 import { getAutoValueToolOutput } from "../shared/value-tools.js";
 import { createCookiePair, createStoragePair } from "../shared/pair-parser.js";
-import { executeBatchOperation } from "../shared/batch-operations.js";
+import { runOperation } from "../shared/operation-client.js";
+import { operationToBatchResult } from "../shared/operation-presentation.js";
+import { getSiteDataItemId } from "../shared/item-identity.js";
 import { assertOperationContext, createOperationContext, reloadOperationTarget } from "../shared/operation-context.js";
 import {
   getBatchOperationCounts
@@ -67,6 +65,7 @@ import { createHistoryView } from "./popup-history-view.js";
 import { createPopupHistoryController } from "./popup-history-controller.js";
 import { createPopupItemActionsController } from "./popup-item-actions-controller.js";
 import { createEditorDraftStore, getEditorDraftKey, getEditorRowSignature } from "./popup-editor-drafts.js";
+import { createOperationsView } from "./popup-operations-view.js";
 
 const state = {
   tab: null,
@@ -122,6 +121,7 @@ let refreshRequestId = 0;
 let cookieRefreshTimer = 0;
 let renderedEditor = null;
 const editorDrafts = createEditorDraftStore();
+const pendingFavoriteIds = new Set();
 
 const elements = {
   hostLabel: document.querySelector("#hostLabel"),
@@ -245,9 +245,13 @@ const historyView = createHistoryView({
 const {
   clearHistoryDetail,
   getVisibleRecentChanges,
-  renderHistory,
+  renderHistory: renderHistoryChanges,
   updateHistoryButtonState
 } = historyView;
+function renderHistory() {
+  renderHistoryChanges();
+  operationsView.render();
+}
 historyController = createPopupHistoryController({
   state,
   getCurrentView,
@@ -280,7 +284,7 @@ const itemActions = createPopupItemActionsController({
   discardEditorDraft,
   rememberCurrentSelection,
   refreshData,
-  recordRecentChange: historyController.recordRecentChange,
+  loadRecentChanges: historyController.loadRecentChanges,
   suppressCookieWatcher,
   requestDeleteConfirmation,
   requestTextInput,
@@ -296,11 +300,16 @@ const popupParams = new URLSearchParams(location.search);
 const surface = popupParams.get("surface") === "sidepanel" ? "sidepanel" : "popup";
 document.documentElement.dataset.surface = surface;
 document.body.dataset.surface = surface;
+const operationsView = createOperationsView({
+  state, loadRecentChanges: historyController.loadRecentChanges, refreshData,
+  setBusy, showStatus, requestDeleteConfirmation
+});
 
 document.addEventListener("DOMContentLoaded", initialize);
 
 async function initialize() {
   bindEvents();
+  operationsView.initialize();
 
   const historyPromise = historyController.loadRecentChanges();
   await Promise.all([
@@ -678,7 +687,7 @@ function persistLastViewedSiteData() {
   const siteOrigin = state.siteOrigin;
   const value = {
     activeDataView: state.dataView,
-    selectedIds: { ...state.rememberedSelectedIds }
+    selectedIds: { [state.dataView]: state.selectedId }
   };
   lastViewedSavePromise = lastViewedSavePromise
     .catch(() => {})
@@ -709,11 +718,12 @@ async function setDataView(view) {
   await refreshData();
 }
 
-async function refreshData() {
+async function refreshData({ preserveStatus = false } = {}) {
+  window.clearTimeout(cookieRefreshTimer);
   rememberEditorDraft();
   const requestId = ++refreshRequestId;
   setLoading(true);
-  clearStatus();
+  if (!preserveStatus) clearStatus();
   setPermissionBanner(false);
   renderViewChrome();
 
@@ -975,13 +985,21 @@ async function importQuickEntries(input) {
     await assertOperationContext(target);
     const currentRows = await readSiteDataRows({ id: target.tabId, url: target.url }, kind, target.cookieStoreId);
     const previousRows = new Map(pairs.map((pair) => [pair.name, findLikelyImportedRow(pair.name, currentRows, target, kind)]));
-    const result = await executeBatchOperation(pairs, async (pair) => {
-      await assertOperationContext(target);
-      const importedRow = await importPair(pair, target, kind);
-      await historyController.recordImportChange(importedRow, pair.value, previousRows.get(pair.name), { target });
-      return importedRow;
+    const job = await runOperation({
+      target, label: `Import ${pairs.length} ${pairs.length === 1 ? "item" : "items"}`, source: "quick-import",
+      items: pairs.map((pair) => {
+        const after = kind === "cookies" ? {
+          name: pair.name, value: pair.value, domain: new URL(target.url).hostname,
+          path: "/", hostOnly: true, storeId: target.cookieStoreId,
+          session: true, secure: false, httpOnly: false, sameSite: "unspecified"
+        } : { type: DATA_VIEWS[kind].storageType, origin: target.origin, key: pair.name, value: pair.value };
+        return { id: getSiteDataItemId(kind, after), kind, name: pair.name, before: previousRows.get(pair.name)?.raw || null, after };
+      })
     });
-    const lastImportedRow = result.success.at(-1)?.value;
+    const result = operationToBatchResult(job);
+    await historyController.loadRecentChanges();
+    const lastSaved = result.success.at(-1)?.value;
+    const lastImportedRow = lastSaved ? (kind === "cookies" ? toCookieRow(lastSaved) : toStorageRow(lastSaved)) : null;
     if (lastImportedRow) {
       state.selectedId = lastImportedRow.id;
       rememberCurrentSelection();
@@ -1062,19 +1080,6 @@ function showImportStatus(pairs, result) {
     `Imported ${counts.success} ${itemLabel}, ${counts.failed} failed.${firstError ? ` ${firstError}` : ""}`,
     "error"
   );
-}
-
-async function importPair(pair, target, kind) {
-  if (kind === "cookies") {
-    if (!target.cookieStoreId) {
-      throw new Error("The target cookie store is unavailable. Refresh before importing.");
-    }
-    const cookie = await setCookiePair(target.url, pair.name, pair.value, target.cookieStoreId);
-    return toCookieRow(cookie);
-  }
-
-  const item = await setStoragePair(target.tabId, target.url, DATA_VIEWS[kind].storageType, pair.name, pair.value);
-  return toStorageRow(item);
 }
 
 function findLikelyImportedRow(name, rows, target, kind) {
@@ -1423,6 +1428,8 @@ function isFavorite(itemId) {
 
 async function toggleFavorite(itemId, favorite) {
   const favoriteItemId = makeFavoriteItemId(state.dataView, itemId);
+  if (pendingFavoriteIds.has(favoriteItemId)) return;
+  pendingFavoriteIds.add(favoriteItemId);
   const previousFavorites = new Set(state.favoriteItemIds);
 
   if (favorite) {
@@ -1434,12 +1441,17 @@ async function toggleFavorite(itemId, favorite) {
   updateEditorFavoriteButton();
 
   try {
-    await saveFavoriteSiteDataIds([...state.favoriteItemIds]);
+    state.favoriteItemIds = new Set(await setFavoriteSiteDataId(favoriteItemId, favorite));
+    renderTable();
+    updateEditorFavoriteButton();
   } catch {
     state.favoriteItemIds = previousFavorites;
     renderTable();
     updateEditorFavoriteButton();
     showStatus("Failed to update favorites.", "error");
+  } finally {
+    pendingFavoriteIds.delete(favoriteItemId);
+    updateEditorFavoriteButton();
   }
 }
 
@@ -1723,7 +1735,9 @@ function updateEditorFavoriteButton() {
   elements.editorFavoriteButton.setAttribute("aria-pressed", String(favorite));
   elements.editorFavoriteButton.setAttribute("aria-label", label);
   elements.editorFavoriteButton.title = tooltip;
-  elements.editorFavoriteButton.disabled = state.busy || state.loading || !row;
+  const pending = row && pendingFavoriteIds.has(makeFavoriteItemId(state.dataView, row.id));
+  elements.editorFavoriteButton.disabled = state.busy || state.loading || !row || pending;
+  elements.editorFavoriteButton.setAttribute("aria-busy", String(Boolean(pending)));
 }
 
 function renderEditorChips(row) {

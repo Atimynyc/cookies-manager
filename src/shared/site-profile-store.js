@@ -1,5 +1,11 @@
 import { callChrome } from "./chrome-call.js";
-import { normalizeSiteProfiles } from "./site-profiles.js";
+import {
+  duplicateSiteProfile,
+  normalizeSiteProfile,
+  normalizeSiteProfiles,
+  renameSiteProfile
+} from "./site-profiles.js";
+import { withStorageWriteLock } from "./storage-write-coordinator.js";
 
 export const SITE_PROFILES_KEY = "siteDataProfiles";
 export const MAX_SITE_PROFILES = 50;
@@ -11,7 +17,58 @@ export async function getSiteProfiles() {
 
 export async function saveSiteProfiles(profiles) {
   const normalized = normalizeSiteProfiles(profiles);
-  const existing = await getSiteProfiles();
+  return withStorageWriteLock(SITE_PROFILES_KEY, async () => {
+    const existing = await getSiteProfiles();
+    return writeSiteProfiles(normalized, existing);
+  });
+}
+
+export async function addSiteProfile(profile) {
+  const normalized = normalizeSiteProfile(profile);
+  return mutateSiteProfiles((existing) => {
+    if (existing.some((item) => item.id === normalized.id)) {
+      throw Object.assign(new Error("A saved state with this ID already exists. Reload Saved States and try again."), {
+        code: "SAVED_STATE_ALREADY_EXISTS"
+      });
+    }
+    return [normalized, ...existing];
+  });
+}
+
+export async function renameStoredSiteProfile(id, name) {
+  return mutateSiteProfiles((existing) => {
+    const current = requireStoredSiteProfile(existing, id);
+    const renamed = renameSiteProfile(current, name);
+    return existing.map((profile) => profile.id === id ? renamed : profile);
+  });
+}
+
+export async function duplicateStoredSiteProfile(id) {
+  return mutateSiteProfiles((existing) => [duplicateSiteProfile(requireStoredSiteProfile(existing, id)), ...existing]);
+}
+
+export async function deleteStoredSiteProfile(id) {
+  return mutateSiteProfiles((existing) => existing.filter((profile) => profile.id !== id));
+}
+
+async function mutateSiteProfiles(update) {
+  return withStorageWriteLock(SITE_PROFILES_KEY, async () => {
+    const existing = await getSiteProfiles();
+    return writeSiteProfiles(update(existing), existing);
+  });
+}
+
+function requireStoredSiteProfile(profiles, id) {
+  const profile = profiles.find((item) => item.id === id);
+  if (!profile) {
+    throw Object.assign(new Error("This saved state no longer exists. Reload Saved States and select another state."), {
+      code: "SAVED_STATE_NOT_FOUND"
+    });
+  }
+  return profile;
+}
+
+async function writeSiteProfiles(normalized, existing) {
   const existingIds = new Set(existing.map((profile) => profile.id));
   const addsProfiles = normalized.length > existing.length
     || normalized.some((profile) => !existingIds.has(profile.id));

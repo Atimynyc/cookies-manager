@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { installOperationBrowser } from "../helpers/operation-browser.mjs";
 
 import { createPopupSiteDataController } from "../../src/popup/popup-site-data-controller.js";
 import { toCookieRow } from "../../src/shared/cookie-format.js";
 import { createSiteDataPackage } from "../../src/shared/site-data-package.js";
 
-const SNAPSHOT_KEY = "latestSiteDataBatchSnapshot";
 const SOURCE_URL = "https://example.com/app";
 
 function cookie(overrides = {}) {
@@ -20,115 +20,12 @@ function dataPackage(data = {}) {
   return createSiteDataPackage({ url: SOURCE_URL, ...data });
 }
 
-function storageMap(entries = []) {
-  const values = new Map(entries);
-  return {
-    get length() { return values.size; },
-    key(index) { return [...values.keys()][index] ?? null; },
-    getItem(key) { return values.get(key) ?? null; },
-    setItem(key, value) { values.set(key, String(value)); },
-    removeItem(key) { values.delete(key); }
-  };
-}
-
 function setup(t) {
-  const previousChrome = globalThis.chrome;
-  const env = {
-    tabs: new Map([
-      [1, { id: 1, url: SOURCE_URL, incognito: false }],
-      [2, { id: 2, url: "https://other.example/app", incognito: false }]
-    ]),
-    stores: [{ id: "0", tabIds: [1, 2] }],
-    cookies: [],
-    storage: new Map(),
-    session: {},
-    writes: [],
-    reloads: [],
-    onRead: null,
-    onRefresh: null
-  };
-  env.getStorage = (tabId, type) => {
-    const id = `${tabId}:${type}`;
-    if (!env.storage.has(id)) {
-      env.storage.set(id, storageMap());
-    }
-    return env.storage.get(id);
-  };
-  globalThis.chrome = {
-    runtime: {},
-    tabs: {
-      get(tabId, callback) { callback(structuredClone(env.tabs.get(tabId))); },
-      reload(tabId, callback) { env.reloads.push(tabId); callback(); }
-    },
-    cookies: {
-      getAllCookieStores(callback) { callback(structuredClone(env.stores)); },
-      getAll(details, callback) {
-        const host = new URL(details.url).hostname;
-        const matches = env.cookies.filter((item) => item.storeId === details.storeId &&
-          host === item.domain.replace(/^\./, ""));
-        env.onRead?.();
-        callback(structuredClone(matches));
-      },
-      set(details, callback) {
-        env.writes.push({ kind: "cookie-set", ...details });
-        const saved = cookie({
-          ...details,
-          domain: details.domain || new URL(details.url).hostname,
-          hostOnly: !details.domain,
-          session: !Number.isFinite(details.expirationDate)
-        });
-        delete saved.url;
-        env.cookies = env.cookies.filter((item) => !sameCookie(item, saved));
-        env.cookies.push(saved);
-        callback(structuredClone(saved));
-      },
-      remove(details, callback) {
-        env.writes.push({ kind: "cookie-remove", ...details });
-        const domain = new URL(details.url).hostname;
-        env.cookies = env.cookies.filter((item) => item.name !== details.name ||
-          item.storeId !== details.storeId || item.domain !== domain);
-        callback(details);
-      }
-    },
-    scripting: {
-      executeScript({ target, func, args }, callback) {
-        const names = ["location", "localStorage", "sessionStorage"];
-        const previous = names.map((name) => Object.getOwnPropertyDescriptor(globalThis, name));
-        const tab = env.tabs.get(target.tabId);
-        const values = [{ origin: new URL(tab.url).origin }, env.getStorage(tab.id, "local"), env.getStorage(tab.id, "session")];
-        try {
-          names.forEach((name, index) => Object.defineProperty(globalThis, name, { configurable: true, value: values[index] }));
-          const result = func(...args);
-          if (args[2] !== "read" && result.ok) {
-            env.writes.push({ kind: `storage-${args[2]}`, tabId: target.tabId, type: args[0], origin: result.origin, key: args[3] });
-          }
-          callback([{ result }]);
-        } finally {
-          names.forEach((name, index) => {
-            if (previous[index]) {
-              Object.defineProperty(globalThis, name, previous[index]);
-            } else {
-              delete globalThis[name];
-            }
-          });
-        }
-      }
-    },
-    storage: {
-      session: {
-        get(defaults, callback) { callback(structuredClone({ ...defaults, ...env.session })); },
-        set(values, callback) { Object.assign(env.session, structuredClone(values)); callback(); },
-        remove(key, callback) { delete env.session[key]; callback(); }
-      }
-    }
-  };
-  t.after(() => {
-    if (previousChrome === undefined) {
-      delete globalThis.chrome;
-    } else {
-      globalThis.chrome = previousChrome;
-    }
-  });
+  const env = installOperationBrowser(t, { tabs: [
+    { id: 1, url: SOURCE_URL, incognito: false },
+    { id: 2, url: "https://other.example/app", incognito: false }
+  ] });
+  env.onRefresh = null;
   const state = {
     tab: structuredClone(env.tabs.get(1)), cookieStoreId: "0", dataView: "cookies",
     rows: [], autoRefreshPage: false
@@ -143,10 +40,6 @@ function setup(t) {
     requestTextInput: async () => null
   });
   return { env, state, controller };
-}
-
-function sameCookie(left, right) {
-  return ["name", "domain", "path", "storeId"].every((field) => left[field] === right[field]);
 }
 
 const applyOptions = { strategy: "overwrite" };
@@ -203,13 +96,14 @@ test("package writes and automatic reload stay on the captured tab throughout a 
 
   assert.equal(outcome.result.success.length, 3);
   assert.equal(outcome.result.failed.length, 0);
-  assert.equal(env.writes[0].url, SOURCE_URL);
+  assert.equal(env.writes[0].url, "https://example.com/");
   assert.equal(env.writes[0].storeId, "0");
   assert.deepEqual(env.writes.slice(1).map((write) => write.tabId), [1, 1]);
   assert.equal(env.getStorage(2, "local").getItem("flag"), null);
   assert.deepEqual(env.reloads, [1]);
-  assert.deepEqual(env.session[SNAPSHOT_KEY].target, preview.operationTarget);
-  assert.equal(env.session[SNAPSHOT_KEY].targetUrl, SOURCE_URL);
+  assert.deepEqual(env.jobs[0].target, preview.operationTarget);
+  assert.equal(env.jobs[0].source, "package-import");
+  assert.equal(env.jobs[0].target.url, SOURCE_URL);
 });
 
 test("navigation during a package batch prevents remaining writes and preserves successful-item undo", async (t) => {
@@ -218,18 +112,16 @@ test("navigation during a package batch prevents remaining writes and preserves 
   const preview = await controller.previewPackage(dataPackage({
     localStorage: [{ key: "first", value: "1" }, { key: "second", value: "2" }]
   }));
-  const outcome = await controller.applyPackage(preview, {
-    ...applyOptions,
-    onProgress: ({ completed }) => {
-      if (completed === 1) env.tabs.set(1, { id: 1, url: "https://other.example/", incognito: false });
-    }
-  });
+  env.afterWrite = () => {
+    if (env.writes.length === 1) env.tabs.set(1, { id: 1, url: "https://other.example/", incognito: false });
+  };
+  const outcome = await controller.applyPackage(preview, applyOptions);
 
   assert.equal(outcome.result.success.length, 1);
   assert.match(outcome.result.failed[0].error.message, /changed sites/);
   assert.equal(env.writes.length, 1);
-  assert.equal(env.session[SNAPSHOT_KEY].entries.length, 1);
-  assert.equal(env.session[SNAPSHOT_KEY].target.origin, "https://example.com");
+  assert.deepEqual(env.jobs[0].items.map((item) => item.state), ["applied", "failed"]);
+  assert.equal(env.jobs[0].target.origin, "https://example.com");
   assert.deepEqual(env.reloads, []);
 });
 
@@ -274,16 +166,15 @@ test("verified package undo restores overwritten data and removes newly imported
   assert.equal(env.getStorage(1, "local").getItem("flag"), "before");
   assert.equal(env.getStorage(1, "session").getItem("step"), null);
   assert.ok(env.writes.filter((write) => write.kind.startsWith("storage")).every((write) => write.tabId === 1));
-  assert.equal(env.session[SNAPSHOT_KEY], undefined);
+  assert.ok(env.jobs[0].items.every((item) => item.state === "undone"));
   assert.deepEqual(env.reloads, [1]);
 });
 
-test("batch undo rejects legacy snapshots and changed target contexts before any mutation", async (t) => {
+test("batch undo rejects changed target contexts before any mutation", async (t) => {
   const { env, state, controller } = setup(t);
   const originalTab = state.tab;
   const preview = await controller.previewPackage(dataPackage({ localStorage: [{ key: "flag", value: "after" }] }));
   await controller.applyPackage(preview, applyOptions);
-  const snapshot = structuredClone(env.session[SNAPSHOT_KEY]);
   env.writes = [];
   for (const changedTarget of [
     { tab: { ...originalTab, id: 2 }, cookieStoreId: "0" },
@@ -296,11 +187,16 @@ test("batch undo rejects legacy snapshots and changed target contexts before any
   }
   state.tab = originalTab;
   state.cookieStoreId = "0";
-  delete env.session[SNAPSHOT_KEY].target;
-  await assert.rejects(controller.undoLatestBatch(), /older import.*cannot be undone/);
-  env.session[SNAPSHOT_KEY] = { ...snapshot, target: { tabId: 1, origin: "https://example.com" } };
-  await assert.rejects(controller.undoLatestBatch(), /original target tab/);
   assert.equal(env.writes.length, 0);
+});
+
+test("legacy import snapshots stay untouched and cannot bypass operation journal validation", async (t) => {
+  const { env, controller } = setup(t);
+  const legacy = { id: "legacy", targetOrigin: "https://example.com", entries: [{ kind: "localStorage", after: { key: "flag", value: "after" } }] };
+  env.sessionData.latestSiteDataBatchSnapshot = structuredClone(legacy);
+  await assert.rejects(controller.undoLatestBatch(), /No import snapshot/);
+  assert.equal(env.writes.length, 0);
+  assert.deepEqual(env.sessionData.latestSiteDataBatchSnapshot, legacy);
 });
 
 test("navigation during batch undo leaves remaining entries retryable and does not touch the new site", async (t) => {
@@ -310,17 +206,16 @@ test("navigation during batch undo leaves remaining entries retryable and does n
   }));
   await controller.applyPackage(preview, applyOptions);
   env.writes = [];
-  const outcome = await controller.undoLatestBatch({
-    onProgress: ({ completed }) => {
-      if (completed === 1) env.tabs.set(1, { id: 1, url: "https://other.example/", incognito: false });
-    }
-  });
+  env.afterWrite = () => {
+    if (env.writes.length === 1) env.tabs.set(1, { id: 1, url: "https://other.example/", incognito: false });
+  };
+  const outcome = await controller.undoLatestBatch();
 
   assert.equal(outcome.complete, false);
   assert.equal(outcome.result.success.length, 1);
   assert.match(outcome.result.failed[0].error.message, /changed sites/);
   assert.equal(env.writes.length, 1);
-  assert.equal(env.session[SNAPSHOT_KEY].entries.length, 1);
+  assert.deepEqual(env.jobs[0].items.map((item) => item.state), ["undo-failed", "undone"]);
 });
 
 test("all-data export keeps captured source metadata when another tab is selected during reads", async (t) => {
@@ -347,4 +242,52 @@ test("view export keeps its captured kind and rows through asynchronous context 
   assert.equal(exported.type, "cookies");
   assert.equal(exported.count, 1);
   assert.equal(exported.data.cookies[0].name, "token");
+});
+
+test("package apply submits preview before-values and preserves data changed after preview", async (t) => {
+  const { env, controller } = setup(t);
+  env.getStorage(1, "local").setItem("flag", "before");
+  const preview = await controller.previewPackage(dataPackage({ localStorage: [{ key: "flag", value: "imported" }] }));
+  env.getStorage(1, "local").setItem("flag", "external");
+
+  const result = await controller.applyPackage(preview, applyOptions);
+  const request = env.messages.find((message) => message.command === "submit").spec;
+  assert.equal(request.items[0].before.value, "before");
+  assert.equal(request.items[0].after.value, "imported");
+  assert.equal(result.result.failed.length, 1);
+  assert.equal(result.canUndo, false);
+  assert.equal(env.getStorage(1, "local").getItem("flag"), "external");
+  assert.equal(env.writes.length, 0);
+});
+
+test("package undo reports conflicts and leaves later changes available for review", async (t) => {
+  const { env, controller } = setup(t);
+  const preview = await controller.previewPackage(dataPackage({ localStorage: [{ key: "flag", value: "imported" }] }));
+  await controller.applyPackage(preview, applyOptions);
+  env.getStorage(1, "local").setItem("flag", "later");
+  env.writes = [];
+
+  const result = await controller.undoLatestBatch();
+  assert.equal(result.complete, false);
+  assert.equal(result.result.failed.length, 1);
+  assert.match(result.result.failed[0].error.message, /changed after.*prepared/);
+  assert.equal(env.getStorage(1, "local").getItem("flag"), "later");
+  assert.equal(env.jobs[0].items[0].state, "undo-conflict");
+  assert.equal(env.writes.length, 0);
+});
+
+test("an all-skipped package returns its result without mutating site data", async (t) => {
+  const { env, controller } = setup(t);
+  env.getStorage(1, "local").setItem("flag", "before");
+  const preview = await controller.previewPackage(dataPackage({ localStorage: [{ key: "flag", value: "imported" }] }));
+
+  const outcome = await controller.applyPackage(preview, { strategy: "skip" });
+  assert.equal(outcome.result.skipped.length, 1);
+  assert.equal(outcome.result.success.length, 0);
+  assert.equal(outcome.canUndo, false);
+  assert.equal(env.getStorage(1, "local").getItem("flag"), "before");
+  assert.equal(env.writes.length, 0);
+  assert.equal(env.jobs[0].status, "completed");
+  assert.equal(env.jobs[0].items.length, 0);
+  assert.equal(env.jobs[0].skipped.length, 1);
 });

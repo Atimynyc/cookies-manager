@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { installWebLocks } from "../helpers/web-locks.mjs";
 
 import { createSiteDataPackage } from "../../src/shared/site-data-package.js";
 import {
@@ -9,8 +10,12 @@ import {
   renameSiteProfile
 } from "../../src/shared/site-profiles.js";
 import {
+  addSiteProfile,
+  deleteStoredSiteProfile,
+  duplicateStoredSiteProfile,
   getSiteProfiles,
   MAX_SITE_PROFILES,
+  renameStoredSiteProfile,
   saveSiteProfiles,
   SITE_PROFILES_KEY
 } from "../../src/shared/site-profile-store.js";
@@ -36,11 +41,13 @@ function bytesForEntry(key, value) {
 }
 
 function installStorage(t, profiles = [], options = {}) {
+  const { requests } = installWebLocks(t);
   const previousChrome = globalThis.chrome;
   const state = {
     data: structuredClone({ ...options.otherData, [SITE_PROFILES_KEY]: profiles }),
     writes: 0,
-    byteQueries: []
+    byteQueries: [],
+    lockRequests: requests
   };
   globalThis.chrome = {
     runtime: {},
@@ -206,4 +213,110 @@ test("unrelated Chrome storage errors are propagated without changing saved stat
     message: "Extension context invalidated"
   });
   assert.deepEqual(storage.data[SITE_PROFILES_KEY], profiles);
+});
+
+test("concurrent profile additions from independent modules retain both saved states", async (t) => {
+  const profiles = createProfiles(2);
+  const storage = installStorage(t);
+  const otherSurface = await import("../../src/shared/site-profile-store.js?surface=sidepanel");
+
+  await Promise.all([addSiteProfile(profiles[0]), otherSurface.addSiteProfile(profiles[1])]);
+
+  assert.deepEqual(await getSiteProfiles(), [profiles[1], profiles[0]]);
+  assert.equal(storage.writes, 2);
+  assert.deepEqual(storage.lockRequests, Array(2).fill({
+    name: "cookie-controller:storage.local:siteDataProfiles", mode: "exclusive"
+  }));
+});
+
+test("concurrent addition and deletion preserve the latest changes to different states", async (t) => {
+  const profiles = createProfiles(3);
+  const storage = installStorage(t, profiles.slice(0, 2));
+
+  await Promise.all([addSiteProfile(profiles[2]), deleteStoredSiteProfile(profiles[0].id)]);
+
+  assert.deepEqual(storage.data[SITE_PROFILES_KEY], [profiles[2], profiles[1]]);
+});
+
+test("concurrent copies are made from the latest renamed state", async (t) => {
+  const profiles = createProfiles(1);
+  const storage = installStorage(t, profiles);
+
+  await Promise.all([
+    renameStoredSiteProfile(profiles[0].id, "Latest name"),
+    duplicateStoredSiteProfile(profiles[0].id)
+  ]);
+
+  const saved = storage.data[SITE_PROFILES_KEY];
+  assert.equal(saved.length, 2);
+  assert.equal(saved[0].name, "Latest name copy");
+  assert.equal(saved[1].name, "Latest name");
+  assert.notEqual(saved[0].id, saved[1].id);
+});
+
+test("concurrent creates at 49 states allow only one new state without dropping old entries", async (t) => {
+  const profiles = createProfiles(MAX_SITE_PROFILES + 1);
+  const storage = installStorage(t, profiles.slice(0, 49));
+
+  const results = await Promise.allSettled([addSiteProfile(profiles[49]), addSiteProfile(profiles[50])]);
+
+  assert.equal(results[0].status, "fulfilled");
+  assert.equal(results[1].status, "rejected");
+  assert.equal(results[1].reason.code, "SAVED_STATE_LIMIT_REACHED");
+  assert.equal(storage.writes, 1);
+  assert.deepEqual(storage.data[SITE_PROFILES_KEY], [profiles[49], ...profiles.slice(0, 49)]);
+});
+
+test("incremental copies honor the capacity limit and release the lock after rejection", async (t) => {
+  const profiles = createProfiles(MAX_SITE_PROFILES);
+  const storage = installStorage(t, profiles);
+
+  await assert.rejects(duplicateStoredSiteProfile(profiles[0].id), { code: "SAVED_STATE_LIMIT_REACHED" });
+  await deleteStoredSiteProfile(profiles.at(-1).id);
+  const saved = await duplicateStoredSiteProfile(profiles[0].id);
+
+  assert.equal(saved.length, MAX_SITE_PROFILES);
+  assert.equal(saved[0].name, "State 0 copy");
+  assert.equal(storage.writes, 2);
+});
+
+test("incremental mutations keep over-limit existing states manageable", async (t) => {
+  const profiles = createProfiles(52);
+  const storage = installStorage(t, profiles);
+
+  const renamed = await renameStoredSiteProfile(profiles[51].id, "Last state");
+  assert.equal(renamed.length, 52);
+  assert.equal(renamed[51].name, "Last state");
+  const deleted = await deleteStoredSiteProfile(profiles[0].id);
+  assert.equal(deleted.length, 51);
+  assert.equal(deleted.at(-1).name, "Last state");
+  assert.deepEqual(storage.data[SITE_PROFILES_KEY], deleted);
+});
+
+test("renaming or copying a deleted state cannot restore stale data", async (t) => {
+  const profiles = createProfiles(1);
+  const storage = installStorage(t, profiles);
+
+  await deleteStoredSiteProfile(profiles[0].id);
+  await assert.rejects(renameStoredSiteProfile(profiles[0].id, "Stale rename"), { code: "SAVED_STATE_NOT_FOUND" });
+  await assert.rejects(duplicateStoredSiteProfile(profiles[0].id), { code: "SAVED_STATE_NOT_FOUND" });
+  assert.deepEqual(await deleteStoredSiteProfile(profiles[0].id), []);
+  assert.deepEqual(storage.data[SITE_PROFILES_KEY], []);
+});
+
+test("adding a duplicate profile ID rejects and keeps the existing saved state", async (t) => {
+  const profiles = createProfiles(1);
+  const storage = installStorage(t, profiles);
+
+  await assert.rejects(addSiteProfile({ ...profiles[0], name: "Replacement" }), { code: "SAVED_STATE_ALREADY_EXISTS" });
+  assert.equal(storage.writes, 0);
+  assert.deepEqual(storage.data[SITE_PROFILES_KEY], profiles);
+});
+
+test("incremental additions preserve existing states when Chrome rejects quota", async (t) => {
+  const profiles = createProfiles(2);
+  const storage = installStorage(t, profiles.slice(0, 1), { writeError: "QUOTA_BYTES quota exceeded" });
+
+  await assert.rejects(addSiteProfile(profiles[1]), { code: "SAVED_STATE_QUOTA_EXCEEDED" });
+  assert.deepEqual(storage.data[SITE_PROFILES_KEY], profiles.slice(0, 1));
 });

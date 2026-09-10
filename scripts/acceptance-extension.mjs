@@ -19,6 +19,7 @@ const extensionPath = projectRoot;
 const runId = Date.now().toString(36);
 const favoritesOnly = process.argv.includes("--favorites-only");
 const v030Only = process.argv.includes("--v030-only");
+const selectionOnly = process.argv.includes("--selection-only");
 const jwt =
   "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VyIjoiZGV2Iiwicm9sZXMiOlsicWEiXX0.";
 
@@ -58,7 +59,9 @@ try {
   await assertWorkbenchLoadsLazily(popup, popupModuleRequests);
   await assertPopupListsSeededCookies(popup);
   await assertValueTypeIndicators(popup);
-  if (favoritesOnly) {
+  if (selectionOnly) {
+    await assertLargeCookieSelectionStaysLocal(popup, context, baseUrl);
+  } else if (favoritesOnly) {
     await assertFavoriteFlow(popup);
     await assertDetailFavoriteControl(popup);
     await assertNameSort(popup);
@@ -379,6 +382,15 @@ async function assertFavoriteFlow(popup) {
       true
     );
     await favoriteButton.click();
+    const favoriteId = `${view}:${await firstRow.getAttribute("data-item-id")}`;
+    const persistedDeadline = Date.now() + 5000;
+    let persisted = false;
+    while (Date.now() < persistedDeadline) {
+      persisted = await popup.evaluate(async (id) => (await chrome.storage.local.get({ favoriteSiteDataIds: [] })).favoriteSiteDataIds.includes(id), favoriteId);
+      if (persisted) break;
+      await new Promise((resolve) => setTimeout(resolve, 25));
+    }
+    assert.equal(persisted, true, "Favorite must be durable before reloading the surface.");
     assert.equal(await favoriteButton.getAttribute("aria-pressed"), "true");
     assert.equal(await favoriteButton.getAttribute("aria-label"), favoriteLabel);
     assert.equal(
@@ -2094,20 +2106,12 @@ async function assertHistoryPersistsWithSessionSnapshots(popup, context, baseUrl
   await popup.locator("#saveButton").click();
   await waitForStatus(popup, "Saved editable.");
 
-  const storedHistory = await popup.evaluate(async () => {
-    const [changeResult, snapshotResult] = await Promise.all([
-      chrome.storage.local.get({ recentCookieChanges: [] }),
-      chrome.storage.session.get({ recentChangeSnapshots: {} })
-    ]);
-    return {
-      changes: changeResult.recentCookieChanges,
-      snapshots: snapshotResult.recentChangeSnapshots
-    };
-  });
+  const storedHistory = await readPersistedOperationHistory(popup);
   const persistedChange = storedHistory.changes.find((change) => {
     return (change.itemKind || "cookie") === "cookie" && change.name === "editable";
   });
   assert.ok(persistedChange, "Expected persisted cookie history before reloading the popup.");
+  assert.ok(storedHistory.localChanges.some((change) => change.id === persistedChange.id), "Expected a durable local history summary.");
   assert.equal(storedHistory.snapshots[persistedChange.id]?.beforeValue, valueBeforeEdit);
   assert.equal(storedHistory.snapshots[persistedChange.id]?.afterValue, valueAfterEdit);
 
@@ -2137,11 +2141,28 @@ async function assertHistoryPersistsWithSessionSnapshots(popup, context, baseUrl
   const cookiesAfterUndo = await context.cookies(baseUrl);
   assert.equal(cookiesAfterUndo.find((cookie) => cookie.name === "editable")?.value, valueBeforeEdit);
 
-  const snapshotAfterUndo = await popup.evaluate(async (changeId) => {
-    const result = await chrome.storage.session.get({ recentChangeSnapshots: {} });
-    return result.recentChangeSnapshots[changeId];
-  }, persistedChange.id);
-  assert.equal(snapshotAfterUndo, undefined);
+  const historyAfterUndo = await readPersistedOperationHistory(popup);
+  assert.equal(historyAfterUndo.snapshots[persistedChange.id], undefined);
+}
+
+async function readPersistedOperationHistory(popup) {
+  return popup.evaluate(async () => {
+    const { listOperations } = await import(chrome.runtime.getURL("src/shared/operation-client.js"));
+    const { projectOperationHistory } = await import(chrome.runtime.getURL("src/shared/operation-history.js"));
+    const { getRecentCookieChanges, getDismissedChangeIds } = await import(chrome.runtime.getURL("src/shared/history-store.js"));
+    const [jobs, localChanges, dismissedIds] = await Promise.all([
+      listOperations(), getRecentCookieChanges(), getDismissedChangeIds()
+    ]);
+    const projection = projectOperationHistory(jobs);
+    const merged = new Map(localChanges.map((change) => [change.id, change]));
+    for (const change of projection.changes) merged.set(change.id, change);
+    const dismissed = new Set(dismissedIds);
+    return {
+      localChanges,
+      changes: [...merged.values()].filter((change) => !dismissed.has(change.id)).sort((left, right) => right.timestamp - left.timestamp),
+      snapshots: projection.snapshots
+    };
+  });
 }
 
 async function assertHistoryDetailLayout(popup) {

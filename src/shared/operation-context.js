@@ -53,6 +53,9 @@ export function getUndoUnavailableReason(snapshot, tab, cookieStoreId = "") {
   if (!snapshot) {
     return "This change can no longer be undone in this browser session.";
   }
+  if (snapshot.legacyUnverified) {
+    return "This older change has no operation journal and cannot be safely undone.";
+  }
   const target = snapshot.target;
   if (!isOperationContext(target)) {
     return "This older change has no verified target information and cannot be undone.";

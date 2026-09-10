@@ -1,12 +1,5 @@
-import {
-  removeCookie,
-  setCookieValue
-} from "../shared/cookie-api.js";
-import {
-  removeStorageItem,
-  setStorageValue
-} from "../shared/storage-api.js";
-import { executeBatchOperation } from "../shared/batch-operations.js";
+import { runOperation } from "../shared/operation-client.js";
+import { assertOperationSucceeded, operationItemFromRow, operationToBatchResult } from "../shared/operation-presentation.js";
 import { getBatchOperationCounts } from "../shared/operation-result.js";
 import { assertOperationContext, createOperationContext, reloadOperationTarget } from "../shared/operation-context.js";
 
@@ -29,7 +22,7 @@ export function createPopupItemActionsController({
   discardEditorDraft,
   rememberCurrentSelection,
   refreshData,
-  recordRecentChange,
+  loadRecentChanges,
   suppressCookieWatcher,
   requestDeleteConfirmation,
   requestTextInput,
@@ -49,7 +42,6 @@ export function createPopupItemActionsController({
     }
 
     const target = createOperationContext(state.tab, state.cookieStoreId);
-    const view = getCurrentView();
     const cookieView = isCookieView();
     const nextValue = elements.valueInput.value;
     const expiration = cookieView ? getExpirationDraft() : null;
@@ -74,13 +66,13 @@ export function createPopupItemActionsController({
       }
       await assertOperationContext(target);
       assertRowTarget(currentRow, target);
-      let savedCookie = null;
-      if (cookieView) {
-        savedCookie = await setCookieValue(target.url, currentRow.raw, nextValue, expiration);
-      } else {
-        await setStorageValue(target.tabId, target.url, view.storageType, row.name, nextValue);
-      }
-      await recordRecentChange(currentRow, nextValue, { savedCookie, target });
+      assertOperationSucceeded(await runOperation({
+        target, label: `Edit ${row.name}`, source: "edit",
+        items: [operationItemFromRow(currentRow, {
+          ...currentRow.raw, value: nextValue, ...(cookieView ? expiration : {})
+        })]
+      }));
+      await loadRecentChanges();
       discardEditorDraft(row, target);
       state.selectedId = row.id;
       await refreshData();
@@ -104,11 +96,9 @@ export function createPopupItemActionsController({
     }
 
     const target = createOperationContext(state.tab, state.cookieStoreId);
-    const view = getCurrentView();
-    const cookieView = isCookieView();
     const confirmed = await requestDeleteConfirmation({
       title: `Delete ${getCurrentView().singular}?`,
-      message: `"${row.name}" will be permanently deleted.`,
+      message: `"${row.name}" will be deleted.`,
       detail: getRowLocation(row)
     });
     if (!confirmed) {
@@ -122,11 +112,11 @@ export function createPopupItemActionsController({
     try {
       await assertOperationContext(target);
       assertRowTarget(row, target);
-      if (cookieView) {
-        await removeCookie(target.url, row.raw);
-      } else {
-        await removeStorageItem(target.tabId, target.url, view.storageType, row.name);
-      }
+      assertOperationSucceeded(await runOperation({
+        target, label: `Delete ${row.name}`, source: "delete",
+        items: [operationItemFromRow(row, null)]
+      }));
+      await loadRecentChanges();
       discardEditorDraft(row, target);
       state.selectedId = "";
       rememberCurrentSelection();
@@ -151,8 +141,6 @@ export function createPopupItemActionsController({
     }
 
     const target = createOperationContext(state.tab, state.cookieStoreId);
-    const view = getCurrentView();
-    const cookieView = isCookieView();
     const nextValue = await requestTextInput({
       title: "Set value",
       fieldLabel: `Value for ${selectedRows.length} selected ${getCurrentView().plural}`,
@@ -168,19 +156,18 @@ export function createPopupItemActionsController({
     suppressCookieWatcher();
 
     try {
-      const result = await executeBatchOperation(selectedRows, async (row) => {
-        await assertOperationContext(target);
-        assertRowTarget(row, target);
-        let savedCookie = null;
-        if (cookieView) {
-          savedCookie = await setCookieValue(target.url, row.raw, nextValue);
-        } else {
-          await setStorageValue(target.tabId, target.url, view.storageType, row.name, nextValue);
-        }
-        await recordRecentChange(row, nextValue, { savedCookie, target });
+      const job = await runOperation({
+        target, label: `Edit ${selectedRows.length} items`, source: "batch-edit",
+        items: selectedRows.map((row) => operationItemFromRow(row, { ...row.raw, value: nextValue }))
       });
-
+      const result = operationToBatchResult(job);
+      for (const item of result.success) {
+        const row = selectedRows.find((candidate) => candidate.id === item.itemId);
+        discardEditorDraft(row, target);
+      }
+      await loadRecentChanges();
       await refreshData();
+      if (state.autoRefreshPage && result.success.length > 0) await reloadOperationTarget(target);
       showBatchOperationStatus("Updated", result);
     } catch (error) {
       showStatus(error?.message || `Failed to update selected ${getCurrentView().plural}.`, "error");
@@ -196,11 +183,9 @@ export function createPopupItemActionsController({
     }
 
     const target = createOperationContext(state.tab, state.cookieStoreId);
-    const view = getCurrentView();
-    const cookieView = isCookieView();
     const confirmed = await requestDeleteConfirmation({
       title: `Delete selected ${getCurrentView().plural}?`,
-      message: `${selectedRows.length} selected ${getCurrentView().plural} will be permanently deleted.`,
+      message: `${selectedRows.length} selected ${getCurrentView().plural} will be deleted.`,
       confirmLabel: `Delete ${selectedRows.length}`,
       selection: getSelectionReview(selectedRows)
     });
@@ -213,21 +198,20 @@ export function createPopupItemActionsController({
     suppressCookieWatcher();
 
     try {
-      const result = await executeBatchOperation(selectedRows, async (row) => {
-        await assertOperationContext(target);
-        assertRowTarget(row, target);
-        if (cookieView) {
-          await removeCookie(target.url, row.raw);
-        } else {
-          await removeStorageItem(target.tabId, target.url, view.storageType, row.name);
-        }
-        discardEditorDraft(row, target);
+      const job = await runOperation({
+        target, label: `Delete ${selectedRows.length} items`, source: "batch-delete",
+        items: selectedRows.map((row) => operationItemFromRow(row, null))
       });
-
+      const result = operationToBatchResult(job);
+      for (const entry of result.success) {
+        discardEditorDraft(selectedRows.find((row) => row.id === entry.itemId), target);
+      }
+      await loadRecentChanges();
       state.selectedId = "";
       rememberCurrentSelection();
       state.selectedIds = new Set(result.failed.map((entry) => entry.itemId));
       await refreshData();
+      if (state.autoRefreshPage && result.success.length > 0) await reloadOperationTarget(target);
       showBatchOperationStatus("Deleted", result);
     } catch (error) {
       showStatus(error?.message || `Failed to delete selected ${getCurrentView().plural}.`, "error");

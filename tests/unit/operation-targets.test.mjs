@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import vm from "node:vm";
+import { installOperationBrowser } from "../helpers/operation-browser.mjs";
+import { runOperation } from "../../src/shared/operation-client.js";
+import { operationItemFromRow } from "../../src/shared/operation-presentation.js";
 
 import {
   assertOperationContext,
@@ -37,11 +39,12 @@ test("operation contexts stay fixed and reject changed origin, mode, and cookie 
 test("Storage reads, writes, and deletes reject navigation inside the injected document", async (t) => {
   const browser = mockBrowser(t);
   browser.local.setItem("key", "original");
+  const originalLocal = browser.local;
   browser.origin = "https://other.test";
   await assert.rejects(getStorageItems(11, ORIGINAL_TAB.url, "local"), /changed sites/);
   await assert.rejects(setStorageValue(11, ORIGINAL_TAB.url, "local", "key", "new"), /changed sites/);
   await assert.rejects(removeStorageItem(11, ORIGINAL_TAB.url, "local", "key"), /changed sites/);
-  assert.equal(browser.local.getItem("key"), "original");
+  assert.equal(originalLocal.getItem("key"), "original");
   assert.equal(browser.writes.length, 0);
 });
 
@@ -71,7 +74,7 @@ test("Storage rejects an absent injection result instead of reporting success", 
 test("history refuses cross-origin undo and preserves its snapshot", async (t) => {
   const browser = mockBrowser(t);
   const { state, controller, statuses } = createHistoryHarness(browser);
-  const changeId = await recordStorageEdit(controller, state, "local");
+  const changeId = await recordStorageEdit(browser, controller, state, "local");
   state.tab = { ...ORIGINAL_TAB, id: 12, url: "https://other.test/" };
   await controller.undoRecentChange(changeId);
   assert.match(statuses.at(-1).message, /only available for https:\/\/example.test/);
@@ -82,7 +85,7 @@ test("history refuses cross-origin undo and preserves its snapshot", async (t) =
 test("Session Storage undo requires the original tab and permits same-tab reloads", async (t) => {
   const browser = mockBrowser(t);
   const { state, controller, statuses } = createHistoryHarness(browser);
-  const changeId = await recordStorageEdit(controller, state, "session");
+  const changeId = await recordStorageEdit(browser, controller, state, "session");
   state.tab = { ...ORIGINAL_TAB, id: 12 };
   await controller.undoRecentChange(changeId);
   assert.match(statuses.at(-1).message, /original tab/);
@@ -99,7 +102,7 @@ test("Session Storage undo requires the original tab and permits same-tab reload
 test("Local Storage undo can use another tab at the original origin", async (t) => {
   const browser = mockBrowser(t);
   const { state, controller, statuses } = createHistoryHarness(browser);
-  const changeId = await recordStorageEdit(controller, state, "local");
+  const changeId = await recordStorageEdit(browser, controller, state, "local");
   state.tab = { ...ORIGINAL_TAB, id: 12 };
   browser.tab = { ...state.tab };
   await controller.undoRecentChange(changeId);
@@ -111,7 +114,7 @@ test("Local Storage undo can use another tab at the original origin", async (t) 
 test("undo refuses navigation between the tab check and the injected write", async (t) => {
   const browser = mockBrowser(t);
   const { state, controller, statuses } = createHistoryHarness(browser);
-  const changeId = await recordStorageEdit(controller, state, "local");
+  const changeId = await recordStorageEdit(browser, controller, state, "local");
   browser.origin = "https://other.test";
   browser.local.setItem("setting", "other-site-value");
   await controller.undoRecentChange(changeId);
@@ -124,8 +127,7 @@ test("history refuses different Cookie stores and incognito modes", async (t) =>
   const browser = mockBrowser(t);
   const { state, controller, statuses } = createHistoryHarness(browser);
   const row = makeCookieRow();
-  await controller.recordRecentChange(row, "after", { target: createOperationContext(state.tab, "0") });
-  const changeId = state.recentChanges[0].id;
+  const changeId = await recordHistoryChange(browser, controller, state, row, "after");
   state.cookieStoreId = "1";
   await controller.undoRecentChange(changeId);
   assert.match(statuses.at(-1).message, /original cookie store/);
@@ -147,14 +149,12 @@ test("Cookie undo restores its complete identity, partition, and attributes", as
   const browser = mockBrowser(t);
   const { state, controller, statuses } = createHistoryHarness(browser);
   const row = makeCookieRow();
-  await controller.recordRecentChange(row, "after", { target: createOperationContext(state.tab, "0") });
-  const changeId = state.recentChanges[0].id;
+  const changeId = await recordHistoryChange(browser, controller, state, row, "after");
   row.raw.partitionKey.topLevelSite = "https://mutated.test";
   await controller.undoRecentChange(changeId);
-  assert.deepEqual(browser.writes[0], {
-    kind: "cookie-set",
-    details: {
-      url: ORIGINAL_TAB.url,
+  assert.equal(browser.writes[0].kind, "cookie-set");
+  assert.deepEqual(browser.writes[0].details, {
+      url: "https://example.test/account",
       name: "setting",
       value: "before",
       path: "/account",
@@ -165,7 +165,6 @@ test("Cookie undo restores its complete identity, partition, and attributes", as
       domain: ".example.test",
       expirationDate: 2000000000,
       partitionKey: { topLevelSite: "https://example.test", hasCrossSiteAncestor: false }
-    }
   });
   assert.equal(statuses.at(-1).type, "success");
 });
@@ -186,16 +185,14 @@ test("Cookie import-create undo removes the original partition and path", async 
   const browser = mockBrowser(t);
   const { state, controller, statuses } = createHistoryHarness(browser);
   const row = makeCookieRow();
-  await controller.recordImportChange(row, row.value, null, { target: createOperationContext(state.tab, "0") });
+  await recordHistoryChange(browser, controller, state, row, row.value, { source: "quick-import", create: true });
   await controller.undoRecentChange(state.recentChanges[0].id);
-  assert.deepEqual(browser.writes[0], {
-    kind: "cookie-remove",
-    details: {
+  assert.equal(browser.writes[0].kind, "cookie-remove");
+  assert.deepEqual(browser.writes[0].details, {
       url: "https://example.test/account",
       name: "setting",
       storeId: "0",
       partitionKey: { topLevelSite: "https://example.test", hasCrossSiteAncestor: false }
-    }
   });
   assert.equal(statuses.at(-1).type, "success");
 });
@@ -203,7 +200,7 @@ test("Cookie import-create undo removes the original partition and path", async 
 test("repeated Undo clicks share a single mutation", async (t) => {
   const browser = mockBrowser(t);
   const { state, controller } = createHistoryHarness(browser);
-  const changeId = await recordStorageEdit(controller, state, "local");
+  const changeId = await recordStorageEdit(browser, controller, state, "local");
   await Promise.all([controller.undoRecentChange(changeId), controller.undoRecentChange(changeId)]);
   assert.equal(browser.writes.length, 1);
   assert.equal(state.undoSnapshots.has(changeId), false);
@@ -212,7 +209,7 @@ test("repeated Undo clicks share a single mutation", async (t) => {
 test("history mutation waits until current site writes and reads finish", async (t) => {
   const browser = mockBrowser(t);
   const { state, controller } = createHistoryHarness(browser);
-  const changeId = await recordStorageEdit(controller, state, "local");
+  const changeId = await recordStorageEdit(browser, controller, state, "local");
   for (const flag of ["busy", "loading"]) {
     state[flag] = true;
     await controller.undoRecentChange(changeId);
@@ -233,7 +230,7 @@ test("Storage history works without Cookie store metadata", async (t) => {
   const { state, controller, statuses } = createHistoryHarness(browser);
   const target = createOperationContext(state.tab);
   const row = toStorageRow({ type: "local", key: "setting", value: "before", origin: target.origin });
-  await controller.recordRecentChange(row, "after", { target });
+  await recordHistoryChange(browser, controller, state, row, "after", { target });
   assert.equal(state.undoSnapshots.get(state.recentChanges[0].id).target.cookieStoreId, "");
   await controller.undoRecentChange(state.recentChanges[0].id);
   assert.equal(browser.local.getItem("setting"), "before");
@@ -244,10 +241,10 @@ test("import-create undo removes only the item in its captured target", async (t
   const browser = mockBrowser(t);
   const { state, controller, statuses } = createHistoryHarness(browser);
   const row = toStorageRow({ type: "session", key: "imported", value: "new", origin: "https://example.test" });
-  browser.session.setItem("imported", "new");
-  await controller.recordImportChange(row, "new", null, { target: createOperationContext(state.tab, "0") });
+  await recordHistoryChange(browser, controller, state, row, "new", { source: "quick-import", create: true });
   const changeId = state.recentChanges[0].id;
-  assert.equal(state.undoSnapshots.get(changeId).deleteOnUndo, true);
+  assert.equal(browser.jobs[0].items[0].before, null);
+  assert.equal(state.undoSnapshots.get(changeId).operationId, browser.jobs[0].id);
   state.tab = { ...ORIGINAL_TAB, id: 12 };
   await controller.undoRecentChange(changeId);
   assert.equal(browser.session.getItem("imported"), "new");
@@ -264,7 +261,7 @@ test("history uses captured row and target when the visible site and data view c
   const target = createOperationContext(state.tab, "0");
   const row = toStorageRow({ type: "session", key: "setting", value: "before", origin: target.origin });
   state.tab = { ...ORIGINAL_TAB, id: 12, url: "https://other.test/" };
-  await controller.recordImportChange(row, "after", row, { target });
+  await recordHistoryChange(browser, controller, state, row, "after", { target, source: "quick-import" });
   const change = state.recentChanges[0];
   assert.equal(change.itemKind, "sessionStorage");
   assert.equal(change.host, "example.test");
@@ -286,11 +283,84 @@ test("invalid Cookie scope and missing store information disable undo", () => {
   assert.match(getUndoUnavailableReason(snapshot, ORIGINAL_TAB, "0"), /incomplete cookie target/);
 });
 
-async function recordStorageEdit(controller, state, type) {
+test("history undo sends the selected operation item ID without undoing its batch siblings", async (t) => {
+  const browser = mockBrowser(t);
+  const { state, controller, statuses } = createHistoryHarness(browser);
+  const target = createOperationContext(state.tab, "0");
+  const rows = ["first", "second"].map((key) => toStorageRow({ type: "local", key, value: "before", origin: target.origin }));
+  rows.forEach((row) => browser.local.setItem(row.name, row.value));
+  const job = await runOperation({ target, source: "batch-edit", items: rows.map((row) => operationItemFromRow(row, { ...row.raw, value: "after" })) });
+  await controller.loadRecentChanges();
+  browser.messages = [];
+  browser.writes = [];
+
+  await controller.undoRecentChange(`${job.id}:${rows[1].id}`);
+
+  const request = browser.messages.find((message) => message.command === "undo");
+  assert.equal(request.id, job.id);
+  assert.deepEqual(request.options.itemIds, [rows[1].id]);
+  assert.deepEqual(request.options.target, target);
+  assert.equal(browser.local.getItem("first"), "after");
+  assert.equal(browser.local.getItem("second"), "before");
+  assert.equal(browser.writes.length, 1);
+  assert.equal(statuses.at(-1).type, "success");
+});
+
+test("history undo retains a conflicting snapshot and reports the preserved later value", async (t) => {
+  const browser = mockBrowser(t);
+  const { state, controller, statuses } = createHistoryHarness(browser);
+  const changeId = await recordStorageEdit(browser, controller, state, "local");
+  browser.local.setItem("setting", "later");
+
+  await controller.undoRecentChange(changeId);
+
+  assert.equal(browser.local.getItem("setting"), "later");
+  assert.equal(browser.writes.length, 0);
+  assert.equal(state.undoSnapshots.has(changeId), true);
+  assert.match(statuses.at(-1).message, /changed after.*prepared/);
+  assert.equal(statuses.at(-1).type, "error");
+});
+
+test("loaded legacy snapshots with target metadata remain readable but cannot bypass the journal", async (t) => {
+  const browser = mockBrowser(t);
+  const { state, controller, statuses } = createHistoryHarness(browser);
+  browser.localData.recentCookieChanges = [{ id: "legacy", name: "setting", timestamp: 1, itemKind: "localStorage" }];
+  browser.sessionData.recentChangeSnapshots = { legacy: {
+    target: createOperationContext(state.tab, "0"), itemKind: "localStorage", storageType: "local",
+    raw: { origin: "https://example.test", key: "setting", value: "before" }, key: "setting",
+    beforeValue: "before", afterValue: "after"
+  } };
+  await controller.loadRecentChanges();
+  assert.equal(state.recentChanges.length, 1);
+  assert.equal(state.undoSnapshots.get("legacy").beforeValue, "before");
+
+  await controller.undoRecentChange("legacy");
+  assert.match(statuses.at(-1).message, /older change.*no operation journal/);
+  assert.equal(browser.messages.some((message) => message.command === "undo"), false);
+  assert.equal(browser.writes.length, 0);
+});
+
+async function recordStorageEdit(browser, controller, state, type) {
   const target = createOperationContext(state.tab, "0");
   const row = toStorageRow({ type, key: "setting", value: "before", origin: target.origin });
-  await controller.recordRecentChange(row, "after", { target });
+  await recordHistoryChange(browser, controller, state, row, "after", { target });
   return state.recentChanges[0].id;
+}
+
+async function recordHistoryChange(browser, controller, state, row, value, {
+  target = createOperationContext(state.tab, "0"), source = "edit", create = false
+} = {}) {
+  if (!create) {
+    if (row.type) browser.getStorage(target.tabId, row.type).setItem(row.name, row.value);
+    else browser.cookies.push(structuredClone(row.raw));
+  }
+  const item = operationItemFromRow(row, { ...row.raw, value });
+  if (create) item.before = null;
+  const job = await runOperation({ target, source, label: `Change ${row.name}`, items: [item] });
+  assert.equal(job.items[0].state, "applied", job.items[0].error);
+  await controller.loadRecentChanges();
+  browser.writes = [];
+  return `${job.id}:${item.id}`;
 }
 
 function makeCookieRow() {
@@ -313,67 +383,22 @@ function createHistoryHarness(browser) {
     getCurrentView: () => ({ storageType: "local", title: "Local Storage" }),
     getHistoryItemKind: () => "localStorage",
     rememberCurrentSelection() {}, clearHistoryDetail() {}, renderHistory() {},
-    refreshData: async () => {}, suppressCookieWatcher() {}, setBusy() {}, clearStatus() {},
+    refreshData: async () => {}, suppressCookieWatcher() {}, setBusy: (busy) => { state.busy = busy; }, clearStatus() {},
     showStatus: (message, type) => statuses.push({ message, type })
   });
   return { state, controller, statuses };
 }
 
-function createMemoryStorage() {
-  const values = new Map();
-  return {
-    get length() { return values.size; },
-    key: (index) => [...values.keys()][index] ?? null,
-    getItem: (key) => values.get(key) ?? null,
-    setItem: (key, value) => values.set(key, String(value)),
-    removeItem: (key) => values.delete(key)
-  };
-}
-
 function mockBrowser(t) {
-  const previousChrome = globalThis.chrome;
-  t.after(() => {
-    if (previousChrome === undefined) delete globalThis.chrome;
-    else globalThis.chrome = previousChrome;
+  const browser = installOperationBrowser(t, { tabs: [ORIGINAL_TAB, { ...ORIGINAL_TAB, id: 12 }] });
+  let activeTabId = ORIGINAL_TAB.id;
+  Object.defineProperties(browser, {
+    tab: { get: () => browser.tabs.get(activeTabId), set: (tab) => { activeTabId = tab.id; browser.tabs.set(tab.id, tab); } },
+    origin: { get: () => browser.origins.get(activeTabId) || new URL(browser.tab.url).origin,
+      set: (origin) => browser.origins.set(activeTabId, origin) },
+    storeId: { get: () => browser.stores[0].id, set: (id) => { browser.stores[0].id = id; } },
+    local: { get: () => browser.getStorage(activeTabId, "local") },
+    session: { get: () => browser.getStorage(activeTabId, "session") }
   });
-  const browser = {
-    tab: { ...ORIGINAL_TAB }, origin: "https://example.test", storeId: "0", writes: [],
-    local: createMemoryStorage(), session: createMemoryStorage()
-  };
-  const storageArea = () => ({
-    set: (_data, callback) => callback(),
-    get: (defaults, callback) => callback(defaults),
-    remove: (_key, callback) => callback()
-  });
-  globalThis.chrome = {
-    runtime: {},
-    tabs: { get: (_tabId, callback) => callback(browser.tab), reload: (_tabId, callback) => callback() },
-    cookies: {
-      getAllCookieStores: (callback) => callback([{ id: browser.storeId, tabIds: [browser.tab.id] }]),
-      set: (details, callback) => {
-        browser.writes.push({ kind: "cookie-set", details: structuredClone(details) });
-        callback({ ...details, domain: details.domain || "example.test", hostOnly: !details.domain });
-      },
-      remove: (details, callback) => {
-        browser.writes.push({ kind: "cookie-remove", details: structuredClone(details) });
-        callback(details);
-      }
-    },
-    scripting: {
-      executeScript: (details, callback) => {
-        const result = vm.runInNewContext(`(${details.func.toString()})(...args)`, {
-          args: details.args,
-          location: { origin: browser.origin },
-          localStorage: browser.local,
-          sessionStorage: browser.session
-        });
-        if (result.ok && details.args[2] !== "read") {
-          browser.writes.push({ kind: details.args[2], tabId: details.target.tabId });
-        }
-        callback([{ result }]);
-      }
-    },
-    storage: { local: storageArea(), session: storageArea() }
-  };
   return browser;
 }

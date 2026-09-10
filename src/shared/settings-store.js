@@ -1,6 +1,7 @@
 import { callChrome } from "./chrome-call.js";
 import { normalizeFavoriteItemIds } from "./favorites.js";
 import { getSiteOrigin } from "./url.js";
+import { withStorageWriteLock } from "./storage-write-coordinator.js";
 
 export const FAVORITE_SITE_DATA_IDS_KEY = "favoriteSiteDataIds";
 export const LAST_VIEWED_SITE_DATA_KEY_PREFIX = "lastViewedSiteData:";
@@ -28,8 +29,30 @@ export async function getFavoriteSiteDataIds() {
 }
 
 export async function saveFavoriteSiteDataIds(itemIds) {
-  await callChrome("storage.local.set", {
-    [FAVORITE_SITE_DATA_IDS_KEY]: normalizeFavoriteItemIds(itemIds)
+  const normalized = normalizeFavoriteItemIds(itemIds);
+  return withStorageWriteLock(FAVORITE_SITE_DATA_IDS_KEY, async () => {
+    await callChrome("storage.local.set", { [FAVORITE_SITE_DATA_IDS_KEY]: normalized });
+    return normalized;
+  });
+}
+
+export async function setFavoriteSiteDataId(itemId, enabled) {
+  if (typeof itemId !== "string" || !itemId || typeof enabled !== "boolean") {
+    throw new TypeError("A favorite item ID and enabled state are required.");
+  }
+  return withStorageWriteLock(FAVORITE_SITE_DATA_IDS_KEY, async () => {
+    const current = await getFavoriteSiteDataIds();
+    const favorites = new Set(current);
+    if (enabled) {
+      favorites.add(itemId);
+    } else {
+      favorites.delete(itemId);
+    }
+    const next = [...favorites];
+    if (next.length !== current.length) {
+      await callChrome("storage.local.set", { [FAVORITE_SITE_DATA_IDS_KEY]: next });
+    }
+    return next;
   });
 }
 
@@ -68,7 +91,17 @@ export async function saveLastViewedSiteData(url, value) {
     return;
   }
 
-  await callChrome("storage.local.set", {
-    [storageKey]: normalizeLastViewedSiteData(value)
+  const selectedPatch = Object.fromEntries(SITE_DATA_VIEWS
+    .filter((view) => typeof value?.selectedIds?.[view] === "string")
+    .map((view) => [view, value.selectedIds[view]]));
+  const activeDataView = SITE_DATA_VIEWS.includes(value?.activeDataView) ? value.activeDataView : null;
+  return withStorageWriteLock(storageKey, async () => {
+    const current = await getLastViewedSiteData(url);
+    const next = {
+      activeDataView: activeDataView || current.activeDataView,
+      selectedIds: { ...current.selectedIds, ...selectedPatch }
+    };
+    await callChrome("storage.local.set", { [storageKey]: next });
+    return next;
   });
 }

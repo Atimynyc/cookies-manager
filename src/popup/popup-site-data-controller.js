@@ -1,17 +1,6 @@
-import {
-  removeCookie,
-  setCookieData
-} from "../shared/cookie-api.js";
-import {
-  removeStorageItem,
-  setStorageValue
-} from "../shared/storage-api.js";
-import { executeBatchOperation } from "../shared/batch-operations.js";
-import {
-  addOperationSkip,
-  createBatchOperationResult,
-  getBatchOperationCounts
-} from "../shared/operation-result.js";
+import { getBatchOperationCounts } from "../shared/operation-result.js";
+import { getOperation, listOperations, runOperation, undoOperation } from "../shared/operation-client.js";
+import { operationToBatchResult } from "../shared/operation-presentation.js";
 import {
   createSiteDataPackage,
   parseSiteDataPackage
@@ -22,19 +11,15 @@ import {
 } from "../shared/site-data-import.js";
 import {
   createSiteProfile,
-  duplicateSiteProfile,
-  renameSiteProfile,
   resolveSiteProfileVariables
 } from "../shared/site-profiles.js";
 import {
   getSiteProfiles,
-  saveSiteProfiles
+  addSiteProfile,
+  renameStoredSiteProfile,
+  duplicateStoredSiteProfile,
+  deleteStoredSiteProfile
 } from "../shared/site-profile-store.js";
-import {
-  clearLatestBatchSnapshot,
-  getLatestBatchSnapshot,
-  saveLatestBatchSnapshot
-} from "../shared/batch-snapshot-store.js";
 import { getDisplayHost } from "../shared/url.js";
 import { assertOperationContext, createOperationContext, reloadOperationTarget } from "../shared/operation-context.js";
 import { readAllSiteDataRows } from "./popup-data-service.js";
@@ -49,6 +34,7 @@ export function createPopupSiteDataController({
   requestDeleteConfirmation,
   requestTextInput
 }) {
+  let latestImportId = "";
   async function buildExportForScope(scope) {
     const dataView = state.dataView;
     const dataPackage = await buildPackageForScope(scope);
@@ -118,128 +104,51 @@ export function createPopupSiteDataController({
     const autoRefreshPage = state.autoRefreshPage;
 
     const plan = planSiteDataImport(preview, { strategy, selectedIds });
-    const result = createBatchOperationResult();
-    plan.skipped.forEach(({ item, reason }) => addOperationSkip(result, item, reason));
     suppressCookieWatcher(Math.max(1500, plan.write.length * 30));
-
-    const executed = await executeBatchOperation(plan.write, (item) => writeImportedItem(item, target), {
-      onProgress,
-      yieldEvery: 10
-    });
-    result.success.push(...executed.success);
-    result.failed.push(...executed.failed);
-
-    const entries = executed.success.map((entry, index) => ({
-      id: `${Date.now()}-${index}-${entry.item.id}`,
-      kind: entry.item.kind,
-      name: entry.item.name,
-      before: entry.item.current,
-      after: entry.value
-    }));
-    if (entries.length > 0) {
-      await saveLatestBatchSnapshot({
-        id: `${Date.now()}-site-data-import`,
-        createdAt: new Date().toISOString(),
-        targetUrl: target.url,
-        targetOrigin: target.origin,
-        tabId: target.tabId,
-        target,
-        entries
-      });
-    }
+    const job = await runOperation({
+      target, label: `Import ${plan.write.length} items`, source: "package-import",
+      items: plan.write.map((item) => ({
+        id: item.id, kind: item.kind, name: item.name, before: item.current, after: item.incoming
+      })),
+      skipped: plan.skipped.map(({ item, reason }) => ({ item: { id: item.id, kind: item.kind, name: item.name }, reason }))
+    }, { onProgress });
+    latestImportId = job.id;
+    const result = operationToBatchResult(job);
 
     await refreshData();
-    if (autoRefreshPage && entries.length > 0) {
+    if (autoRefreshPage && result.success.length > 0) {
       await reloadOperationTarget(target);
     }
     showBatchImportStatus(result);
-    return { result, canUndo: entries.length > 0 };
-  }
-
-  async function writeImportedItem(item, target) {
-    await assertOperationContext(target);
-    if (item.kind === "cookies") {
-      assertCookieStore(item.incoming, target);
-      return setCookieData(target.url, item.incoming);
-    }
-    const storageType = item.kind === "sessionStorage" ? "session" : "local";
-    return setStorageValue(
-      target.tabId,
-      target.url,
-      storageType,
-      item.incoming.key,
-      item.incoming.value
-    );
+    return { result, canUndo: result.success.length > 0 };
   }
 
   async function undoLatestBatch({ onProgress } = {}) {
-    const snapshot = await getLatestBatchSnapshot();
-    if (!snapshot || !Array.isArray(snapshot.entries) || snapshot.entries.length === 0) {
+    const snapshot = latestImportId ? await getOperation(latestImportId)
+      : (await listOperations()).find((job) => job.source === "package-import");
+    if (!snapshot || !snapshot.items.some((item) => ["applied", "undo-failed", "undo-conflict"].includes(item.state))) {
       throw new Error("No import snapshot is available in this browser session.");
-    }
-    if (!snapshot.target) {
-      throw new Error("This older import has no verified target information and cannot be undone.");
     }
     const target = await getVerifiedCurrentTarget(snapshot.target,
       "Return to the original target tab, site, and browsing mode before undoing this import.");
     const autoRefreshPage = state.autoRefreshPage;
 
-    suppressCookieWatcher(Math.max(1500, snapshot.entries.length * 30));
-    const entries = [...snapshot.entries].reverse();
-    const result = await executeBatchOperation(entries, (entry) => undoImportedItem(entry, target), {
-      onProgress,
-      yieldEvery: 10
-    });
-    const failedIds = new Set(result.failed.map((entry) => entry.item.id));
-    const remainingEntries = snapshot.entries.filter((entry) => failedIds.has(entry.id));
-    if (remainingEntries.length > 0) {
-      await saveLatestBatchSnapshot({ ...snapshot, entries: remainingEntries });
-    } else {
-      await clearLatestBatchSnapshot();
-    }
+    suppressCookieWatcher(Math.max(1500, snapshot.items.length * 30));
+    const itemIds = snapshot.items.filter((item) => ["applied", "undo-failed", "undo-conflict"].includes(item.state)).map((item) => item.id);
+    const job = await undoOperation(snapshot.id, { onProgress, target });
+    const result = operationToBatchResult(job, { undo: true, itemIds });
 
     await refreshData();
     if (autoRefreshPage && result.success.length > 0) {
       await reloadOperationTarget(target);
     }
     showStatus(
-      remainingEntries.length > 0
+      result.failed.length > 0
         ? `Undo restored ${result.success.length} items; ${result.failed.length} failed.`
         : `Undid ${result.success.length} imported items.`,
-      remainingEntries.length > 0 ? "error" : "success"
+      result.failed.length > 0 ? "error" : "success"
     );
-    return { result, complete: remainingEntries.length === 0 };
-  }
-
-  async function undoImportedItem(entry, target) {
-    await assertOperationContext(target);
-    if (entry.kind === "cookies") {
-      assertCookieStore(entry.before || entry.after, target);
-    }
-    if (entry.before) {
-      if (entry.kind === "cookies") {
-        return setCookieData(target.url, entry.before);
-      }
-      return setStorageValue(
-        target.tabId,
-        target.url,
-        entry.kind === "sessionStorage" ? "session" : "local",
-        entry.before.key,
-        entry.before.value
-      );
-    }
-
-    if (entry.kind === "cookies") {
-      await removeCookie(target.url, entry.after);
-    } else {
-      await removeStorageItem(
-        target.tabId,
-        target.url,
-        entry.kind === "sessionStorage" ? "session" : "local",
-        entry.after.key
-      );
-    }
-    return null;
+    return { result, complete: result.failed.length === 0 };
   }
 
   async function getVerifiedCurrentTarget(savedTarget, message) {
@@ -252,12 +161,6 @@ export function createPopupSiteDataController({
     const target = Object.freeze({ ...savedTarget });
     await assertOperationContext(target);
     return target;
-  }
-
-  function assertCookieStore(cookie, target) {
-    if (!target.cookieStoreId || cookie?.storeId !== target.cookieStoreId) {
-      throw new Error("The imported cookie store does not match the target cookie store.");
-    }
   }
 
   function toTargetTab(target) {
@@ -280,8 +183,7 @@ export function createPopupSiteDataController({
       defaultConflictStrategy: options.defaultConflictStrategy,
       variables: options.variables
     });
-    const profiles = await getSiteProfiles();
-    return saveSiteProfiles([profile, ...profiles]);
+    return addSiteProfile(profile);
   }
 
   async function renameSavedProfile(profile) {
@@ -299,16 +201,14 @@ export function createPopupSiteDataController({
         return trimmed;
       }
     });
-    const profiles = await getSiteProfiles();
     if (name === null) {
-      return profiles;
+      return getSiteProfiles();
     }
-    return saveSiteProfiles(profiles.map((item) => item.id === profile.id ? renameSiteProfile(item, name) : item));
+    return renameStoredSiteProfile(profile.id, name);
   }
 
   async function duplicateSavedProfile(profile) {
-    const profiles = await getSiteProfiles();
-    return saveSiteProfiles([duplicateSiteProfile(profile), ...profiles]);
+    return duplicateStoredSiteProfile(profile.id);
   }
 
   async function deleteSavedProfile(profile) {
@@ -317,11 +217,10 @@ export function createPopupSiteDataController({
       message: `"${profile.name}" will be permanently deleted.`,
       detail: profile.source.origin
     });
-    const profiles = await getSiteProfiles();
     if (!confirmed) {
-      return profiles;
+      return getSiteProfiles();
     }
-    return saveSiteProfiles(profiles.filter((item) => item.id !== profile.id));
+    return deleteStoredSiteProfile(profile.id);
   }
 
   async function exportSavedProfile(profile) {

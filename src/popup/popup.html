@@ -378,11 +378,16 @@
 
             <section class="history-panel" id="historyPanel" aria-label="Recent cookie changes" hidden>
               <div class="history-header">
-                <h2>Recent changes</h2>
+                <div class="history-tabs" aria-label="History view">
+                  <button id="changesTabButton" type="button" aria-pressed="true">Recent changes</button>
+                  <button id="operationsTabButton" type="button" aria-pressed="false">Operations</button>
+                </div>
                 <button id="clearHistoryButton" type="button">Clear</button>
               </div>
               <ol class="history-list" id="historyList"></ol>
               <div class="history-empty" id="historyEmpty">No recent changes</div>
+              <ol class="operation-list" id="operationList" aria-label="Operations" hidden></ol>
+              <div class="history-empty" id="operationsEmpty" hidden>No operations in this session</div>
               <section class="history-detail" id="historyDetail" hidden>
                 <div class="history-detail-header">
                   <h3 id="historyDetailTitle">Change detail</h3>

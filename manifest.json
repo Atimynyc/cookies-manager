@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Cookie Controller",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Inspect, edit, import, export, and manage cookies, Local Storage, and Session Storage for the current page.",
   "permissions": ["cookies", "tabs", "storage", "scripting", "sidePanel"],
   "host_permissions": ["http://*/*", "https://*/*"],

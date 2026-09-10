@@ -1,35 +1,26 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createPopupItemActionsController } from "../../src/popup/popup-item-actions-controller.js";
+import { toStorageRow } from "../../src/shared/storage-format.js";
+import { toCookieRow } from "../../src/shared/cookie-format.js";
+import { installOperationBrowser } from "../helpers/operation-browser.mjs";
 
 function setup(t) {
-  const originalChrome = globalThis.chrome;
-  t.after(() => { globalThis.chrome = originalChrome; });
   const tab = { id: 1, url: "https://a.example/", incognito: false };
   const otherTab = { id: 2, url: "https://b.example/", incognito: false };
-  const row = { id: "flag", name: "flag", type: "local", value: "before", raw: { type: "local", key: "flag", value: "before", origin: "https://a.example" } };
+  const browser = installOperationBrowser(t, { tabs: [tab, otherTab] });
+  const rows = ["flag", "second"].map((key) => toStorageRow({ type: "local", key, value: "before", origin: "https://a.example" }));
+  const row = rows[0];
+  rows.forEach((item) => browser.getStorage(1, "local").setItem(item.name, item.value));
   const state = { tab, cookieStoreId: "0", autoRefreshPage: true, selectedIds: new Set() };
   const calls = [];
-  const tabs = new Map([[1, tab], [2, otherTab]]);
-  globalThis.chrome = {
-    runtime: {},
-    tabs: {
-      get: (id, callback) => callback(tabs.get(id)),
-      reload: (id, callback) => { calls.push(["reload", id]); callback(); }
-    },
-    cookies: { getAllCookieStores: (callback) => callback([{ id: "0", tabIds: [1, 2] }]) },
-    scripting: { executeScript: (details, callback) => {
-      calls.push(["storage", details.target.tabId, details.args]);
-      callback([{ result: { ok: true, origin: new URL(tabs.get(details.target.tabId).url).origin, value: details.args[4] } }]);
-    } }
-  };
   const elements = { valueInput: { value: "draft" }, expirationInput: { reportValidity() {} } };
   const options = {
     state, elements,
     getCurrentView: () => ({ singular: "storage item", plural: "storage items", storageType: "local" }),
     isCookieView: () => false,
     getSelectedRow: () => row,
-    getSelectedRows: () => [row, { ...row, id: "second", name: "second" }],
+    getSelectedRows: () => rows,
     getExpirationDraft: () => null,
     hasSelectedItemChanges: () => true,
     getRowLocation: () => row.raw.origin,
@@ -42,7 +33,7 @@ function setup(t) {
     discardEditorDraft: (value, target) => calls.push(["discard", value.id, target.tabId]),
     rememberCurrentSelection() {},
     refreshData: async () => { state.tab = otherTab; },
-    recordRecentChange: async (value, nextValue, metadata) => calls.push(["history", value, nextValue, metadata]),
+    loadRecentChanges: async () => calls.push(["history-loaded"]),
     suppressCookieWatcher() {},
     requestDeleteConfirmation: async () => true,
     requestTextInput: async () => "batch-value",
@@ -51,7 +42,7 @@ function setup(t) {
     clearStatus() {},
     writeClipboard() {}, showCopyFeedback() {}, resetCopyFeedback() {}
   };
-  return { options, state, row, otherTab, tabs, calls, elements };
+  return { options, state, row, rows, otherTab, tabs: browser.tabs, calls, elements, browser };
 }
 
 test("single saves retain their target for history and reload after the UI changes", async (t) => {
@@ -61,9 +52,15 @@ test("single saves retain their target for history and reload after the UI chang
     return row;
   };
   await createPopupItemActionsController(env.options).saveSelectedItem({ preventDefault() {} });
-  assert.equal(env.calls.find(([kind]) => kind === "storage")[1], 1);
-  assert.equal(env.calls.find(([kind]) => kind === "history")[3].target.tabId, 1);
-  assert.deepEqual(env.calls.find(([kind]) => kind === "reload"), ["reload", 1]);
+  const request = env.browser.messages.find((message) => message.command === "submit").spec;
+  assert.equal(request.target.tabId, 1);
+  assert.equal(request.source, "edit");
+  assert.deepEqual(request.items[0].before, env.row.raw);
+  assert.equal(request.items[0].after.value, "draft");
+  assert.equal(env.browser.getStorage(1, "local").getItem("flag"), "draft");
+  assert.equal(env.browser.getStorage(2, "local").getItem("flag"), null);
+  assert.deepEqual(env.browser.reloads, [1]);
+  assert.equal(env.calls.filter(([kind]) => kind === "history-loaded").length, 1);
   assert.equal(env.state.busy, false);
 });
 
@@ -74,7 +71,9 @@ test("deleting after navigation refuses the write and retains the draft", async 
     return true;
   };
   await createPopupItemActionsController(env.options).deleteSelectedItem();
-  assert.equal(env.calls.some(([kind]) => kind === "storage" || kind === "discard"), false);
+  assert.equal(env.browser.writes.length, 0);
+  assert.equal(env.browser.messages.length, 0);
+  assert.equal(env.calls.some(([kind]) => kind === "discard"), false);
   assert.match(env.calls.find(([kind]) => kind === "status")[1], /changed sites/);
 });
 
@@ -84,7 +83,7 @@ test("a successful save does not reload a target that navigates during refresh",
     env.tabs.set(1, { ...env.state.tab, url: env.otherTab.url });
   };
   await createPopupItemActionsController(env.options).saveSelectedItem({ preventDefault() {} });
-  assert.equal(env.calls.some(([kind]) => kind === "reload"), false);
+  assert.deepEqual(env.browser.reloads, []);
   assert.deepEqual(env.calls.at(-1), ["status", "Saved flag.", "success"]);
 });
 
@@ -96,10 +95,13 @@ test("batch edits use the original target even if the dialog changes the selecte
     return "batch-value";
   };
   await createPopupItemActionsController(env.options).batchEditSelected();
-  const writes = env.calls.filter(([kind]) => kind === "storage");
+  const writes = env.browser.writes;
   assert.equal(writes.length, 2);
-  assert.ok(writes.every(([, tabId, args]) => tabId === 1 && args[0] === "local"));
-  assert.ok(env.calls.filter(([kind]) => kind === "history").every((entry) => entry[3].target.origin === "https://a.example"));
+  assert.ok(writes.every((write) => write.tabId === 1 && write.type === "local"));
+  const request = env.browser.messages.find((message) => message.command === "submit").spec;
+  assert.equal(request.source, "batch-edit");
+  assert.ok(request.items.every((item) => item.kind === "localStorage" && item.after.value === "batch-value"));
+  assert.equal(env.calls.filter(([kind]) => kind === "discard").length, 2);
 });
 
 test("cancelling a draft conflict causes no mutation or draft discard", async (t) => {
@@ -107,6 +109,7 @@ test("cancelling a draft conflict causes no mutation or draft discard", async (t
   env.options.prepareRowForSave = async () => null;
   await createPopupItemActionsController(env.options).saveSelectedItem({ preventDefault() {} });
   assert.equal(env.calls.length, 0);
+  assert.equal(env.browser.messages.length, 0);
   assert.equal(env.state.busy, false);
 });
 
@@ -115,4 +118,55 @@ test("Reset clears the draft and updates expiration, layout, save state, and too
   createPopupItemActionsController(env.options).resetSelectedItem();
   assert.equal(env.elements.valueInput.value, "before");
   assert.deepEqual(env.calls.map(([kind]) => kind), ["discard", "expiration", "height", "save-state", "tools"]);
+});
+
+test("an engine conflict retains the draft and displays an error without reporting success", async (t) => {
+  const env = setup(t);
+  env.browser.getStorage(1, "local").setItem("flag", "external");
+  await createPopupItemActionsController(env.options).saveSelectedItem({ preventDefault() {} });
+  assert.equal(env.browser.getStorage(1, "local").getItem("flag"), "external");
+  assert.equal(env.calls.some(([kind]) => kind === "discard"), false);
+  assert.match(env.calls.at(-1)[1], /changed after.*prepared/);
+  assert.equal(env.calls.at(-1)[2], "error");
+  assert.equal(env.state.busy, false);
+});
+
+test("single delete submits a reversible null after-state", async (t) => {
+  const env = setup(t);
+  await createPopupItemActionsController(env.options).deleteSelectedItem();
+  const request = env.browser.messages.find((message) => message.command === "submit").spec;
+  assert.equal(request.source, "delete");
+  assert.deepEqual(request.items[0].before, env.row.raw);
+  assert.equal(request.items[0].after, null);
+  assert.equal(env.browser.getStorage(1, "local").getItem("flag"), null);
+  assert.equal(env.browser.jobs[0].items[0].state, "applied");
+});
+
+test("partial batch deletion retains failed selections and clears only successful drafts", async (t) => {
+  const env = setup(t);
+  env.browser.getStorage(1, "local").setItem("second", "external");
+  await createPopupItemActionsController(env.options).batchDeleteSelected();
+  assert.equal(env.browser.getStorage(1, "local").getItem("flag"), null);
+  assert.equal(env.browser.getStorage(1, "local").getItem("second"), "external");
+  assert.deepEqual([...env.state.selectedIds], [env.rows[1].id]);
+  assert.deepEqual(env.calls.filter(([kind]) => kind === "discard"), [["discard", env.row.id, 1]]);
+  assert.match(env.calls.at(-1)[1], /Deleted 1, 1 failed/);
+});
+
+test("editing an unnamed browser cookie preserves its identity and expiration draft", async (t) => {
+  const env = setup(t);
+  const row = toCookieRow({ name: "", value: "before", domain: "a.example", path: "/", storeId: "0",
+    session: true, hostOnly: true, secure: false, httpOnly: false, sameSite: "unspecified" });
+  env.browser.cookies.push(structuredClone(row.raw));
+  env.options.getSelectedRow = () => row;
+  env.options.isCookieView = () => true;
+  env.options.getExpirationDraft = () => ({ session: false, expirationDate: 2000000000 });
+
+  await createPopupItemActionsController(env.options).saveSelectedItem({ preventDefault() {} });
+
+  assert.equal(env.browser.cookies[0].name, "");
+  assert.equal(env.browser.cookies[0].value, "draft");
+  assert.equal(env.browser.cookies[0].expirationDate, 2000000000);
+  assert.equal(env.browser.jobs[0].items[0].state, "applied");
+  assert.equal(env.calls.at(-1)[2], "success");
 });
