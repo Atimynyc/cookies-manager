@@ -1,5 +1,4 @@
 import {
-  reloadTab,
   removeCookie,
   setCookieValue
 } from "../shared/cookie-api.js";
@@ -22,6 +21,12 @@ import {
 import { toCookieRow } from "../shared/cookie-format.js";
 import { toStorageRow } from "../shared/storage-format.js";
 import { getDisplayHost } from "../shared/url.js";
+import {
+  assertOperationContext,
+  createOperationContext,
+  getUndoUnavailableReason,
+  reloadOperationTarget
+} from "../shared/operation-context.js";
 
 export function createPopupHistoryController({
   state,
@@ -36,6 +41,8 @@ export function createPopupHistoryController({
   showStatus,
   clearStatus
 }) {
+  let undoInProgress = false;
+
   async function loadRecentChanges() {
     try {
       state.recentChanges = normalizeRecentChanges(await getRecentCookieChanges());
@@ -56,11 +63,11 @@ export function createPopupHistoryController({
     renderHistory();
   }
 
-  async function recordRecentChange(row, nextValue, { savedCookie = null } = {}) {
+  async function recordRecentChange(row, nextValue, { savedCookie = null, target = null } = {}) {
     try {
-      const itemKind = getHistoryItemKind();
+      const itemKind = row.kind || (row.type === "session" ? "sessionStorage" : row.type === "local" ? "localStorage" : "cookie");
       const afterCookie = savedCookie || row.raw;
-      const recordOptions = { itemKind };
+      const recordOptions = { itemKind, target };
       if (itemKind === "cookie") {
         Object.assign(recordOptions, {
           beforeSession: Boolean(row.raw?.session),
@@ -73,14 +80,15 @@ export function createPopupHistoryController({
       const record = createRecentChange(
         row,
         nextValue,
-        getDisplayHost(state.tab?.url),
+        getDisplayHost(target?.url || row.origin),
         Date.now(),
         recordOptions
       );
       const snapshot = {
         itemKind,
-        raw: row.raw,
-        storageType: row.type || getCurrentView().storageType,
+        target: target ? Object.freeze({ ...target }) : null,
+        raw: structuredClone(row.raw),
+        storageType: row.type || "",
         key: row.name,
         value: row.value,
         beforeValue: row.value,
@@ -104,28 +112,32 @@ export function createPopupHistoryController({
     }
   }
 
-  async function recordImportChange(row, nextValue, previousRow) {
+  async function recordImportChange(row, nextValue, previousRow, { target = null } = {}) {
     try {
-      const record = createRecentChange(row, nextValue, getDisplayHost(state.tab?.url), Date.now(), {
+      const itemKind = row.kind || (row.type === "session" ? "sessionStorage" : row.type === "local" ? "localStorage" : "cookie");
+      const record = createRecentChange(row, nextValue, getDisplayHost(target?.url || row.origin), Date.now(), {
         action: previousRow ? "import-overwrite" : "import-create",
-        itemKind: getHistoryItemKind(),
-        beforeSize: previousRow?.size || 0
+        itemKind,
+        beforeSize: previousRow?.size || 0,
+        target
       });
 
       state.undoSnapshots.set(record.id, previousRow
         ? {
-            itemKind: getHistoryItemKind(),
-            raw: previousRow.raw,
-            storageType: previousRow.type || getCurrentView().storageType,
+            itemKind,
+            target: target ? Object.freeze({ ...target }) : null,
+            raw: structuredClone(previousRow.raw),
+            storageType: previousRow.type || "",
             key: previousRow.name,
             value: previousRow.value,
             beforeValue: previousRow.value,
             afterValue: nextValue
           }
         : {
-            itemKind: getHistoryItemKind(),
-            raw: row.raw,
-            storageType: row.type || getCurrentView().storageType,
+            itemKind,
+            target: target ? Object.freeze({ ...target }) : null,
+            raw: structuredClone(row.raw),
+            storageType: row.type || "",
             key: row.name,
             beforeValue: "",
             afterValue: nextValue,
@@ -141,31 +153,41 @@ export function createPopupHistoryController({
   }
 
   async function undoRecentChange(changeId) {
+    if (undoInProgress || state.busy || state.loading) {
+      return;
+    }
     const snapshot = state.undoSnapshots.get(changeId);
-    if (!snapshot || !state.tab?.url) {
-      showStatus("This change can no longer be undone in this browser session.", "error");
+    const unavailableReason = getUndoUnavailableReason(snapshot, state.tab, state.cookieStoreId);
+    if (unavailableReason) {
+      showStatus(unavailableReason, "error");
       return;
     }
 
+    undoInProgress = true;
     setBusy(true);
     clearStatus();
     suppressCookieWatcher();
 
     try {
+      const target = createOperationContext(state.tab, snapshot.target.cookieStoreId);
+      await assertOperationContext(target);
       if (snapshot.deleteOnUndo) {
         if (snapshot.itemKind === "cookie") {
-          await removeCookie(state.tab.url, snapshot.raw);
+          const removed = await removeCookie(snapshot.target.url, snapshot.raw);
+          if (!removed) {
+            throw new Error("The cookie was not removed. Refresh and try again.");
+          }
         } else {
-          await removeStorageItem(state.tab.id, state.tab.url, snapshot.storageType, snapshot.key);
+          await removeStorageItem(target.tabId, target.url, snapshot.storageType, snapshot.key);
         }
         state.selectedId = "";
         rememberCurrentSelection();
       } else if (snapshot.itemKind === "cookie") {
-        const restored = await setCookieValue(state.tab.url, snapshot.raw, snapshot.value);
+        const restored = await setCookieValue(snapshot.target.url, snapshot.raw, snapshot.value);
         state.selectedId = toCookieRow(restored).id;
         rememberCurrentSelection();
       } else {
-        const restored = await setStorageValue(state.tab.id, state.tab.url, snapshot.storageType, snapshot.key, snapshot.value);
+        const restored = await setStorageValue(target.tabId, target.url, snapshot.storageType, snapshot.key, snapshot.value);
         state.selectedId = toStorageRow(restored).id;
         rememberCurrentSelection();
       }
@@ -180,18 +202,22 @@ export function createPopupHistoryController({
       await refreshData();
 
       if (state.autoRefreshPage) {
-        await reloadTab(state.tab.id);
+        await reloadOperationTarget(target);
       }
 
       showStatus("Undid the selected change.", "success");
     } catch (error) {
       showStatus(error?.message || "Failed to undo change.", "error");
     } finally {
+      undoInProgress = false;
       setBusy(false);
     }
   }
 
   async function clearHistory() {
+    if (state.busy || state.loading) {
+      return;
+    }
     try {
       const itemKind = getHistoryItemKind();
       const clearedIds = new Set(

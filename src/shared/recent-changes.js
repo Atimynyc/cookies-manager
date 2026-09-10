@@ -10,7 +10,7 @@ export function createRecentChange(row, nextValue, host, timestamp = Date.now(),
     itemId: row.id,
     cookieId: row.id,
     storageType: row.type || "",
-    origin: row.origin || "",
+    origin: row.origin || options.target?.origin || "",
     action: options.action || "edit",
     host,
     name: row.name,
@@ -20,6 +20,11 @@ export function createRecentChange(row, nextValue, host, timestamp = Date.now(),
     beforeSize: Number.isFinite(options.beforeSize) ? options.beforeSize : row.size,
     afterSize: getCookiePairSize(row.name, nextValue)
   };
+
+  if (options.target) {
+    change.targetTabId = options.target.tabId;
+    change.targetIncognito = options.target.incognito;
+  }
 
   if (itemKind === "cookie") {
     const raw = row.raw || {};

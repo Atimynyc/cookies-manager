@@ -1,5 +1,4 @@
 import {
-  reloadTab,
   removeCookie,
   setCookieData
 } from "../shared/cookie-api.js";
@@ -36,7 +35,8 @@ import {
   getLatestBatchSnapshot,
   saveLatestBatchSnapshot
 } from "../shared/batch-snapshot-store.js";
-import { getDisplayHost, getSiteOrigin, isSupportedPageUrl } from "../shared/url.js";
+import { getDisplayHost } from "../shared/url.js";
+import { assertOperationContext, createOperationContext, reloadOperationTarget } from "../shared/operation-context.js";
 import { readAllSiteDataRows } from "./popup-data-service.js";
 import { saveJsonFile } from "./popup-downloads.js";
 
@@ -50,38 +50,41 @@ export function createPopupSiteDataController({
   requestTextInput
 }) {
   async function buildExportForScope(scope) {
+    const dataView = state.dataView;
     const dataPackage = await buildPackageForScope(scope);
     const count = Object.values(dataPackage.data)
       .reduce((total, items) => total + items.length, 0);
     return {
       ...dataPackage,
-      url: state.tab.url,
-      host: getDisplayHost(state.tab.url),
-      type: scope === "all" ? "siteData" : state.dataView,
+      url: dataPackage.source.url,
+      host: getDisplayHost(dataPackage.source.url),
+      type: scope === "all" ? "siteData" : dataView,
       count
     };
   }
 
   async function buildPackageForScope(scope) {
-    if (!state.tab?.url || !isSupportedPageUrl(state.tab.url)) {
-      throw new Error("Open an HTTP or HTTPS page before exporting site data.");
-    }
+    const target = createOperationContext(state.tab, state.cookieStoreId);
+    const dataView = state.dataView;
 
     let rowsByKind;
     if (scope === "all") {
-      rowsByKind = await readAllSiteDataRows(state.tab, state.cookieStoreId);
+      await assertOperationContext(target);
+      rowsByKind = await readAllSiteDataRows(toTargetTab(target), target.cookieStoreId);
+      await assertOperationContext(target);
     } else {
       const rows = scope === "selected" ? getSelectedRows() : state.rows;
       if (scope === "selected" && rows.length === 0) {
         throw new Error("Select at least one item before exporting.");
       }
       rowsByKind = { cookies: [], localStorage: [], sessionStorage: [] };
-      rowsByKind[state.dataView] = rows;
+      rowsByKind[dataView] = rows;
+      await assertOperationContext(target);
     }
 
     return createSiteDataPackage({
-      url: state.tab.url,
-      origin: getSiteOrigin(state.tab.url),
+      url: target.url,
+      origin: target.origin,
       cookies: rowsByKind.cookies,
       localStorage: rowsByKind.localStorage,
       sessionStorage: rowsByKind.sessionStorage
@@ -89,31 +92,37 @@ export function createPopupSiteDataController({
   }
 
   async function previewPackage(dataPackage, options) {
-    if (!state.tab?.url || !isSupportedPageUrl(state.tab.url)) {
-      throw new Error("Open an HTTP or HTTPS page before importing site data.");
-    }
-    const rows = await readAllSiteDataRows(state.tab, state.cookieStoreId);
-    return buildSiteDataImportPreview(parseSiteDataPackage(dataPackage), {
+    const target = createOperationContext(state.tab, state.cookieStoreId);
+    const parsedPackage = parseSiteDataPackage(dataPackage);
+    parsedPackage.data.cookies = parsedPackage.data.cookies.map((cookie) => ({
+      ...cookie,
+      storeId: cookie.storeId || target.cookieStoreId
+    }));
+    await assertOperationContext(target);
+    const rows = await readAllSiteDataRows(toTargetTab(target), target.cookieStoreId);
+    await assertOperationContext(target);
+    const preview = buildSiteDataImportPreview(parsedPackage, {
       cookies: rows.cookies.map((row) => row.raw),
       localStorage: rows.localStorage.map((row) => row.raw),
       sessionStorage: rows.sessionStorage.map((row) => row.raw)
     }, {
-      targetUrl: state.tab.url,
-      ...options
+      ...options,
+      targetUrl: target.url
     });
+    return { ...preview, operationTarget: target };
   }
 
   async function applyPackage(preview, { strategy, selectedIds, onProgress }) {
-    if (!state.tab?.url || !isSupportedPageUrl(state.tab.url)) {
-      throw new Error("The target page is no longer available.");
-    }
+    const target = await getVerifiedCurrentTarget(preview?.operationTarget,
+      "The import target changed. Build a new preview before applying this package.");
+    const autoRefreshPage = state.autoRefreshPage;
 
     const plan = planSiteDataImport(preview, { strategy, selectedIds });
     const result = createBatchOperationResult();
     plan.skipped.forEach(({ item, reason }) => addOperationSkip(result, item, reason));
     suppressCookieWatcher(Math.max(1500, plan.write.length * 30));
 
-    const executed = await executeBatchOperation(plan.write, writeImportedItem, {
+    const executed = await executeBatchOperation(plan.write, (item) => writeImportedItem(item, target), {
       onProgress,
       yieldEvery: 10
     });
@@ -131,29 +140,32 @@ export function createPopupSiteDataController({
       await saveLatestBatchSnapshot({
         id: `${Date.now()}-site-data-import`,
         createdAt: new Date().toISOString(),
-        targetUrl: state.tab.url,
-        targetOrigin: getSiteOrigin(state.tab.url),
-        tabId: state.tab.id,
+        targetUrl: target.url,
+        targetOrigin: target.origin,
+        tabId: target.tabId,
+        target,
         entries
       });
     }
 
     await refreshData();
-    if (state.autoRefreshPage && entries.length > 0) {
-      await reloadTab(state.tab.id);
+    if (autoRefreshPage && entries.length > 0) {
+      await reloadOperationTarget(target);
     }
     showBatchImportStatus(result);
     return { result, canUndo: entries.length > 0 };
   }
 
-  async function writeImportedItem(item) {
+  async function writeImportedItem(item, target) {
+    await assertOperationContext(target);
     if (item.kind === "cookies") {
-      return setCookieData(state.tab.url, item.incoming);
+      assertCookieStore(item.incoming, target);
+      return setCookieData(target.url, item.incoming);
     }
     const storageType = item.kind === "sessionStorage" ? "session" : "local";
     return setStorageValue(
-      state.tab.id,
-      state.tab.url,
+      target.tabId,
+      target.url,
       storageType,
       item.incoming.key,
       item.incoming.value
@@ -162,16 +174,19 @@ export function createPopupSiteDataController({
 
   async function undoLatestBatch({ onProgress } = {}) {
     const snapshot = await getLatestBatchSnapshot();
-    if (!snapshot || snapshot.entries.length === 0) {
+    if (!snapshot || !Array.isArray(snapshot.entries) || snapshot.entries.length === 0) {
       throw new Error("No import snapshot is available in this browser session.");
     }
-    if (!state.tab?.url || snapshot.tabId !== state.tab.id || snapshot.targetOrigin !== getSiteOrigin(state.tab.url)) {
-      throw new Error("Return to the original target tab before undoing this import.");
+    if (!snapshot.target) {
+      throw new Error("This older import has no verified target information and cannot be undone.");
     }
+    const target = await getVerifiedCurrentTarget(snapshot.target,
+      "Return to the original target tab, site, and browsing mode before undoing this import.");
+    const autoRefreshPage = state.autoRefreshPage;
 
     suppressCookieWatcher(Math.max(1500, snapshot.entries.length * 30));
     const entries = [...snapshot.entries].reverse();
-    const result = await executeBatchOperation(entries, undoImportedItem, {
+    const result = await executeBatchOperation(entries, (entry) => undoImportedItem(entry, target), {
       onProgress,
       yieldEvery: 10
     });
@@ -184,8 +199,8 @@ export function createPopupSiteDataController({
     }
 
     await refreshData();
-    if (state.autoRefreshPage) {
-      await reloadTab(state.tab.id);
+    if (autoRefreshPage && result.success.length > 0) {
+      await reloadOperationTarget(target);
     }
     showStatus(
       remainingEntries.length > 0
@@ -196,14 +211,18 @@ export function createPopupSiteDataController({
     return { result, complete: remainingEntries.length === 0 };
   }
 
-  async function undoImportedItem(entry) {
+  async function undoImportedItem(entry, target) {
+    await assertOperationContext(target);
+    if (entry.kind === "cookies") {
+      assertCookieStore(entry.before || entry.after, target);
+    }
     if (entry.before) {
       if (entry.kind === "cookies") {
-        return setCookieData(state.tab.url, entry.before);
+        return setCookieData(target.url, entry.before);
       }
       return setStorageValue(
-        state.tab.id,
-        state.tab.url,
+        target.tabId,
+        target.url,
         entry.kind === "sessionStorage" ? "session" : "local",
         entry.before.key,
         entry.before.value
@@ -211,16 +230,38 @@ export function createPopupSiteDataController({
     }
 
     if (entry.kind === "cookies") {
-      await removeCookie(state.tab.url, entry.after);
+      await removeCookie(target.url, entry.after);
     } else {
       await removeStorageItem(
-        state.tab.id,
-        state.tab.url,
+        target.tabId,
+        target.url,
         entry.kind === "sessionStorage" ? "session" : "local",
         entry.after.key
       );
     }
     return null;
+  }
+
+  async function getVerifiedCurrentTarget(savedTarget, message) {
+    const current = createOperationContext(state.tab, state.cookieStoreId);
+    if (!savedTarget || ["tabId", "origin", "cookieStoreId", "incognito"].some(
+      (field) => savedTarget[field] !== current[field]
+    )) {
+      throw new Error(message);
+    }
+    const target = Object.freeze({ ...savedTarget });
+    await assertOperationContext(target);
+    return target;
+  }
+
+  function assertCookieStore(cookie, target) {
+    if (!target.cookieStoreId || cookie?.storeId !== target.cookieStoreId) {
+      throw new Error("The imported cookie store does not match the target cookie store.");
+    }
+  }
+
+  function toTargetTab(target) {
+    return { id: target.tabId, url: target.url, incognito: target.incognito };
   }
 
   function showBatchImportStatus(result) {

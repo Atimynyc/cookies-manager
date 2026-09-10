@@ -1,5 +1,6 @@
 import { formatBytes } from "../shared/recent-changes.js";
 import { getStorageTypeLabel } from "../shared/storage-format.js";
+import { getUndoUnavailableReason } from "../shared/operation-context.js";
 
 export function createHistoryView({
   state,
@@ -18,7 +19,7 @@ export function createHistoryView({
     elements.historyList.replaceChildren(...visibleChanges.map(createHistoryItem));
     elements.historyList.hidden = visibleChanges.length === 0;
     elements.historyEmpty.hidden = visibleChanges.length > 0;
-    elements.clearHistoryButton.disabled = visibleChanges.length === 0;
+    elements.clearHistoryButton.disabled = Boolean(state.busy || state.loading || visibleChanges.length === 0);
 
     if (state.selectedHistoryId && !visibleChanges.some((change) => change.id === state.selectedHistoryId)) {
       clearHistoryDetail();
@@ -119,9 +120,13 @@ export function createHistoryView({
     sub.append(scope, delta, detailButton);
     if (state.undoSnapshots.has(change.id)) {
       const undoButton = document.createElement("button");
+      const unavailableReason = getUndoUnavailableReason(state.undoSnapshots.get(change.id), state.tab, state.cookieStoreId);
       undoButton.type = "button";
       undoButton.className = "history-undo-button";
       undoButton.textContent = "Undo";
+      undoButton.disabled = Boolean(state.busy || state.loading || unavailableReason);
+      undoButton.title = unavailableReason || "Undo this change";
+      undoButton.setAttribute("aria-label", unavailableReason || "Undo this change");
       undoButton.addEventListener("click", () => onUndo(change.id));
       sub.append(undoButton);
     }
@@ -179,6 +184,7 @@ export function createHistoryView({
         ["After expiration", formatHistoryExpiration(change.afterSession, change.afterExpirationDate)]
       ] : []),
       ["Store", change.storeId || "Default"],
+      ["Origin", change.origin || ""],
       ["Host", change.host || ""],
       ["Changed", formatFullHistoryTime(change.timestamp)],
       ["Size", `${formatBytes(change.beforeSize)} -> ${formatBytes(change.afterSize)}`],
@@ -193,6 +199,11 @@ export function createHistoryView({
       ["Size", `${formatBytes(change.beforeSize)} -> ${formatBytes(change.afterSize)}`],
       ["Item ID", change.itemId || ""]
     ];
+
+    if (Number.isInteger(change.targetTabId)) {
+      rows.push(["Original tab", String(change.targetTabId)]);
+      rows.push(["Browsing mode", change.targetIncognito ? "Incognito" : "Regular"]);
+    }
 
     const fragment = document.createDocumentFragment();
     for (const [label, value] of rows) {
@@ -212,8 +223,9 @@ export function createHistoryView({
     if (snapshot && "beforeValue" in snapshot && "afterValue" in snapshot) {
       renderValueDiff(elements.historyBeforeValue, elements.historyAfterValue, snapshot.beforeValue || "", snapshot.afterValue || "");
       elements.historyValueDetail.hidden = false;
-      elements.historyDetailNote.hidden = true;
-      elements.historyDetailNote.textContent = "";
+      const unavailableReason = getUndoUnavailableReason(snapshot, state.tab, state.cookieStoreId);
+      elements.historyDetailNote.hidden = !unavailableReason;
+      elements.historyDetailNote.textContent = unavailableReason;
       return;
     }
 

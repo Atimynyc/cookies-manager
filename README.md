@@ -43,9 +43,20 @@ Cookie Controller 是一款面向开发者、测试人员和高级用户的站�
 
 Development
 
+- Run `npm run lint` for undefined JavaScript identifier checks.
 - Run `npm test` for the unit-test baseline covering parsing, identifiers, package validation, conflicts, batch results, favorites, and recent-change normalization.
 - Run `npm run test:acceptance` for the full Chrome extension workflow.
+- Run `npm run test:acceptance:v032` for target isolation, editor drafts, history undo, and Saved States capacity regressions.
 - Run `npm run test:acceptance:v030` for the focused data-package and saved-state workflow.
 - The versioned site data interchange contract is documented in `docs/site-data-package-v1.md`.
+- Acceptance screenshots are written to `.tmp/` by default. Set `ACCEPTANCE_ARTIFACT_DIR` to choose another artifact directory for the full workflow.
+
+v0.3.2 stability
+
+- Site-data mutations keep their original tab, origin, browsing mode, and Cookie store. Storage checks the actual page origin inside the injected operation.
+- History undo is available only for a verified target; Session Storage additionally requires its original tab. Older snapshots without target metadata remain viewable but cannot be undone.
+- Unsaved value and expiration drafts stay in the open extension surface when switching items, views, sites, or refreshing. External changes require confirmation before overwriting. Drafts are not persisted after closing that surface.
+- Saved States reject additions beyond 50 without deleting existing states; older collections above the limit remain readable and manageable. Storage quota failures preserve existing data and provide an actionable error.
+- Reset updates the complete editor state. Error messages remain visible until dismissed or replaced.
 
 Netscape/cURL import and export is Cookie-only. The format cannot represent SameSite, Partitioned/CHIPS, or the Chrome Cookie store, so use the JSON package when those attributes or web storage must round-trip without loss.

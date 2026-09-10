@@ -4,7 +4,6 @@ import {
   getWindowHttpTabs,
   hasSitePermission,
   openSidePanel,
-  reloadTab,
   setCookiePair,
   watchCookieChanges
 } from "../shared/cookie-api.js";
@@ -42,6 +41,7 @@ import { getDisplayHost, getSiteOrigin, isSupportedPageUrl } from "../shared/url
 import { getAutoValueToolOutput } from "../shared/value-tools.js";
 import { createCookiePair, createStoragePair } from "../shared/pair-parser.js";
 import { executeBatchOperation } from "../shared/batch-operations.js";
+import { assertOperationContext, createOperationContext, reloadOperationTarget } from "../shared/operation-context.js";
 import {
   getBatchOperationCounts
 } from "../shared/operation-result.js";
@@ -66,6 +66,7 @@ import { renderDataTable } from "./popup-table-view.js";
 import { createHistoryView } from "./popup-history-view.js";
 import { createPopupHistoryController } from "./popup-history-controller.js";
 import { createPopupItemActionsController } from "./popup-item-actions-controller.js";
+import { createEditorDraftStore, getEditorDraftKey, getEditorRowSignature } from "./popup-editor-drafts.js";
 
 const state = {
   tab: null,
@@ -99,7 +100,8 @@ const state = {
   toolOutputTitle: "",
   emptyMessage: "No cookies for this page",
   ignoreCookieChangesUntil: 0,
-  loading: false
+  loading: false,
+  busy: false
 };
 
 const COPY_MODES = Object.freeze({
@@ -116,6 +118,10 @@ let lastViewedSavePromise = Promise.resolve();
 let workbenchPromise = null;
 let workbenchOpening = false;
 let selectedCopyMode = "value";
+let refreshRequestId = 0;
+let cookieRefreshTimer = 0;
+let renderedEditor = null;
+const editorDrafts = createEditorDraftStore();
 
 const elements = {
   hostLabel: document.querySelector("#hostLabel"),
@@ -270,6 +276,8 @@ const itemActions = createPopupItemActionsController({
   updateValueWorkspaceHeight,
   updateSaveState,
   updateAutoToolOutput,
+  prepareRowForSave,
+  discardEditorDraft,
   rememberCurrentSelection,
   refreshData,
   recordRecentChange: historyController.recordRecentChange,
@@ -380,12 +388,14 @@ function bindEvents() {
   });
   elements.cookieEditor.addEventListener("submit", itemActions.saveSelectedItem);
   elements.valueInput.addEventListener("input", () => {
+    rememberEditorDraft();
     updateValueWorkspaceHeight();
     updateSaveState();
     updateAutoToolOutput();
   });
   window.addEventListener("resize", updateValueWorkspaceHeight);
   const handleExpirationChange = () => {
+    rememberEditorDraft();
     updateExpirationValidity();
     updateSaveState();
   };
@@ -622,13 +632,12 @@ function updateRefreshControlState() {
   elements.refreshButton.title = state.autoRefreshPage ? "Refresh data (page reload is on)" : "Refresh data";
 }
 
-async function restoreLastViewedSiteData(url) {
+async function restoreLastViewedSiteData(url, requestId) {
   const siteOrigin = getSiteOrigin(url);
   if (state.siteOrigin === siteOrigin) {
     return;
   }
 
-  state.siteOrigin = siteOrigin;
   let lastViewed = normalizeLastViewedSiteData(null);
   try {
     lastViewed = await getLastViewedSiteData(url);
@@ -636,10 +645,11 @@ async function restoreLastViewedSiteData(url) {
     // A storage failure should not prevent the current site's data from loading.
   }
 
-  if (state.siteOrigin !== siteOrigin) {
+  if (requestId !== refreshRequestId) {
     return;
   }
 
+  state.siteOrigin = siteOrigin;
   state.dataView = lastViewed.activeDataView;
   state.rememberedSelectedIds = { ...lastViewed.selectedIds };
   state.selectedId = state.rememberedSelectedIds[state.dataView] || "";
@@ -677,10 +687,11 @@ function persistLastViewedSiteData() {
 }
 
 async function setDataView(view) {
-  if (!DATA_VIEWS[view] || state.dataView === view) {
+  if (state.busy || !DATA_VIEWS[view] || state.dataView === view) {
     return;
   }
 
+  rememberEditorDraft();
   state.dataView = view;
   state.rows = [];
   state.selectedId = state.rememberedSelectedIds[view] || "";
@@ -699,6 +710,8 @@ async function setDataView(view) {
 }
 
 async function refreshData() {
+  rememberEditorDraft();
+  const requestId = ++refreshRequestId;
   setLoading(true);
   clearStatus();
   setPermissionBanner(false);
@@ -706,6 +719,9 @@ async function refreshData() {
 
   try {
     const tab = await getActiveTab();
+    if (requestId !== refreshRequestId) {
+      return;
+    }
     state.tab = tab;
     globalThis.cookieControllerTheme?.setActiveTabIncognito(tab?.incognito);
     state.cookieStoreId = "";
@@ -713,10 +729,13 @@ async function refreshData() {
 
     const supportedPage = Boolean(tab?.url && isSupportedPageUrl(tab.url));
     const [, , cookieStoreId] = await Promise.all([
-      restoreLastViewedSiteData(tab?.url),
-      refreshSiteOptions(tab?.id),
+      restoreLastViewedSiteData(tab?.url, requestId),
+      refreshSiteOptions(tab?.id, requestId),
       supportedPage ? resolveCookieStoreId(tab) : Promise.resolve("")
     ]);
+    if (requestId !== refreshRequestId) {
+      return;
+    }
     const view = getCurrentView();
 
     if (!supportedPage) {
@@ -731,7 +750,11 @@ async function refreshData() {
     }
 
     state.cookieStoreId = cookieStoreId;
-    state.rows = await readSiteDataRows(tab, state.dataView, state.cookieStoreId);
+    const rows = await readSiteDataRows(tab, state.dataView, state.cookieStoreId);
+    if (requestId !== refreshRequestId) {
+      return;
+    }
+    state.rows = rows;
     state.emptyMessage = view.emptyMessage;
 
     if (state.selectedId && !state.rows.some((row) => row.id === state.selectedId)) {
@@ -743,13 +766,18 @@ async function refreshData() {
     renderTable();
     renderSelectedItem();
   } catch (error) {
+    if (requestId !== refreshRequestId) {
+      return;
+    }
     state.rows = [];
     state.emptyMessage = getCurrentView().unavailableMessage;
     renderTable();
     renderSelectedItem();
     await handleReadError(error);
   } finally {
-    setLoading(false);
+    if (requestId === refreshRequestId) {
+      setLoading(false);
+    }
   }
 }
 
@@ -819,12 +847,17 @@ async function openWorkbench(view) {
   }
 }
 
-async function refreshSiteOptions(activeTabId) {
+async function refreshSiteOptions(activeTabId, requestId) {
+  let tabs;
   try {
-    state.tabs = await getWindowHttpTabs();
+    tabs = await getWindowHttpTabs();
   } catch {
-    state.tabs = [];
+    tabs = [];
   }
+  if (requestId !== refreshRequestId) {
+    return;
+  }
+  state.tabs = tabs;
 
   const fragment = document.createDocumentFragment();
   for (const tab of state.tabs) {
@@ -837,7 +870,7 @@ async function refreshSiteOptions(activeTabId) {
   }
 
   elements.siteSelect.replaceChildren(fragment);
-  elements.siteSelect.disabled = state.tabs.length <= 1;
+  elements.siteSelect.disabled = state.busy || state.loading || state.tabs.length <= 1;
 }
 
 function getSiteOptionLabel(tab) {
@@ -847,6 +880,10 @@ function getSiteOptionLabel(tab) {
 }
 
 async function switchToSelectedSite() {
+  if (state.busy || state.loading) {
+    return;
+  }
+  rememberEditorDraft();
   const tabId = Number(elements.siteSelect.value);
   if (!Number.isFinite(tabId)) {
     return;
@@ -927,16 +964,21 @@ async function importQuickEntries(input) {
   }
 
   const pairs = validateQuickInputRows(input, isCookieView() ? "cookie" : "storage");
+  const target = createOperationContext(state.tab, state.cookieStoreId);
+  const kind = state.dataView;
 
   setBusy(true);
   clearStatus();
   suppressCookieWatcher(Math.max(1500, pairs.length * 30));
 
   try {
-    const previousRows = new Map(pairs.map((pair) => [pair.name, findLikelyImportedRow(pair.name)]));
+    await assertOperationContext(target);
+    const currentRows = await readSiteDataRows({ id: target.tabId, url: target.url }, kind, target.cookieStoreId);
+    const previousRows = new Map(pairs.map((pair) => [pair.name, findLikelyImportedRow(pair.name, currentRows, target, kind)]));
     const result = await executeBatchOperation(pairs, async (pair) => {
-      const importedRow = await importPair(pair);
-      await historyController.recordImportChange(importedRow, pair.value, previousRows.get(pair.name));
+      await assertOperationContext(target);
+      const importedRow = await importPair(pair, target, kind);
+      await historyController.recordImportChange(importedRow, pair.value, previousRows.get(pair.name), { target });
       return importedRow;
     });
     const lastImportedRow = result.success.at(-1)?.value;
@@ -947,7 +989,7 @@ async function importQuickEntries(input) {
     await refreshData();
 
     if (state.autoRefreshPage && result.success.length > 0) {
-      await reloadTab(state.tab.id);
+      await reloadOperationTarget(target);
     }
 
     showImportStatus(pairs, result);
@@ -1022,30 +1064,30 @@ function showImportStatus(pairs, result) {
   );
 }
 
-async function importPair(pair) {
-  if (isCookieView()) {
-    const cookie = await setCookiePair(state.tab.url, pair.name, pair.value, state.cookieStoreId);
+async function importPair(pair, target, kind) {
+  if (kind === "cookies") {
+    if (!target.cookieStoreId) {
+      throw new Error("The target cookie store is unavailable. Refresh before importing.");
+    }
+    const cookie = await setCookiePair(target.url, pair.name, pair.value, target.cookieStoreId);
     return toCookieRow(cookie);
   }
 
-  const item = await setStoragePair(state.tab.id, state.tab.url, getCurrentView().storageType, pair.name, pair.value);
+  const item = await setStoragePair(target.tabId, target.url, DATA_VIEWS[kind].storageType, pair.name, pair.value);
   return toStorageRow(item);
 }
 
-function findLikelyImportedRow(name) {
-  if (!state.tab?.url) {
-    return null;
+function findLikelyImportedRow(name, rows, target, kind) {
+  if (kind !== "cookies") {
+    return rows.find((row) => row.name === name) || null;
   }
 
-  if (!isCookieView()) {
-    return state.rows.find((row) => row.name === name) || null;
-  }
-
-  const host = new URL(state.tab.url).hostname;
-  return state.rows.find((row) =>
+  const host = new URL(target.url).hostname;
+  return rows.find((row) =>
     row.name === name &&
     row.path === "/" &&
-    (row.domain === host || row.domain === `.${host}`)
+    !row.partitioned && row.raw.hostOnly && row.raw.storeId === target.cookieStoreId &&
+    row.domain === host
   ) || null;
 }
 
@@ -1437,6 +1479,10 @@ function areSetsEqual(a, b) {
 }
 
 function selectItem(id, rowElement) {
+  if (state.busy || state.loading) {
+    return;
+  }
+  rememberEditorDraft();
   const changed = state.selectedId !== id;
   state.selectedId = id;
   rememberCurrentSelection();
@@ -1457,6 +1503,10 @@ function selectItem(id, rowElement) {
 }
 
 function toggleRowSelection(id, selected, rowElement) {
+  if (state.busy || state.loading) {
+    renderTable();
+    return;
+  }
   if (selected) {
     state.selectedIds.add(id);
   } else {
@@ -1495,6 +1545,9 @@ function resetSelectedOnly() {
 }
 
 function toggleSelectAllVisible() {
+  if (state.busy || state.loading) {
+    return;
+  }
   const visibleRows = getVisibleRows();
   if (elements.selectAllCheckbox.checked) {
     visibleRows.forEach((row) => state.selectedIds.add(row.id));
@@ -1531,8 +1584,9 @@ function updateSelectionSummary(visibleRows = null) {
   elements.selectionCount.setAttribute("aria-pressed", String(state.selectedOnly));
   elements.selectionCount.title = state.selectedOnly ? "Show all items" : "Show selected items";
   elements.batchActions.hidden = selectedCount === 0;
-  elements.batchEditButton.disabled = selectedCount === 0;
-  elements.batchDeleteButton.disabled = selectedCount === 0;
+  elements.batchEditButton.disabled = state.busy || state.loading || selectedCount === 0;
+  elements.batchDeleteButton.disabled = state.busy || state.loading || selectedCount === 0;
+  elements.selectAllCheckbox.disabled = state.busy || state.loading;
   elements.selectAllCheckbox.checked = visibleRowCount > 0 && visibleSelectedCount === visibleRowCount;
   elements.selectAllCheckbox.indeterminate = visibleSelectedCount > 0 && visibleSelectedCount < visibleRowCount;
 }
@@ -1552,7 +1606,63 @@ function setActiveDetailView(view) {
   }
 }
 
+function rememberEditorDraft() {
+  if (!renderedEditor) {
+    return;
+  }
+  const { key, row, kind } = renderedEditor;
+  const cookie = kind === "cookies";
+  const originalExpiration = cookie && !row.session && Number.isFinite(row.raw.expirationDate)
+    ? formatDateTimeLocal(row.raw.expirationDate)
+    : "";
+  editorDrafts.capture(key, row, elements.valueInput.value,
+    cookie ? elements.expirationInput.value : "", originalExpiration);
+}
+
+function discardEditorDraft(row, target, { keepEditor = false } = {}) {
+  const kind = row.type === "session" ? "sessionStorage" : row.type === "local" ? "localStorage" : "cookies";
+  const key = getEditorDraftKey(target, kind, row.id);
+  editorDrafts.remove(key);
+  if (!keepEditor && renderedEditor?.key === key) {
+    renderedEditor = null;
+  }
+}
+
+async function prepareRowForSave(row, target) {
+  const kind = row.type === "session" ? "sessionStorage" : row.type === "local" ? "localStorage" : "cookies";
+  const readCurrentRow = async () => {
+    const rows = await readSiteDataRows({ id: target.tabId, url: target.url }, kind, target.cookieStoreId);
+    const current = rows.find((item) => item.id === row.id);
+    if (!current) {
+      throw new Error("This item was removed from the page. Your draft was kept.");
+    }
+    return current;
+  };
+  const current = await readCurrentRow();
+  const key = getEditorDraftKey(target, kind, row.id);
+  if (editorDrafts.hasConflict(key, current) || getEditorRowSignature(row) !== getEditorRowSignature(current)) {
+    const confirmed = await requestDeleteConfirmation({
+      title: "Overwrite changed item?",
+      message: `"${row.name}" changed on the page after editing started.`,
+      detail: kind === "cookies"
+        ? "The current value and expiration will be replaced by your draft."
+        : "The current page value will be replaced by your draft.",
+      confirmLabel: "Overwrite"
+    });
+    if (!confirmed) {
+      return null;
+    }
+    await assertOperationContext(target);
+    const latest = await readCurrentRow();
+    if (getEditorRowSignature(latest) !== getEditorRowSignature(current)) {
+      throw new Error("This item changed again. Refresh and review it before saving. Your draft was kept.");
+    }
+  }
+  return current;
+}
+
 function renderSelectedItem() {
+  rememberEditorDraft();
   const row = getSelectedRow();
   const hasSelection = Boolean(row);
 
@@ -1562,6 +1672,7 @@ function renderSelectedItem() {
   updateEditorFavoriteButton();
 
   if (!row) {
+    renderedEditor = null;
     renderHistory();
     updateSelectionControls();
     return;
@@ -1571,8 +1682,19 @@ function renderSelectedItem() {
   elements.editorName.title = row.name;
   elements.editorLocation.textContent = getRowLocation(row);
   elements.editorLocation.title = getRowLocation(row);
-  elements.valueInput.value = row.value;
+  const target = createOperationContext(state.tab, state.cookieStoreId);
+  const key = getEditorDraftKey(target, state.dataView, row.id);
+  const draft = editorDrafts.get(key);
+  renderedEditor = { key, row, target, kind: state.dataView };
+  elements.valueInput.value = draft?.value ?? row.value;
   populateExpirationEditor(row);
+  if (draft && isCookieView()) {
+    elements.expirationInput.value = draft.expiration;
+    updateExpirationValidity();
+  }
+  if (editorDrafts.hasConflict(key, row)) {
+    showStatus("This item changed on the page. Your draft was kept.", "warning");
+  }
   updateAutoToolOutput();
   updateValueWorkspaceHeight();
   elements.metaDomain.textContent = row.domain;
@@ -1601,7 +1723,7 @@ function updateEditorFavoriteButton() {
   elements.editorFavoriteButton.setAttribute("aria-pressed", String(favorite));
   elements.editorFavoriteButton.setAttribute("aria-label", label);
   elements.editorFavoriteButton.title = tooltip;
-  elements.editorFavoriteButton.disabled = !row;
+  elements.editorFavoriteButton.disabled = state.busy || state.loading || !row;
 }
 
 function renderEditorChips(row) {
@@ -1739,16 +1861,16 @@ function isExpirationDraftChanged(row) {
 function updateSaveState() {
   const row = getSelectedRow();
   const hasChanges = hasSelectedItemChanges(row);
-  elements.saveButton.disabled = !hasChanges;
-  elements.resetButton.disabled = !hasChanges;
+  elements.saveButton.disabled = state.busy || state.loading || !hasChanges;
+  elements.resetButton.disabled = state.busy || state.loading || !hasChanges;
   updateToolState();
 }
 
 function updateToolState() {
   const hasSelection = Boolean(getSelectedRow());
   const hasOutput = Boolean(state.toolOutputText);
-  elements.valueToolsButton.disabled = !hasSelection;
-  elements.valueViewToggleButton.disabled = !hasSelection || !hasOutput;
+  elements.valueToolsButton.disabled = state.busy || state.loading || !hasSelection;
+  elements.valueViewToggleButton.disabled = state.busy || state.loading || !hasSelection || !hasOutput;
   if (!hasSelection) {
     setValueToolsMenuOpen(false);
   }
@@ -1756,13 +1878,14 @@ function updateToolState() {
 
 function updateSelectionControls() {
   const hasSelection = Boolean(getSelectedRow());
-  elements.deleteButton.disabled = !hasSelection;
-  elements.copyButton.disabled = !hasSelection;
-  elements.copyMenuButton.disabled = !hasSelection;
+  const blocked = state.busy || state.loading;
+  elements.deleteButton.disabled = blocked || !hasSelection;
+  elements.copyButton.disabled = blocked || !hasSelection;
+  elements.copyMenuButton.disabled = blocked || !hasSelection;
   if (!hasSelection) {
     setCopyMenuOpen(false);
   }
-  elements.clearHistoryButton.disabled = getVisibleRecentChanges().length === 0;
+  elements.clearHistoryButton.disabled = blocked || getVisibleRecentChanges().length === 0;
   updateSaveState();
 }
 
@@ -1778,6 +1901,7 @@ function startCookieWatcher() {
   watchCookieChanges((changeInfo) => {
     if (
       !isCookieView() ||
+      state.busy ||
       state.loading ||
       Date.now() < state.ignoreCookieChangesUntil ||
       !state.tab?.url ||
@@ -1787,7 +1911,11 @@ function startCookieWatcher() {
       return;
     }
 
-    window.setTimeout(() => {
+    window.clearTimeout(cookieRefreshTimer);
+    cookieRefreshTimer = window.setTimeout(() => {
+      if (state.busy) {
+        return;
+      }
       refreshData();
     }, 150);
   });
@@ -1818,19 +1946,32 @@ function getSelectedRow() {
 function setLoading(isLoading) {
   state.loading = isLoading;
   elements.loadingState.hidden = !isLoading;
-  elements.refreshButton.disabled = isLoading;
+  elements.refreshButton.disabled = state.busy || isLoading;
+  elements.siteSelect.disabled = state.busy || isLoading || state.tabs.length <= 1;
+  elements.dataViewButtons.forEach((button) => { button.disabled = state.busy || isLoading; });
+  elements.valueInput.disabled = state.busy || isLoading;
+  elements.expirationInput.disabled = state.busy || isLoading;
   updateActionAvailability();
+  updateEditorFavoriteButton();
+  updateSelectionControls();
+  renderHistory();
   renderTable();
 }
 
 function updateActionAvailability() {
   const supportedPage = Boolean(state.tab?.url && isSupportedPageUrl(state.tab.url));
-  elements.exportButton.disabled = state.loading || !supportedPage;
-  elements.importButton.disabled = state.loading || !supportedPage;
-  elements.profilesButton.disabled = state.loading || !supportedPage;
+  elements.exportButton.disabled = state.busy || state.loading || !supportedPage;
+  elements.importButton.disabled = state.busy || state.loading || !supportedPage;
+  elements.profilesButton.disabled = state.busy || state.loading || !supportedPage;
 }
 
 function setBusy(isBusy) {
+  state.busy = isBusy;
+  elements.refreshButton.disabled = isBusy || state.loading;
+  elements.siteSelect.disabled = isBusy || state.loading || state.tabs.length <= 1;
+  elements.valueInput.disabled = isBusy || state.loading;
+  elements.expirationInput.disabled = isBusy || state.loading;
+  renderHistory();
   if (isBusy) {
     elements.dataViewButtons.forEach((button) => {
       button.disabled = true;
@@ -1855,13 +1996,14 @@ function setBusy(isBusy) {
   }
 
   elements.dataViewButtons.forEach((button) => {
-    button.disabled = false;
+    button.disabled = state.loading;
   });
   const hasSelection = Boolean(getSelectedRow());
   elements.deleteButton.disabled = !hasSelection;
   updateEditorFavoriteButton();
   updateActionAvailability();
   updateSelectionControls();
+  updateSelectionSummary();
 }
 
 function setPermissionBanner(visible, message = "Site permission is required for this page.") {

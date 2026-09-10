@@ -65,7 +65,7 @@ export function normalizeSiteProfile(value) {
   };
 }
 
-export function normalizeSiteProfiles(values, limit = 50) {
+export function normalizeSiteProfiles(values) {
   if (!Array.isArray(values)) {
     return [];
   }
@@ -75,9 +75,6 @@ export function normalizeSiteProfiles(values, limit = 50) {
       profiles.push(normalizeSiteProfile(value));
     } catch {
       // A malformed stored profile should not make the remaining profiles unavailable.
-    }
-    if (profiles.length >= limit) {
-      break;
     }
   }
   return profiles;

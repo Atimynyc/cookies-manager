@@ -4,7 +4,7 @@ const STATUS_DURATIONS = {
   success: 2000,
   info: 3000,
   warning: 5000,
-  error: 3000
+  error: 0
 };
 
 export function createStatusController({ statusBar, statusMessage, closeStatusButton }) {

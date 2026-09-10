@@ -11,7 +11,10 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, "..");
 const fixturePath = path.join(projectRoot, "tests", "fixtures", "cookie-test-page.html");
 const faviconPath = path.join(projectRoot, "assets", "icon-16.png");
-const artifactDir = path.join(projectRoot, "tests", "artifacts");
+const artifactDir = path.resolve(
+  projectRoot,
+  process.env.ACCEPTANCE_ARTIFACT_DIR || path.join(".tmp", "acceptance-artifacts")
+);
 const extensionPath = projectRoot;
 const runId = Date.now().toString(36);
 const favoritesOnly = process.argv.includes("--favorites-only");
@@ -22,6 +25,7 @@ const jwt =
 let server;
 let context;
 let userDataDir;
+const pageErrors = [];
 
 try {
   const { baseUrl, closeServer } = await startCookieServer();
@@ -37,6 +41,7 @@ try {
       `--load-extension=${extensionPath}`
     ]
   });
+  collectPageErrors(context, pageErrors);
 
   const extensionId = await getExtensionId(context);
   const testPage = await context.newPage();
@@ -94,7 +99,16 @@ try {
     await assertSingleHistoryDetailLayout(popup, runId);
     await assertLargeCookieSelectionStaysLocal(popup, context, baseUrl);
   }
+  assert.equal(pageErrors.length, 0, formatPageErrors(pageErrors));
   console.log("extension acceptance ok");
+} catch (error) {
+  if (pageErrors.length > 0) {
+    throw new AggregateError(
+      [...pageErrors.map((entry) => entry.error), error],
+      `Extension acceptance failed.\n${formatPageErrors(pageErrors)}`
+    );
+  }
+  throw error;
 } finally {
   if (context) {
     await context.close();
@@ -105,6 +119,25 @@ try {
   if (userDataDir) {
     await rm(userDataDir, { recursive: true, force: true });
   }
+}
+
+function collectPageErrors(browserContext, errors) {
+  const watchedPages = new WeakSet();
+  const watchPage = (page) => {
+    if (watchedPages.has(page)) {
+      return;
+    }
+    watchedPages.add(page);
+    page.on("pageerror", (error) => {
+      errors.push({ url: page.url(), error });
+    });
+  };
+  browserContext.on("page", watchPage);
+  browserContext.pages().forEach(watchPage);
+}
+
+function formatPageErrors(errors) {
+  return errors.map(({ url, error }) => `${url}\n${error.stack || error.message}`).join("\n\n");
 }
 
 async function startCookieServer() {
@@ -616,10 +649,12 @@ async function assertValueTools(popup) {
   await selectCookieBySearch(popup, "jwt");
   await runValueTool(popup, "jwt");
   await expectToolOutput(popup, '"user": "dev"');
+  await popup.locator("#valueViewToggleButton").click();
   await popup.locator("#valueInput").fill("not-a-jwt");
   await runValueTool(popup, "jwt");
-  await waitForStatus(popup, "JWT payload could not be decoded.");
+  await waitForStatus(popup, "Value is not a JWT.");
   assert.equal(await popup.locator("#closeStatusButton").isHidden(), false);
+  await popup.locator("#closeStatusButton").click();
   await popup.waitForFunction(() => document.querySelector("#statusBar")?.hidden === true);
   assert.equal(await popup.locator("#statusMessage").textContent(), "");
   await popup.locator("#resetButton").click();

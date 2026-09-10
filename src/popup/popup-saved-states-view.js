@@ -25,10 +25,12 @@ export function createSavedStatesView({
   async function open() {
     elements.profileScopeSelect.querySelector('option[value="selected"]').disabled = getContext().selectedCount === 0;
     state.mode = "list";
+    setFeedback(elements.profileListError);
     try {
       state.profiles = await onLoadProfiles();
-    } catch {
+    } catch (error) {
       state.profiles = [];
+      setFeedback(elements.profileListError, error?.message || "Failed to load saved states.");
     }
     renderProfiles();
   }
@@ -46,6 +48,7 @@ export function createSavedStatesView({
 
   function showProfileForm() {
     state.applyingProfile = null;
+    setFeedback(elements.profileListError);
     elements.profileForm.reset();
     elements.profileScopeSelect.value = getContext().selectedCount > 0 ? "selected" : "current";
     setFeedback(elements.profileFormError);
@@ -147,6 +150,7 @@ export function createSavedStatesView({
   }
 
   async function updateProfileList(promise) {
+    setFeedback(elements.profileListError);
     setBusy(true);
     try {
       const profiles = await promise;
@@ -154,6 +158,8 @@ export function createSavedStatesView({
         state.profiles = profiles;
         renderProfiles();
       }
+    } catch (error) {
+      setFeedback(elements.profileListError, error?.message || "Failed to update saved states.");
     } finally {
       setBusy(false);
     }
@@ -225,6 +231,7 @@ function getElements(dialog) {
   const byId = (id) => dialog.querySelector(`#${id}`);
   return {
     profileCount: byId("profileCount"),
+    profileListError: byId("profileListError"),
     profileHelpButton: byId("profileHelpButton"),
     profileHelpDialog: byId("profileHelpDialog"),
     profileHelpBody: byId("profileHelpBody"),
