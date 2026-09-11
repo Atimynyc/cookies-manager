@@ -52,6 +52,12 @@ Development
 - The versioned site data interchange contract is documented in `docs/site-data-package-v1.md`.
 - Acceptance screenshots are written to `.tmp/` by default. Set `ACCEPTANCE_ARTIFACT_DIR` to choose another artifact directory for the full workflow.
 
+v0.3.5 release preparation
+
+- Manifest version is `0.3.5` and the supported Chrome baseline is version 114 or newer.
+- The upload package contains only `manifest.json`, `assets/`, and `src/`; release checks exclude tests, scripts, docs, temporary files, and dependencies.
+- Chrome Web Store copy and four 1280×800 feature images are in `store-assets/`.
+
 v0.3.3 operation reliability
 
 - Edits, deletions and imports share a background operation journal. Accepted tasks survive closing the extension surface; worker restarts reconcile interrupted writes before continuing.

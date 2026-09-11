@@ -2,15 +2,11 @@ Cookie Controller - Chrome Web Store Review Explanations (English)
 
 Single purpose description
 
-Cookie Controller has one purpose: to let users inspect and manage site data for a website they explicitly select, including cookies, Local Storage, and Session Storage. Search, copy, batch editing, import/export, value formatting, templates, site profiles, change history, and undo directly support this purpose. The extension contains no advertising, analytics, user tracking, or functionality unrelated to site data management.
+Cookie Controller has one purpose: to let users inspect and manage site data for a website they explicitly select, including cookies, Local Storage, and Session Storage. Search, copy, batch editing, import/export, value formatting, site states, change history, and undo directly support this purpose. The extension contains no advertising, analytics, user tracking, or functionality unrelated to site data management.
 
 Justification for cookies
 
 The extension uses the chrome.cookies API to read cookies for a user-selected website, identify the cookie store associated with the current tab, and create, update, remove, and observe cookie changes. This permission is required for the extension's core cookie inspection and management functionality. Cookie data is processed locally only while the user opens and operates the extension. It is not uploaded or shared with the developer or third-party servers.
-
-Justification for activeTab
-
-The current version does not require the activeTab permission, and it should be removed from manifest.json before submission. The extension already uses the tabs permission to identify and switch tabs and declares HTTP/HTTPS host permissions. The source code does not depend on the temporary host access supplied by activeTab. To follow the principle of least privilege, a misleading or overly broad justification should not be submitted for this redundant permission.
 
 Justification for tabs
 
@@ -18,7 +14,7 @@ The extension uses the chrome.tabs API to identify the active tab, list HTTP/HTT
 
 Justification for storage
 
-The extension uses chrome.storage.local to store interface preferences, automatic reload settings, column widths, the selected value-tool mode, cookie templates, site profiles explicitly created by the user, and recent change records on the user's device. A site profile may contain site-data values the user deliberately selects; apply-time variables retain placeholders and do not store captured or entered values. The extension uses chrome.storage.session to retain complete before-and-after values for difference viewing and batch undo only during the current browser session. This data is used only to restore extension state and support site data management workflows. It is not synchronized or uploaded to the developer or third-party servers. Users can remove locally stored data by deleting profiles, clearing extension data, or uninstalling the extension, and session snapshots are discarded when the browser session ends.
+The extension uses chrome.storage.local to store interface preferences, automatic reload settings, column widths, the selected value-tool mode, favorites, and site profiles explicitly created by the user, and recent change records on the user's device. A site profile may contain site-data values the user deliberately selects; apply-time variables retain placeholders and do not store captured or entered values. The extension uses chrome.storage.session to retain complete before-and-after values for difference viewing and batch undo only during the current browser session. This data is used only to restore extension state and support site data management workflows. It is not synchronized or uploaded to the developer or third-party servers. Users can remove locally stored data by deleting profiles, clearing extension data, or uninstalling the extension, and session snapshots are discarded when the browser session ends.
 
 Justification for scripting
 

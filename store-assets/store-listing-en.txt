@@ -22,14 +22,14 @@ Main features
 - Quickly import one or more Cookies with separate Name and Value fields; Storage supports key=value for one-off imports.
 - Copy a cookie value, a name=value pair, or structured JSON with one action.
 - Use built-in URL encode/decode, JSON format/compact, and JWT payload decoding tools.
-- Save frequently used values as local templates for reuse.
+- Save reusable site states with tags, origin rules, apply-time variables, rename, duplicate, export, apply, and delete actions.
 - Review recent changes and before/after differences, and undo changes during the current browser session.
 - Optionally reload the page automatically after a change.
 - Use the extension from either its popup or the Chrome side panel.
 
 Privacy
 
-Cookie Controller contains no advertising, analytics, or user tracking and does not require an account. Cookies and web storage data accessed by the extension are processed only on the user's device. They are not uploaded, sold, or shared with the developer or third-party servers. Interface preferences, favorite site-data identifiers (which do not contain cookie or storage values), templates, site profiles explicitly saved by the user, and recent change records are stored in the browser's local extension storage and can be removed by clearing the extension data or uninstalling the extension. Complete batch-undo snapshots remain only in browser-session storage.
+Cookie Controller contains no advertising, analytics, or user tracking and does not require an account. Cookies and web storage data accessed by the extension are processed only on the user's device. They are not uploaded, sold, or shared with the developer or third-party servers. Interface preferences, favorite site-data identifiers (which do not contain cookie or storage values), site profiles explicitly saved by the user, and recent change records are stored in the browser's local extension storage and can be removed by clearing the extension data or uninstalling the extension. Complete batch-undo snapshots remain only in browser-session storage.
 
 Usage notes
 
