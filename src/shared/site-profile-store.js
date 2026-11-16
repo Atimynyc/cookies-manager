@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 import { callChrome } from "./chrome-call.js";
 import {
   duplicateSiteProfile,
@@ -27,7 +28,7 @@ export async function addSiteProfile(profile) {
   const normalized = normalizeSiteProfile(profile);
   return mutateSiteProfiles((existing) => {
     if (existing.some((item) => item.id === normalized.id)) {
-      throw Object.assign(new Error("A saved state with this ID already exists. Reload Saved States and try again."), {
+      throw Object.assign(new Error(t("A saved state with this ID already exists. Reload Saved States and try again.")), {
         code: "SAVED_STATE_ALREADY_EXISTS"
       });
     }
@@ -61,7 +62,7 @@ async function mutateSiteProfiles(update) {
 function requireStoredSiteProfile(profiles, id) {
   const profile = profiles.find((item) => item.id === id);
   if (!profile) {
-    throw Object.assign(new Error("This saved state no longer exists. Reload Saved States and select another state."), {
+    throw Object.assign(new Error(t("This saved state no longer exists. Reload Saved States and select another state.")), {
       code: "SAVED_STATE_NOT_FOUND"
     });
   }
@@ -74,7 +75,7 @@ async function writeSiteProfiles(normalized, existing) {
     || normalized.some((profile) => !existingIds.has(profile.id));
   if (normalized.length > MAX_SITE_PROFILES && addsProfiles) {
     throw Object.assign(new Error(
-      `Saved States is limited to ${MAX_SITE_PROFILES} states. Return to the Saved States list and delete unused states before saving or copying another state. Your existing states have not been changed.`
+      t`Saved States is limited to ${MAX_SITE_PROFILES} states. Return to the Saved States list and delete unused states before saving or copying another state. Your existing states have not been changed.`
     ), { code: "SAVED_STATE_LIMIT_REACHED" });
   }
 
@@ -108,10 +109,10 @@ async function writeSiteProfiles(normalized, existing) {
 
 function createQuotaError(quota, projectedBytes, cause) {
   const usage = Number.isFinite(quota) && quota > 0
-    ? ` (Chrome limit: ${formatBytes(quota)}${projectedBytes == null ? "" : `; required: ${formatBytes(projectedBytes)}`})`
+    ? t` (Chrome limit: ${formatBytes(quota)}${projectedBytes == null ? "" : `; required: ${formatBytes(projectedBytes)}`})`
     : "";
   return Object.assign(new Error(
-    `Extension storage is full${usage}. Return to the Saved States list and delete unused states, or save fewer site data entries, then try again. Your existing states have not been changed.`,
+    t`Extension storage is full${usage}. Return to the Saved States list and delete unused states, or save fewer site data entries, then try again. Your existing states have not been changed.`,
     cause ? { cause } : undefined
   ), { code: "SAVED_STATE_QUOTA_EXCEEDED" });
 }

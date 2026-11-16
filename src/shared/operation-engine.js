@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 import { createOperationJournal } from "./operation-journal.js";
 import {
   conflictError,
@@ -34,7 +35,7 @@ export function createOperationEngine({
       const job = normalizeSpec(spec);
       const previous = jobs.find((item) => item.id === job.id);
       if (previous) {
-        if (!sameSpec(previous, job)) throw new Error("This operation ID already belongs to another request.");
+        if (!sameSpec(previous, job)) throw new Error(t("This operation ID already belongs to another request."));
         return structuredClone(previous);
       }
       await adapter.verifyTarget(job.target);
@@ -91,7 +92,7 @@ export function createOperationEngine({
       requireCompleted(job);
       const selected = itemIds === undefined ? null : new Set(itemIds);
       if (selected && [...selected].some((itemId) => !job.items.some((item) => item.id === itemId))) {
-        throw new Error("The undo selection contains an unknown operation item.");
+        throw new Error(t("The undo selection contains an unknown operation item."));
       }
       const items = job.items.filter((item) => UNDO_ELIGIBLE.has(item.state) && (!selected || selected.has(item.id)));
       if (items.length === 0) return structuredClone(job);
@@ -233,23 +234,23 @@ export function createOperationEngine({
 
 function normalizeSpec(spec) {
   if (!spec || !Array.isArray(spec.items) || (spec.items.length === 0 && !spec.skipped?.length)) {
-    throw new Error("Select at least one site data item before starting an operation.");
+    throw new Error(t("Select at least one site data item before starting an operation."));
   }
   const target = normalizeOperationTarget(spec.target);
   const items = spec.items.map((item, index) => normalizeOperationItem(item, target, index));
   if (new Set(items.map((item) => item.id)).size !== items.length) {
-    throw new Error("Operation item IDs must be unique within the batch.");
+    throw new Error(t("Operation item IDs must be unique within the batch."));
   }
   const identities = items.map((item) => `${item.kind}:${getSiteDataItemId(item.kind, item.after || item.before)}`);
   if (new Set(identities).size !== items.length) {
-    throw new Error("A batch cannot contain the same site data item more than once.");
+    throw new Error(t("A batch cannot contain the same site data item more than once."));
   }
   const createdAt = new Date().toISOString();
   return {
     id: String(spec.id || crypto.randomUUID()),
     target,
     executionTarget: target,
-    label: String(spec.label || "Site data change"),
+    label: String(spec.label || t("Site data change")),
     source: String(spec.source || "site-data"),
     createdAt,
     updatedAt: createdAt,
@@ -281,16 +282,16 @@ function touch(job) {
 
 function findJob(jobs, id) {
   const job = jobs.find((item) => item.id === id);
-  if (!job) throw new Error("This operation is no longer available in the current browser session.");
+  if (!job) throw new Error(t("This operation is no longer available in the current browser session."));
   return job;
 }
 
 function requireCompleted(job) {
   if (job.status !== "completed") {
-    throw new Error("Wait for the operation to finish before retrying, undoing, or clearing it.");
+    throw new Error(t("Wait for the operation to finish before retrying, undoing, or clearing it."));
   }
 }
 
 function boundedError(error) {
-  return String(error?.message || error || "The operation failed.").slice(0, 240);
+  return String(error?.message || error || t("The operation failed.")).slice(0, 240);
 }

@@ -1,0 +1,2901 @@
+{
+  "m_only_this_extension_can_request_site_data_operat_af2557a": {
+    "message": "Numai această extensie poate solicita operațiuni legate de datele site-ului.",
+    "description": "Only this extension can request site data operations."
+  },
+  "m_unknown_operation_command_820758d": {
+    "message": "Comandă de operație necunoscută.",
+    "description": "Unknown operation command."
+  },
+  "m_operation_failed_3b96e637": {
+    "message": "Operațiunea a eșuat.",
+    "description": "Operation failed."
+  },
+  "m_url_decoded_value_23b88df9": {
+    "message": "Valoarea decodată a URL",
+    "description": "URL decoded value"
+  },
+  "m_url_encoded_value_34861f0d": {
+    "message": "Valoarea codificată a URL",
+    "description": "URL encoded value"
+  },
+  "m_formatted_json_b53536a7": {
+    "message": "Formatat JSON",
+    "description": "Formatted JSON"
+  },
+  "m_compacted_json_bec19963": {
+    "message": "JSON compactat",
+    "description": "Compacted JSON"
+  },
+  "m_jwt_payload_2cce1860": {
+    "message": "Sarcina utilă JWT",
+    "description": "JWT payload"
+  },
+  "m_cookie_77a740bf": {
+    "message": "cookie",
+    "description": "cookie"
+  },
+  "m_cookies_284b0124": {
+    "message": "cookies",
+    "description": "cookies"
+  },
+  "m_cookie_bdbabadf": {
+    "message": "Cookie",
+    "description": "Cookie"
+  },
+  "m_reading_cookies_5d1246a0": {
+    "message": "Citirea cookies",
+    "description": "Reading cookies"
+  },
+  "m_no_cookies_for_this_page_d6b33cd9": {
+    "message": "Nu există cookies pentru această pagină",
+    "description": "No cookies for this page"
+  },
+  "m_cookies_unavailable_86e2c35e": {
+    "message": "Cookies indisponibil",
+    "description": "Cookies unavailable"
+  },
+  "m_only_http_and_https_pages_support_cookie_operati_7f8f266c": {
+    "message": "Doar paginile http:// și https:// acceptă operațiunile cookie.",
+    "description": "Only http:// and https:// pages support cookie operations."
+  },
+  "m_failed_to_read_cookies_ec17682": {
+    "message": "Nu s-a putut citi cookies.",
+    "description": "Failed to read cookies."
+  },
+  "m_name_fe07306": {
+    "message": "Nume",
+    "description": "Name"
+  },
+  "m_value_d147f96a": {
+    "message": "Valoare",
+    "description": "Value"
+  },
+  "m_domain_be1c8911": {
+    "message": "Domeniu",
+    "description": "Domain"
+  },
+  "m_path_eb66e456": {
+    "message": "Cale",
+    "description": "Path"
+  },
+  "m_expires_c7aa0523": {
+    "message": "Expiră",
+    "description": "Expires"
+  },
+  "m_flags_4222ebcc": {
+    "message": "Atribute",
+    "description": "Flags"
+  },
+  "m_size_a6478e7c": {
+    "message": "Dimensiune",
+    "description": "Size"
+  },
+  "m_store_6da32dce": {
+    "message": "Stocarea datelor",
+    "description": "Store"
+  },
+  "m_local_storage_item_980fa25c": {
+    "message": "element de stocare locală",
+    "description": "local storage item"
+  },
+  "m_local_storage_items_8f9c4ffd": {
+    "message": "articole stocate la nivel local",
+    "description": "local storage items"
+  },
+  "m_local_storage_c6c2fa19": {
+    "message": "Local Storage",
+    "description": "Local Storage"
+  },
+  "m_reading_local_storage_85a66635": {
+    "message": "Citirea memoriei locale",
+    "description": "Reading local storage"
+  },
+  "m_no_local_storage_for_this_page_81f3287c": {
+    "message": "Această pagină nu dispune de spațiu de stocare local",
+    "description": "No local storage for this page"
+  },
+  "m_local_storage_unavailable_be2258cf": {
+    "message": "Spațiul de stocare local nu este disponibil",
+    "description": "Local storage unavailable"
+  },
+  "m_only_http_and_https_pages_support_storage_operat_1fb0cf9f": {
+    "message": "Doar paginile http:// și https:// acceptă operațiuni de stocare.",
+    "description": "Only http:// and https:// pages support storage operations."
+  },
+  "m_failed_to_read_local_storage_5600c819": {
+    "message": "Nu s-a putut citi memoria locală.",
+    "description": "Failed to read local storage."
+  },
+  "m_key_cd1ac90c": {
+    "message": "Cheie",
+    "description": "Key"
+  },
+  "m_origin_1f93146f": {
+    "message": "Origine",
+    "description": "Origin"
+  },
+  "m_storage_34eddf06": {
+    "message": "Storage",
+    "description": "Storage"
+  },
+  "m_scope_63e6658b": {
+    "message": "Domeniu de aplicare",
+    "description": "Scope"
+  },
+  "m_type_d155d06d": {
+    "message": "Tip",
+    "description": "Type"
+  },
+  "m_session_storage_item_abc5a459": {
+    "message": "element de stocare de sesiune",
+    "description": "session storage item"
+  },
+  "m_session_storage_items_92216e1e": {
+    "message": "elemente de stocare de sesiune",
+    "description": "session storage items"
+  },
+  "m_session_storage_c99fc216": {
+    "message": "Session Storage",
+    "description": "Session Storage"
+  },
+  "m_reading_session_storage_58eeddc2": {
+    "message": "Citirea datelor stocate în sesiune",
+    "description": "Reading session storage"
+  },
+  "m_no_session_storage_for_this_page_81d58bab": {
+    "message": "Această pagină nu utilizează stocarea în sesiune",
+    "description": "No session storage for this page"
+  },
+  "m_session_storage_unavailable_22a66cec": {
+    "message": "Stocarea sesiunii nu este disponibilă",
+    "description": "Session storage unavailable"
+  },
+  "m_failed_to_read_session_storage_9a5d1b9c": {
+    "message": "Nu s-a putut citi spațiul de stocare al sesiunii.",
+    "description": "Failed to read session storage."
+  },
+  "m_delete_5797ea6a": {
+    "message": "Șterge",
+    "description": "Delete"
+  },
+  "m_enter_a_valid_value_21accea5": {
+    "message": "Introduceți o valoare validă.",
+    "description": "Enter a valid value."
+  },
+  "m_items_3a79338f": {
+    "message": "articole",
+    "description": "items"
+  },
+  "m_selected_1_eac1029b": {
+    "message": "Intrări selectate: $slot_1$",
+    "description": "Selected $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_unnamed_727f184c": {
+    "message": "(anonim)",
+    "description": "(unnamed)"
+  },
+  "m_local_28b223a8": {
+    "message": "Local",
+    "description": "Local"
+  },
+  "m_session_2048cc97": {
+    "message": "Sesiune",
+    "description": "Session"
+  },
+  "m_all_cookies_96f0f90b": {
+    "message": "Toate cookies",
+    "description": "All cookies"
+  },
+  "m_all_site_data_37826d75": {
+    "message": "Toate datele site-ului",
+    "description": "All site data"
+  },
+  "m_copy_netscape_3515f66b": {
+    "message": "Copiază Netscape",
+    "description": "Copy Netscape"
+  },
+  "m_copy_json_e595bc8e": {
+    "message": "Copiază JSON",
+    "description": "Copy JSON"
+  },
+  "m_save_cookies_txt_686a7b51": {
+    "message": "Salvează fișierul cookies.txt",
+    "description": "Save cookies.txt"
+  },
+  "m_save_json_a889c0da": {
+    "message": "Salvează JSON",
+    "description": "Save JSON"
+  },
+  "m_cookies_58f3dcc4": {
+    "message": "Cookies",
+    "description": "Cookies"
+  },
+  "m_current_view_1_9eee4e3d": {
+    "message": "Vizualizare curentă ($slot_1$)",
+    "description": "Current view($1)",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_hide_items_d1e5ea99": {
+    "message": "Ascunde elementele",
+    "description": "Hide items"
+  },
+  "m_choose_items_73f07ad4": {
+    "message": "Alegeți articolele",
+    "description": "Choose items"
+  },
+  "m_1_of_2_selected_8d353d4c": {
+    "message": "Au fost selectate $slot_1$ din $slot_2$",
+    "description": "$1 of $2 selected",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_select_1_fcc09d68": {
+    "message": "Selectați $slot_1$",
+    "description": "Select $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_item_1f648006": {
+    "message": "Articol",
+    "description": "Item"
+  },
+  "m_1_cookies_in_the_current_view_a8926f6b": {
+    "message": "$slot_1$ cookies în vizualizarea curentă",
+    "description": "$1 cookies in the current view",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_selected_cookies_121bff00": {
+    "message": "Cookie-uri selectate: $slot_1$",
+    "description": "$1 selected cookies",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_all_cookies_for_the_current_target_3d500f07": {
+    "message": "Toate cookies pentru ținta curentă",
+    "description": "All cookies for the current target"
+  },
+  "m_samesite_partitioned_chips_and_cookie_store_are__c9b688b": {
+    "message": ". SameSite, Partitioned/CHIPS și containerul de stocare a cookie-urilor din browser nu sunt reprezentate.",
+    "description": ". SameSite, Partitioned/CHIPS, and Cookie store are not represented."
+  },
+  "m_1_2_in_the_current_view_47e460ee": {
+    "message": "$slot_1$ $slot_2$ în vizualizarea curentă",
+    "description": "$1 $2 in the current view",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_1_selected_2_f3f350b7": {
+    "message": "Intrări de date selectate: $slot_1$ $slot_2$",
+    "description": "$1 selected $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_cookies_local_storage_and_session_storage_for_th_70999cbc": {
+    "message": "Cookies, Local Storage și Session Storage pentru ținta curentă",
+    "description": "Cookies, Local Storage, and Session Storage for the current target"
+  },
+  "m_preparing_preview_ecfabd6b": {
+    "message": "Se pregătește previzualizarea...",
+    "description": "Preparing preview..."
+  },
+  "m_failed_to_build_export_preview_56fd5cdd": {
+    "message": "Nu s-a putut genera previzualizarea de export.",
+    "description": "Failed to build export preview."
+  },
+  "m_copied_1_2_7c37d74c": {
+    "message": "S-a copiat $slot_1$ $slot_2$.",
+    "description": "Copied $1 $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_saved_1_2_84ae4f6b": {
+    "message": "S-au salvat cu succes $slot_1$ $slot_2$.",
+    "description": "Saved $1 $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_failed_to_export_site_data_132c6226": {
+    "message": "Nu s-au putut exporta datele site-ului.",
+    "description": "Failed to export site data."
+  },
+  "m_copied_8dc21305": {
+    "message": "Copiat",
+    "description": "Copied"
+  },
+  "m_copied_to_clipboard_35a67762": {
+    "message": "Copiat în clipboard.",
+    "description": "Copied to clipboard."
+  },
+  "m_clipboard_is_unavailable_80f97fb5": {
+    "message": "Clipboard nu este disponibil.",
+    "description": "Clipboard is unavailable."
+  },
+  "m_operation_history_could_not_be_loaded_5e027316": {
+    "message": "Nu s-a putut încărca istoricul operațiunilor.",
+    "description": "Operation history could not be loaded."
+  },
+  "m_this_older_change_has_no_operation_journal_and_c_68e243a8": {
+    "message": "Această modificare mai veche nu are jurnal de operațiuni și nu poate fi anulată în condiții de siguranță.",
+    "description": "This older change has no operation journal and cannot be safely undone."
+  },
+  "m_the_change_could_not_be_undone_b52cca32": {
+    "message": "Schimbarea nu putea fi anulată.",
+    "description": "The change could not be undone."
+  },
+  "m_undid_the_selected_change_87c607c7": {
+    "message": "A anulat modificarea selectată.",
+    "description": "Undid the selected change."
+  },
+  "m_failed_to_undo_change_d52af123": {
+    "message": "Nu s-a putut anula modificarea.",
+    "description": "Failed to undo change."
+  },
+  "m_1_history_cleared_fe217fd8": {
+    "message": "Istoricul $slot_1$ a fost șters.",
+    "description": "$1 history cleared.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_clear_recent_changes_8140e2d8": {
+    "message": "Nu s-au putut șterge modificările recente.",
+    "description": "Failed to clear recent changes."
+  },
+  "m_back_to_details_c7da44f9": {
+    "message": "Înapoi la detalii",
+    "description": "Back to details"
+  },
+  "m_1_unread_changes_3b48aa9c": {
+    "message": "$slot_1$ modificări necitite",
+    "description": "$1 unread changes",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_recent_changes_b8075d47": {
+    "message": "Modificări recente",
+    "description": "Recent changes"
+  },
+  "m_change_detail_38f8e0a6": {
+    "message": "Detalii privind modificarea",
+    "description": "Change detail"
+  },
+  "m_details_ec24245": {
+    "message": "Detalii",
+    "description": "Details"
+  },
+  "m_unknown_scope_32aea031": {
+    "message": "Domeniu de aplicare necunoscut",
+    "description": "Unknown scope"
+  },
+  "m_undo_71fd4acf": {
+    "message": "Anulare",
+    "description": "Undo"
+  },
+  "m_undo_this_change_7d5c83f": {
+    "message": "Anulează această modificare",
+    "description": "Undo this change"
+  },
+  "m_action_a77a91f": {
+    "message": "Acțiune",
+    "description": "Action"
+  },
+  "m_before_expiration_26ac998b": {
+    "message": "Înainte de expirare",
+    "description": "Before expiration"
+  },
+  "m_after_expiration_f68ca912": {
+    "message": "După expirare",
+    "description": "After expiration"
+  },
+  "m_default_19dc307e": {
+    "message": "Implicit",
+    "description": "Default"
+  },
+  "m_host_302af18f": {
+    "message": "Gazdă",
+    "description": "Host"
+  },
+  "m_changed_89c5203b": {
+    "message": "Modificat",
+    "description": "Changed"
+  },
+  "m_cookie_id_4eda8c38": {
+    "message": "ID-ul Cookie",
+    "description": "Cookie ID"
+  },
+  "m_item_id_e7a83b9f": {
+    "message": "Cod articol",
+    "description": "Item ID"
+  },
+  "m_original_tab_b29944a5": {
+    "message": "Fila originală",
+    "description": "Original tab"
+  },
+  "m_browsing_mode_8e47a543": {
+    "message": "Modul de navigare",
+    "description": "Browsing mode"
+  },
+  "m_incognito_ed905099": {
+    "message": "Incognito",
+    "description": "Incognito"
+  },
+  "m_regular_e750f2b7": {
+    "message": "Obișnuit",
+    "description": "Regular"
+  },
+  "m_value_snapshots_are_only_available_during_the_cu_61f70835": {
+    "message": "Instantaneele valorilor sunt disponibile doar pe durata sesiunii curente a browserului.",
+    "description": "Value snapshots are only available during the current browser session."
+  },
+  "m_unknown_cc200e59": {
+    "message": "Necunoscut",
+    "description": "Unknown"
+  },
+  "m_edit_c2c76cb1": {
+    "message": "Editare",
+    "description": "Edit"
+  },
+  "m_import_create_fa45a268": {
+    "message": "Importare și creare",
+    "description": "Import create"
+  },
+  "m_import_overwrite_bc473479": {
+    "message": "Import cu suprascriere",
+    "description": "Import overwrite"
+  },
+  "m_change_a1de2fdd": {
+    "message": "Modificare",
+    "description": "Change"
+  },
+  "m_edit_1_70f54d7c": {
+    "message": "Editează $slot_1$",
+    "description": "Edit $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_saved_1_146f391f": {
+    "message": "S-a salvat $slot_1$.",
+    "description": "Saved $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_save_1_a7d79009": {
+    "message": "Nu s-a putut salva $slot_1$.",
+    "description": "Failed to save $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_delete_1_aae09c76": {
+    "message": "Să ștergem $slot_1$?",
+    "description": "Delete $1?",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_will_be_deleted_c4fd26b6": {
+    "message": "„$slot_1$” va fi șters.",
+    "description": "\"$1\" will be deleted.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_delete_1_e576134d": {
+    "message": "Șterge $slot_1$",
+    "description": "Delete $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_deleted_1_60ffd4f9": {
+    "message": "S-a șters $slot_1$.",
+    "description": "Deleted $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_delete_1_d656ba17": {
+    "message": "Nu s-a putut șterge $slot_1$.",
+    "description": "Failed to delete $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_set_value_64db79c6": {
+    "message": "Valoare setată",
+    "description": "Set value"
+  },
+  "m_value_for_1_selected_2_d0eb34dd": {
+    "message": "Valoarea pentru $slot_1$ selectat $slot_2$",
+    "description": "Value for $1 selected $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_edit_1_items_849caea8": {
+    "message": "Editează $slot_1$ elemente",
+    "description": "Edit $1 items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_updated_513083d0": {
+    "message": "Actualizat",
+    "description": "Updated"
+  },
+  "m_failed_to_update_selected_1_d1101454": {
+    "message": "Nu s-a putut actualiza $slot_1$-ul selectat.",
+    "description": "Failed to update selected $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_delete_selected_1_fe5c7abb": {
+    "message": "Doriți să ștergeți înregistrările selectate ($slot_1$)?",
+    "description": "Delete selected $1?",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_selected_2_will_be_deleted_232e6b57": {
+    "message": "Următoarele înregistrări selectate vor fi șterse: $slot_1$ $slot_2$.",
+    "description": "$1 selected $2 will be deleted.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_delete_1_items_4b46c619": {
+    "message": "Șterge $slot_1$ elemente",
+    "description": "Delete $1 items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_deleted_f225740a": {
+    "message": "Șters",
+    "description": "Deleted"
+  },
+  "m_failed_to_delete_selected_1_3dc9d492": {
+    "message": "Nu s-au putut șterge înregistrările selectate ($slot_1$).",
+    "description": "Failed to delete selected $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_2_selected_3_f233475c": {
+    "message": "$slot_1$ $slot_2$ a selectat $slot_3$.",
+    "description": "$1 $2 selected $3.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_1_failed_daf125e3": {
+    "message": "$slot_1$ a eșuat",
+    "description": "$1 failed",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_skipped_4823a4a": {
+    "message": "$slot_1$ a fost omis",
+    "description": "$1 skipped",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_copy_f7803f90": {
+    "message": "Copierea a eșuat.",
+    "description": "Failed to copy."
+  },
+  "m_the_item_s_origin_does_not_match_the_target_page_1a1ea3ad": {
+    "message": "Originea elementului nu corespunde cu pagina de destinație. Reîmprospătați pagina înainte de a edita.",
+    "description": "The item's origin does not match the target page. Refresh before editing."
+  },
+  "m_the_cookie_does_not_belong_to_the_target_page_an_a7a414cf": {
+    "message": "Cookie-ul nu aparține paginii web selectate și nici spațiului de stocare a cookie-urilor din browser. Actualizați pagina înainte de a edita.",
+    "description": "The cookie does not belong to the target page and cookie store. Refresh before editing."
+  },
+  "m_queued_9e437c74": {
+    "message": "În așteptare",
+    "description": "Queued"
+  },
+  "m_writing_3c4e7def": {
+    "message": "Scrierea",
+    "description": "Writing"
+  },
+  "m_written_e27a560": {
+    "message": "Scris",
+    "description": "Written"
+  },
+  "m_failed_5579c3d4": {
+    "message": "Eșec",
+    "description": "Failed"
+  },
+  "m_conflict_77d3e0ef": {
+    "message": "Conflict",
+    "description": "Conflict"
+  },
+  "m_undoing_2053d2e9": {
+    "message": "Anulare",
+    "description": "Undoing"
+  },
+  "m_undone_94b5c3a2": {
+    "message": "Operațiunea a fost anulată",
+    "description": "Undone"
+  },
+  "m_undo_failed_75fa16cc": {
+    "message": "Anularea nu a reușit",
+    "description": "Undo failed"
+  },
+  "m_undo_conflict_e5fe1187": {
+    "message": "Conflict la anularea modificărilor",
+    "description": "Undo conflict"
+  },
+  "m_1_tab_2_3_49b4634e": {
+    "message": "$slot_1$ | Fila $slot_2$ | $slot_3$",
+    "description": "$1 | Tab $2 | $3",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_retry_failed_a53fbd96": {
+    "message": "Reîncearcă elementele care au eșuat",
+    "description": "Retry failed"
+  },
+  "m_undo_unchanged_items_in_this_operation_f2f1f31e": {
+    "message": "Anulează elementele nemodificate din această operațiune",
+    "description": "Undo unchanged items in this operation"
+  },
+  "m_remove_record_e8883f8e": {
+    "message": "Șterge înregistrarea",
+    "description": "Remove record"
+  },
+  "m_items_1_4d7b976b": {
+    "message": "Articole ($slot_1$)",
+    "description": "Items ($1)",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_resume_454d1d8a": {
+    "message": "CV",
+    "description": "Resume"
+  },
+  "m_remove_operation_record_fc8a6952": {
+    "message": "Să ștergem înregistrarea operației?",
+    "description": "Remove operation record?"
+  },
+  "m_1_will_no_longer_be_retryable_or_undoable_63f756e8": {
+    "message": "„$slot_1$” nu va mai putea fi repetat sau anulat.",
+    "description": "\"$1\" will no longer be retryable or undoable.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_operation_record_removed_657ba6df": {
+    "message": "Înregistrarea operației a fost ștersă.",
+    "description": "Operation record removed."
+  },
+  "m_1_items_still_need_attention_9744ebf8": {
+    "message": "$slot_1$ de elemente necesită încă atenție.",
+    "description": "$1 items still need attention.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_operation_undone_6eaa3429": {
+    "message": "Operațiunea a fost anulată.",
+    "description": "Operation undone."
+  },
+  "m_retry_complete_d6be7652": {
+    "message": "Reîncercarea s-a încheiat.",
+    "description": "Retry complete."
+  },
+  "m_the_operation_could_not_be_completed_9dfb6413": {
+    "message": "Operațiunea nu a putut fi finalizată.",
+    "description": "The operation could not be completed."
+  },
+  "m_failed_to_load_saved_states_eba79a18": {
+    "message": "Nu s-au putut încărca stările salvate.",
+    "description": "Failed to load saved states."
+  },
+  "m_failed_to_save_state_f7ddf0e7": {
+    "message": "Nu s-a putut salva starea.",
+    "description": "Failed to save state."
+  },
+  "m_1_saved_70a9d181": {
+    "message": "$slot_1$ a fost salvat",
+    "description": "$1 saved",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_apply_ca77bbdb": {
+    "message": "Aplică",
+    "description": "Apply"
+  },
+  "m_rename_c80631f3": {
+    "message": "Redenumire",
+    "description": "Rename"
+  },
+  "m_copy_658f3664": {
+    "message": "Copiere",
+    "description": "Copy"
+  },
+  "m_export_e86349d3": {
+    "message": "Export",
+    "description": "Export"
+  },
+  "m_failed_to_update_saved_states_915ee649": {
+    "message": "Nu s-a reușit actualizarea stărilor salvate.",
+    "description": "Failed to update saved states."
+  },
+  "m_failed_to_prepare_saved_state_4e725642": {
+    "message": "Nu s-a putut pregăti starea salvată.",
+    "description": "Failed to prepare saved state."
+  },
+  "m_select_at_least_one_item_before_exporting_c009f5e7": {
+    "message": "Selectați cel puțin un element înainte de exportare.",
+    "description": "Select at least one item before exporting."
+  },
+  "m_the_import_target_changed_build_a_new_preview_be_608d4006": {
+    "message": "Ținta de import s-a modificat. Creați o nouă versiune de previzualizare înainte de a aplica acest pachet.",
+    "description": "The import target changed. Build a new preview before applying this package."
+  },
+  "m_import_1_items_b55a9d0b": {
+    "message": "Importă $slot_1$ articole",
+    "description": "Import $1 items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_no_import_snapshot_is_available_in_this_browser__69690989": {
+    "message": "În această sesiune de navigare nu există nicio copie salvată a datelor importate.",
+    "description": "No import snapshot is available in this browser session."
+  },
+  "m_return_to_the_original_target_tab_site_and_brows_eb117f96": {
+    "message": "Reveniți la fila, site-ul și modul de navigare inițiale înainte de a anula această importare.",
+    "description": "Return to the original target tab, site, and browsing mode before undoing this import."
+  },
+  "m_undo_restored_1_items_2_failed_ab5a808a": {
+    "message": "Operațiunea de anulare a restabilit $slot_1$ înregistrări de date; $slot_2$ a eșuat.",
+    "description": "Undo restored $1 items; $2 failed.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_undid_1_imported_items_f6bd9698": {
+    "message": "S-au anulat $slot_1$ articole importate.",
+    "description": "Undid $1 imported items.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_written_2_failed_3_skipped_304b4a05": {
+    "message": "Intrări de date scrise: $slot_1$; eșuate: $slot_2$; omise: $slot_3$.",
+    "description": "$1 written, $2 failed, $3 skipped.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_rename_saved_state_5dfd733d": {
+    "message": "Redenumirea stării salvate",
+    "description": "Rename saved state"
+  },
+  "m_saved_state_name_3d927c88": {
+    "message": "Numele stării salvate",
+    "description": "Saved state name"
+  },
+  "m_enter_a_saved_state_name_9fd29047": {
+    "message": "Introduceți numele unei stări salvate.",
+    "description": "Enter a saved state name."
+  },
+  "m_delete_saved_state_84940685": {
+    "message": "Să ștergi starea salvată?",
+    "description": "Delete saved state?"
+  },
+  "m_1_will_be_permanently_deleted_a8c73725": {
+    "message": "„$slot_1$” va fi șters definitiv.",
+    "description": "\"$1\" will be permanently deleted.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_bytes_73e126d1": {
+    "message": "$slot_1$ octeți",
+    "description": "$1 bytes",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_jwt_value_f3ae0363": {
+    "message": "Valoarea JWT",
+    "description": "JWT value"
+  },
+  "m_json_value_f2431466": {
+    "message": "Valoarea JSON",
+    "description": "JSON value"
+  },
+  "m_favorite_7c6c19ed": {
+    "message": "Preferat",
+    "description": "Favorite"
+  },
+  "m_new_8b242db1": {
+    "message": "Nou",
+    "description": "New"
+  },
+  "m_modified_dd13a6b2": {
+    "message": "Modificat",
+    "description": "Modified"
+  },
+  "m_same_4d38965b": {
+    "message": "La fel",
+    "description": "Same"
+  },
+  "m_unsupported_3f4e39d0": {
+    "message": "Nu este acceptat",
+    "description": "Unsupported"
+  },
+  "m_import_573e0af4": {
+    "message": "Import",
+    "description": "Import"
+  },
+  "m_saved_states_93462486": {
+    "message": "Stări salvate",
+    "description": "Saved States"
+  },
+  "m_cookie_name_daf59b6e": {
+    "message": "Cookie nume",
+    "description": "Cookie name"
+  },
+  "m_storage_key_df0caa39": {
+    "message": "Cheia Storage",
+    "description": "Storage key"
+  },
+  "m_cookie_value_cfa44712": {
+    "message": "Valoarea Cookie",
+    "description": "Cookie value"
+  },
+  "m_storage_value_e83fba3b": {
+    "message": "Valoarea Storage",
+    "description": "Storage value"
+  },
+  "m_enter_valid_site_data_dffd0cc8": {
+    "message": "Introduceți date valide privind site-ul.",
+    "description": "Enter valid site data."
+  },
+  "m_drop_one_import_file_at_a_time_d54fa864": {
+    "message": "Adăugați câte un fișier de import pe rând.",
+    "description": "Drop one import file at a time."
+  },
+  "m_netscape_curl_files_can_only_be_imported_from_co_bb4fa060": {
+    "message": "Fișierele Netscape / cURL pot fi importate numai din Cookies.",
+    "description": "Netscape / cURL files can only be imported from Cookies."
+  },
+  "m_failed_to_read_the_selected_file_d34a98a9": {
+    "message": "Nu s-a putut citi fișierul selectat.",
+    "description": "Failed to read the selected file."
+  },
+  "m_invalid_site_data_package_3913772d": {
+    "message": "Pachetul de date al site-ului este nevalid.",
+    "description": "Invalid site data package."
+  },
+  "m_failed_to_build_import_preview_a2a2a0f8": {
+    "message": "Nu s-a putut genera previzualizarea importului.",
+    "description": "Failed to build import preview."
+  },
+  "m_target_1_3691ef59": {
+    "message": "Țintă: $slot_1$",
+    "description": "Target: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_selected_5f70e77b": {
+    "message": "Intrări selectate: $slot_1$",
+    "description": "$1 selected",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_applying_site_data_eac81ccc": {
+    "message": "Aplicarea modificărilor la datele site-ului web",
+    "description": "Applying site data"
+  },
+  "m_preparing_batch_61d07c13": {
+    "message": "Pregătirea lotului",
+    "description": "Preparing batch"
+  },
+  "m_import_complete_5d213773": {
+    "message": "Importul s-a încheiat",
+    "description": "Import complete"
+  },
+  "m_import_failed_9ffdaa11": {
+    "message": "Importul a eșuat",
+    "description": "Import failed"
+  },
+  "m_the_batch_could_not_be_applied_417dafd2": {
+    "message": "Lotul nu a putut fi aplicat.",
+    "description": "The batch could not be applied."
+  },
+  "m_1_of_2_359557ff": {
+    "message": "$slot_1$ din $slot_2$",
+    "description": "$1 of $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_1_succeeded_2_failed_3_skipped_218f4367": {
+    "message": "$slot_1$ a reușit, $slot_2$ a eșuat, $slot_3$ a fost omis",
+    "description": "$1 succeeded, $2 failed, $3 skipped",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_site_data_item_59051e8d": {
+    "message": "Element de date al site-ului",
+    "description": "Site data item"
+  },
+  "m_success_3a5fbf10": {
+    "message": "succes",
+    "description": "success"
+  },
+  "m_failed_e0accfb4": {
+    "message": "eșuat",
+    "description": "failed"
+  },
+  "m_skipped_22ec9b7": {
+    "message": "omise",
+    "description": "skipped"
+  },
+  "m_undoing_import_79ebb952": {
+    "message": "Anularea importului",
+    "description": "Undoing import"
+  },
+  "m_import_undone_76ad3b2b": {
+    "message": "Importul a fost anulat",
+    "description": "Import undone"
+  },
+  "m_undo_incomplete_341418ed": {
+    "message": "Anulare incompletă",
+    "description": "Undo incomplete"
+  },
+  "m_the_batch_could_not_be_undone_e7c1877a": {
+    "message": "Nu s-a putut anula procesul în serie.",
+    "description": "The batch could not be undone."
+  },
+  "m_or_drop_a_file_here_929523b2": {
+    "message": "sau trageți un fișier aici",
+    "description": "or drop a file here"
+  },
+  "m_netscape_cookie_jar_6ff3f335": {
+    "message": "Netscape cookie borcan",
+    "description": "Netscape cookie jar"
+  },
+  "m_package_json_7a60c07f": {
+    "message": "Pachetul JSON",
+    "description": "Package JSON"
+  },
+  "m_paste_netscape_curl_cookie_data_31a18196": {
+    "message": "Lipiți datele Netscape / cURL cookie",
+    "description": "Paste Netscape / cURL cookie data"
+  },
+  "m_paste_a_site_data_package_bd31982": {
+    "message": "Inserarea unui pachet de date al site-ului",
+    "description": "Paste a site data package"
+  },
+  "m_copy_value_8902f3e5": {
+    "message": "Copiere valoare",
+    "description": "Copy value"
+  },
+  "m_copy_name_value_6c98eeaf": {
+    "message": "Copiază name=value",
+    "description": "Copy name=value"
+  },
+  "m_copy_result_4fd54b5": {
+    "message": "Copierea rezultatului",
+    "description": "Copy result"
+  },
+  "m_reload_after_changes_on_1de03620": {
+    "message": "Reîncărcare după modificări: activată",
+    "description": "Reload after changes: on"
+  },
+  "m_reload_after_changes_off_7e09437a": {
+    "message": "Reîncărcare după modificări: dezactivată",
+    "description": "Reload after changes: off"
+  },
+  "m_refresh_data_page_reload_is_on_cece4e4c": {
+    "message": "Reîmprospătează datele (opțiunea de reîncărcare a paginii este activată)",
+    "description": "Refresh data (page reload is on)"
+  },
+  "m_refresh_data_f7e27804": {
+    "message": "Reîmprospătează datele",
+    "description": "Refresh data"
+  },
+  "m_this_page_is_not_supported_c8ca9e9f": {
+    "message": "Această pagină nu este acceptată",
+    "description": "This page is not supported"
+  },
+  "m_failed_to_open_site_data_tools_82dfa4d9": {
+    "message": "Nu s-au putut deschide instrumentele de date ale site-ului.",
+    "description": "Failed to open site data tools."
+  },
+  "m_failed_to_switch_site_b20d98c8": {
+    "message": "Nu s-a reușit schimbarea site-ului.",
+    "description": "Failed to switch site."
+  },
+  "m_opened_side_panel_7e401ebd": {
+    "message": "Panoul lateral deschis.",
+    "description": "Opened side panel."
+  },
+  "m_failed_to_open_side_panel_f092d38e": {
+    "message": "Nu s-a putut deschide panoul lateral.",
+    "description": "Failed to open side panel."
+  },
+  "m_1_reload_this_extension_in_chrome_extensions_aft_7b6e4c77": {
+    "message": "$slot_1$ Reîncarcă această extensie din chrome://extensions după actualizarea manifestului.",
+    "description": "$1 Reload this extension in chrome://extensions after updating the manifest.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_no_supported_target_dc598e35": {
+    "message": "Nu există destinație acceptată",
+    "description": "No supported target"
+  },
+  "m_open_an_http_or_https_page_before_importing_1_157b51a6": {
+    "message": "Deschideți o pagină de tipul http:// sau https:// înainte de a importa $slot_1$.",
+    "description": "Open an http:// or https:// page before importing $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_import_1_item_d94801da": {
+    "message": "Importă articolul $slot_1$",
+    "description": "Import $1 item",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_import_1_5398384d": {
+    "message": "Nu s-a putut importa $slot_1$.",
+    "description": "Failed to import $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_row_1_2_943d7d0a": {
+    "message": "Rândul $slot_1$: $slot_2$",
+    "description": "Row $1: $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_row_1_2_3_is_duplicated_23e8d788": {
+    "message": "Rândul $slot_1$: $slot_2$ „$slot_3$” apare de două ori.",
+    "description": "Row $1: $2 \"$3\" is duplicated.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_enter_at_least_one_1_f54799b0": {
+    "message": "Introduceți cel puțin un $slot_1$.",
+    "description": "Enter at least one $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_imported_1_7eecd17a": {
+    "message": "$slot_1$ importat.",
+    "description": "Imported $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_imported_1_2_875cc7ac": {
+    "message": "S-au importat $slot_1$ $slot_2$.",
+    "description": "Imported $1 $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_imported_1_2_3_failed_4_4ed60786": {
+    "message": "S-au importat cu succes $slot_1$ $slot_2$; importul $slot_3$ a eșuat.$slot_4$",
+    "description": "Imported $1 $2, $3 failed.$4",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      },
+      "slot_4": {
+        "content": "$4"
+      }
+    }
+  },
+  "m_1_ready_2ec8dfb5": {
+    "message": "$slot_1$ este gata.",
+    "description": "$1 ready.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_unable_to_parse_this_value_88fdaac5": {
+    "message": "Nu se poate analiza această valoare.",
+    "description": "Unable to parse this value."
+  },
+  "m_show_result_b85e67ad": {
+    "message": "Afișează rezultatul",
+    "description": "Show result"
+  },
+  "m_raw_a689aa91": {
+    "message": "Brut",
+    "description": "Raw"
+  },
+  "m_raw_value_c5a32700": {
+    "message": "valoare brută",
+    "description": "raw value"
+  },
+  "m_show_1_a598d193": {
+    "message": "Afișează $slot_1$",
+    "description": "Show $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_search_selected_cookies_a8e71275": {
+    "message": "Căutare după cookies selectat",
+    "description": "Search selected cookies"
+  },
+  "m_search_name_value_domain_path_3fd69442": {
+    "message": "Căutare după nume, valoare, domeniu, cale",
+    "description": "Search name, value, domain, path"
+  },
+  "m_search_selected_items_c4b3e72a": {
+    "message": "Căutare în articolele selectate",
+    "description": "Search selected items"
+  },
+  "m_search_key_value_origin_a6484085": {
+    "message": "Căutare după cheie, valoare, origine",
+    "description": "Search key, value, origin"
+  },
+  "m_refresh_1_4d5efd5b": {
+    "message": "Reîmprospătează $slot_1$",
+    "description": "Refresh $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_editor_86069f43": {
+    "message": "editorul $slot_1$",
+    "description": "$1 editor",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_select_a_1_c629d055": {
+    "message": "Selectați un $slot_1$",
+    "description": "Select a $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_resize_1_column_a7150cf6": {
+    "message": "Redimensionare coloană $slot_1$",
+    "description": "Resize $1 column",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_cookie_dccfa860": {
+    "message": "$slot_1$ cookie",
+    "description": "$1 cookie",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_cookies_ade595e9": {
+    "message": "$slot_1$ cookies",
+    "description": "$1 cookies",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_local_storage_item_2393a4f7": {
+    "message": "$slot_1$ element de stocare locală",
+    "description": "$1 local storage item",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_local_storage_items_856bfbcc": {
+    "message": "$slot_1$ elemente stocate local",
+    "description": "$1 local storage items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_session_storage_item_549260e6": {
+    "message": "Element de stocare a sesiunii $slot_1$",
+    "description": "$1 session storage item",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_session_storage_items_b76e0a8f": {
+    "message": "Elemente de stocare a sesiunii $slot_1$",
+    "description": "$1 session storage items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_sort_1_ascending_9526e2a6": {
+    "message": "Sortează $slot_1$ în ordine crescătoare",
+    "description": "Sort $1 ascending",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_sort_1_descending_c2ff5ce6": {
+    "message": "Sortează $slot_1$ în ordine descrescătoare",
+    "description": "Sort $1 descending",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_update_favorites_5e1b6823": {
+    "message": "Nu s-a putut actualiza lista de favorite.",
+    "description": "Failed to update favorites."
+  },
+  "m_1_selected_2_e507aad": {
+    "message": "Intrări selectate: $slot_1$$slot_2$",
+    "description": "$1 selected$2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_1_hidden_eef079a1": {
+    "message": " · $slot_1$ ascuns",
+    "description": " · $1 hidden",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_show_all_items_36117eb7": {
+    "message": "Afișează toate articolele",
+    "description": "Show all items"
+  },
+  "m_show_selected_items_7a2ae1e9": {
+    "message": "Afișează articolele selectate",
+    "description": "Show selected items"
+  },
+  "m_this_item_was_removed_from_the_page_your_draft_w_586055b6": {
+    "message": "Acest element a fost eliminat de pe pagină. Schița ta a fost păstrată.",
+    "description": "This item was removed from the page. Your draft was kept."
+  },
+  "m_overwrite_changed_item_a01cac5e": {
+    "message": "Doriți să suprascrieți elementul modificat?",
+    "description": "Overwrite changed item?"
+  },
+  "m_1_changed_on_the_page_after_editing_started_56a44a84": {
+    "message": "„$slot_1$” s-a modificat pe pagină după începerea procesului de editare.",
+    "description": "\"$1\" changed on the page after editing started.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_the_current_value_and_expiration_will_be_replace_28509cd8": {
+    "message": "Valoarea actuală și data de expirare vor fi înlocuite cu cele din schița dumneavoastră.",
+    "description": "The current value and expiration will be replaced by your draft."
+  },
+  "m_the_current_page_value_will_be_replaced_by_your__cbc560ff": {
+    "message": "Valoarea actuală a datelor de pe pagina web va fi înlocuită cu valoarea din schița dumneavoastră.",
+    "description": "The current page value will be replaced by your draft."
+  },
+  "m_overwrite_78ff0e92": {
+    "message": "Suprascrie",
+    "description": "Overwrite"
+  },
+  "m_this_item_changed_again_refresh_and_review_it_be_fcda25ab": {
+    "message": "Acest element s-a modificat din nou. Actualizează pagina și verifică-l înainte de a salva. Schița ta a fost păstrată.",
+    "description": "This item changed again. Refresh and review it before saving. Your draft was kept."
+  },
+  "m_this_item_changed_on_the_page_your_draft_was_kep_614fc574": {
+    "message": "Acest element a fost modificat pe pagină. Schița ta a fost păstrată.",
+    "description": "This item changed on the page. Your draft was kept."
+  },
+  "m_remove_1_from_favorites_3f3873c5": {
+    "message": "Elimină $slot_1$ din favorite",
+    "description": "Remove $1 from favorites",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_favorite_1_748a9488": {
+    "message": "Preferat $slot_1$",
+    "description": "Favorite $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_my_favorite_cookie_1_bcb78c80": {
+    "message": "Preferatul meu cookie $slot_1$",
+    "description": "My favorite cookie $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_enter_a_valid_expiration_date_and_time_117dcc4b": {
+    "message": "Introduceți o dată și o oră de expirare valide.",
+    "description": "Enter a valid expiration date and time."
+  },
+  "m_expiration_must_be_in_the_future_87176fbd": {
+    "message": "Data de expirare trebuie să fie în viitor.",
+    "description": "Expiration must be in the future."
+  },
+  "m_site_permission_is_required_for_this_page_6af52a2e": {
+    "message": "Pentru această pagină este necesară autorizarea site-ului.",
+    "description": "Site permission is required for this page."
+  },
+  "m_skipped_32d7a557": {
+    "message": "Omis",
+    "description": "Skipped"
+  },
+  "m_batch_operation_items_must_be_an_array_8927061c": {
+    "message": "Elementele operației în lot trebuie să fie un tablou.",
+    "description": "Batch operation items must be an array."
+  },
+  "m_batch_operation_handler_must_be_a_function_2a2e2b1": {
+    "message": "Funcția de gestionare a operațiunilor în lot trebuie să fie o funcție.",
+    "description": "Batch operation handler must be a function."
+  },
+  "m_a_persistent_cookie_requires_a_valid_expiration__69a955bd": {
+    "message": "Un cookie persistent necesită o dată de expirare validă.",
+    "description": "A persistent cookie requires a valid expiration date."
+  },
+  "m_side_panel_is_not_available_in_this_browser_1deaac7f": {
+    "message": "Panoul lateral nu este disponibil în acest browser.",
+    "description": "Side panel is not available in this browser."
+  },
+  "m_unspecified_646386c": {
+    "message": "Nespecificat",
+    "description": "Unspecified"
+  },
+  "m_a_supported_data_view_and_item_id_are_required_1efa8375": {
+    "message": "Sunt necesare o vizualizare a datelor acceptată și un ID de element.",
+    "description": "A supported data view and item ID are required."
+  },
+  "m_unsupported_site_data_kind_1_99f7b534": {
+    "message": "Tip de date al site-ului neacceptat: $slot_1$",
+    "description": "Unsupported site data kind: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_line_1_2_3e08f18e": {
+    "message": "Rândul $slot_1$: $slot_2$",
+    "description": "Line $1: $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_netscape_cookie_data_must_be_text_91c54441": {
+    "message": "Datele Netscape cookie trebuie să fie sub formă de text.",
+    "description": "Netscape cookie data must be text."
+  },
+  "m_expected_7_tab_separated_fields_12f054d4": {
+    "message": "Se așteaptă 7 câmpuri separate prin tab.",
+    "description": "Expected 7 tab-separated fields."
+  },
+  "m_path_must_start_with_f0000f56": {
+    "message": "Calea trebuie să înceapă cu /.",
+    "description": "Path must start with /."
+  },
+  "m_duplicate_cookie_1_for_2_3_55aa331f": {
+    "message": "Duplică cookie $slot_1$ pentru $slot_2$$slot_3$.",
+    "description": "Duplicate cookie $1 for $2$3.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_no_netscape_cookie_rows_were_found_7d90721b": {
+    "message": "Nu s-au găsit rânduri Netscape cookie.",
+    "description": "No Netscape cookie rows were found."
+  },
+  "m_the_selected_scope_does_not_contain_any_cookies_f3791e8": {
+    "message": "Domeniul selectat nu conține niciun cookies.",
+    "description": "The selected scope does not contain any cookies."
+  },
+  "m_expiration_must_be_a_non_negative_integer_unix_t_43e6d38c": {
+    "message": "Data de expirare trebuie să fie un timestamp Unix de tip număr întreg nenegativ.",
+    "description": "Expiration must be a non-negative integer Unix timestamp."
+  },
+  "m_cookie_domain_is_invalid_411f9532": {
+    "message": "Domeniul Cookie nu este valid.",
+    "description": "Cookie domain is invalid."
+  },
+  "m_1_must_be_true_or_false_51a26bf8": {
+    "message": "$slot_1$ trebuie să fie TRUE sau FALSE.",
+    "description": "$1 must be TRUE or FALSE.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_expiration_is_outside_the_supported_range_8cfc8697": {
+    "message": "Data de expirare se află în afara intervalului acceptat.",
+    "description": "Expiration is outside the supported range."
+  },
+  "m_1_cannot_be_represented_in_netscape_format_e7a8a446": {
+    "message": "$slot_1$ nu poate fi reprezentat în formatul Netscape.",
+    "description": "$1 cannot be represented in Netscape format.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_the_operation_history_is_no_longer_available_in__7160ca61": {
+    "message": "Istoricul operațiunilor nu mai este disponibil în această sesiune de navigare.",
+    "description": "The operation history is no longer available in this browser session."
+  },
+  "m_the_background_operation_service_is_unavailable__2418d24d": {
+    "message": "Serviciul de funcționare în fundal nu este disponibil. Redeschide extensia și încearcă din nou.",
+    "description": "The background operation service is unavailable. Reopen the extension and try again."
+  },
+  "m_select_an_http_or_https_tab_before_changing_site_78b8790a": {
+    "message": "Selectați fila „http://” sau „https://” înainte de a modifica datele site-ului.",
+    "description": "Select an http:// or https:// tab before changing site data."
+  },
+  "m_the_operation_target_is_unavailable_refresh_and__ea7bb94d": {
+    "message": "Ținta operațiunii nu este disponibilă. Actualizați pagina și încercați din nou.",
+    "description": "The operation target is unavailable. Refresh and try again."
+  },
+  "m_the_target_tab_changed_sites_refresh_and_try_aga_45abf2d3": {
+    "message": "Fila selectată din browser a redirecționat către un alt site web. Reîmprospătați pagina și încercați din nou.",
+    "description": "The target tab changed sites. Refresh and try again."
+  },
+  "m_the_target_tab_changed_browsing_modes_refresh_an_9b421ca": {
+    "message": "Fila „Țintă” a schimbat modurile de navigare. Actualizează pagina și încearcă din nou.",
+    "description": "The target tab changed browsing modes. Refresh and try again."
+  },
+  "m_the_target_cookie_store_changed_refresh_and_try__d7c5bc8d": {
+    "message": "S-a modificat locația de stocare a cookie-urilor din browserul selectat. Actualizează pagina și încearcă din nou.",
+    "description": "The target cookie store changed. Refresh and try again."
+  },
+  "m_this_change_can_no_longer_be_undone_in_this_brow_54389916": {
+    "message": "Această modificare nu mai poate fi anulată în această sesiune de navigare.",
+    "description": "This change can no longer be undone in this browser session."
+  },
+  "m_this_older_change_has_no_verified_target_informa_19604fe9": {
+    "message": "Această modificare mai veche nu conține informații verificate despre destinație și nu poate fi anulată.",
+    "description": "This older change has no verified target information and cannot be undone."
+  },
+  "m_undo_is_only_available_for_1_f2a63182": {
+    "message": "Funcția „Anulare” este disponibilă doar pentru $slot_1$.",
+    "description": "Undo is only available for $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_switch_to_the_original_browsing_mode_before_undo_870755c9": {
+    "message": "Reveniți la modul de navigare inițial înainte de a anula această modificare.",
+    "description": "Switch to the original browsing mode before undoing this change."
+  },
+  "m_session_storage_undo_requires_the_original_tab_1_2fdf9bd9": {
+    "message": "Anularea acțiunii Session Storage necesită fila inițială ($slot_1$).",
+    "description": "Session Storage undo requires the original tab ($1).",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_this_change_has_incomplete_cookie_target_informa_a2dd5586": {
+    "message": "Această modificare conține informații incomplete despre ținta cookie și nu poate fi anulată.",
+    "description": "This change has incomplete cookie target information and cannot be undone."
+  },
+  "m_switch_to_the_original_cookie_store_before_undoi_d2820a6a": {
+    "message": "Reveniți la spațiul de stocare original al cookie-urilor din browser înainte de a anula această modificare.",
+    "description": "Switch to the original cookie store before undoing this change."
+  },
+  "m_this_change_has_incomplete_storage_target_inform_55298dcd": {
+    "message": "Această modificare conține informații incomplete privind destinația de stocare și nu poate fi anulată.",
+    "description": "This change has incomplete storage target information and cannot be undone."
+  },
+  "m_the_operation_requires_a_complete_verified_targe_c2dd669c": {
+    "message": "Operațiunea necesită o țintă complet verificată.",
+    "description": "The operation requires a complete verified target."
+  },
+  "m_the_operation_target_origin_is_invalid_d22ef5f": {
+    "message": "Originea țintei operației nu este validă.",
+    "description": "The operation target origin is invalid."
+  },
+  "m_the_operation_item_type_is_not_supported_7da692f3": {
+    "message": "Tipul de operație nu este acceptat.",
+    "description": "The operation item type is not supported."
+  },
+  "m_an_operation_item_requires_its_before_and_after__f10583a8": {
+    "message": "Un element de operație necesită starea sa inițială și cea finală.",
+    "description": "An operation item requires its before and after states."
+  },
+  "m_an_operation_cannot_change_an_item_s_identity_de_98312c57": {
+    "message": "O operație nu poate modifica identitatea unui element. În schimb, ștergeți elementul și creați unul nou.",
+    "description": "An operation cannot change an item's identity. Delete and create separate items instead."
+  },
+  "m_undo_requires_the_original_site_cookie_store_and_5fcd5b1a": {
+    "message": "Funcția „Anulare” necesită site-ul web original, spațiul de stocare a cookie-urilor din browser și modul de navigare.",
+    "description": "Undo requires the original site, cookie store, and browsing mode."
+  },
+  "m_session_storage_undo_requires_the_original_tab_c5074cf1": {
+    "message": "Anularea acțiunii Session Storage necesită fila inițială.",
+    "description": "Session Storage undo requires the original tab."
+  },
+  "m_the_cookie_changed_during_writing_or_chrome_norm_9c28e63c": {
+    "message": "cookie s-a modificat în timpul scrierii sau Chrome a normalizat atributele neacceptate. Verificați starea actuală a acestuia înainte de a încerca din nou.",
+    "description": "The cookie changed during writing or Chrome normalized unsupported attributes. Review its current state before retrying."
+  },
+  "m_chrome_would_remove_a_different_same_name_cookie_1f0e6ca9": {
+    "message": "Chrome ar elimina un alt element cu același nume, cookie. Datele acestuia au fost păstrate.",
+    "description": "Chrome would remove a different same-name cookie. Its data was preserved."
+  },
+  "m_the_cookie_changed_during_writing_or_chrome_norm_c0f5c111": {
+    "message": "cookie s-a modificat în timpul scrierii sau Chrome i-a normalizat atributele. Verificați starea sa actuală înainte de a încerca din nou.",
+    "description": "The cookie changed during writing or Chrome normalized its attributes. Review its current state before retrying."
+  },
+  "m_this_item_changed_after_the_operation_was_prepar_6afc1ff6": {
+    "message": "Acest element a suferit modificări după ce operațiunea a fost pregătită. Datele sale actuale au fost păstrate.",
+    "description": "This item changed after the operation was prepared. Its current data was preserved."
+  },
+  "m_operation_item_states_must_be_objects_or_null_648de299": {
+    "message": "Valorile elementelor de operație trebuie să fie obiecte sau să aibă valoarea null.",
+    "description": "Operation item states must be objects or null."
+  },
+  "m_storage_operations_require_a_key_and_a_string_va_be861fef": {
+    "message": "Operațiunile Storage necesită o cheie și o valoare de tip șir de caractere.",
+    "description": "Storage operations require a key and a string value."
+  },
+  "m_the_storage_item_belongs_to_a_different_origin_c5770dcf": {
+    "message": "Intrarea cu datele stocate în browser aparține unui site web cu o origine diferită.",
+    "description": "The storage item belongs to a different origin."
+  },
+  "m_cookie_operations_require_a_name_value_and_domai_ad606296": {
+    "message": "Operațiile Cookie necesită un nume, o valoare și un domeniu.",
+    "description": "Cookie operations require a name, value, and domain."
+  },
+  "m_the_cookie_store_does_not_match_the_target_brows_8b6d58d0": {
+    "message": "Containerul de stocare a cookie-urilor din browser nu corespunde contextului de navigare selectat.",
+    "description": "The cookie store does not match the target browsing context."
+  },
+  "m_the_cookie_domain_is_outside_the_target_site_2c893fc": {
+    "message": "Domeniul cookie se află în afara site-ului țintă.",
+    "description": "The cookie domain is outside the target site."
+  },
+  "m_the_cookie_scope_is_not_supported_by_the_target__5ed5f691": {
+    "message": "Domeniul de aplicare cookie nu este acceptat de site-ul de destinație.",
+    "description": "The cookie scope is not supported by the target site."
+  },
+  "m_this_operation_id_already_belongs_to_another_req_26aec4b6": {
+    "message": "Acest ID de operațiune aparține deja unei alte solicitări.",
+    "description": "This operation ID already belongs to another request."
+  },
+  "m_the_undo_selection_contains_an_unknown_operation_7a61fd74": {
+    "message": "Selecția de anulare conține o operație necunoscută.",
+    "description": "The undo selection contains an unknown operation item."
+  },
+  "m_select_at_least_one_site_data_item_before_starti_3a6505e4": {
+    "message": "Selectați cel puțin un element de date al unui site web înainte de a începe o operațiune.",
+    "description": "Select at least one site data item before starting an operation."
+  },
+  "m_operation_item_ids_must_be_unique_within_the_bat_c80b02fe": {
+    "message": "Codurile elementelor operaționale trebuie să fie unice în cadrul lotului.",
+    "description": "Operation item IDs must be unique within the batch."
+  },
+  "m_a_batch_cannot_contain_the_same_site_data_item_m_12586bbb": {
+    "message": "Un lot nu poate conține același element de date referitor la un site web de mai multe ori.",
+    "description": "A batch cannot contain the same site data item more than once."
+  },
+  "m_site_data_change_85c94fa": {
+    "message": "Modificarea datelor site-ului",
+    "description": "Site data change"
+  },
+  "m_this_operation_is_no_longer_available_in_the_cur_dd0b5906": {
+    "message": "Această operațiune nu mai este disponibilă în sesiunea curentă a browserului.",
+    "description": "This operation is no longer available in the current browser session."
+  },
+  "m_wait_for_the_operation_to_finish_before_retrying_4e00d481": {
+    "message": "Așteptați finalizarea operațiunii înainte de a o repeta, de a o anula sau de a o șterge.",
+    "description": "Wait for the operation to finish before retrying, undoing, or clearing it."
+  },
+  "m_the_operation_failed_ab9ab784": {
+    "message": "Operațiunea a eșuat.",
+    "description": "The operation failed."
+  },
+  "m_the_operation_journal_cannot_be_read_existing_hi_5f7bdebd": {
+    "message": "Jurnalul de operațiuni nu poate fi citit. Istoricul existent a fost păstrat.",
+    "description": "The operation journal cannot be read. Existing history has been preserved."
+  },
+  "m_operation_history_is_limited_to_1_batches_5f70f1c6": {
+    "message": "Istoricul operațiunilor este limitat la $slot_1$ loturi.",
+    "description": "Operation history is limited to $1 batches.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_session_storage_does_not_have_enough_room_to_rec_baffb4f6": {
+    "message": "Spațiul de stocare al sesiunii nu este suficient pentru a înregistra această operațiune în condiții de siguranță.",
+    "description": "Session storage does not have enough room to record this operation safely."
+  },
+  "m_chrome_could_not_reserve_operation_history_space_cb06e6c2": {
+    "message": "Chrome nu a putut rezerva spațiu pentru istoricul operațiunilor.",
+    "description": "Chrome could not reserve operation history space."
+  },
+  "m_session_storage_is_required_for_recoverable_site_a5071db5": {
+    "message": "Stocarea pe durata sesiunii este necesară pentru operațiunile legate de datele recuperabile ale site-ului.",
+    "description": "Session storage is required for recoverable site data operations."
+  },
+  "m_1_clear_completed_batches_in_history_and_try_aga_8d7c6029": {
+    "message": "$slot_1$ Ștergeți loturile finalizate din Istoric și încercați din nou.",
+    "description": "$1 Clear completed batches in History and try again.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_the_operation_was_not_completed_open_operations__1ba12ca0": {
+    "message": "Operațiunea nu a fost finalizată. Deschideți secțiunea „Operațiuni” pentru a verifica rezultatul acesteia.",
+    "description": "The operation was not completed. Open Operations to review its result."
+  },
+  "m_unknown_error_ce512b43": {
+    "message": "Eroare necunoscută",
+    "description": "Unknown error"
+  },
+  "m_invalid_batch_operation_result_2c7f1d9c": {
+    "message": "Rezultat nevalid al operațiunii în lot.",
+    "description": "Invalid batch operation result."
+  },
+  "m_enter_a_valid_1_a42ed343": {
+    "message": "Introduceți un $slot_1$ valid.",
+    "description": "Enter a valid $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_enter_a_cookie_name_829f0c23": {
+    "message": "Introduceți un nume cookie.",
+    "description": "Enter a cookie name."
+  },
+  "m_cookie_name_is_invalid_dafca5ad": {
+    "message": "Numele Cookie nu este valid.",
+    "description": "Cookie name is invalid."
+  },
+  "m_enter_a_storage_key_42911d0a": {
+    "message": "Introduceți o cheie de stocare.",
+    "description": "Enter a storage key."
+  },
+  "m_a_favorite_item_id_and_enabled_state_are_require_d025e94a": {
+    "message": "Este necesar să se specifice ID-ul unui articol preferat și starea „activat”.",
+    "description": "A favorite item ID and enabled state are required."
+  },
+  "m_unsupported_import_conflict_strategy_1_11eb35cf": {
+    "message": "Strategie de rezolvare a conflictelor de import neacceptată: $slot_1$",
+    "description": "Unsupported import conflict strategy: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_item_is_not_supported_3c19884d": {
+    "message": "Această funcție nu este disponibilă.",
+    "description": "Item is not supported."
+  },
+  "m_not_selected_88a4320b": {
+    "message": "Nu a fost selectat.",
+    "description": "Not selected."
+  },
+  "m_already_identical_4051b14a": {
+    "message": "Sunt deja identice.",
+    "description": "Already identical."
+  },
+  "m_only_new_items_are_enabled_71d46290": {
+    "message": "Sunt activate doar articolele noi.",
+    "description": "Only new items are enabled."
+  },
+  "m_existing_item_was_kept_8d637d38": {
+    "message": "Articolul existent a fost păstrat.",
+    "description": "Existing item was kept."
+  },
+  "m_conflict_was_not_selected_41b4cfaa": {
+    "message": "Nu a fost selectat niciun conflict.",
+    "description": "Conflict was not selected."
+  },
+  "m_the_package_contains_the_same_stable_item_more_t_5819a2cf": {
+    "message": "Pachetul conține același articol stabil de mai multe ori.",
+    "description": "The package contains the same stable item more than once."
+  },
+  "m_no_changes_23de827f": {
+    "message": "Nicio modificare.",
+    "description": "No changes."
+  },
+  "m_value_will_change_67c2db88": {
+    "message": "Valoarea se va modifica.",
+    "description": "Value will change."
+  },
+  "m_cookie_attributes_differ_from_the_target_343b62be": {
+    "message": "Atributele Cookie diferă de cele ale elementului țintă.",
+    "description": "Cookie attributes differ from the target."
+  },
+  "m_source_origin_1_does_not_match_2_d97e2856": {
+    "message": "Sursa $slot_1$ nu corespunde cu $slot_2$.",
+    "description": "Source origin $1 does not match $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_storage_origin_1_cannot_be_written_to_2_5e2f32f1": {
+    "message": "Storage de origine $slot_1$ nu poate fi înregistrat în $slot_2$.",
+    "description": "Storage origin $1 cannot be written to $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_secure_cookies_require_an_https_target_42458c0f": {
+    "message": "Secure cookies necesită o țintă HTTPS.",
+    "description": "Secure cookies require an HTTPS target."
+  },
+  "m_samesite_none_cookies_require_secure_b0e3af34": {
+    "message": "SameSite=Niciunul cookies necesită Secure.",
+    "description": "SameSite=None cookies require Secure."
+  },
+  "m_persistent_cookies_require_a_valid_expiration_da_59fa4574": {
+    "message": "cookies-urile persistente trebuie să aibă o dată de expirare valabilă.",
+    "description": "Persistent cookies require a valid expiration date."
+  },
+  "m_the_cookie_expiration_date_is_in_the_past_fb6631d3": {
+    "message": "Data de expirare a cookie a trecut.",
+    "description": "The cookie expiration date is in the past."
+  },
+  "m_the_partition_key_is_not_supported_f5b3f532": {
+    "message": "Cheia de partiționare nu este acceptată.",
+    "description": "The partition key is not supported."
+  },
+  "m_cookie_domain_1_is_not_valid_for_2_87a7b1d8": {
+    "message": "Domeniul Cookie $slot_1$ nu este valabil pentru $slot_2$.",
+    "description": "Cookie domain $1 is not valid for $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_a_valid_http_or_https_target_url_is_required_d1af520b": {
+    "message": "Este necesară o țintă HTTP sau HTTPS validă URL.",
+    "description": "A valid HTTP or HTTPS target URL is required."
+  },
+  "m_site_data_package_is_not_valid_json_1_205edefc": {
+    "message": "Pachetul de date al site-ului nu este valabil JSON: $slot_1$",
+    "description": "Site data package is not valid JSON: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_site_data_package_must_be_a_json_object_4b3bb0fc": {
+    "message": "Pachetul de date al site-ului trebuie să fie un obiect JSON.",
+    "description": "Site data package must be a JSON object."
+  },
+  "m_unsupported_site_data_schema_version_1_1e133de1": {
+    "message": "Versiune a schemei de date a site-ului neacceptată: $slot_1$",
+    "description": "Unsupported site data schema version: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_parse_site_data_package_13a1fb6f": {
+    "message": "Nu s-a putut analiza pachetul de date al site-ului.",
+    "description": "Failed to parse site data package."
+  },
+  "m_cookie_must_be_an_object_2f03109b": {
+    "message": "Cookie trebuie să fie un obiect.",
+    "description": "Cookie must be an object."
+  },
+  "m_cookie_domain_c25955b9": {
+    "message": "Domeniul Cookie",
+    "description": "Cookie domain"
+  },
+  "m_storage_item_must_be_an_object_1cfa84f9": {
+    "message": "Elementul Storage trebuie să fie un obiect.",
+    "description": "Storage item must be an object."
+  },
+  "m_site_data_package_data_must_be_an_object_e66f478": {
+    "message": "Datele din pachetul de date al site-ului trebuie să fie un obiect.",
+    "description": "Site data package data must be an object."
+  },
+  "m_site_data_package_source_must_be_an_object_56cfeb13": {
+    "message": "Sursa pachetului de date al site-ului trebuie să fie un obiect.",
+    "description": "Site data package source must be an object."
+  },
+  "m_source_url_199c3119": {
+    "message": "Sursă URL",
+    "description": "Source URL"
+  },
+  "m_source_url_is_invalid_79058912": {
+    "message": "Sursa URL nu este validă.",
+    "description": "Source URL is invalid."
+  },
+  "m_source_url_must_use_http_or_https_402a5c35": {
+    "message": "Sursa URL trebuie să utilizeze http sau https.",
+    "description": "Source URL must use http or https."
+  },
+  "m_source_origin_does_not_match_the_source_url_ddb08ac2": {
+    "message": "Sursa nu corespunde cu sursa URL.",
+    "description": "Source origin does not match the source URL."
+  },
+  "m_export_time_14390320": {
+    "message": "Ora de export",
+    "description": "Export time"
+  },
+  "m_export_time_is_invalid_966ca827": {
+    "message": "Ora de export nu este validă.",
+    "description": "Export time is invalid."
+  },
+  "m_storage_origin_is_invalid_c2b74933": {
+    "message": "Originea Storage este nevalidă.",
+    "description": "Storage origin is invalid."
+  },
+  "m_1_must_be_an_array_e1b4fde0": {
+    "message": "$slot_1$ trebuie să fie un tablou.",
+    "description": "$1 must be an array.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_must_be_a_string_7db28ee6": {
+    "message": "$slot_1$ trebuie să fie un șir de caractere.",
+    "description": "$1 must be a string.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_cannot_be_empty_e318fe17": {
+    "message": "$slot_1$ nu poate fi gol.",
+    "description": "$1 cannot be empty.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_a_saved_state_with_this_id_already_exists_reload_d5d699bd": {
+    "message": "Există deja o stare salvată cu acest ID. Reîncarcă stările salvate și încearcă din nou.",
+    "description": "A saved state with this ID already exists. Reload Saved States and try again."
+  },
+  "m_this_saved_state_no_longer_exists_reload_saved_s_2606c3f0": {
+    "message": "Această stare salvată nu mai există. Reîncarcă stările salvate și selectează o altă stare.",
+    "description": "This saved state no longer exists. Reload Saved States and select another state."
+  },
+  "m_saved_states_is_limited_to_1_states_return_to_th_c6f09f4f": {
+    "message": "Opțiunea „Stări salvate” este limitată la $slot_1$ stări. Reveniți la lista „Stări salvate” și ștergeți stările neutilizate înainte de a salva sau copia o altă stare. Stările existente nu au fost modificate.",
+    "description": "Saved States is limited to $1 states. Return to the Saved States list and delete unused states before saving or copying another state. Your existing states have not been changed.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_chrome_limit_1_2_3949d5f2": {
+    "message": " (Limita Chrome: $slot_1$$slot_2$)",
+    "description": " (Chrome limit: $1$2)",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_extension_storage_is_full_1_return_to_the_saved__c0d6cf4b": {
+    "message": "Spațiul de stocare al extensiei este plin$slot_1$. Reveniți la lista „Stări salvate” și ștergeți stările neutilizate sau salvați mai puține intrări de date ale site-ului web, apoi încercați din nou. Stările existente nu au fost modificate.",
+    "description": "Extension storage is full$1. Return to the Saved States list and delete unused states, or save fewer site data entries, then try again. Your existing states have not been changed.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_profile_must_be_an_object_d72872c": {
+    "message": "Profilul trebuie să fie un obiect.",
+    "description": "Profile must be an object."
+  },
+  "m_profile_name_is_required_19a1effa": {
+    "message": "Numele profilului este obligatoriu.",
+    "description": "Profile name is required."
+  },
+  "m_enter_a_value_for_1_91a86c1b": {
+    "message": "Introduceți o valoare pentru $slot_1$.",
+    "description": "Enter a value for $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_missing_profile_variables_1_1592cd58": {
+    "message": "Variabile de profil lipsă: $slot_1$.",
+    "description": "Missing profile variables: $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_variable_line_1_must_use_name_value_2dec1abd": {
+    "message": "Variabila $slot_1$ trebuie să utilizeze name=value.",
+    "description": "Variable line $1 must use name=value.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_variable_name_1_is_invalid_56f993ec": {
+    "message": "Numele variabilei $slot_1$ nu este valid.",
+    "description": "Variable name $1 is invalid.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_variable_1_is_duplicated_2d297b8b": {
+    "message": "Variabila $slot_1$ apare de două ori.",
+    "description": "Variable $1 is duplicated.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_variable_1_needs_a_captured_value_516edb55": {
+    "message": "Variabila $slot_1$ necesită o valoare capturată.",
+    "description": "Variable $1 needs a captured value.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_copy_3f7d3a3f": {
+    "message": "$slot_1$ copie",
+    "description": "$1 copy",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_profile_variables_require_a_valid_name_and_captu_58575d16": {
+    "message": "Variabilele de profil trebuie să aibă un nume valid și o valoare înregistrată.",
+    "description": "Profile variables require a valid name and captured value."
+  },
+  "m_profile_variable_names_must_be_valid_and_unique_dbee74c8": {
+    "message": "Numele variabilelor de profil trebuie să fie valide și unice.",
+    "description": "Profile variable names must be valid and unique."
+  },
+  "m_conditional_storage_values_must_be_strings_or_nu_f66e578c": {
+    "message": "Valorile de stocare condiționale trebuie să fie șiruri de caractere sau valori nule.",
+    "description": "Conditional storage values must be strings or null."
+  },
+  "m_storage_operation_did_not_return_a_verified_resu_a0d8584c": {
+    "message": "Operațiunea Storage nu a returnat un rezultat verificat. Actualizați pagina și încercați din nou.",
+    "description": "Storage operation did not return a verified result. Refresh and try again."
+  },
+  "m_no_active_tab_is_available_7fb08c70": {
+    "message": "Nu există nicio filă activă.",
+    "description": "No active tab is available."
+  },
+  "m_storage_type_is_not_supported_6565b571": {
+    "message": "Tipul Storage nu este acceptat.",
+    "description": "Storage type is not supported."
+  },
+  "m_storage_key_is_required_9a984642": {
+    "message": "Cheia Storage este obligatorie.",
+    "description": "Storage key is required."
+  },
+  "m_tab_session_79252400": {
+    "message": "Sesiune de file",
+    "description": "Tab session"
+  },
+  "m_persistent_b9d8a5e0": {
+    "message": "Persistent",
+    "description": "Persistent"
+  },
+  "m_a_storage_key_and_update_action_are_required_bcf52f8d": {
+    "message": "Sunt necesare o cheie de stocare și o acțiune de actualizare.",
+    "description": "A storage key and update action are required."
+  },
+  "m_storage_write_coordination_is_unavailable_reload_a3049af7": {
+    "message": "Coordonarea de scriere Storage nu este disponibilă. Reîncarcă extensia într-un browser Chrome actualizat și încearcă din nou.",
+    "description": "Storage write coordination is unavailable. Reload the extension in an up-to-date Chrome browser and try again."
+  },
+  "m_unsupported_page_ba4049fb": {
+    "message": "Pagină neacceptată",
+    "description": "Unsupported page"
+  },
+  "m_value_is_not_valid_url_encoded_text_410c8c5c": {
+    "message": "Valoarea nu este un text codificat în format URL.",
+    "description": "Value is not valid URL-encoded text."
+  },
+  "m_value_is_not_valid_json_4ebcf7b9": {
+    "message": "Valoarea JSON nu este validă.",
+    "description": "Value is not valid JSON."
+  },
+  "m_value_is_not_a_jwt_ced21751": {
+    "message": "Valoarea nu este un JWT.",
+    "description": "Value is not a JWT."
+  },
+  "m_jwt_payload_could_not_be_decoded_c3f891e7": {
+    "message": "Nu s-a putut decoda încărcătura JWT.",
+    "description": "JWT payload could not be decoded."
+  },
+  "m_loading_page_9a85b9e6": {
+    "message": "Se încarcă pagina",
+    "description": "Loading page"
+  },
+  "m_0_cookies_82c7dfac": {
+    "message": "0 cookies",
+    "description": "0 cookies"
+  },
+  "m_current_page_fe92f855": {
+    "message": "Pagina curentă",
+    "description": "Current page"
+  },
+  "m_switch_active_tab_site_fbd36ba9": {
+    "message": "Comută la site-ul din fila activă",
+    "description": "Switch active tab site"
+  },
+  "m_switch_site_d8886748": {
+    "message": "Schimbă site-ul",
+    "description": "Switch site"
+  },
+  "m_data_type_9af022c7": {
+    "message": "Tipul de date",
+    "description": "Data type"
+  },
+  "m_search_c646a2c9": {
+    "message": "Căutare",
+    "description": "Search"
+  },
+  "m_reload_settings_b738e329": {
+    "message": "Reîncarcă setările",
+    "description": "Reload settings"
+  },
+  "m_open_reload_settings_4892e4a3": {
+    "message": "Deschide setările de reîncărcare",
+    "description": "Open reload settings"
+  },
+  "m_reload_after_changes_bf61c657": {
+    "message": "Reîncarcă după modificări",
+    "description": "Reload after changes"
+  },
+  "m_reload_the_active_page_after_editing_data_b1f353e4": {
+    "message": "Reîncarcă pagina activă după modificarea datelor",
+    "description": "Reload the active page after editing data"
+  },
+  "m_open_side_panel_6c80bafe": {
+    "message": "Panou lateral deschis",
+    "description": "Open side panel"
+  },
+  "m_history_7d96597f": {
+    "message": "Istorie",
+    "description": "History"
+  },
+  "m_show_recent_changes_aa3be0a2": {
+    "message": "Afișează modificările recente",
+    "description": "Show recent changes"
+  },
+  "m_site_access_is_required_to_read_cookies_a1440a5d": {
+    "message": "Pentru a citi cookies este necesar accesul la site.",
+    "description": "Site access is required to read cookies."
+  },
+  "m_retry_8036af59": {
+    "message": "Reîncearcă",
+    "description": "Retry"
+  },
+  "m_dismiss_message_df912220": {
+    "message": "Ignoră mesajul",
+    "description": "Dismiss message"
+  },
+  "m_site_data_actions_6b44a8f5": {
+    "message": "Acțiuni privind datele site-ului",
+    "description": "Site data actions"
+  },
+  "m_select_all_visible_rows_2f22967d": {
+    "message": "Selectează toate rândurile vizibile",
+    "description": "Select all visible rows"
+  },
+  "m_sort_name_ascending_68daec8a": {
+    "message": "Sortează numele în ordine crescătoare",
+    "description": "Sort Name ascending"
+  },
+  "m_0_selected_326ec79c": {
+    "message": "Intrări selectate: 0",
+    "description": "0 selected"
+  },
+  "m_delete_selected_97a78547": {
+    "message": "Șterge elementele selectate",
+    "description": "Delete selected"
+  },
+  "m_selected_item_actions_93276b88": {
+    "message": "Acțiuni pentru articolele selectate",
+    "description": "Selected item actions"
+  },
+  "m_cookie_list_e8aca549": {
+    "message": "Lista Cookie",
+    "description": "Cookie list"
+  },
+  "m_select_a_cookie_21e3db4c": {
+    "message": "Selectați un cookie",
+    "description": "Select a cookie"
+  },
+  "m_favorite_item_639ee370": {
+    "message": "Articolul preferat",
+    "description": "Favorite item"
+  },
+  "m_choose_copy_format_c244c130": {
+    "message": "Alegeți formatul de copiere",
+    "description": "Choose copy format"
+  },
+  "m_copy_format_85aa5ff": {
+    "message": "Copiere format",
+    "description": "Copy format"
+  },
+  "m_reset_ac8a560": {
+    "message": "Resetare",
+    "description": "Reset"
+  },
+  "m_save_4d2d5d68": {
+    "message": "Salvare",
+    "description": "Save"
+  },
+  "m_editor_actions_e49fe113": {
+    "message": "Acțiuni ale editorului",
+    "description": "Editor actions"
+  },
+  "m_tools_950196fc": {
+    "message": "Instrumente",
+    "description": "Tools"
+  },
+  "m_value_tools_462d8191": {
+    "message": "Instrumente de evaluare",
+    "description": "Value tools"
+  },
+  "m_url_decode_21cf2a4c": {
+    "message": "URL decodare",
+    "description": "URL decode"
+  },
+  "m_url_encode_e1baee70": {
+    "message": "URL codificare",
+    "description": "URL encode"
+  },
+  "m_format_json_c6800e10": {
+    "message": "Format JSON",
+    "description": "Format JSON"
+  },
+  "m_compact_json_3e7be4cc": {
+    "message": "JSON compact",
+    "description": "Compact JSON"
+  },
+  "m_cookie_expiration_date_and_time_29a11076": {
+    "message": "Data și ora expirării Cookie",
+    "description": "Cookie expiration date and time"
+  },
+  "m_clear_the_time_to_use_a_session_cookie_cfc8ce4f": {
+    "message": "Ștergeți data de expirare pentru a utiliza un cookie de sesiune",
+    "description": "Clear the time to use a session cookie"
+  },
+  "m_cookie_editor_1dce6a00": {
+    "message": "editorul Cookie",
+    "description": "Cookie editor"
+  },
+  "m_operations_a78e754f": {
+    "message": "Operațiuni",
+    "description": "Operations"
+  },
+  "m_history_view_122e9250": {
+    "message": "Vizualizare istoric",
+    "description": "History view"
+  },
+  "m_clear_4a57fc2": {
+    "message": "Șterge",
+    "description": "Clear"
+  },
+  "m_no_recent_changes_1ba3108": {
+    "message": "Nu au fost efectuate modificări recente",
+    "description": "No recent changes"
+  },
+  "m_no_operations_in_this_session_9f373445": {
+    "message": "Nu există operațiuni în această sesiune",
+    "description": "No operations in this session"
+  },
+  "m_close_cd86acc3": {
+    "message": "Închide",
+    "description": "Close"
+  },
+  "m_before_25a2cf5e": {
+    "message": "Înainte",
+    "description": "Before"
+  },
+  "m_after_a7dd3a69": {
+    "message": "După",
+    "description": "After"
+  },
+  "m_recent_cookie_changes_948aeb99": {
+    "message": "Modificări recente la cookie",
+    "description": "Recent cookie changes"
+  },
+  "m_cookie_workspace_934f6bae": {
+    "message": "Spațiul de lucru Cookie",
+    "description": "Cookie workspace"
+  },
+  "m_delete_item_9112cfa6": {
+    "message": "Să ștergi elementul?",
+    "description": "Delete item?"
+  },
+  "m_selected_items_401a0220": {
+    "message": "Articole selectate",
+    "description": "Selected items"
+  },
+  "m_cancel_35afca3b": {
+    "message": "Anulează",
+    "description": "Cancel"
+  },
+  "m_enter_value_4f11af6c": {
+    "message": "Introduceți valoarea",
+    "description": "Enter value"
+  },
+  "m_continue_ab43d664": {
+    "message": "Continuă",
+    "description": "Continue"
+  },
+  "m_import_method_d6e65675": {
+    "message": "Metoda de import",
+    "description": "Import method"
+  },
+  "m_1_quick_entry_c1ce8719": {
+    "message": "$slot_1$ Introducere rapidă",
+    "description": "$1 Quick entry",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_json_package_5fd092bc": {
+    "message": "Pachetul $slot_1$ JSON",
+    "description": "$1 JSON package",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_netscape_curl_8c6f0afa": {
+    "message": "$slot_1$ Netscape / cURL",
+    "description": "$1 Netscape / cURL",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_add_9dc3aa14": {
+    "message": "Adaugă",
+    "description": "Add"
+  },
+  "m_remove_cookie_row_2371fc81": {
+    "message": "Elimină rândul cookie",
+    "description": "Remove cookie row"
+  },
+  "m_cookies_only_domains_from_the_file_must_be_valid_7598760a": {
+    "message": "Doar Cookies. Domeniile din fișier trebuie să fie valide pentru ținta curentă.",
+    "description": "Cookies only. Domains from the file must be valid for the current target."
+  },
+  "m_choose_file_7ccb86d6": {
+    "message": "Alegeți un fișier",
+    "description": "Choose file"
+  },
+  "m_choose_or_drop_an_import_file_cb7cec54": {
+    "message": "Alegeți un fișier de import sau trageți-l și plasați-l aici.",
+    "description": "Choose or drop an import file"
+  },
+  "m_preview_fdda4cf7": {
+    "message": "Previzualizare",
+    "description": "Preview"
+  },
+  "m_change_source_389c45d2": {
+    "message": "Modificare sursă",
+    "description": "Change source"
+  },
+  "m_map_source_origin_to_current_target_b4c34739": {
+    "message": "Asociază originea site-ului web sursă cu destinația selectată în prezent.",
+    "description": "Map source origin to current target"
+  },
+  "m_conflicts_3e8a9594": {
+    "message": "Conflicte",
+    "description": "Conflicts"
+  },
+  "m_skip_c197c7e2": {
+    "message": "Sari peste",
+    "description": "Skip"
+  },
+  "m_add_only_fc8d6796": {
+    "message": "Adaugă doar",
+    "description": "Add only"
+  },
+  "m_individual_4debea66": {
+    "message": "Individual",
+    "description": "Individual"
+  },
+  "m_apply_selected_14d0d990": {
+    "message": "Aplică selecția",
+    "description": "Apply selected"
+  },
+  "m_undo_batch_9db3f173": {
+    "message": "Anulare lot",
+    "description": "Undo batch"
+  },
+  "m_import_another_33095ef7": {
+    "message": "Importă altul",
+    "description": "Import another"
+  },
+  "m_format_ffb0ff72": {
+    "message": "Format",
+    "description": "Format"
+  },
+  "m_export_format_918e82a6": {
+    "message": "Format de export",
+    "description": "Export format"
+  },
+  "m_export_scope_6080fad7": {
+    "message": "Domeniul de aplicare al exportului",
+    "description": "Export scope"
+  },
+  "m_current_view_cookies_b8f50c77": {
+    "message": "Vizualizare curentă (Cookies)",
+    "description": "Current view(Cookies)"
+  },
+  "m_select_items_to_export_bbcae900": {
+    "message": "Selectați elementele pe care doriți să le exportați",
+    "description": "Select items to export"
+  },
+  "m_select_all_visible_90496e48": {
+    "message": "Selectează tot ce este vizibil",
+    "description": "Select all visible"
+  },
+  "m_filter_items_910b807f": {
+    "message": "Filtrează articolele",
+    "description": "Filter items"
+  },
+  "m_filter_items_to_export_95e0b822": {
+    "message": "Filtrează elementele de exportat",
+    "description": "Filter items to export"
+  },
+  "m_no_items_in_the_current_view_51e3b0f4": {
+    "message": "Nu există elemente în vizualizarea curentă",
+    "description": "No items in the current view"
+  },
+  "m_export_preview_33afc7c3": {
+    "message": "Previzualizare export",
+    "description": "Export preview"
+  },
+  "m_saved_states_a5eae766": {
+    "message": "Stări salvate",
+    "description": "Saved states"
+  },
+  "m_how_saved_states_work_7efa7c25": {
+    "message": "Cum funcționează stările salvate",
+    "description": "How saved states work"
+  },
+  "m_0_saved_43d1ba2c": {
+    "message": "0 salvate",
+    "description": "0 saved"
+  },
+  "m_save_current_state_27cc8b68": {
+    "message": "Salvează starea curentă",
+    "description": "Save current state"
+  },
+  "m_no_saved_states_3f60a5e1": {
+    "message": "Nu există stări salvate",
+    "description": "No saved states"
+  },
+  "m_tags_76bda0c0": {
+    "message": "Etichete",
+    "description": "Tags"
+  },
+  "m_description_66de7a09": {
+    "message": "Descriere",
+    "description": "Description"
+  },
+  "m_capture_2fbb5e61": {
+    "message": "Captură",
+    "description": "Capture"
+  },
+  "m_current_view_d4b5b48f": {
+    "message": "Vizualizare curentă",
+    "description": "Current view"
+  },
+  "m_default_conflicts_5dc68821": {
+    "message": "Conflicte implicite",
+    "description": "Default conflicts"
+  },
+  "m_variables_7996f062": {
+    "message": "Variabile",
+    "description": "Variables"
+  },
+  "m_save_state_fb44729d": {
+    "message": "Salvare stare",
+    "description": "Save state"
+  },
+  "m_apply_saved_state_f8327dc5": {
+    "message": "Aplică starea salvată",
+    "description": "Apply saved state"
+  },
+  "m_map_saved_origin_to_current_target_367fc6c1": {
+    "message": "Asociază originea site-ului web salvat cu destinația selectată în prezent.",
+    "description": "Map saved origin to current target"
+  },
+  "m_preview_changes_964c14fa": {
+    "message": "Previzualizare modificări",
+    "description": "Preview changes"
+  },
+  "m_a_saved_state_keeps_a_reusable_set_of_cookies_lo_7feb125b": {
+    "message": "O stare salvată păstrează un set reutilizabil de Cookies, Local Storage și Session Storage pentru un site.",
+    "description": "A saved state keeps a reusable set of Cookies, Local Storage, and Session Storage for a site."
+  },
+  "m_save_the_current_state_166690d7": {
+    "message": "Salvează starea curentă",
+    "description": "Save the current state"
+  },
+  "m_open_the_site_state_you_want_to_reuse_then_selec_5ce0052": {
+    "message": "Deschideți starea site-ului pe care doriți să o reutilizați, apoi selectați $slot_1$.",
+    "description": "Open the site state you want to reuse, then select $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_choose_the_capture_scope_the_current_data_view_s_529cd2f6": {
+    "message": "Alegeți domeniul de captură: vizualizarea curentă a datelor, elementele selectate sau toate datele site-ului.",
+    "description": "Choose the capture scope: the current data view, selected items, or all site data."
+  },
+  "m_add_optional_variables_then_save_saved_states_st_dd227e3": {
+    "message": "Adăugați variabile opționale, apoi salvați. Stările salvate rămân în acest browser, cu excepția cazului în care le exportați.",
+    "description": "Add optional variables, then save. Saved states stay in this browser unless you export them."
+  },
+  "m_enter_one_captured_value_per_line_matching_value_22f4016": {
+    "message": "Introduceți o singură valoare capturată pe fiecare rând. Valorile corespunzătoare din datele salvate sunt înlocuite cu o variabilă.",
+    "description": "Enter one captured value per line. Matching values in the saved data are replaced with a variable."
+  },
+  "m_prefills_1_when_applying_the_saved_state_e33e2ad4": {
+    "message": "Completează automat $slot_1$ la aplicarea stării salvate.",
+    "description": "Prefills $1 when applying the saved state.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_asks_for_the_value_every_time_and_does_not_store_cb4d0df3": {
+    "message": "Solicită valoarea de fiecare dată și nu stochează $slot_1$ în starea salvată.",
+    "description": "Asks for the value every time and does not store $1 in the saved state.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_apply_a_saved_state_504c0672": {
+    "message": "Aplică o stare salvată",
+    "description": "Apply a saved state"
+  },
+  "m_select_1_and_enter_any_requested_variables_c8ff81f6": {
+    "message": "Selectați $slot_1$ și introduceți variabilele solicitate.",
+    "description": "Select $1 and enter any requested variables.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_for_a_different_origin_explicitly_enable_origin__b4821030": {
+    "message": "Pentru o altă origine, activați în mod explicit maparea originii.",
+    "description": "For a different origin, explicitly enable origin mapping."
+  },
+  "m_preview_the_changes_and_conflict_handling_before_29ad5a": {
+    "message": "Previzualizați modificările și modul de rezolvare a conflictelor înainte de a le aplica.",
+    "description": "Preview the changes and conflict handling before applying them."
+  },
+  "m_the_storage_change_could_not_be_verified_after_w_7a7ef6a4": {
+    "message": "Modificarea setărilor de stocare nu a putut fi verificată după înregistrare.",
+    "description": "The storage change could not be verified after writing."
+  },
+  "m_the_storage_value_could_not_be_verified_after_sa_77c05f71": {
+    "message": "Valoarea stocată nu a putut fi verificată după salvare.",
+    "description": "The storage value could not be verified after saving."
+  },
+  "m_the_storage_item_could_not_be_verified_as_delete_6d3355a2": {
+    "message": "Nu s-a putut verifica dacă elementul din spațiul de stocare a fost șters.",
+    "description": "The storage item could not be verified as deleted."
+  },
+  "m_storage_is_unavailable_in_the_target_page_cee7872a": {
+    "message": "Storage nu este disponibil în pagina țintă.",
+    "description": "Storage is unavailable in the target page."
+  },
+  "extensionName": {
+    "message": "Cookie Controller",
+    "description": "Cookie Controller"
+  },
+  "extensionDescription": {
+    "message": "Gestionează cookies, Local Storage și Session Storage pentru pagina curentă.",
+    "description": "Manage cookies, Local Storage, and Session Storage for the current page."
+  },
+  "m_settings_4b058728": {
+    "message": "Setări",
+    "description": "Settings"
+  },
+  "m_language_9a73db9b": {
+    "message": "Limba",
+    "description": "Language"
+  },
+  "m_automatic_616a6784": {
+    "message": "Automat",
+    "description": "Automatic"
+  },
+  "m_could_not_save_settings_please_try_again_960d71ae": {
+    "message": "Nu s-au putut salva setările. Vă rugăm să încercați din nou.",
+    "description": "Could not save settings. Please try again."
+  },
+  "m_could_not_load_this_language_please_try_again_fe3d5f54": {
+    "message": "Nu s-a putut încărca această limbă. Vă rugăm să încercați din nou.",
+    "description": "Could not load this language. Please try again."
+  },
+  "m_color_theme_5f51d6fd": {
+    "message": "Tema de culori",
+    "description": "Color theme"
+  },
+  "m_light_theme_f8e348fa": {
+    "message": "Tema deschisă",
+    "description": "Light theme"
+  },
+  "m_dark_theme_5a026490": {
+    "message": "Tema întunecată",
+    "description": "Dark theme"
+  },
+  "m_allow_access_d2983970": {
+    "message": "Permite accesul",
+    "description": "Allow access"
+  },
+  "m_site_access_is_required_to_read_this_site_s_data_acf058b1": {
+    "message": "Pentru a citi datele de pe acest site este necesar să aveți acces la acesta.",
+    "description": "Site access is required to read this site's data."
+  },
+  "m_allow_this_extension_to_read_this_site_s_data_a1c9bac0": {
+    "message": "Permiteți acestei extensii să citească datele de pe acest site?",
+    "description": "Allow this extension to read this site's data?"
+  },
+  "m_allow_site_data_access_75dd19dc": {
+    "message": "Permiteți accesul la datele site-ului?",
+    "description": "Allow site data access?"
+  },
+  "m_back_c2954bc2": {
+    "message": "Înapoi",
+    "description": "Back"
+  },
+  "m_cookies_local_storage_and_session_storage_data_s_e67cf99e": {
+    "message": "Cookies, Local Storage și Session Storage. Datele rămân pe dispozitivul dumneavoastră.",
+    "description": "Cookies, Local Storage, and Session Storage. Data stays on your device."
+  }
+}

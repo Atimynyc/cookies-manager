@@ -1,12 +1,13 @@
+import { t } from "../shared/i18n.js";
 import {
   NETSCAPE_COOKIE_FILE_MIME_TYPE,
   serializeNetscapeCookieFile
 } from "../shared/netscape-cookies.js";
 
 const KIND_LABELS = {
-  cookies: "Cookie",
-  localStorage: "Local",
-  sessionStorage: "Session"
+  get cookies() { return t("Cookie"); },
+  get localStorage() { return t("Local"); },
+  get sessionStorage() { return t("Session"); }
 };
 
 export function createSiteDataExportView({
@@ -78,9 +79,9 @@ export function createSiteDataExportView({
     elements.netscapeExportFormatLabel.hidden = !cookies;
     elements.packageExportFormatSwitch.classList.toggle("is-storage", !cookies);
     updateExportScopeAvailability();
-    elements.allExportScopeLabel.textContent = netscape ? "All cookies" : "All site data";
-    setButtonLabel(elements.copyPackageButton, netscape ? "Copy Netscape" : "Copy JSON");
-    setButtonLabel(elements.savePackageButton, netscape ? "Save cookies.txt" : "Save JSON");
+    elements.allExportScopeLabel.textContent = netscape ? t("All cookies") : t("All site data");
+    setButtonLabel(elements.copyPackageButton, netscape ? t("Copy Netscape") : t("Copy JSON"));
+    setButtonLabel(elements.savePackageButton, netscape ? t("Save cookies.txt") : t("Save JSON"));
     setFeedback(elements.packageExportFeedback);
     updateExportSummary();
   }
@@ -90,11 +91,11 @@ export function createSiteDataExportView({
     const netscape = getExportFormat() === "netscape";
     const currentIsCookies = context.currentKind === "cookies";
     const currentViewLabel = {
-      cookies: "Cookies",
-      localStorage: "Local Storage",
-      sessionStorage: "Session Storage"
+      cookies: t("Cookies"),
+      localStorage: t("Local Storage"),
+      sessionStorage: t("Session Storage")
     }[context.currentKind] || context.currentViewLabel;
-    elements.currentExportScopeLabel.textContent = `Current view(${currentViewLabel})`;
+    elements.currentExportScopeLabel.textContent = t`Current view(${currentViewLabel})`;
     elements.currentExportScope.disabled = netscape && !currentIsCookies;
     elements.selectedExportScope.disabled = netscape && !currentIsCookies;
     if (netscape && !currentIsCookies && getExportScope() !== "all") {
@@ -108,8 +109,8 @@ export function createSiteDataExportView({
     elements.exportSelectionBody.hidden = !visible || !state.selectionExpanded;
     elements.exportSelectionToggleButton.setAttribute("aria-expanded", String(visible && state.selectionExpanded));
     elements.exportSelectionToggleButton.querySelector("span").textContent = state.selectionExpanded
-      ? "Hide items"
-      : "Choose items";
+      ? t("Hide items")
+      : t("Choose items");
     elements.selectedExportScopeCount.textContent = String(getSelectedExportRows().length);
     if (visible) {
       renderExportSelectionList();
@@ -132,7 +133,7 @@ export function createSiteDataExportView({
     const rows = getFilteredExportRows();
     const allRows = getContext().currentRows || [];
     const selectedRows = getSelectedExportRows();
-    elements.exportSelectionCount.textContent = `${selectedRows.length} of ${allRows.length} selected`;
+    elements.exportSelectionCount.textContent = t`${selectedRows.length} of ${allRows.length} selected`;
     elements.exportSelectAllCheckbox.checked = rows.length > 0 && rows.every((row) => state.selectedIds.has(row.id));
     elements.exportSelectAllCheckbox.indeterminate = rows.some((row) => state.selectedIds.has(row.id)) && !elements.exportSelectAllCheckbox.checked;
     elements.exportSelectionList.replaceChildren(...rows.map(createExportSelectionItem));
@@ -166,12 +167,12 @@ export function createSiteDataExportView({
     checkbox.type = "checkbox";
     checkbox.checked = state.selectedIds.has(row.id);
     checkbox.dataset.exportId = row.id;
-    checkbox.setAttribute("aria-label", `Select ${row.name}`);
+    checkbox.setAttribute("aria-label", t`Select ${row.name}`);
     copy.className = "export-selection-item-copy";
-    name.textContent = row.name || "(unnamed)";
+    name.textContent = row.name || t("(unnamed)");
     location.textContent = row.location || "";
     kind.className = "export-selection-item-kind";
-    kind.textContent = KIND_LABELS[row.kind] || row.kind || "Item";
+    kind.textContent = KIND_LABELS[row.kind] || row.kind || t("Item");
     copy.append(name, location);
     label.append(checkbox, copy, kind);
     return label;
@@ -220,14 +221,14 @@ export function createSiteDataExportView({
     const netscape = getExportFormat() === "netscape";
     const summary = netscape
       ? {
-        current: `${context.currentCount} cookies in the current view`,
-        selected: `${context.selectedCount} selected cookies`,
-        all: "All cookies for the current target"
-      }[scope] + ". SameSite, Partitioned/CHIPS, and Cookie store are not represented."
+        current: t`${context.currentCount} cookies in the current view`,
+        selected: t`${context.selectedCount} selected cookies`,
+        all: t("All cookies for the current target")
+      }[scope] + t(". SameSite, Partitioned/CHIPS, and Cookie store are not represented.")
       : {
-        current: `${context.currentCount} ${context.currentViewLabel.toLowerCase()} in the current view`,
-        selected: `${context.selectedCount} selected ${context.currentViewLabel.toLowerCase()}`,
-        all: "Cookies, Local Storage, and Session Storage for the current target"
+        current: t`${context.currentCount} ${context.currentViewLabel.toLowerCase()} in the current view`,
+        selected: t`${context.selectedCount} selected ${context.currentViewLabel.toLowerCase()}`,
+        all: t("Cookies, Local Storage, and Session Storage for the current target")
       }[scope];
     elements.packageExportSummary.textContent = summary;
     elements.packageExportSummary.title = summary;
@@ -236,7 +237,7 @@ export function createSiteDataExportView({
   async function updateExportPreview() {
     const requestId = ++state.previewRequest;
     const format = getExportFormat();
-    elements.packageExportPreview.value = "Preparing preview...";
+    elements.packageExportPreview.value = t("Preparing preview...");
     try {
       setBusy(true);
       const dataPackage = await onBuildPackage(getExportScope());
@@ -246,7 +247,7 @@ export function createSiteDataExportView({
       elements.packageExportPreview.value = serializeExport(dataPackage, format);
     } catch (error) {
       if (requestId === state.previewRequest) {
-        elements.packageExportPreview.value = error?.message || "Failed to build export preview.";
+        elements.packageExportPreview.value = error?.message || t("Failed to build export preview.");
       }
     } finally {
       if (requestId === state.previewRequest) {
@@ -265,17 +266,17 @@ export function createSiteDataExportView({
       const count = netscape ? dataPackage.data.cookies.length : countPackageItems(dataPackage);
       if (mode === "copy") {
         await onCopy(text);
-        setFeedback(elements.packageExportFeedback, `Copied ${count} ${netscape ? "cookies" : "items"}.`, "success");
+        setFeedback(elements.packageExportFeedback, t`Copied ${count} ${netscape ? t("cookies") : t("items")}.`, "success");
       } else {
         if (netscape) {
           await onSaveText(text, createNetscapeFileName(dataPackage), NETSCAPE_COOKIE_FILE_MIME_TYPE);
         } else {
           await onSaveJson(dataPackage, createPackageFileName(dataPackage));
         }
-        setFeedback(elements.packageExportFeedback, `Saved ${count} ${netscape ? "cookies" : "items"}.`, "success");
+        setFeedback(elements.packageExportFeedback, t`Saved ${count} ${netscape ? t("cookies") : t("items")}.`, "success");
       }
     } catch (error) {
-      setFeedback(elements.packageExportFeedback, error?.message || "Failed to export site data.");
+      setFeedback(elements.packageExportFeedback, error?.message || t("Failed to export site data."));
     } finally {
       setBusy(false);
     }
@@ -296,7 +297,7 @@ export function createSiteDataExportView({
     return getFormat(elements.packageExportFormatInputs);
   }
 
-  return { open };
+  return { open, localize: () => { updateExportFormat(); updateExportSelectionPanel(); } };
 }
 
 function getElements(dialog) {

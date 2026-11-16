@@ -1,3 +1,4 @@
+import { t } from "../shared/i18n.js";
 import { forgetOperation, retryOperation, undoOperation } from "../shared/operation-client.js";
 import { OPERATION_JOURNAL_KEY } from "../shared/operation-journal.js";
 import { createOperationContext, getUndoUnavailableReason, reloadOperationTarget } from "../shared/operation-context.js";
@@ -5,8 +6,8 @@ import { createOperationContext, getUndoUnavailableReason, reloadOperationTarget
 const UNDO_STATES = new Set(["applied", "undo-failed", "undo-conflict"]);
 const RETRY_STATES = new Set(["failed", "conflict"]);
 const STATE_LABELS = {
-  pending: "Queued", running: "Writing", applied: "Written", failed: "Failed", conflict: "Conflict",
-  undoing: "Undoing", undone: "Undone", "undo-failed": "Undo failed", "undo-conflict": "Undo conflict"
+  get pending() { return t("Queued"); }, get running() { return t("Writing"); }, get applied() { return t("Written"); }, get failed() { return t("Failed"); }, get conflict() { return t("Conflict"); },
+  get undoing() { return t("Undoing"); }, get undone() { return t("Undone"); }, get "undo-failed"() { return t("Undo failed"); }, get "undo-conflict"() { return t("Undo conflict"); }
 };
 
 export function createOperationsView({ state, loadRecentChanges, refreshData, setBusy, showStatus, requestDeleteConfirmation }) {
@@ -61,7 +62,7 @@ export function createOperationsView({ state, loadRecentChanges, refreshData, se
     title.textContent = job.label;
     const scope = document.createElement("span");
     scope.className = "operation-scope";
-    scope.textContent = `${job.target.origin} | Tab ${job.target.tabId} | ${job.target.incognito ? "Incognito" : "Regular"}`;
+    scope.textContent = t`${job.target.origin} | Tab ${job.target.tabId} | ${job.target.incognito ? t("Incognito") : t("Regular")}`;
     const time = document.createElement("time");
     time.className = "operation-scope";
     time.dateTime = job.createdAt;
@@ -71,7 +72,7 @@ export function createOperationsView({ state, loadRecentChanges, refreshData, se
     const summary = document.createElement("p");
     summary.className = "operation-summary";
     summary.textContent = [...counts].map(([key, count]) => `${count} ${STATE_LABELS[key].toLowerCase()}`)
-      .concat(job.skipped?.length ? [`${job.skipped.length} skipped`] : []).join(", ");
+      .concat(job.skipped?.length ? [t`${job.skipped.length} skipped`] : []).join(", ");
     const actions = document.createElement("div");
     actions.className = "operation-actions";
     const running = job.status !== "completed";
@@ -83,26 +84,26 @@ export function createOperationsView({ state, loadRecentChanges, refreshData, se
       storageType: item.kind === "sessionStorage" ? "session" : item.kind === "localStorage" ? "local" : ""
     }, state.tab, state.cookieStoreId)).find(Boolean);
     if (job.items.some((item) => RETRY_STATES.has(item.state))) {
-      actions.append(button("Retry failed", () => act(job, "retry"), blocked));
+      actions.append(button(t("Retry failed"), () => act(job, "retry"), blocked));
     }
     if (undoItems.length) {
-      const undo = button("Undo", () => act(job, "undo"), blocked || Boolean(targetReason));
-      undo.title = targetReason || "Undo unchanged items in this operation";
+      const undo = button(t("Undo"), () => act(job, "undo"), blocked || Boolean(targetReason));
+      undo.title = targetReason || t("Undo unchanged items in this operation");
       actions.append(undo);
     }
-    actions.append(button("Remove record", () => act(job, "forget"), blocked));
+    actions.append(button(t("Remove record"), () => act(job, "forget"), blocked));
     const details = document.createElement("details");
     details.open = openedJobs.has(job.id);
     details.addEventListener("toggle", () => details.open ? openedJobs.add(job.id) : openedJobs.delete(job.id));
     const toggle = document.createElement("summary");
-    toggle.textContent = `Items (${job.items.length + (job.skipped?.length || 0)})`;
+    toggle.textContent = t`Items (${job.items.length + (job.skipped?.length || 0)})`;
     details.append(toggle);
     for (const item of job.items) {
       const detail = document.createElement("div");
       detail.className = "operation-item";
       detail.dataset.state = item.state;
       const name = document.createElement("span");
-      name.textContent = `${item.kind === "cookies" ? "Cookie" : item.kind === "localStorage" ? "Local" : "Session"}: ${item.name}`;
+      name.textContent = `${item.kind === "cookies" ? t("Cookie") : item.kind === "localStorage" ? t("Local") : t("Session")}: ${item.name}`;
       const status = document.createElement("span");
       status.textContent = STATE_LABELS[item.state];
       detail.append(name, status);
@@ -124,7 +125,7 @@ export function createOperationsView({ state, loadRecentChanges, refreshData, se
       const error = document.createElement("p");
       error.className = "operation-error";
       error.textContent = job.executionError.message;
-      row.append(error, button("Resume", () => loadRecentChanges(), state.busy));
+      row.append(error, button(t("Resume"), () => loadRecentChanges(), state.busy));
     }
     return row;
   }
@@ -132,8 +133,8 @@ export function createOperationsView({ state, loadRecentChanges, refreshData, se
   async function act(job, action) {
     if (state.busy || state.loading) return;
     if (action === "forget" && !await requestDeleteConfirmation({
-      title: "Remove operation record?", message: `"${job.label}" will no longer be retryable or undoable.`,
-      confirmLabel: "Remove record", detail: job.target.origin
+      title: t("Remove operation record?"), message: t`"${job.label}" will no longer be retryable or undoable.`,
+      confirmLabel: t("Remove record"), detail: job.target.origin
     })) return;
     const target = action === "undo" ? createOperationContext(state.tab, job.target.cookieStoreId) : null;
     setBusy(true);
@@ -149,10 +150,10 @@ export function createOperationsView({ state, loadRecentChanges, refreshData, se
         && ["applied", "undone"].includes(item.state));
       if (state.autoRefreshPage && changed) await reloadOperationTarget(target || job.target);
       const failures = result?.items.filter((item) => RETRY_STATES.has(item.state) || item.state.startsWith("undo-")).length || 0;
-      showStatus(action === "forget" ? "Operation record removed." : failures
-        ? `${failures} items still need attention.` : action === "undo" ? "Operation undone." : "Retry complete.", failures ? "error" : "success");
+      showStatus(action === "forget" ? t("Operation record removed.") : failures
+        ? t`${failures} items still need attention.` : action === "undo" ? t("Operation undone.") : t("Retry complete."), failures ? "error" : "success");
     } catch (error) {
-      showStatus(error?.message || "The operation could not be completed.", "error");
+      showStatus(error?.message || t("The operation could not be completed."), "error");
     } finally {
       setBusy(false);
       render();

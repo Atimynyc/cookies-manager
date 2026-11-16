@@ -1,3 +1,4 @@
+import { t } from "../shared/i18n.js";
 import { parseVariableCaptures } from "../shared/site-profiles.js";
 import { cancelDialogFromBackdrop } from "./popup-dialogs.js";
 
@@ -17,12 +18,13 @@ export function createSavedStatesView({
   const state = {
     profiles: [],
     mode: "list",
-    applyingProfile: null
+    applyingProfile: null,
+    applyMode: "apply"
   };
 
   bindEvents();
 
-  async function open() {
+  async function open({ focusProfileId = "" } = {}) {
     elements.profileScopeSelect.querySelector('option[value="selected"]').disabled = getContext().selectedCount === 0;
     state.mode = "list";
     setFeedback(elements.profileListError);
@@ -30,9 +32,14 @@ export function createSavedStatesView({
       state.profiles = await onLoadProfiles();
     } catch (error) {
       state.profiles = [];
-      setFeedback(elements.profileListError, error?.message || "Failed to load saved states.");
+      setFeedback(elements.profileListError, error?.message || t("Failed to load saved states."));
     }
     renderProfiles();
+    if (focusProfileId) {
+      const profileRow = Array.from(elements.profileList.children)
+        .find((row) => row.dataset.profileId === focusProfileId);
+      (profileRow?.querySelector("button") || elements.newProfileButton).focus();
+    }
   }
 
   function bindEvents() {
@@ -48,6 +55,7 @@ export function createSavedStatesView({
 
   function showProfileForm() {
     state.applyingProfile = null;
+    state.applyMode = "apply";
     setFeedback(elements.profileListError);
     elements.profileForm.reset();
     elements.profileScopeSelect.value = getContext().selectedCount > 0 ? "selected" : "current";
@@ -89,14 +97,14 @@ export function createSavedStatesView({
       hideProfileForm();
       renderProfiles();
     } catch (error) {
-      setFeedback(elements.profileFormError, error?.message || "Failed to save state.");
+      setFeedback(elements.profileFormError, error?.message || t("Failed to save state."));
     } finally {
       setBusy(false);
     }
   }
 
   function renderProfiles() {
-    elements.profileCount.textContent = `${state.profiles.length} saved`;
+    elements.profileCount.textContent = t`${state.profiles.length} saved`;
     elements.profileList.replaceChildren(...state.profiles.map(createProfileItem));
     setMode(state.mode);
   }
@@ -113,14 +121,23 @@ export function createSavedStatesView({
   function createProfileItem(profile) {
     const row = document.createElement("article");
     row.className = "profile-item";
+    row.dataset.profileId = profile.id;
     const copy = document.createElement("div");
     copy.className = "profile-item-copy";
     const name = document.createElement("strong");
     name.textContent = profile.name;
+    const origin = document.createElement("span");
+    origin.className = "profile-item-origin";
+    origin.textContent = `${t("Origin")}: ${profile.source.origin}`;
+    origin.title = profile.source.origin;
     const description = document.createElement("span");
-    description.textContent = profile.description || profile.source.origin;
+    description.className = "profile-item-description";
+    description.textContent = profile.description || "";
     description.title = description.textContent;
-    copy.append(name, description);
+    copy.append(name, origin);
+    if (profile.description) {
+      copy.append(description);
+    }
     if (profile.tags.length > 0) {
       const tags = document.createElement("span");
       tags.className = "profile-tags";
@@ -130,11 +147,12 @@ export function createSavedStatesView({
     const actions = document.createElement("div");
     actions.className = "profile-item-actions";
     actions.append(
-      profileButton("Apply", () => showProfileApply(profile), "primary-button"),
-      profileButton("Rename", () => updateProfileList(onRenameProfile(profile))),
-      profileButton("Copy", () => updateProfileList(onDuplicateProfile(profile))),
-      profileButton("Export", () => exportProfile(profile)),
-      profileButton("Delete", () => updateProfileList(onDeleteProfile(profile)), "danger-button")
+      profileButton(t("Preview"), () => void previewSavedProfile(profile)),
+      profileButton(t("Apply"), () => showProfileApply(profile), "primary-button"),
+      profileButton(t("Rename"), () => updateProfileList(onRenameProfile(profile))),
+      profileButton(t("Copy"), () => updateProfileList(onDuplicateProfile(profile))),
+      profileButton(t("Export"), () => exportProfile(profile)),
+      profileButton(t("Delete"), () => updateProfileList(onDeleteProfile(profile)), "danger-button")
     );
     row.append(copy, actions);
     return row;
@@ -159,7 +177,7 @@ export function createSavedStatesView({
         renderProfiles();
       }
     } catch (error) {
-      setFeedback(elements.profileListError, error?.message || "Failed to update saved states.");
+      setFeedback(elements.profileListError, error?.message || t("Failed to update saved states."));
     } finally {
       setBusy(false);
     }
@@ -174,9 +192,11 @@ export function createSavedStatesView({
     }
   }
 
-  function showProfileApply(profile) {
+  function showProfileApply(profile, mode = "apply") {
     state.applyingProfile = profile;
+    state.applyMode = mode;
     elements.profileApplyName.textContent = profile.name;
+    elements.profileApplyMode.textContent = mode === "preview" ? t("Preview") : t("Apply saved state");
     elements.profileVariableInputs.replaceChildren(...profile.variables.map((variable) => {
       const label = document.createElement("label");
       label.className = "workbench-field";
@@ -201,7 +221,27 @@ export function createSavedStatesView({
 
   function hideProfileApply() {
     state.applyingProfile = null;
+    state.applyMode = "apply";
     setMode("list");
+  }
+
+  async function previewSavedProfile(profile) {
+    if (profile.variables.some((variable) => variable.promptOnApply)) {
+      showProfileApply(profile, "preview");
+      return;
+    }
+
+    setFeedback(elements.profileListError);
+    setBusy(true);
+    try {
+      await onPrepareProfile(profile, {}, false);
+      state.applyingProfile = null;
+      state.applyMode = "apply";
+    } catch (error) {
+      setFeedback(elements.profileListError, error?.message || t("Failed to prepare saved state."));
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function previewProfile() {
@@ -218,13 +258,22 @@ export function createSavedStatesView({
       await onPrepareProfile(profile, inputs, elements.profileMappingToggle.checked);
       hideProfileApply();
     } catch (error) {
-      setFeedback(elements.profileApplyError, error?.message || "Failed to prepare saved state.");
+      setFeedback(elements.profileApplyError, error?.message || t("Failed to prepare saved state."));
     } finally {
       setBusy(false);
     }
   }
 
-  return { open };
+  function localize() {
+    renderProfiles();
+    if (state.applyingProfile) {
+      elements.profileApplyMode.textContent = state.applyMode === "preview"
+        ? t("Preview")
+        : t("Apply saved state");
+    }
+  }
+
+  return { open, localize };
 }
 
 function getElements(dialog) {
@@ -250,6 +299,7 @@ function getElements(dialog) {
     cancelProfileButton: byId("cancelProfileButton"),
     profileApplyPanel: byId("profileApplyPanel"),
     profileApplyName: byId("profileApplyName"),
+    profileApplyMode: byId("profileApplyMode"),
     profileVariableInputs: byId("profileVariableInputs"),
     profileMappingControl: byId("profileMappingControl"),
     profileMappingToggle: byId("profileMappingToggle"),

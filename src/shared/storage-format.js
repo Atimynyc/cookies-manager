@@ -1,8 +1,9 @@
+import { t } from "./i18n.js";
 import { makeStorageId } from "./item-identity.js";
 
 const STORAGE_LABELS = {
-  local: "Local Storage",
-  session: "Session Storage"
+  get local() { return t("Local Storage"); },
+  get session() { return t("Session Storage"); }
 };
 
 export { makeStorageId } from "./item-identity.js";
@@ -29,14 +30,14 @@ export function toStorageRow(item) {
     name: normalized.key,
     value: normalized.value,
     domain: normalized.origin,
-    path: STORAGE_LABELS[normalized.type] || "Storage",
-    expires: normalized.type === "session" ? "Tab session" : "Persistent",
+    path: STORAGE_LABELS[normalized.type] || t("Storage"),
+    expires: normalized.type === "session" ? t("Tab session") : t("Persistent"),
     size: getStorageItemSize(normalized.key, normalized.value),
     httpOnly: false,
     secure: false,
     sameSite: "",
     session: normalized.type === "session",
-    storeId: STORAGE_LABELS[normalized.type] || "Storage",
+    storeId: STORAGE_LABELS[normalized.type] || t("Storage"),
     partitioned: false,
     origin: normalized.origin,
     raw: normalized
@@ -56,5 +57,5 @@ export function getStorageItemSize(key, value) {
 }
 
 export function getStorageTypeLabel(type) {
-  return STORAGE_LABELS[type] || "Storage";
+  return STORAGE_LABELS[type] || t("Storage");
 }

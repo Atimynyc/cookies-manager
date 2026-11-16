@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 import { parseSiteDataPackage } from "./site-data-package.js";
 import { IMPORT_CONFLICT_STRATEGIES } from "./site-data-import.js";
 
@@ -38,11 +39,11 @@ export function createSiteProfile({
 
 export function normalizeSiteProfile(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
-    throw new TypeError("Profile must be an object.");
+    throw new TypeError(t("Profile must be an object."));
   }
   const name = String(value.name || "").trim();
   if (!name) {
-    throw new TypeError("Profile name is required.");
+    throw new TypeError(t("Profile name is required."));
   }
   const dataPackage = parseSiteDataPackage(value.dataPackage);
   const variables = normalizeStoredVariables(value.variables);
@@ -89,7 +90,7 @@ export function resolveSiteProfileVariables(profileValue, inputs = {}) {
     } else if (!variable.promptOnApply) {
       values[variable.name] = variable.defaultValue;
     } else {
-      throw new TypeError(`Enter a value for ${variable.name}.`);
+      throw new TypeError(t`Enter a value for ${variable.name}.`);
     }
   }
 
@@ -99,7 +100,7 @@ export function resolveSiteProfileVariables(profileValue, inputs = {}) {
   ));
   const unresolved = collectVariableReferences(resolved);
   if (unresolved.length > 0) {
-    throw new TypeError(`Missing profile variables: ${unresolved.join(", ")}.`);
+    throw new TypeError(t`Missing profile variables: ${unresolved.join(", ")}.`);
   }
   return parseSiteDataPackage(resolved);
 }
@@ -114,20 +115,20 @@ export function parseVariableCaptures(text) {
     }
     const separator = line.indexOf("=");
     if (separator <= 0) {
-      throw new TypeError(`Variable line ${index + 1} must use name=value.`);
+      throw new TypeError(t`Variable line ${index + 1} must use name=value.`);
     }
     const rawName = line.slice(0, separator).trim();
     const promptOnApply = rawName.startsWith("!");
     const name = promptOnApply ? rawName.slice(1) : rawName;
     if (!VARIABLE_NAME_PATTERN.test(name)) {
-      throw new TypeError(`Variable name ${name || "on line " + (index + 1)} is invalid.`);
+      throw new TypeError(t`Variable name ${name || "on line " + (index + 1)} is invalid.`);
     }
     if (names.has(name)) {
-      throw new TypeError(`Variable ${name} is duplicated.`);
+      throw new TypeError(t`Variable ${name} is duplicated.`);
     }
     const capturedValue = line.slice(separator + 1);
     if (!capturedValue) {
-      throw new TypeError(`Variable ${name} needs a captured value.`);
+      throw new TypeError(t`Variable ${name} needs a captured value.`);
     }
     names.add(name);
     variables.push({
@@ -146,7 +147,7 @@ export function duplicateSiteProfile(profileValue, timestamp = Date.now()) {
   return normalizeSiteProfile({
     ...profile,
     id: `${timestamp}-${Math.random().toString(36).slice(2, 8)}`,
-    name: `${profile.name} copy`,
+    name: t`${profile.name} copy`,
     createdAt: now,
     updatedAt: now
   });
@@ -203,7 +204,7 @@ function normalizeVariableCaptures(values) {
     const name = String(value?.name || "");
     const capturedValue = String(value?.capturedValue ?? "");
     if (!VARIABLE_NAME_PATTERN.test(name) || !capturedValue) {
-      throw new TypeError("Profile variables require a valid name and captured value.");
+      throw new TypeError(t("Profile variables require a valid name and captured value."));
     }
     const promptOnApply = Boolean(value.promptOnApply);
     return {
@@ -223,7 +224,7 @@ function normalizeStoredVariables(values) {
   return values.map((value) => {
     const name = String(value?.name || "");
     if (!VARIABLE_NAME_PATTERN.test(name) || names.has(name)) {
-      throw new TypeError("Profile variable names must be valid and unique.");
+      throw new TypeError(t("Profile variable names must be valid and unique."));
     }
     names.add(name);
     const promptOnApply = Boolean(value.promptOnApply);

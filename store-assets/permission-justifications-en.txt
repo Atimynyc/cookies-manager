@@ -14,7 +14,7 @@ The extension uses the chrome.tabs API to identify the active tab, list HTTP/HTT
 
 Justification for storage
 
-The extension uses chrome.storage.local to store interface preferences, automatic reload settings, column widths, the selected value-tool mode, favorites, and site profiles explicitly created by the user, and recent change records on the user's device. A site profile may contain site-data values the user deliberately selects; apply-time variables retain placeholders and do not store captured or entered values. The extension uses chrome.storage.session to retain complete before-and-after values for difference viewing and batch undo only during the current browser session. This data is used only to restore extension state and support site data management workflows. It is not synchronized or uploaded to the developer or third-party servers. Users can remove locally stored data by deleting profiles, clearing extension data, or uninstalling the extension, and session snapshots are discarded when the browser session ends.
+The extension uses chrome.storage.local to store interface preferences, automatic reload settings, column widths, the selected value-tool mode, favorites, site-data read-consent records, site profiles explicitly created by the user, and recent change records on the user's device. A site profile may contain site-data values the user deliberately selects; apply-time variables retain placeholders and do not store captured or entered values. The extension uses chrome.storage.session to retain complete before-and-after values for difference viewing and batch undo only during the current browser session. This data is used only to restore extension state and support site data management workflows. It is not synchronized or uploaded to the developer or third-party servers. Users can remove locally stored data by deleting profiles, clearing extension data, or uninstalling the extension, and session snapshots are discarded when the browser session ends.
 
 Justification for scripting
 
@@ -26,7 +26,7 @@ The extension uses the chrome.sidePanel API to open the same site data managemen
 
 Justification for host permissions
 
-The extension requires http://*/* and https://*/* host permissions so users can manage cookies, Local Storage, and Session Storage on any HTTP or HTTPS website they explicitly select. Access through the chrome.cookies API and chrome.scripting.executeScript requires host permission matching the target website. The extension does not scan websites in the background. It accesses site data only after the user opens the extension, selects a tab, and performs a view or modification action. No site data is transmitted to an external server.
+The extension declares http://*/* and https://*/* as optional host permissions so users can grant access only to the HTTP or HTTPS websites they explicitly select. Access through the chrome.cookies API and chrome.scripting.executeScript requires host permission matching the target website. The extension asks for the current site's access when the user chooses to read its data, and does not scan websites in the background. No site data is transmitted to an external server.
 
 Remote code declaration
 

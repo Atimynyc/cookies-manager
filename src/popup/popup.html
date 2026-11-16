@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,73 +12,87 @@
   <body>
     <main class="app-shell">
       <header class="topbar">
-        <section class="site-summary" aria-label="Current page">
+        <section class="site-summary" aria-label="Current page" data-i18n-attrs="aria-label">
           <div class="site-title">
             <img class="site-icon" id="siteIcon" alt="" width="16" height="16" hidden>
-            <div class="site-host" id="hostLabel">Loading page</div>
+            <div class="site-host" id="hostLabel" data-i18n="Loading page">Loading page</div>
           </div>
-          <div class="site-count" id="cookieCount">0 cookies</div>
+          <div class="site-count" id="cookieCount" data-i18n="0 cookies">0 cookies</div>
         </section>
 
         <label class="site-switch">
-          <select id="siteSelect" aria-label="Switch active tab site" title="Switch site"></select>
+          <select id="siteSelect" aria-label="Switch active tab site" title="Switch site" data-i18n-attrs="aria-label title"></select>
         </label>
 
-        <nav class="data-switch" aria-label="Data type">
-          <button class="is-active" id="cookiesViewButton" type="button" data-view="cookies" aria-pressed="true">Cookies</button>
-          <button id="localStorageViewButton" type="button" data-view="localStorage" aria-pressed="false">Local</button>
-          <button id="sessionStorageViewButton" type="button" data-view="sessionStorage" aria-pressed="false">Session</button>
+        <nav class="data-switch" aria-label="Data type" data-i18n-attrs="aria-label">
+          <button class="is-active" id="cookiesViewButton" type="button" data-view="cookies" aria-pressed="true" data-i18n="Cookies">Cookies</button>
+          <button id="localStorageViewButton" type="button" data-view="localStorage" aria-pressed="false" data-i18n="Local">Local</button>
+          <button id="sessionStorageViewButton" type="button" data-view="sessionStorage" aria-pressed="false" data-i18n="Session">Session</button>
         </nav>
 
         <label class="search-field">
-          <span class="search-icon" aria-hidden="true">Search</span>
-          <input id="searchInput" type="search" autocomplete="off" placeholder="Search name, value, domain, path">
+          <span class="search-icon" aria-hidden="true" data-i18n="Search">Search</span>
+          <input id="searchInput" type="search" autocomplete="off" placeholder="Search name, value, domain, path" data-i18n-attrs="placeholder">
         </label>
 
         <div class="refresh-control" id="refreshControl">
-          <button class="icon-button refresh-action-button" id="refreshButton" type="button" title="Refresh data" aria-label="Refresh data">
+          <button class="icon-button refresh-action-button" id="refreshButton" type="button" title="Refresh current page" aria-label="Refresh current page">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 5v4h4m-4 4a8.1 8.1 0 0 0 15.5 2M20 19v-4h-4" />
             </svg>
-            <span class="refresh-status-dot" aria-hidden="true"></span>
           </button>
-          <button class="refresh-menu-button" id="refreshMenuButton" type="button" title="Reload settings" aria-label="Open reload settings" aria-haspopup="dialog" aria-controls="refreshMenu" aria-expanded="false">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="m7 10 5 5 5-5" />
-            </svg>
-          </button>
-          <div class="refresh-menu" id="refreshMenu" role="dialog" aria-label="Reload settings" hidden>
-            <label class="refresh-setting">
-              <span class="refresh-setting-copy">
-                <span class="refresh-setting-title">Reload after changes</span>
-                <span class="refresh-setting-note">Reload the active page after editing data</span>
-              </span>
-              <input id="autoRefreshToggle" type="checkbox">
-              <span class="switch-track" aria-hidden="true"></span>
-            </label>
-          </div>
         </div>
 
-        <button class="icon-button panel-button" id="openSidePanelButton" type="button" title="Open side panel" aria-label="Open side panel">
+        <button class="icon-button panel-button" id="openSidePanelButton" type="button" title="Open side panel" aria-label="Open side panel" data-i18n-attrs="title aria-label">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M4 5h16v14H4zM14 5v14" />
           </svg>
         </button>
 
-        <button class="history-view-button" id="historyViewButton" type="button" title="Recent changes" aria-label="Show recent changes" aria-controls="historyPanel" aria-pressed="false">
+        <div class="settings-control" id="settingsControl">
+          <button class="icon-button settings-button" id="settingsButton" type="button" title="Settings" aria-label="Settings" aria-haspopup="dialog" aria-controls="settingsMenu" aria-expanded="false" data-i18n-attrs="title aria-label">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9.5 3-.6 2.2-2 .9-2-.6-2.4 4.1 1.6 1.6v2.3l-1.6 1.6 2.4 4.1 2-.6 2 .9.6 2.2h5l.6-2.2 2-.9 2 .6 2.4-4.1-1.6-1.6v-2.3l1.6-1.6-2.4-4.1-2 .6-2-.9-.6-2.2z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+          <section class="settings-menu" id="settingsMenu" role="dialog" aria-labelledby="settingsTitle" hidden>
+            <h2 id="settingsTitle" data-i18n="Settings">Settings</h2>
+            <div class="settings-controls">
+              <div class="settings-preferences-row">
+                <select id="languageSelect" aria-label="Language" data-i18n-attrs="aria-label"></select>
+                <button class="theme-toggle" id="themeToggle" type="button" role="switch" aria-checked="false" aria-label="Dark theme" data-i18n-attrs="aria-label" disabled>
+                  <svg class="icon theme-sun" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4" />
+                    <path d="M12 2v2M12 20v2M2 12h2M20 12h2m-3-7 1.4-1.4M5.6 18.4 7 17m10 0 1.4 1.4M5.6 5.6 7 7" />
+                  </svg>
+                  <svg class="icon theme-moon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z" />
+                  </svg>
+                </button>
+              </div>
+              <label class="refresh-setting settings-refresh-row">
+                <span class="refresh-setting-copy">
+                  <span class="refresh-setting-title" data-i18n="Reload after changes">Reload after changes</span>
+                  <span class="refresh-setting-note" data-i18n="Reload the active page after editing data">Reload the active page after editing data</span>
+                </span>
+                <input id="autoRefreshToggle" type="checkbox">
+                <span class="switch-track" aria-hidden="true"></span>
+              </label>
+            </div>
+            <p class="settings-error" id="settingsError" role="alert" hidden></p>
+          </section>
+        </div>
+
+        <button class="history-view-button" id="historyViewButton" type="button" title="Recent changes" aria-label="Show recent changes" aria-controls="historyPanel" aria-pressed="false" data-i18n-attrs="title aria-label">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
             <path d="M3 3v5h5M12 7v5l3 2" />
           </svg>
-          <span>History</span>
+          <span data-i18n="History">History</span>
           <span class="history-count-badge" id="historyCountBadge" hidden>0</span>
         </button>
       </header>
-
-      <section class="permission-banner" id="permissionBanner" hidden>
-        <span id="permissionMessage">Site access is required to read cookies.</span>
-        <button id="requestPermissionButton" type="button">Retry</button>
-      </section>
 
       <section class="status-bar" id="statusBar" hidden>
         <span class="status-icon" aria-hidden="true">
@@ -100,7 +114,7 @@
           </svg>
         </span>
         <span class="status-message" id="statusMessage" role="status" aria-live="polite" aria-atomic="true"></span>
-        <button class="status-close-button" id="closeStatusButton" type="button" title="Dismiss message" aria-label="Dismiss message" hidden>
+        <button class="status-close-button" id="closeStatusButton" type="button" title="Dismiss message" aria-label="Dismiss message" hidden data-i18n-attrs="title aria-label">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M18 6 6 18M6 6l12 12" />
           </svg>
@@ -109,30 +123,30 @@
       <span class="visually-hidden" id="copyAnnouncement" aria-live="polite" aria-atomic="true"></span>
 
       <section class="content">
-        <section class="table-pane" aria-label="Cookie list">
-          <div class="table-global-toolbar" aria-label="Site data actions">
-            <button class="data-action-button" id="importButton" type="button" aria-label="Import">
+        <section class="table-pane" aria-label="Cookie list" data-i18n-attrs="aria-label">
+          <div class="table-global-toolbar" aria-label="Site data actions" data-i18n-attrs="aria-label">
+            <button class="data-action-button" id="importButton" type="button" aria-label="Import" data-i18n-attrs="aria-label">
               <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <path d="m17 8-5-5-5 5" />
                 <path d="M12 3v12" />
               </svg>
-              <span>Import</span>
+              <span data-i18n="Import">Import</span>
             </button>
-            <button class="data-action-button" id="exportButton" type="button" aria-label="Export">
+            <button class="data-action-button" id="exportButton" type="button" aria-label="Export" data-i18n-attrs="aria-label">
               <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <path d="m7 10 5 5 5-5" />
                 <path d="M12 15V3" />
               </svg>
-              <span>Export</span>
+              <span data-i18n="Export">Export</span>
             </button>
-            <button class="data-action-button secondary-action-button" id="profilesButton" type="button" aria-label="Saved States">
+            <button class="data-action-button secondary-action-button" id="profilesButton" type="button" aria-label="Saved States" data-i18n-attrs="aria-label">
               <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M3 5h18v14H3z" />
                 <path d="M3 9h18M10 13h4" />
               </svg>
-              <span>Saved States</span>
+              <span data-i18n="Saved States">Saved States</span>
             </button>
           </div>
 
@@ -141,11 +155,11 @@
               <thead>
                 <tr>
                   <th class="select-column" scope="col">
-                    <input id="selectAllCheckbox" type="checkbox" aria-label="Select all visible rows">
+                    <input id="selectAllCheckbox" type="checkbox" aria-label="Select all visible rows" data-i18n-attrs="aria-label">
                   </th>
                   <th class="name-sort-header" scope="col" data-column-index="0" aria-sort="none">
-                    <button class="column-sort-button" id="nameSortButton" type="button" aria-label="Sort Name ascending" title="Sort Name ascending">
-                      <span id="nameSortLabel">Name</span>
+                    <button class="column-sort-button" id="nameSortButton" type="button" aria-label="Sort Name ascending" title="Sort Name ascending" data-i18n-attrs="aria-label title">
+                      <span id="nameSortLabel" data-i18n="Name">Name</span>
                       <svg class="icon sort-neutral-icon" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="m3 8 4-4 4 4M7 4v16M21 16l-4 4-4-4M17 20V4" />
                       </svg>
@@ -154,61 +168,65 @@
                       </svg>
                     </button>
                   </th>
-                  <th scope="col" data-column-index="1">Value</th>
-                  <th scope="col" data-column-index="2">Domain</th>
-                  <th scope="col" data-column-index="3">Path</th>
-                  <th scope="col" data-column-index="4">Expires</th>
-                  <th scope="col" data-column-index="5">Flags</th>
-                  <th scope="col" data-column-index="6">Size</th>
+                  <th scope="col" data-column-index="1" data-i18n="Value">Value</th>
+                  <th scope="col" data-column-index="2" data-i18n="Domain">Domain</th>
+                  <th scope="col" data-column-index="3" data-i18n="Path">Path</th>
+                  <th scope="col" data-column-index="4" data-i18n="Expires">Expires</th>
+                  <th scope="col" data-column-index="5" data-i18n="Flags">Flags</th>
+                  <th scope="col" data-column-index="6" data-i18n="Size">Size</th>
                 </tr>
               </thead>
               <tbody id="cookieTableBody"></tbody>
             </table>
           </div>
 
-          <div class="empty-state" id="loadingState">Reading cookies</div>
-          <div class="empty-state" id="emptyState" hidden>No cookies for this page</div>
+          <div class="empty-state" id="loadingState" data-i18n="Reading cookies">Reading cookies</div>
+          <div class="empty-state" id="emptyState" hidden data-i18n="No cookies for this page">No cookies for this page</div>
+          <div class="empty-state site-access-state" id="siteAccessState" hidden>
+            <span data-i18n="Site permission is required for this page.">Site permission is required for this page.</span>
+            <button id="requestPermissionButton" type="button" data-i18n="Allow access">Allow access</button>
+          </div>
 
           <div class="table-toolbar">
-            <button class="selection-count" id="selectionCount" type="button" aria-controls="cookieTableBody" aria-pressed="false" title="Show selected items" disabled>
+            <button class="selection-count" id="selectionCount" type="button" aria-controls="cookieTableBody" aria-pressed="false" title="Show selected items" disabled data-i18n-attrs="title">
               <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M4 5h16l-6 7v5l-4 2v-7Z" />
               </svg>
-              <span id="selectionCountLabel">0 selected</span>
+              <span id="selectionCountLabel" data-i18n="0 selected">0 selected</span>
             </button>
-            <div class="batch-actions" id="batchActions" aria-label="Selected item actions" hidden>
-              <button class="table-action-button batch-action-button" id="batchEditButton" type="button" aria-label="Set value" data-tooltip="Set value" disabled>
+            <div class="batch-actions" id="batchActions" aria-label="Selected item actions" hidden data-i18n-attrs="aria-label">
+              <button class="table-action-button batch-action-button" id="batchEditButton" type="button" aria-label="Set value" data-tooltip="Set value" disabled data-i18n-attrs="aria-label data-tooltip">
                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M12 20h9" />
                   <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
                 </svg>
-                <span>Set value</span>
+                <span data-i18n="Set value">Set value</span>
               </button>
-              <button class="table-action-button batch-action-button danger-button" id="batchDeleteButton" type="button" aria-label="Delete selected" data-tooltip="Delete selected" disabled>
+              <button class="table-action-button batch-action-button danger-button" id="batchDeleteButton" type="button" aria-label="Delete selected" data-tooltip="Delete selected" disabled data-i18n-attrs="aria-label data-tooltip">
                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M3 6h18" />
                   <path d="M8 6V4h8v2" />
                   <path d="M19 6l-1 15H6L5 6" />
                   <path d="M10 11v6M14 11v6" />
                 </svg>
-                <span>Delete</span>
+                <span data-i18n="Delete">Delete</span>
               </button>
             </div>
           </div>
         </section>
 
-        <aside class="detail-pane" aria-label="Cookie workspace">
+        <aside class="detail-pane" aria-label="Cookie workspace" data-i18n-attrs="aria-label">
           <div class="detail-content">
-            <section class="detail-view" id="detailsView" aria-label="Cookie editor">
-              <div class="detail-empty" id="detailPlaceholder">Select a cookie</div>
+            <section class="detail-view" id="detailsView" aria-label="Cookie editor" data-i18n-attrs="aria-label">
+              <div class="detail-empty" id="detailPlaceholder" data-i18n="Select a cookie">Select a cookie</div>
 
               <form class="editor" id="cookieEditor" hidden>
                 <header class="editor-header">
                   <div class="editor-title-block">
-                    <h1 id="editorName">Cookie</h1>
+                    <h1 id="editorName" data-i18n="Cookie">Cookie</h1>
                     <div id="editorLocation" class="editor-location"></div>
                   </div>
-                  <button class="editor-favorite-button" id="editorFavoriteButton" type="button" title="Favorite item" aria-label="Favorite item" aria-pressed="false">
+                  <button class="editor-favorite-button" id="editorFavoriteButton" type="button" title="Favorite item" aria-label="Favorite item" aria-pressed="false" data-i18n-attrs="title aria-label">
                     <img class="favorite-brand-icon" src="../../assets/icon-32.png" alt="" width="22" height="22">
                   </button>
                   <div class="chip-row" id="editorChips"></div>
@@ -216,10 +234,10 @@
 
                 <div class="value-field">
                   <div class="value-field-header">
-                    <label for="valueInput">Value</label>
-                    <div class="editor-actions" aria-label="Editor actions">
+                    <label for="valueInput" data-i18n="Value">Value</label>
+                    <div class="editor-actions" aria-label="Editor actions" data-i18n-attrs="aria-label">
                       <div class="copy-control" id="copyControl">
-                        <button class="editor-action-button copy-feedback-button copy-primary-button" id="copyButton" type="button" aria-label="Copy value" data-tooltip="Copy value" data-copy-mode="value">
+                        <button class="editor-action-button copy-feedback-button copy-primary-button" id="copyButton" type="button" aria-label="Copy value" data-tooltip="Copy value" data-copy-mode="value" data-i18n-attrs="aria-label data-tooltip">
                           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                             <rect width="14" height="14" x="8" y="8" rx="2" />
                             <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
@@ -228,42 +246,42 @@
                             <svg class="icon" viewBox="0 0 24 24">
                               <path d="m5 12 4 4L19 6" />
                             </svg>
-                            <span class="copy-feedback-label">Copied</span>
+                            <span class="copy-feedback-label" data-i18n="Copied">Copied</span>
                           </span>
                         </button>
-                        <button class="copy-menu-button" id="copyMenuButton" type="button" aria-label="Choose copy format" aria-haspopup="menu" aria-controls="copyMenu" aria-expanded="false">
+                        <button class="copy-menu-button" id="copyMenuButton" type="button" aria-label="Choose copy format" aria-haspopup="menu" aria-controls="copyMenu" aria-expanded="false" data-i18n-attrs="aria-label">
                           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                             <path d="m7 10 5 5 5-5" />
                           </svg>
                         </button>
-                        <div class="copy-menu" id="copyMenu" role="menu" aria-label="Copy format" hidden>
+                        <div class="copy-menu" id="copyMenu" role="menu" aria-label="Copy format" hidden data-i18n-attrs="aria-label">
                           <button type="button" role="menuitemradio" data-copy-mode="value" aria-checked="true">
                             <svg class="icon copy-menu-check" viewBox="0 0 24 24" aria-hidden="true">
                               <path d="m5 12 4 4L19 6" />
                             </svg>
-                            <span>Copy value</span>
+                            <span data-i18n="Copy value">Copy value</span>
                           </button>
                           <button type="button" role="menuitemradio" data-copy-mode="pair" aria-checked="false">
                             <svg class="icon copy-menu-check" viewBox="0 0 24 24" aria-hidden="true">
                               <path d="m5 12 4 4L19 6" />
                             </svg>
-                            <span>Copy name=value</span>
+                            <span data-i18n="Copy name=value">Copy name=value</span>
                           </button>
                           <button type="button" role="menuitemradio" data-copy-mode="json" aria-checked="false">
                             <svg class="icon copy-menu-check" viewBox="0 0 24 24" aria-hidden="true">
                               <path d="m5 12 4 4L19 6" />
                             </svg>
-                            <span>Copy JSON</span>
+                            <span data-i18n="Copy JSON">Copy JSON</span>
                           </button>
                         </div>
                       </div>
-                      <button class="editor-action-button" id="resetButton" type="button" aria-label="Reset" data-tooltip="Reset">
+                      <button class="editor-action-button" id="resetButton" type="button" aria-label="Reset" data-tooltip="Reset" data-i18n-attrs="aria-label data-tooltip">
                         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                           <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
                           <path d="M3 3v5h5" />
                         </svg>
                       </button>
-                      <button class="editor-action-button danger-button" id="deleteButton" type="button" aria-label="Delete" data-tooltip="Delete">
+                      <button class="editor-action-button danger-button" id="deleteButton" type="button" aria-label="Delete" data-tooltip="Delete" data-i18n-attrs="aria-label data-tooltip">
                         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                           <path d="M3 6h18" />
                           <path d="M8 6V4h8v2" />
@@ -271,7 +289,7 @@
                           <path d="M10 11v6M14 11v6" />
                         </svg>
                       </button>
-                      <button class="editor-action-button primary-button" id="saveButton" type="submit" aria-label="Save" data-tooltip="Save">
+                      <button class="editor-action-button primary-button" id="saveButton" type="submit" aria-label="Save" data-tooltip="Save" data-i18n-attrs="aria-label data-tooltip">
                         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                           <path d="M5 3h12l4 4v14H3V5a2 2 0 0 1 2-2Z" />
                           <path d="M7 3v6h9V3M7 21v-8h10v8" />
@@ -286,8 +304,8 @@
                     </section>
                     <div class="value-workspace-footer">
                       <div class="value-view-switch" id="valueViewSwitch" hidden>
-                        <button id="valueViewToggleButton" type="button" aria-label="Show result" disabled>
-                          <span id="valueViewLabel">Raw</span>
+                        <button id="valueViewToggleButton" type="button" aria-label="Show result" disabled data-i18n-attrs="aria-label">
+                          <span id="valueViewLabel" data-i18n="Raw">Raw</span>
                           <svg class="icon" id="valueViewToggleIcon" viewBox="0 0 24 24" aria-hidden="true" hidden>
                             <path d="M8 3 4 7l4 4M4 7h16" />
                             <path d="m16 21 4-4-4-4M20 17H4" />
@@ -296,45 +314,45 @@
                       </div>
                       <div class="value-workspace-actions">
                         <div class="value-tools-control" id="valueToolsControl">
-                          <button class="value-tools-button" id="valueToolsButton" type="button" title="Value tools" aria-label="Value tools" data-icon="wrench" aria-haspopup="menu" aria-controls="valueToolsMenu" aria-expanded="false">
+                          <button class="value-tools-button" id="valueToolsButton" type="button" title="Value tools" aria-label="Value tools" data-icon="wrench" aria-haspopup="menu" aria-controls="valueToolsMenu" aria-expanded="false" data-i18n-attrs="title aria-label">
                             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                               <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.2-3.2a6 6 0 0 1-7.4 7.4L6.1 21.1a2.1 2.1 0 0 1-3-3l7.6-7.6A6 6 0 0 1 18.1 3l-3.2 3.3Z" />
                             </svg>
-                            <span>Tools</span>
+                            <span data-i18n="Tools">Tools</span>
                             <svg class="icon value-tools-chevron" viewBox="0 0 24 24" aria-hidden="true">
                               <path d="m7 10 5 5 5-5" />
                             </svg>
                           </button>
-                          <div class="value-tools-menu" id="valueToolsMenu" role="menu" aria-label="Value tools" hidden>
+                          <div class="value-tools-menu" id="valueToolsMenu" role="menu" aria-label="Value tools" hidden data-i18n-attrs="aria-label">
                             <button type="button" role="menuitemradio" data-value-tool="urlDecode" aria-checked="false">
                               <svg class="icon value-tool-check" viewBox="0 0 24 24" aria-hidden="true">
                                 <path d="m5 12 4 4L19 6" />
                               </svg>
-                              <span>URL decode</span>
+                              <span data-i18n="URL decode">URL decode</span>
                             </button>
                             <button type="button" role="menuitemradio" data-value-tool="urlEncode" aria-checked="false">
                               <svg class="icon value-tool-check" viewBox="0 0 24 24" aria-hidden="true">
                                 <path d="m5 12 4 4L19 6" />
                               </svg>
-                              <span>URL encode</span>
+                              <span data-i18n="URL encode">URL encode</span>
                             </button>
                             <button type="button" role="menuitemradio" data-value-tool="jsonFormat" aria-checked="false">
                               <svg class="icon value-tool-check" viewBox="0 0 24 24" aria-hidden="true">
                                 <path d="m5 12 4 4L19 6" />
                               </svg>
-                              <span>Format JSON</span>
+                              <span data-i18n="Format JSON">Format JSON</span>
                             </button>
                             <button type="button" role="menuitemradio" data-value-tool="jsonCompact" aria-checked="false">
                               <svg class="icon value-tool-check" viewBox="0 0 24 24" aria-hidden="true">
                                 <path d="m5 12 4 4L19 6" />
                               </svg>
-                              <span>Compact JSON</span>
+                              <span data-i18n="Compact JSON">Compact JSON</span>
                             </button>
                             <button type="button" role="menuitemradio" data-value-tool="jwt" aria-checked="false">
                               <svg class="icon value-tool-check" viewBox="0 0 24 24" aria-hidden="true">
                                 <path d="m5 12 4 4L19 6" />
                               </svg>
-                              <span>JWT payload</span>
+                              <span data-i18n="JWT payload">JWT payload</span>
                             </button>
                           </div>
                         </div>
@@ -345,18 +363,18 @@
 
                 <dl class="meta-grid">
                   <div>
-                    <dt id="metaDomainLabel">Domain</dt>
+                    <dt id="metaDomainLabel" data-i18n="Domain">Domain</dt>
                     <dd id="metaDomain"></dd>
                   </div>
                   <div>
-                    <dt id="metaPathLabel">Path</dt>
+                    <dt id="metaPathLabel" data-i18n="Path">Path</dt>
                     <dd id="metaPath"></dd>
                   </div>
                   <div id="metaExpiresGroup">
-                    <dt id="metaExpiresLabel">Expires</dt>
+                    <dt id="metaExpiresLabel" data-i18n="Expires">Expires</dt>
                     <dd id="metaExpires"></dd>
                     <dd class="meta-expiration-editor" id="expirationEditorCell" hidden>
-                      <input id="expirationInput" type="datetime-local" step="1" aria-label="Cookie expiration date and time" title="Clear the time to use a session cookie">
+                      <input id="expirationInput" type="datetime-local" step="1" aria-label="Cookie expiration date and time" title="Clear the time to use a session cookie" data-i18n-attrs="aria-label title">
                     </dd>
                   </div>
                   <div>
@@ -364,11 +382,11 @@
                     <dd id="metaSameSite"></dd>
                   </div>
                   <div>
-                    <dt id="metaStoreLabel">Store</dt>
+                    <dt id="metaStoreLabel" data-i18n="Store">Store</dt>
                     <dd id="metaStore"></dd>
                   </div>
                   <div>
-                    <dt>Size</dt>
+                    <dt data-i18n="Size">Size</dt>
                     <dd id="metaSize"></dd>
                   </div>
                 </dl>
@@ -376,31 +394,31 @@
               </form>
             </section>
 
-            <section class="history-panel" id="historyPanel" aria-label="Recent cookie changes" hidden>
+            <section class="history-panel" id="historyPanel" aria-label="Recent cookie changes" hidden data-i18n-attrs="aria-label">
               <div class="history-header">
-                <div class="history-tabs" aria-label="History view">
-                  <button id="changesTabButton" type="button" aria-pressed="true">Recent changes</button>
-                  <button id="operationsTabButton" type="button" aria-pressed="false">Operations</button>
+                <div class="history-tabs" aria-label="History view" data-i18n-attrs="aria-label">
+                  <button id="changesTabButton" type="button" aria-pressed="true" data-i18n="Recent changes">Recent changes</button>
+                  <button id="operationsTabButton" type="button" aria-pressed="false" data-i18n="Operations">Operations</button>
                 </div>
-                <button id="clearHistoryButton" type="button">Clear</button>
+                <button id="clearHistoryButton" type="button" data-i18n="Clear">Clear</button>
               </div>
               <ol class="history-list" id="historyList"></ol>
-              <div class="history-empty" id="historyEmpty">No recent changes</div>
-              <ol class="operation-list" id="operationList" aria-label="Operations" hidden></ol>
-              <div class="history-empty" id="operationsEmpty" hidden>No operations in this session</div>
+              <div class="history-empty" id="historyEmpty" data-i18n="No recent changes">No recent changes</div>
+              <ol class="operation-list" id="operationList" aria-label="Operations" hidden data-i18n-attrs="aria-label"></ol>
+              <div class="history-empty" id="operationsEmpty" hidden data-i18n="No operations in this session">No operations in this session</div>
               <section class="history-detail" id="historyDetail" hidden>
                 <div class="history-detail-header">
-                  <h3 id="historyDetailTitle">Change detail</h3>
-                  <button id="closeHistoryDetailButton" type="button">Close</button>
+                  <h3 id="historyDetailTitle" data-i18n="Change detail">Change detail</h3>
+                  <button id="closeHistoryDetailButton" type="button" data-i18n="Close">Close</button>
                 </div>
                 <dl class="history-detail-grid" id="historyDetailGrid"></dl>
                 <div class="history-value-detail" id="historyValueDetail" hidden>
                   <div>
-                    <span>Before</span>
+                    <span data-i18n="Before">Before</span>
                     <pre id="historyBeforeValue"></pre>
                   </div>
                   <div>
-                    <span>After</span>
+                    <span data-i18n="After">After</span>
                     <pre id="historyAfterValue"></pre>
                   </div>
                 </div>
@@ -412,23 +430,39 @@
       </section>
     </main>
 
+    <dialog class="app-dialog site-access-dialog" id="siteAccessDialog" aria-labelledby="siteAccessDialogTitle" aria-describedby="siteAccessDialogMessage">
+      <form method="dialog">
+        <div class="app-dialog-body">
+          <h2 id="siteAccessDialogTitle" data-i18n="Allow site data access?">Allow site data access?</h2>
+          <p id="siteAccessDialogMessage" data-i18n="Allow this extension to read this site's data?">Allow this extension to read this site's data?</p>
+          <p class="confirm-dialog-detail" id="siteAccessDialogDetail"></p>
+          <p data-i18n="Cookies, Local Storage, and Session Storage. Data stays on your device.">Cookies, Local Storage, and Session Storage. Data stays on your device.</p>
+          <p class="dialog-field-error" id="siteAccessDialogError" role="alert" hidden></p>
+        </div>
+        <div class="app-dialog-actions">
+          <button id="siteAccessDialogCancelButton" type="button" data-dialog-cancel autofocus data-i18n="Cancel">Cancel</button>
+          <button class="primary-button" id="siteAccessDialogAllowButton" type="submit" value="allow" data-i18n="Allow access">Allow access</button>
+        </div>
+      </form>
+    </dialog>
+
     <dialog class="app-dialog confirm-dialog" id="confirmDialog" aria-labelledby="confirmDialogTitle" aria-describedby="confirmDialogMessage">
       <form method="dialog">
         <div class="app-dialog-body">
-          <h2 id="confirmDialogTitle">Delete item?</h2>
+          <h2 id="confirmDialogTitle" data-i18n="Delete item?">Delete item?</h2>
           <p id="confirmDialogMessage"></p>
           <p class="confirm-dialog-detail" id="confirmDialogDetail" hidden></p>
           <details class="dialog-selection-review" data-selection-review hidden>
             <summary>
-              <span data-selection-review-label>Selected items</span>
+              <span data-selection-review-label data-i18n="Selected items">Selected items</span>
               <span class="dialog-selection-review-count" data-selection-review-count>0</span>
             </summary>
             <ul data-selection-review-list></ul>
           </details>
         </div>
         <div class="app-dialog-actions">
-          <button id="confirmDialogCancelButton" type="button" data-dialog-cancel autofocus>Cancel</button>
-          <button class="confirm-dialog-delete" id="confirmDialogDeleteButton" type="submit" value="confirm">Delete</button>
+          <button id="confirmDialogCancelButton" type="button" data-dialog-cancel autofocus data-i18n="Cancel">Cancel</button>
+          <button class="confirm-dialog-delete" id="confirmDialogDeleteButton" type="submit" value="confirm" data-i18n="Delete">Delete</button>
         </div>
       </form>
     </dialog>
@@ -436,23 +470,23 @@
     <dialog class="app-dialog text-input-dialog" id="textInputDialog" aria-labelledby="textInputDialogTitle">
       <form id="textInputDialogForm" method="dialog">
         <div class="app-dialog-body">
-          <h2 id="textInputDialogTitle">Enter value</h2>
+          <h2 id="textInputDialogTitle" data-i18n="Enter value">Enter value</h2>
           <details class="dialog-selection-review" data-selection-review hidden>
             <summary>
-              <span data-selection-review-label>Selected items</span>
+              <span data-selection-review-label data-i18n="Selected items">Selected items</span>
               <span class="dialog-selection-review-count" data-selection-review-count>0</span>
             </summary>
             <ul data-selection-review-list></ul>
           </details>
           <label class="dialog-field" for="textInputDialogInput">
-            <span id="textInputDialogFieldLabel">Value</span>
+            <span id="textInputDialogFieldLabel" data-i18n="Value">Value</span>
             <input id="textInputDialogInput" type="text" autocomplete="off" spellcheck="false">
           </label>
           <p class="dialog-field-error" id="textInputDialogError" role="alert" hidden></p>
         </div>
         <div class="app-dialog-actions">
-          <button type="button" data-dialog-cancel>Cancel</button>
-          <button class="primary-button" id="textInputDialogSubmitButton" type="submit" value="submit">Continue</button>
+          <button type="button" data-dialog-cancel data-i18n="Cancel">Cancel</button>
+          <button class="primary-button" id="textInputDialogSubmitButton" type="submit" value="submit" data-i18n="Continue">Continue</button>
         </div>
       </form>
     </dialog>
@@ -461,10 +495,10 @@
       <div class="workbench-shell">
         <header class="workbench-header">
           <div>
-            <h2 id="workbenchTitle">Import</h2>
+            <h2 id="workbenchTitle" data-i18n="Import">Import</h2>
             <span id="workbenchTarget"></span>
           </div>
-          <button class="workbench-close" id="workbenchCloseButton" type="button" aria-label="Close" title="Close">
+          <button class="workbench-close" id="workbenchCloseButton" type="button" aria-label="Close" title="Close" data-i18n-attrs="aria-label title">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M18 6 6 18M6 6l12 12" />
             </svg>
@@ -474,31 +508,31 @@
         <div class="workbench-body">
           <section class="workbench-view" id="packageImportView" data-workbench-view="import">
             <div class="package-source" id="packageImportSource">
-              <fieldset class="workbench-format-switch import-format-switch" id="packageImportFormatSwitch" aria-label="Import method">
-                <legend>Import method</legend>
-                <label><input type="radio" name="packageImportFormat" value="quick" checked> Quick entry</label>
-                <label><input type="radio" name="packageImportFormat" value="json"> JSON package</label>
-                <label id="netscapeImportFormatLabel"><input type="radio" name="packageImportFormat" value="netscape"> Netscape / cURL</label>
+              <fieldset class="workbench-format-switch import-format-switch" id="packageImportFormatSwitch" aria-label="Import method" data-i18n-attrs="aria-label">
+                <legend data-i18n="Import method">Import method</legend>
+                <label data-i18n="$1 Quick entry"><input type="radio" name="packageImportFormat" value="quick" checked> Quick entry</label>
+                <label data-i18n="$1 JSON package"><input type="radio" name="packageImportFormat" value="json"> JSON package</label>
+                <label id="netscapeImportFormatLabel" data-i18n="$1 Netscape / cURL"><input type="radio" name="packageImportFormat" value="netscape"> Netscape / cURL</label>
               </fieldset>
 
               <div class="quick-import-fields" id="quickImportFields">
                 <div class="quick-cookie-fields" id="quickEntryFields">
                   <div class="cookie-import-header">
-                    <strong id="quickEntryTitle">Cookies</strong>
-                    <button class="cookie-import-add" id="quickEntryAddButton" type="button">Add</button>
+                    <strong id="quickEntryTitle" data-i18n="Cookies">Cookies</strong>
+                    <button class="cookie-import-add" id="quickEntryAddButton" type="button" data-i18n="Add">Add</button>
                   </div>
                   <div class="cookie-import-columns" aria-hidden="true">
-                    <span id="quickEntryNameColumn">Name</span>
-                    <span id="quickEntryValueColumn">Value</span>
+                    <span id="quickEntryNameColumn" data-i18n="Name">Name</span>
+                    <span id="quickEntryValueColumn" data-i18n="Value">Value</span>
                     <span></span>
                   </div>
                   <div class="cookie-import-rows" id="quickEntryRows"></div>
                   <template id="quickEntryRowTemplate">
                     <div class="cookie-import-row">
-                      <input class="cookie-import-name" type="text" autocomplete="off" spellcheck="false" placeholder="Cookie name">
-                      <input class="cookie-import-value" type="text" autocomplete="off" spellcheck="false" placeholder="Cookie value">
+                      <input class="cookie-import-name" type="text" autocomplete="off" spellcheck="false" placeholder="Cookie name" data-i18n-attrs="placeholder">
+                      <input class="cookie-import-value" type="text" autocomplete="off" spellcheck="false" placeholder="Cookie value" data-i18n-attrs="placeholder">
                       <div class="cookie-import-row-actions">
-                        <button class="cookie-import-remove icon-button" type="button" aria-label="Remove cookie row" title="Remove cookie row">
+                        <button class="cookie-import-remove icon-button" type="button" aria-label="Remove cookie row" title="Remove cookie row" data-i18n-attrs="aria-label title">
                           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5" />
                           </svg>
@@ -509,23 +543,23 @@
                 </div>
                 <p class="workbench-feedback is-error" id="quickImportError" role="alert" hidden></p>
                 <div class="workbench-footer-actions">
-                  <button class="primary-button" id="quickImportButton" type="button">Import</button>
+                  <button class="primary-button" id="quickImportButton" type="button" data-i18n="Import">Import</button>
                 </div>
               </div>
 
               <div class="package-import-fields" id="packageImportFields" hidden>
-                <p class="workbench-format-note" id="packageImportFormatNote" hidden>Cookies only. Domains from the file must be valid for the current target.</p>
+                <p class="workbench-format-note" id="packageImportFormatNote" hidden data-i18n="Cookies only. Domains from the file must be valid for the current target.">Cookies only. Domains from the file must be valid for the current target.</p>
                 <label class="workbench-field" for="packageTextInput">
-                  <span id="packageInputLabel">Package JSON</span>
-                  <textarea id="packageTextInput" spellcheck="false" placeholder="Paste a site data package"></textarea>
+                  <span id="packageInputLabel" data-i18n="Package JSON">Package JSON</span>
+                  <textarea id="packageTextInput" spellcheck="false" placeholder="Paste a site data package" data-i18n-attrs="placeholder"></textarea>
                 </label>
                 <div class="workbench-inline-actions">
-                  <div class="package-file-dropzone" id="packageFileDropzone" aria-label="Choose or drop an import file">
+                  <div class="package-file-dropzone" id="packageFileDropzone" aria-label="Choose or drop an import file" data-i18n-attrs="aria-label">
                     <input id="packageFileInput" type="file" accept="application/json,.json" hidden>
-                    <button id="choosePackageFileButton" type="button">Choose file</button>
-                    <span id="packageFileName">or drop a file here</span>
+                    <button id="choosePackageFileButton" type="button" data-i18n="Choose file">Choose file</button>
+                    <span id="packageFileName" data-i18n="or drop a file here">or drop a file here</span>
                   </div>
-                  <button class="primary-button" id="previewPackageButton" type="button">Preview</button>
+                  <button class="primary-button" id="previewPackageButton" type="button" data-i18n="Preview">Preview</button>
                 </div>
                 <p class="workbench-feedback is-error" id="packageInputError" role="alert" hidden></p>
               </div>
@@ -533,70 +567,75 @@
 
             <div class="package-preview" id="packagePreview" hidden>
               <div class="package-preview-header">
+                <button class="icon-button package-preview-back" id="backToSavedStatesButton" type="button" aria-label="Back" title="Back" data-i18n-attrs="aria-label title" hidden>
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M19 12H5m7-7-7 7 7 7" />
+                  </svg>
+                </button>
                 <div>
                   <strong id="packagePreviewSource"></strong>
                   <span id="packagePreviewTarget"></span>
                 </div>
-                <button id="changePackageSourceButton" type="button">Change source</button>
+                <button id="changePackageSourceButton" type="button" data-i18n="Change source">Change source</button>
               </div>
               <label class="mapping-toggle" id="packageMappingControl" hidden>
                 <input id="packageMappingToggle" type="checkbox">
-                <span>Map source origin to current target</span>
+                <span data-i18n="Map source origin to current target">Map source origin to current target</span>
               </label>
               <div class="preview-counts" id="packagePreviewCounts"></div>
               <div class="preview-toolbar">
                 <label>
                   <input id="packageSelectAll" type="checkbox">
-                  <span id="packageSelectionCount">0 selected</span>
+                  <span id="packageSelectionCount" data-i18n="0 selected">0 selected</span>
                 </label>
                 <label class="strategy-field" for="packageConflictStrategy">
-                  <span>Conflicts</span>
+                  <span data-i18n="Conflicts">Conflicts</span>
                   <select id="packageConflictStrategy">
-                    <option value="overwrite">Overwrite</option>
-                    <option value="skip">Skip</option>
-                    <option value="add-only">Add only</option>
-                    <option value="individual">Individual</option>
+                    <option value="overwrite" data-i18n="Overwrite">Overwrite</option>
+                    <option value="skip" data-i18n="Skip">Skip</option>
+                    <option value="add-only" data-i18n="Add only">Add only</option>
+                    <option value="individual" data-i18n="Individual">Individual</option>
                   </select>
                 </label>
               </div>
               <div class="preview-list" id="packagePreviewList"></div>
               <div class="workbench-footer-actions">
-                <button class="primary-button" id="applyPackageButton" type="button">Apply selected</button>
+                <button class="primary-button" id="applyPackageButton" type="button" data-i18n="Apply selected">Apply selected</button>
               </div>
             </div>
 
             <div class="package-result" id="packageResult" hidden>
               <div class="result-summary">
-                <strong id="packageResultTitle">Import complete</strong>
+                <strong id="packageResultTitle" data-i18n="Import complete">Import complete</strong>
                 <span id="packageResultSummary"></span>
               </div>
               <progress id="packageProgress" max="1" value="0"></progress>
               <div class="result-list" id="packageResultList"></div>
               <div class="workbench-footer-actions">
-                <button id="undoPackageButton" type="button" hidden>Undo batch</button>
-                <button id="importAnotherButton" type="button">Import another</button>
+                <button id="undoPackageButton" type="button" hidden data-i18n="Undo batch">Undo batch</button>
+                <button id="importAnotherButton" type="button" data-i18n="Import another">Import another</button>
               </div>
             </div>
           </section>
 
           <section class="workbench-view" id="packageExportView" data-workbench-view="export" hidden>
-            <fieldset class="workbench-format-switch export-format-switch" id="packageExportFormatSwitch" aria-label="Export format">
-              <legend>Format</legend>
-              <label><input type="radio" name="packageExportFormat" value="json" checked> JSON package</label>
-              <label id="netscapeExportFormatLabel"><input type="radio" name="packageExportFormat" value="netscape"> Netscape / cURL</label>
+            <fieldset class="workbench-format-switch export-format-switch" id="packageExportFormatSwitch" aria-label="Export format" data-i18n-attrs="aria-label">
+              <legend data-i18n="Format">Format</legend>
+              <label data-i18n="$1 JSON package"><input type="radio" name="packageExportFormat" value="json" checked> JSON package</label>
+              <label id="netscapeExportFormatLabel" data-i18n="$1 Netscape / cURL"><input type="radio" name="packageExportFormat" value="netscape"> Netscape / cURL</label>
             </fieldset>
             <fieldset class="option-group">
-              <legend>Export scope</legend>
-              <label><input id="currentExportScope" type="radio" name="exportScope" value="current" checked> <span id="currentExportScopeLabel">Current view(Cookies)</span></label>
-              <label><input id="selectedExportScope" type="radio" name="exportScope" value="selected"> <span>Selected items</span><span class="export-scope-count" id="selectedExportScopeCount">0</span></label>
-              <label><input id="allExportScope" type="radio" name="exportScope" value="all"> <span id="allExportScopeLabel">All site data</span></label>
+              <legend data-i18n="Export scope">Export scope</legend>
+              <label><input id="currentExportScope" type="radio" name="exportScope" value="current" checked> <span id="currentExportScopeLabel" data-i18n="Current view(Cookies)">Current view(Cookies)</span></label>
+              <label><input id="selectedExportScope" type="radio" name="exportScope" value="selected"> <span data-i18n="Selected items">Selected items</span><span class="export-scope-count" id="selectedExportScopeCount">0</span></label>
+              <label><input id="allExportScope" type="radio" name="exportScope" value="all"> <span id="allExportScopeLabel" data-i18n="All site data">All site data</span></label>
             </fieldset>
-            <section class="export-selection" id="exportSelectionPanel" aria-label="Select items to export" hidden>
+            <section class="export-selection" id="exportSelectionPanel" aria-label="Select items to export" hidden data-i18n-attrs="aria-label">
               <div class="export-selection-header">
-                <strong>Select items to export</strong>
-                <span id="exportSelectionCount">0 selected</span>
+                <strong data-i18n="Select items to export">Select items to export</strong>
+                <span id="exportSelectionCount" data-i18n="0 selected">0 selected</span>
                 <button class="export-selection-toggle" id="exportSelectionToggleButton" type="button" aria-expanded="false">
-                  <span>Choose items</span>
+                  <span data-i18n="Choose items">Choose items</span>
                   <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
                 </button>
               </div>
@@ -604,28 +643,28 @@
                 <div class="export-selection-toolbar">
                   <label>
                     <input id="exportSelectAllCheckbox" type="checkbox">
-                    <span>Select all visible</span>
+                    <span data-i18n="Select all visible">Select all visible</span>
                   </label>
-                  <input id="exportSelectionSearch" type="search" autocomplete="off" spellcheck="false" placeholder="Filter items" aria-label="Filter items to export">
+                  <input id="exportSelectionSearch" type="search" autocomplete="off" spellcheck="false" placeholder="Filter items" aria-label="Filter items to export" data-i18n-attrs="placeholder aria-label">
                 </div>
                 <div class="export-selection-list" id="exportSelectionList"></div>
-                <p class="export-selection-empty" id="exportSelectionEmpty" hidden>No items in the current view</p>
+                <p class="export-selection-empty" id="exportSelectionEmpty" hidden data-i18n="No items in the current view">No items in the current view</p>
               </div>
             </section>
             <div class="workbench-field export-preview">
               <div class="export-preview-header">
                 <label class="export-preview-heading" for="packageExportPreview">
-                  <span>Preview</span>
+                  <span data-i18n="Preview">Preview</span>
                   <span class="export-preview-summary" id="packageExportSummary"></span>
                 </label>
                 <div class="export-preview-actions">
-                  <button class="icon-button export-preview-action" id="copyPackageButton" type="button" aria-label="Copy JSON" data-tooltip="Copy JSON">
+                  <button class="icon-button export-preview-action" id="copyPackageButton" type="button" aria-label="Copy JSON" data-tooltip="Copy JSON" data-i18n-attrs="aria-label data-tooltip">
                     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                       <rect width="14" height="14" x="8" y="8" rx="2" />
                       <path d="M16 8V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4" />
                     </svg>
                   </button>
-                  <button class="icon-button export-preview-action primary-button" id="savePackageButton" type="button" aria-label="Save JSON" data-tooltip="Save JSON">
+                  <button class="icon-button export-preview-action primary-button" id="savePackageButton" type="button" aria-label="Save JSON" data-tooltip="Save JSON" data-i18n-attrs="aria-label data-tooltip">
                     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                       <path d="m7 10 5 5 5-5" />
@@ -634,7 +673,7 @@
                   </button>
                 </div>
               </div>
-              <textarea id="packageExportPreview" readonly spellcheck="false" aria-label="Export preview">Preparing preview...</textarea>
+              <textarea id="packageExportPreview" readonly spellcheck="false" aria-label="Export preview" data-i18n-attrs="aria-label" data-i18n="Preparing preview...">Preparing preview...</textarea>
             </div>
             <p class="workbench-feedback" id="packageExportFeedback" role="status" hidden></p>
           </section>
@@ -643,8 +682,8 @@
             <div class="profiles-toolbar">
               <div>
                 <div class="profiles-title-row">
-                  <strong>Saved states</strong>
-                  <button class="profile-help-button" id="profileHelpButton" type="button" aria-label="How saved states work" data-tooltip="How saved states work">
+                  <strong data-i18n="Saved states">Saved states</strong>
+                  <button class="profile-help-button" id="profileHelpButton" type="button" aria-label="How saved states work" data-tooltip="How saved states work" data-i18n-attrs="aria-label data-tooltip">
                     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
                       <circle cx="12" cy="12" r="10" />
                       <path d="M9.1 9a3 3 0 1 1 5.8 1c0 2-2.9 2-2.9 4" />
@@ -652,54 +691,54 @@
                     </svg>
                   </button>
                 </div>
-                <span id="profileCount">0 saved</span>
+                <span id="profileCount" data-i18n="0 saved">0 saved</span>
               </div>
-              <button class="primary-button" id="newProfileButton" type="button">Save current state</button>
+              <button class="primary-button" id="newProfileButton" type="button" data-i18n="Save current state">Save current state</button>
             </div>
             <p class="workbench-feedback is-error" id="profileListError" role="alert" hidden></p>
             <div class="profile-list" id="profileList"></div>
-            <div class="profile-empty" id="profileEmpty">No saved states</div>
+            <div class="profile-empty" id="profileEmpty" data-i18n="No saved states">No saved states</div>
 
             <form class="profile-form" id="profileForm" hidden>
               <div class="profile-form-grid">
                 <label class="workbench-field">
-                  <span>Name</span>
+                  <span data-i18n="Name">Name</span>
                   <input id="profileNameInput" type="text" maxlength="80" required>
                 </label>
                 <label class="workbench-field">
-                  <span>Tags</span>
+                  <span data-i18n="Tags">Tags</span>
                   <input id="profileTagsInput" type="text" maxlength="160" placeholder="uat, account-a">
                 </label>
                 <label class="workbench-field is-wide">
-                  <span>Description</span>
+                  <span data-i18n="Description">Description</span>
                   <input id="profileDescriptionInput" type="text" maxlength="240">
                 </label>
                 <label class="workbench-field">
-                  <span>Capture</span>
+                  <span data-i18n="Capture">Capture</span>
                   <select id="profileScopeSelect">
-                    <option value="current">Current view</option>
-                    <option value="selected">Selected items</option>
-                    <option value="all">All site data</option>
+                    <option value="current" data-i18n="Current view">Current view</option>
+                    <option value="selected" data-i18n="Selected items">Selected items</option>
+                    <option value="all" data-i18n="All site data">All site data</option>
                   </select>
                 </label>
                 <label class="workbench-field">
-                  <span>Default conflicts</span>
+                  <span data-i18n="Default conflicts">Default conflicts</span>
                   <select id="profileStrategySelect">
-                    <option value="overwrite">Overwrite</option>
-                    <option value="skip">Skip</option>
-                    <option value="add-only">Add only</option>
-                    <option value="individual">Individual</option>
+                    <option value="overwrite" data-i18n="Overwrite">Overwrite</option>
+                    <option value="skip" data-i18n="Skip">Skip</option>
+                    <option value="add-only" data-i18n="Add only">Add only</option>
+                    <option value="individual" data-i18n="Individual">Individual</option>
                   </select>
                 </label>
                 <label class="workbench-field is-wide">
-                  <span>Variables</span>
+                  <span data-i18n="Variables">Variables</span>
                   <textarea id="profileVariablesInput" spellcheck="false" placeholder="!userId=current-value&#10;grayFlag=off"></textarea>
                 </label>
               </div>
               <p class="workbench-feedback is-error" id="profileFormError" role="alert" hidden></p>
               <div class="workbench-footer-actions">
-                <button id="cancelProfileButton" type="button">Cancel</button>
-                <button class="primary-button" type="submit">Save state</button>
+                <button id="cancelProfileButton" type="button" data-i18n="Cancel">Cancel</button>
+                <button class="primary-button" type="submit" data-i18n="Save state">Save state</button>
               </div>
             </form>
 
@@ -707,18 +746,18 @@
               <div class="profile-apply-header">
                 <div>
                   <strong id="profileApplyName"></strong>
-                  <span>Apply saved state</span>
+                  <span id="profileApplyMode" data-i18n="Apply saved state">Apply saved state</span>
                 </div>
-                <button id="cancelProfileApplyButton" type="button">Cancel</button>
+                <button id="cancelProfileApplyButton" type="button" data-i18n="Cancel">Cancel</button>
               </div>
               <div class="profile-variable-inputs" id="profileVariableInputs"></div>
               <label class="mapping-toggle" id="profileMappingControl" hidden>
                 <input id="profileMappingToggle" type="checkbox">
-                <span>Map saved origin to current target</span>
+                <span data-i18n="Map saved origin to current target">Map saved origin to current target</span>
               </label>
               <p class="workbench-feedback is-error" id="profileApplyError" role="alert" hidden></p>
               <div class="workbench-footer-actions">
-                <button class="primary-button" id="previewProfileButton" type="button">Preview changes</button>
+                <button class="primary-button" id="previewProfileButton" type="button" data-i18n="Preview changes">Preview changes</button>
               </div>
             </div>
           </section>
@@ -729,41 +768,41 @@
         <form method="dialog">
           <div class="app-dialog-body profile-help-body" id="profileHelpBody">
             <div>
-              <h2 id="profileHelpTitle">How saved states work</h2>
-              <p id="profileHelpIntro">A saved state keeps a reusable set of Cookies, Local Storage, and Session Storage for a site.</p>
+              <h2 id="profileHelpTitle" data-i18n="How saved states work">How saved states work</h2>
+              <p id="profileHelpIntro" data-i18n="A saved state keeps a reusable set of Cookies, Local Storage, and Session Storage for a site.">A saved state keeps a reusable set of Cookies, Local Storage, and Session Storage for a site.</p>
             </div>
 
             <section class="profile-help-section">
-              <h3>Save the current state</h3>
+              <h3 data-i18n="Save the current state">Save the current state</h3>
               <ol>
-                <li>Open the site state you want to reuse, then select <strong>Save current state</strong>.</li>
-                <li>Choose the capture scope: the current data view, selected items, or all site data.</li>
-                <li>Add optional variables, then save. Saved states stay in this browser unless you export them.</li>
+                <li data-i18n="Open the site state you want to reuse, then select $1.">Open the site state you want to reuse, then select <strong data-i18n="Save current state">Save current state</strong>.</li>
+                <li data-i18n="Choose the capture scope: the current data view, selected items, or all site data.">Choose the capture scope: the current data view, selected items, or all site data.</li>
+                <li data-i18n="Add optional variables, then save. Saved states stay in this browser unless you export them.">Add optional variables, then save. Saved states stay in this browser unless you export them.</li>
               </ol>
             </section>
 
             <section class="profile-help-section">
-              <h3>Variables</h3>
-              <p>Enter one captured value per line. Matching values in the saved data are replaced with a variable.</p>
+              <h3 data-i18n="Variables">Variables</h3>
+              <p data-i18n="Enter one captured value per line. Matching values in the saved data are replaced with a variable.">Enter one captured value per line. Matching values in the saved data are replaced with a variable.</p>
               <dl class="profile-help-examples">
                 <dt><code>userId=42</code></dt>
-                <dd>Prefills <code>42</code> when applying the saved state.</dd>
+                <dd data-i18n="Prefills $1 when applying the saved state.">Prefills <code>42</code> when applying the saved state.</dd>
                 <dt><code>!userId=42</code></dt>
-                <dd>Asks for the value every time and does not store <code>42</code> in the saved state.</dd>
+                <dd data-i18n="Asks for the value every time and does not store $1 in the saved state.">Asks for the value every time and does not store <code>42</code> in the saved state.</dd>
               </dl>
             </section>
 
             <section class="profile-help-section">
-              <h3>Apply a saved state</h3>
+              <h3 data-i18n="Apply a saved state">Apply a saved state</h3>
               <ol>
-                <li>Select <strong>Apply</strong> and enter any requested variables.</li>
-                <li>For a different origin, explicitly enable origin mapping.</li>
-                <li>Preview the changes and conflict handling before applying them.</li>
+                <li data-i18n="Select $1 and enter any requested variables.">Select <strong data-i18n="Apply">Apply</strong> and enter any requested variables.</li>
+                <li data-i18n="For a different origin, explicitly enable origin mapping.">For a different origin, explicitly enable origin mapping.</li>
+                <li data-i18n="Preview the changes and conflict handling before applying them.">Preview the changes and conflict handling before applying them.</li>
               </ol>
             </section>
           </div>
           <div class="app-dialog-actions">
-            <button class="primary-button" id="profileHelpCloseButton" type="button">Close</button>
+            <button class="primary-button" id="profileHelpCloseButton" type="button" data-i18n="Close">Close</button>
           </div>
         </form>
       </dialog>

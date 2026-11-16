@@ -1,10 +1,11 @@
+import { t } from "./i18n.js";
 import { makeCookieId } from "./item-identity.js";
 
 const SAME_SITE_LABELS = {
   no_restriction: "None",
   lax: "Lax",
   strict: "Strict",
-  unspecified: "Unspecified"
+  get unspecified() { return t("Unspecified"); }
 };
 
 export { makeCookieId } from "./item-identity.js";
@@ -43,16 +44,16 @@ export function getCookieSearchText(row) {
 }
 
 export function formatSameSite(value) {
-  return SAME_SITE_LABELS[value] || value || "Unspecified";
+  return SAME_SITE_LABELS[value] || value || t("Unspecified");
 }
 
 export function formatExpires(cookie) {
   if (cookie.session) {
-    return "Session";
+    return t("Session");
   }
 
   if (!cookie.expirationDate) {
-    return "Unknown";
+    return t("Unknown");
   }
 
   return new Date(cookie.expirationDate * 1000).toLocaleString();

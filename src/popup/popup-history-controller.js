@@ -1,3 +1,4 @@
+import { t } from "../shared/i18n.js";
 import { clearHistoryKind, getDismissedChangeIds, getRecentChangeSnapshots, getRecentCookieChanges } from "../shared/history-store.js";
 import { normalizeRecentChanges } from "../shared/recent-changes.js";
 import { compareRecentChangeOrder, projectOperationHistory } from "../shared/operation-history.js";
@@ -35,7 +36,7 @@ export function createPopupHistoryController({
       state.operationJobs = jobs;
       renderHistory();
     } catch (error) {
-      showStatus(error?.message || "Operation history could not be loaded.", "error");
+      showStatus(error?.message || t("Operation history could not be loaded."), "error");
     }
   }
 
@@ -44,7 +45,7 @@ export function createPopupHistoryController({
     const snapshot = state.undoSnapshots.get(changeId);
     const reason = getUndoUnavailableReason(snapshot, state.tab, state.cookieStoreId);
     if (reason) return showStatus(reason, "error");
-    if (!snapshot.operationId) return showStatus("This older change has no operation journal and cannot be safely undone.", "error");
+    if (!snapshot.operationId) return showStatus(t("This older change has no operation journal and cannot be safely undone."), "error");
     const target = createOperationContext(state.tab, snapshot.target.cookieStoreId);
     setBusy(true);
     clearStatus();
@@ -53,16 +54,16 @@ export function createPopupHistoryController({
       const job = await undoOperation(snapshot.operationId, { target, itemIds: [snapshot.operationItemId] });
       const item = job.items.find((entry) => entry.id === snapshot.operationItemId);
       await loadRecentChanges();
-      if (item?.state !== "undone") throw new Error(item?.error || "The change could not be undone.");
+      if (item?.state !== "undone") throw new Error(item?.error || t("The change could not be undone."));
       state.unreadHistoryIds.delete(changeId);
       if (state.selectedHistoryId === changeId) clearHistoryDetail();
       rememberCurrentSelection();
       renderHistory();
       await refreshData();
       if (state.autoRefreshPage) await reloadOperationTarget(target);
-      showStatus("Undid the selected change.", "success");
+      showStatus(t("Undid the selected change."), "success");
     } catch (error) {
-      showStatus(error?.message || "Failed to undo change.", "error");
+      showStatus(error?.message || t("Failed to undo change."), "error");
     } finally {
       setBusy(false);
     }
@@ -76,9 +77,9 @@ export function createPopupHistoryController({
       await clearHistoryKind(itemKind, changes.filter((change) => change.itemKind === itemKind).map((change) => change.id));
       clearHistoryDetail();
       await loadRecentChanges();
-      showStatus(`${getCurrentView().title} history cleared.`, "success");
+      showStatus(t`${getCurrentView().title} history cleared.`, "success");
     } catch (error) {
-      showStatus(error?.message || "Failed to clear recent changes.", "error");
+      showStatus(error?.message || t("Failed to clear recent changes."), "error");
     }
   }
 

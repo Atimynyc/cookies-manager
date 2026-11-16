@@ -1,14 +1,17 @@
+import { t, initializeI18n } from "../shared/i18n.js";
 import { createOperationEngine } from "../shared/operation-engine.js";
 import { OPERATION_MESSAGE_CHANNEL } from "../shared/operation-client.js";
 import { persistOperationHistory } from "../shared/history-store.js";
 
 const operations = createOperationEngine({ persistHistory: persistOperationHistory });
 
+const languageReady = initializeI18n();
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message?.channel !== OPERATION_MESSAGE_CHANNEL) return false;
   const extensionOrigin = chrome.runtime.getURL("");
   if (sender.id !== chrome.runtime.id || !sender.url?.startsWith(extensionOrigin)) {
-    sendResponse({ ok: false, error: { message: "Only this extension can request site data operations." } });
+    sendResponse({ ok: false, error: { message: t("Only this extension can request site data operations.") } });
     return false;
   }
   const commands = {
@@ -21,12 +24,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   };
   const command = commands[message.command];
   if (!command) {
-    sendResponse({ ok: false, error: { message: "Unknown operation command." } });
+    sendResponse({ ok: false, error: { message: t("Unknown operation command.") } });
     return false;
   }
-  Promise.resolve().then(command).then(
+  Promise.resolve(languageReady).then(command).then(
     (value) => sendResponse({ ok: true, value }),
-    (error) => sendResponse({ ok: false, error: { message: error?.message || "Operation failed.", code: error?.code } })
+    (error) => sendResponse({ ok: false, error: { message: error?.message || t("Operation failed."), code: error?.code } })
   );
   return true;
 });

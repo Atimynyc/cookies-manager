@@ -1,3 +1,4 @@
+import { t } from "../shared/i18n.js";
 import { classifyValueType } from "../shared/value-tools.js";
 
 export function renderDataTable({
@@ -39,7 +40,7 @@ export function renderDataTable({
       createCell(row.path, row.path),
       createCell(row.expires, row.expires),
       createFlagCell(row),
-      createCell(`${row.size} B`, `${row.size} bytes`)
+      createCell(`${row.size} B`, t`${row.size} bytes`)
     );
     fragment.append(tr);
   }
@@ -61,7 +62,7 @@ function createValueCell(value) {
   valueText.textContent = text;
 
   if (type) {
-    const label = type === "jwt" ? "JWT value" : "JSON value";
+    const label = type === "jwt" ? t("JWT value") : t("JSON value");
     const indicator = document.createElement("span");
     indicator.className = `value-type-indicator value-type-${type}`;
     indicator.textContent = type === "jwt" ? "JWT" : "JSON";
@@ -91,8 +92,8 @@ function createNameCell(row, favoriteIds) {
     const indicator = document.createElement("span");
     const icon = document.createElement("img");
     indicator.className = "favorite-indicator";
-    indicator.title = "Favorite";
-    indicator.setAttribute("aria-label", "Favorite");
+    indicator.title = t("Favorite");
+    indicator.setAttribute("aria-label", t("Favorite"));
     icon.className = "favorite-brand-icon";
     icon.src = "../../assets/icon-16.png";
     icon.alt = "";
@@ -112,7 +113,7 @@ function createSelectCell(row, selectedIds, onToggle, rowElement) {
   td.className = "select-cell";
   checkbox.type = "checkbox";
   checkbox.checked = selectedIds.has(row.id);
-  checkbox.setAttribute("aria-label", `Select ${row.name}`);
+  checkbox.setAttribute("aria-label", t`Select ${row.name}`);
   checkbox.addEventListener("click", (event) => event.stopPropagation());
   checkbox.addEventListener("change", () => onToggle(row.id, checkbox.checked, rowElement));
   td.append(checkbox);

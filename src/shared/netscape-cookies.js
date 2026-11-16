@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 import { createSiteDataPackage, parseSiteDataPackage } from "./site-data-package.js";
 
 export const NETSCAPE_COOKIE_FILE_MIME_TYPE = "text/plain;charset=utf-8";
@@ -12,7 +13,7 @@ const COOKIE_FILE_HEADER = [
 
 export class NetscapeCookieFileError extends Error {
   constructor(message, { line = 0, code = "INVALID_NETSCAPE_COOKIE_FILE" } = {}) {
-    super(line ? `Line ${line}: ${message}` : message);
+    super(line ? t`Line ${line}: ${message}` : message);
     this.name = "NetscapeCookieFileError";
     this.code = code;
     this.line = line;
@@ -25,7 +26,7 @@ export function parseNetscapeCookieFile(input, {
   exportedAt = new Date().toISOString()
 } = {}) {
   if (typeof input !== "string") {
-    throw new NetscapeCookieFileError("Netscape cookie data must be text.");
+    throw new NetscapeCookieFileError(t("Netscape cookie data must be text."));
   }
 
   const cookies = [];
@@ -39,7 +40,7 @@ export function parseNetscapeCookieFile(input, {
 
     const fields = rawLine.split("\t");
     if (fields.length !== 7) {
-      throw new NetscapeCookieFileError("Expected 7 tab-separated fields.", { line: lineNumber });
+      throw new NetscapeCookieFileError(t("Expected 7 tab-separated fields."), { line: lineNumber });
     }
 
     const [rawDomain, includeSubdomainsValue, path, secureValue, expirationValue, name, value] = fields;
@@ -48,17 +49,17 @@ export function parseNetscapeCookieFile(input, {
     const includeSubdomains = parseBooleanField(includeSubdomainsValue, "include-subdomains", lineNumber);
     const secure = parseBooleanField(secureValue, "secure", lineNumber);
     const expirationDate = parseExpiration(expirationValue, lineNumber);
-    assertCookieField(path, "Path", lineNumber, { allowEmpty: false });
+    assertCookieField(path, t("Path"), lineNumber, { allowEmpty: false });
     if (!path.startsWith("/")) {
-      throw new NetscapeCookieFileError("Path must start with /.", { line: lineNumber });
+      throw new NetscapeCookieFileError(t("Path must start with /."), { line: lineNumber });
     }
-    assertCookieField(name, "Cookie name", lineNumber, { allowEmpty: false });
-    assertCookieField(value, "Cookie value", lineNumber, { allowEmpty: true });
+    assertCookieField(name, t("Cookie name"), lineNumber, { allowEmpty: false });
+    assertCookieField(value, t("Cookie value"), lineNumber, { allowEmpty: true });
 
     const normalizedDomain = includeSubdomains ? `.${domain}` : domain;
     const identity = JSON.stringify([String(storeId || ""), normalizedDomain, path, name]);
     if (identities.has(identity)) {
-      throw new NetscapeCookieFileError(`Duplicate cookie ${name} for ${normalizedDomain}${path}.`, {
+      throw new NetscapeCookieFileError(t`Duplicate cookie ${name} for ${normalizedDomain}${path}.`, {
         line: lineNumber,
         code: "DUPLICATE_NETSCAPE_COOKIE"
       });
@@ -80,7 +81,7 @@ export function parseNetscapeCookieFile(input, {
   }
 
   if (cookies.length === 0) {
-    throw new NetscapeCookieFileError("No Netscape cookie rows were found.", {
+    throw new NetscapeCookieFileError(t("No Netscape cookie rows were found."), {
       code: "EMPTY_NETSCAPE_COOKIE_FILE"
     });
   }
@@ -95,7 +96,7 @@ export function parseNetscapeCookieFile(input, {
 export function serializeNetscapeCookieFile(dataPackage) {
   const cookies = parseSiteDataPackage(dataPackage).data.cookies;
   if (cookies.length === 0) {
-    throw new NetscapeCookieFileError("The selected scope does not contain any cookies.", {
+    throw new NetscapeCookieFileError(t("The selected scope does not contain any cookies."), {
       code: "EMPTY_NETSCAPE_COOKIE_EXPORT"
     });
   }
@@ -113,14 +114,14 @@ function serializeCookieRow(cookie, index) {
     ? 0
     : Math.trunc(cookie.expirationDate);
 
-  assertCookieField(path, "Path", index, { allowEmpty: false });
-  assertCookieField(cookie.name, "Cookie name", index, { allowEmpty: false });
-  assertCookieField(cookie.value, "Cookie value", index, { allowEmpty: true });
+  assertCookieField(path, t("Path"), index, { allowEmpty: false });
+  assertCookieField(cookie.name, t("Cookie name"), index, { allowEmpty: false });
+  assertCookieField(cookie.value, t("Cookie value"), index, { allowEmpty: true });
   if (!path.startsWith("/")) {
-    throw new NetscapeCookieFileError("Path must start with /.", { line: index });
+    throw new NetscapeCookieFileError(t("Path must start with /."), { line: index });
   }
   if (!Number.isSafeInteger(expirationDate) || expirationDate < 0) {
-    throw new NetscapeCookieFileError("Expiration must be a non-negative integer Unix timestamp.", { line: index });
+    throw new NetscapeCookieFileError(t("Expiration must be a non-negative integer Unix timestamp."), { line: index });
   }
 
   return [
@@ -137,7 +138,7 @@ function serializeCookieRow(cookie, index) {
 function normalizeDomain(value, line) {
   const domain = String(value || "").replace(/^\./, "");
   if (!domain || /[\s/#]/.test(domain)) {
-    throw new NetscapeCookieFileError("Cookie domain is invalid.", { line });
+    throw new NetscapeCookieFileError(t("Cookie domain is invalid."), { line });
   }
   return domain;
 }
@@ -145,24 +146,24 @@ function normalizeDomain(value, line) {
 function parseBooleanField(value, label, line) {
   const normalized = String(value || "").toUpperCase();
   if (normalized !== "TRUE" && normalized !== "FALSE") {
-    throw new NetscapeCookieFileError(`${label} must be TRUE or FALSE.`, { line });
+    throw new NetscapeCookieFileError(t`${label} must be TRUE or FALSE.`, { line });
   }
   return normalized === "TRUE";
 }
 
 function parseExpiration(value, line) {
   if (!/^\d+$/.test(value)) {
-    throw new NetscapeCookieFileError("Expiration must be a non-negative integer Unix timestamp.", { line });
+    throw new NetscapeCookieFileError(t("Expiration must be a non-negative integer Unix timestamp."), { line });
   }
   const expirationDate = Number(value);
   if (!Number.isSafeInteger(expirationDate)) {
-    throw new NetscapeCookieFileError("Expiration is outside the supported range.", { line });
+    throw new NetscapeCookieFileError(t("Expiration is outside the supported range."), { line });
   }
   return expirationDate;
 }
 
 function assertCookieField(value, label, line, { allowEmpty }) {
   if (typeof value !== "string" || (!allowEmpty && !value) || /[\x00-\x1F\x7F]/.test(value)) {
-    throw new NetscapeCookieFileError(`${label} cannot be represented in Netscape format.`, { line });
+    throw new NetscapeCookieFileError(t`${label} cannot be represented in Netscape format.`, { line });
   }
 }

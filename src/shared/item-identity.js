@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 function getPartitionKeyParts(partitionKey) {
   if (!partitionKey || typeof partitionKey !== "object") {
     return ["", ""];
@@ -47,5 +48,5 @@ export function getSiteDataItemId(kind, item = {}) {
     return makeStorageId({ ...item, type: item.type || kind });
   }
 
-  throw new TypeError(`Unsupported site data kind: ${kind}`);
+  throw new TypeError(t`Unsupported site data kind: ${kind}`);
 }

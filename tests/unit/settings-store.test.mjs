@@ -3,9 +3,13 @@ import test from "node:test";
 import { installWebLocks } from "../helpers/web-locks.mjs";
 import {
   FAVORITE_SITE_DATA_IDS_KEY,
+  SITE_ACCESS_CONSENTS_KEY,
+  getSiteAccessConsents,
   getFavoriteSiteDataIds,
   getLastViewedSiteData,
   getLastViewedSiteDataStorageKey,
+  grantSiteAccessConsent,
+  hasSiteAccessConsent,
   saveLastViewedSiteData,
   savePreferences,
   setFavoriteSiteDataId
@@ -88,6 +92,20 @@ test("favorite write failures preserve old data and do not block later writes", 
 
   storage.writeError = null;
   assert.deepEqual(await setFavoriteSiteDataId("cookies:new", true), ["cookies:first", "cookies:new"]);
+});
+
+test("site access consent is scoped to origins and written idempotently", async (t) => {
+  const storage = installStorage(t, { [SITE_ACCESS_CONSENTS_KEY]: ["https://example.com"] });
+
+  assert.equal(await hasSiteAccessConsent("https://example.com/account"), true);
+  assert.equal(await hasSiteAccessConsent("https://other.example.com/account"), false);
+  assert.equal(await hasSiteAccessConsent("chrome://extensions"), false);
+  assert.deepEqual(await grantSiteAccessConsent("https://example.com/settings"), true);
+  assert.equal(storage.writes, 0);
+
+  await grantSiteAccessConsent("https://other.example.com/settings");
+  assert.deepEqual(await getSiteAccessConsents(), ["https://example.com", "https://other.example.com"]);
+  assert.equal(storage.writes, 1);
 });
 
 test("last-viewed patches from different views preserve each selected item", async (t) => {

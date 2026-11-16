@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 import { getSiteDataItemId } from "./item-identity.js";
 import {
   areSiteDataItemsEqual,
@@ -70,7 +71,7 @@ export function planSiteDataImport(preview, {
   selectedIds = preview?.items?.filter((item) => item.writeable).map((item) => item.id) || []
 } = {}) {
   if (!IMPORT_CONFLICT_STRATEGIES.has(strategy)) {
-    throw new TypeError(`Unsupported import conflict strategy: ${strategy}`);
+    throw new TypeError(t`Unsupported import conflict strategy: ${strategy}`);
   }
 
   const selected = new Set(selectedIds);
@@ -80,22 +81,22 @@ export function planSiteDataImport(preview, {
   for (const item of preview?.items || []) {
     let reason = "";
     if (!item.writeable) {
-      reason = item.reason || "Item is not supported.";
+      reason = item.reason || t("Item is not supported.");
     } else if (!selected.has(item.id)) {
-      reason = "Not selected.";
+      reason = t("Not selected.");
     } else if (item.status === "same") {
-      reason = "Already identical.";
+      reason = t("Already identical.");
     } else if (
       (item.status === "modified" || item.status === "conflict") &&
       (strategy === "skip" || strategy === "add-only")
     ) {
-      reason = strategy === "add-only" ? "Only new items are enabled." : "Existing item was kept.";
+      reason = strategy === "add-only" ? t("Only new items are enabled.") : t("Existing item was kept.");
     } else if (
       (item.status === "modified" || item.status === "conflict") &&
       strategy === "individual" &&
       !selected.has(item.id)
     ) {
-      reason = "Conflict was not selected.";
+      reason = t("Conflict was not selected.");
     }
 
     if (reason) {
@@ -134,7 +135,7 @@ function classifyPreviewItem(kind, incoming, current, { unsupportedReason, dupli
   if (duplicate) {
     return {
       status: "conflict",
-      reason: "The package contains the same stable item more than once.",
+      reason: t("The package contains the same stable item more than once."),
       writeable: false
     };
   }
@@ -142,12 +143,12 @@ function classifyPreviewItem(kind, incoming, current, { unsupportedReason, dupli
     return { status: "new", reason: "", writeable: true };
   }
   if (areSiteDataItemsEqual(incoming, current, kind)) {
-    return { status: "same", reason: "No changes.", writeable: false };
+    return { status: "same", reason: t("No changes."), writeable: false };
   }
   if (hasOnlyValueDifference(kind, incoming, current)) {
-    return { status: "modified", reason: "Value will change.", writeable: true };
+    return { status: "modified", reason: t("Value will change."), writeable: true };
   }
-  return { status: "conflict", reason: "Cookie attributes differ from the target.", writeable: true };
+  return { status: "conflict", reason: t("Cookie attributes differ from the target."), writeable: true };
 }
 
 function hasOnlyValueDifference(kind, incoming, current) {
@@ -162,37 +163,37 @@ function hasOnlyValueDifference(kind, incoming, current) {
 function mapItemToTarget(kind, item, source, target, mapSourceToTarget) {
   const crossOrigin = source.origin !== target.origin;
   if (crossOrigin && !mapSourceToTarget) {
-    return { item: null, reason: `Source origin ${source.origin} does not match ${target.origin}.` };
+    return { item: null, reason: t`Source origin ${source.origin} does not match ${target.origin}.` };
   }
 
   if (kind !== "cookies") {
     const itemOrigin = item.origin || source.origin;
     if (itemOrigin !== target.origin && !(mapSourceToTarget && itemOrigin === source.origin)) {
-      return { item: null, reason: `Storage origin ${itemOrigin} cannot be written to ${target.origin}.` };
+      return { item: null, reason: t`Storage origin ${itemOrigin} cannot be written to ${target.origin}.` };
     }
     return { item: { ...item, origin: target.origin }, reason: "" };
   }
 
   const mapped = { ...item };
   if (mapped.secure && target.protocol !== "https:") {
-    return { item: null, reason: "Secure cookies require an HTTPS target." };
+    return { item: null, reason: t("Secure cookies require an HTTPS target.") };
   }
   if (mapped.sameSite === "no_restriction" && !mapped.secure) {
-    return { item: null, reason: "SameSite=None cookies require Secure." };
+    return { item: null, reason: t("SameSite=None cookies require Secure.") };
   }
   if (mapped.session === false && !Number.isFinite(mapped.expirationDate)) {
-    return { item: null, reason: "Persistent cookies require a valid expiration date." };
+    return { item: null, reason: t("Persistent cookies require a valid expiration date.") };
   }
   if (Number.isFinite(mapped.expirationDate) && mapped.expirationDate <= Date.now() / 1000) {
-    return { item: null, reason: "The cookie expiration date is in the past." };
+    return { item: null, reason: t("The cookie expiration date is in the past.") };
   }
   if (mapped.partitionKey && !isValidPartitionKey(mapped.partitionKey)) {
-    return { item: null, reason: "The partition key is not supported." };
+    return { item: null, reason: t("The partition key is not supported.") };
   }
 
   if (!cookieDomainMatchesHost(mapped.domain, target.hostname)) {
     if (!mapSourceToTarget || !cookieDomainMatchesHost(mapped.domain, source.hostname)) {
-      return { item: null, reason: `Cookie domain ${mapped.domain} is not valid for ${target.hostname}.` };
+      return { item: null, reason: t`Cookie domain ${mapped.domain} is not valid for ${target.hostname}.` };
     }
     mapped.domain = mapped.hostOnly ? target.hostname : `${mapped.domain.startsWith(".") ? "." : ""}${target.hostname}`;
   }
@@ -235,6 +236,6 @@ function parseTargetUrl(value) {
     }
     return url;
   } catch {
-    throw new TypeError("A valid HTTP or HTTPS target URL is required.");
+    throw new TypeError(t("A valid HTTP or HTTPS target URL is required."));
   }
 }

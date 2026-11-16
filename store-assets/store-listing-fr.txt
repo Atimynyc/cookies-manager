@@ -1,0 +1,38 @@
+Cookie Controller
+
+Brève description
+
+Gérer les cookies et le stockage Web pour la page actuelle.
+
+Description détaillée
+
+Cookie Controller est un outil de gestion des données de site destiné aux développeurs, aux testeurs et aux utilisateurs avancés. Il vous permet d'inspecter et de gérer cookies, Local Storage et Session Storage pour la page actuelle à partir d'une fenêtre contextuelle ou du panneau latéral de Chrome, sans ouvrir l'intégralité des outils de développement.
+
+Principales fonctionnalités
+
+- Afficher cookies pour la page actuelle et effectuer une recherche rapide par nom, valeur, domaine ou chemin d'accès.
+- Modifier la valeur d'un cookie individuel tout en conservant ses attributs de domaine, de chemin d'accès, d'expiration, SameSite, « Secure » et HttpOnly.
+- Créez ou supprimez des cookies, supprimez plusieurs cookies sélectionnés et définissez des valeurs par lots.
+- Affichez, créez, modifiez et supprimez des entrées Local Storage et Session Storage.
+- Ajoutez aux favoris les entrées cookies et Local/Session Storage fréquemment utilisées afin qu'elles restent en haut de chaque liste.
+- Basculer entre les onglets HTTP/HTTPS dans la fenêtre actuelle du navigateur.
+- Exporter la vue actuelle, les éléments sélectionnés ou toutes les données du site sous la forme d’un package JSON versionné, puis l’importer avec un aperçu des différences, des contrôles de conflits, des résultats par élément et une annulation par lots.
+- Importez et exportez Cookies au format commun Netscape/cURL cookie-jar, y compris les conventions cURL HttpOnly et session-cookie. Les métadonnées de stockage SameSite, Partitioned/CHIPS et Cookie restent accessibles uniquement via les paquets JSON.
+- Enregistrez localement des profils de site réutilisables avec des balises, des règles d’origine, un comportement par défaut en cas de conflit et des variables d’application ; renommez-les, dupliquez-les, exportez-les, appliquez-les ou supprimez-les.
+- Importez rapidement un ou plusieurs Cookies avec des champs « Nom » et « Valeur » distincts ; le stockage prend en charge key=value pour les importations ponctuelles.
+- Copiez une valeur cookie, une paire name=value ou des données structurées JSON en une seule action.
+- Utilisez les outils intégrés de codage/décodage URL, de formatage/compactage JSON et de décodage de charge utile JWT.
+- Enregistrez des états de site réutilisables avec des balises, des règles d’origine et des variables au moment de l’application ; renommez-les, dupliquez-les, exportez-les, appliquez-les et supprimez-les.
+- Consultez les modifications récentes et les différences avant/après, et annulez les modifications effectuées au cours de la session de navigation en cours.
+- Vous pouvez, si vous le souhaitez, recharger automatiquement la page après une modification.
+- Utilisez l'extension depuis sa fenêtre contextuelle ou depuis le panneau latéral de Chrome.
+
+Confidentialité
+
+Cookie Controller ne contient aucune publicité, aucun outil d’analyse ni aucun système de suivi des utilisateurs, et ne nécessite pas de compte. Les données Cookies et de stockage Web auxquelles l’extension accède sont traitées uniquement sur l’appareil de l’utilisateur. Elles ne sont ni téléchargées, ni vendues, ni partagées avec le développeur ou des serveurs tiers. Les préférences d’interface, les identifiants des données des sites favoris (qui ne contiennent ni cookie ni valeurs de stockage), les profils de sites explicitement enregistrés par l’utilisateur et les historiques des modifications récentes sont stockés dans le stockage local des extensions du navigateur et peuvent être supprimés en effaçant les données de l’extension ou en désinstallant celle-ci. Les instantanés complets d’annulation par lots ne sont conservés que dans le stockage de la session du navigateur.
+
+Remarques d’utilisation
+
+L’extension accède aux données d’un site web sélectionné uniquement lorsque l’utilisateur l’ouvre et l’utilise. Cookies et le stockage web peuvent contenir des informations sensibles telles que l’état de connexion ; par conséquent, utilisez l’extension uniquement sur des appareils de confiance et protégez toutes les données exportées.
+
+L'outil JWT décode la charge utile à des fins d'inspection uniquement. Il ne vérifie pas les signatures et ne détermine pas si un jeton est fiable ou valide. Les instantanés de valeurs complètes nécessaires à l'affichage des différences et à l'annulation sont conservés uniquement en mémoire pendant la session de navigation en cours.

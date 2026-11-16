@@ -1,0 +1,38 @@
+Cookie Controller
+
+Kurzbeschreibung
+
+Cookies und Webspeicher für die aktuelle Seite verwalten.
+
+Ausführliche Beschreibung
+
+Cookie Controller ist ein Tool zur Verwaltung von Website-Daten für Entwickler, Tester und fortgeschrittene Benutzer. Damit können Sie cookies, Local Storage und Session Storage für die aktuelle Seite über ein Popup-Fenster oder das Chrome-Seitenpanel überprüfen und verwalten, ohne die vollständigen Entwicklertools öffnen zu müssen.
+
+Hauptfunktionen
+
+- Zeigen Sie cookies für die aktuelle Seite an und führen Sie eine Schnellsuche nach Name, Wert, Domäne oder Pfad durch.
+- Bearbeiten Sie einen einzelnen cookie-Wert unter Beibehaltung der Attribute „Domäne“, „Pfad“, „Ablaufdatum“, SameSite, „Sicher“ und HttpOnly.
+- Erstellen oder löschen Sie cookies, löschen Sie mehrere ausgewählte cookies und legen Sie Werte stapelweise fest.
+- Zeigen Sie Local Storage- und Session Storage-Einträge an, erstellen, bearbeiten und entfernen Sie diese.
+- Fügen Sie häufig verwendete cookies- und „Lokal/Session Storage“-Einträge zu den Favoriten hinzu, damit sie jeweils ganz oben in der Liste bleiben.
+- Wechseln Sie im aktuellen Browserfenster zwischen den Registerkarten HTTP und HTTPS als Verwaltungsziel.
+- Exportieren Sie die aktuelle Ansicht, ausgewählte Elemente oder alle Website-Daten als versioniertes JSON-Paket und importieren Sie es anschließend mit einer Differenzvorschau, Konfliktkontrolle, Ergebnissen pro Element und Stapel-Rückgängig-Funktion.
+- Importieren und exportieren Sie Cookies im gängigen Netscape/cURL cookie-JAR-Format, einschließlich der Konventionen für cURL HttpOnly und session-cookie. Metadaten aus den Speichern SameSite, Partitioned/CHIPS und Cookie sind weiterhin ausschließlich über JSON-Pakete verfügbar.
+- Speichern Sie wiederverwendbare Website-Profile lokal mit Tags, Ursprungsregeln, Standardverhalten bei Konflikten und Variablen zum Zeitpunkt der Anwendung; benennen Sie sie um, duplizieren, exportieren, wenden Sie sie an oder löschen Sie sie.
+- Importieren Sie schnell einen oder mehrere Cookies mit separaten Feldern für „Name“ und „Wert“; der Speicher unterstützt key=value für einmalige Importe.
+- Kopieren Sie einen cookie-Wert, ein name=value-Paar oder strukturierte JSON mit einem einzigen Vorgang.
+- Nutzen Sie die integrierten Tools zum Kodieren/Dekodieren von URL, zum Formatieren/Komprimieren von JSON und zum Dekodieren von JWT-Nutzdaten.
+- Speichern Sie wiederverwendbare Website-Zustände mit Tags, Ursprungsregeln und Variablen zum Zeitpunkt der Anwendung; führen Sie Aktionen wie Umbenennen, Duplizieren, Exportieren, Anwenden und Löschen durch.
+- Überprüfen Sie die letzten Änderungen und Vorher-Nachher-Unterschiede und machen Sie Änderungen während der aktuellen Browsersitzung rückgängig.
+- Laden Sie die Seite nach einer Änderung optional automatisch neu.
+- Nutzen Sie die Erweiterung entweder über das Popup-Fenster oder über das Chrome-Seitenpanel.
+
+Datenschutz
+
+Cookie Controller enthält keine Werbung, Analysen oder Nutzerverfolgung und erfordert kein Konto. Cookies sowie die von der Erweiterung abgerufenen Webspeicherdaten werden ausschließlich auf dem Gerät des Nutzers verarbeitet. Sie werden nicht hochgeladen, verkauft oder an den Entwickler oder Server von Drittanbietern weitergegeben. Einstellungen der Benutzeroberfläche, Kennungen für bevorzugte Website-Daten (die weder cookie noch Speicherwerte enthalten), vom Nutzer explizit gespeicherte Website-Profile sowie Aufzeichnungen der letzten Änderungen werden im lokalen Erweiterungsspeicher des Browsers gespeichert und können durch Löschen der Erweiterungsdaten oder Deinstallation der Erweiterung entfernt werden. Vollständige Snapshots zum batchweisen Rückgängigmachen verbleiben ausschließlich im Speicher der Browsersitzung.
+
+Hinweise zur Verwendung
+
+Die Erweiterung greift nur dann auf Daten einer ausgewählten Website zu, wenn der Nutzer diese öffnet und nutzt. Cookies und der Webspeicher können sensible Informationen wie den Anmeldestatus enthalten. Verwenden Sie die Erweiterung daher nur auf vertrauenswürdigen Geräten und schützen Sie alle exportierten Daten.
+
+Das JWT-Tool entschlüsselt die Nutzdaten ausschließlich zu Überprüfungszwecken. Es überprüft keine Signaturen und stellt nicht fest, ob ein Token vertrauenswürdig oder gültig ist. Vollständige Wertesnapshots, die für die Differenzanzeige und das Rückgängigmachen erforderlich sind, werden nur im Arbeitsspeicher für die aktuelle Browsersitzung gespeichert.

@@ -1,37 +1,38 @@
 Cookie Controller
 
-简短说明
+简要说明
 
-查看、编辑、导入、导出和删除当前网页的 Cookie、Local Storage 与 Session Storage。
+管理当前页面的 Cookie 和网页存储。
 
 详细说明
 
-Cookie Controller 是一款面向开发者、测试人员和高级用户的站点数据管理工具。它可以在弹出窗口或 Chrome 侧边栏中查看和管理当前网页的 Cookie、Local Storage 与 Session Storage，无需打开完整的开发者工具。
+Cookie Controller 是一款面向开发者、测试人员和高级用户的网站数据管理工具。它允许您通过弹出窗口或 Chrome 侧边栏，查看并管理当前页面的 cookies、Local Storage 和 Session Storage，而无需打开完整的开发者工具。
 
 主要功能
 
-- 查看当前网页的 Cookie，并按名称、值、域名或路径快速搜索。
-- 修改单个 Cookie 的值，同时保留其域名、路径、过期时间、SameSite、Secure 和 HttpOnly 等属性。
-- 新增、删除或批量删除 Cookie，并为多个选中项批量设置值。
-- 查看、添加、修改和删除 Local Storage 与 Session Storage 数据。
-- 收藏常用的 Cookie、Local Storage 和 Session Storage 项，并在对应列表中置顶显示。
-- 在当前浏览器窗口的多个 HTTP/HTTPS 标签页之间快速切换管理目标。
-- 将 Cookie、Local Storage 和 Session Storage 导出为版本化 JSON 数据包，并通过差异预览、冲突策略、逐项结果和整批撤销安全导入。
-- 以常用的 Netscape/cURL cookie jar 格式导入和导出 Cookie，兼容 HttpOnly 与会话 Cookie 约定；SameSite、Partitioned/CHIPS 和 Cookie store 元数据仅由 JSON 数据包保留。
-- 使用独立的 Name 与 Value 输入框快速导入一条或多条 Cookie；Storage 支持 key=value 单条导入。
-- 一键复制 Cookie 值、name=value 键值对或结构化 JSON。
-- 内置 URL 编码与解码、JSON 格式化与压缩、JWT Payload 解码工具。
-- 保存可复用的站点状态，支持标签、Origin 规则、应用时变量，以及重命名、复制、导出、应用和删除。
-- 查看最近的修改记录和修改前后差异，并在当前操作会话中撤销变更。
-- 可选自动刷新页面，让修改后的站点状态立即生效。
-- 同时支持扩展弹出窗口和 Chrome 侧边栏模式。
+- 查看当前页面的 cookies，并可按名称、值、域或路径快速搜索。
+- 编辑单个 cookie 值，同时保留其域、路径、过期时间、SameSite、安全性和 HttpOnly 属性。
+- 创建或删除 cookies，批量删除选中的 cookies，并批量设置值。
+- 查看、创建、编辑和删除 Local Storage 及 Session Storage 条目。
+- 将常用 cookies 和本地/Session Storage 条目添加到收藏夹，使其始终位于各列表顶部。
+- 在当前浏览器窗口的 HTTP/HTTPS 标签页之间切换管理目标。
+- 将当前视图、选定项目或所有站点数据导出为带版本的 JSON 包，随后通过差异预览、冲突控制、逐项结果和批量撤销功能进行导入。
+- 以通用的 Netscape/cURL cookie-jar 格式导入和导出 Cookies，包括 cURL HttpOnly 以及会话-cookie 规范。SameSite、Partitioned/CHIPS 和 Cookie 的元数据存储仅可通过 JSON 包访问。
+- 将可重用的站点配置文件（包含标签、源规则、默认冲突行为和应用时变量）保存在本地；可对其进行重命名、复制、导出、应用或删除。
+- 快速导入一个或多个 Cookies，其中“名称”和“值”字段相互独立；存储功能支持使用 key=value 进行一次性导入。
+- 通过单次操作复制 cookie 值、name=value 对或结构化 JSON。
+- 使用内置的 URL 编码/解码、JSON 格式化/压缩以及 JWT 有效载荷解码工具。
+- 保存可重用的网站状态，并支持标签、源规则、应用时变量，以及重命名、复制、导出、应用和删除等操作。
+- 查看最近的更改以及更改前后的差异，并在当前浏览器会话中撤销更改。
+- 可选择在更改后自动刷新页面。
+- 通过弹出窗口或 Chrome 侧边栏使用该扩展程序。
 
-隐私说明
+隐私
 
-Cookie Controller 不包含广告、统计分析或用户跟踪功能，也不需要注册账号。插件读取的 Cookie 和网页存储数据只在用户设备上处理，不会上传、出售或共享给开发者或第三方服务器。界面偏好、收藏的站点数据标识（不包含 Cookie 或存储值）、用户主动保存的站点状态及最近修改记录保存在浏览器本地存储中，可通过清除扩展数据或卸载插件删除。
+Cookie Controller 不包含任何广告、分析或用户追踪功能，且无需注册账号。扩展程序访问的 Cookies 和网页存储数据仅在用户设备上进行处理。这些数据不会被上传、出售或与开发者或第三方服务器共享。界面偏好设置、收藏的网站数据标识符（不包含 cookie 或存储值）、用户明确保存的网站配置文件以及最近的更改记录均存储在浏览器的本地扩展程序存储中，可通过清除扩展程序数据或卸载扩展程序来删除。完整的批量撤销快照仅保存在浏览器会话存储中。
 
 使用说明
 
-插件仅在用户主动打开并操作时访问所选网站的数据。由于 Cookie 和网页存储可能包含登录状态等敏感信息，请只在可信设备上使用，导出数据后也请妥善保管。
+该扩展程序仅在用户打开并操作时，才会访问所选网站的数据。Cookies 和 Web 存储可能包含登录状态等敏感信息，因此请仅在可信设备上使用该扩展程序，并保护任何导出的数据。
 
-JWT 工具仅解码 Payload 以便查看内容，不验证签名，也不判断令牌是否可信或有效。撤销所需的完整值快照仅保留在当前弹出窗口或侧边栏会话中。
+JWT 工具仅对有效载荷进行解码以供检查，不会验证签名，也不会判断令牌是否可信或有效。用于差异查看和撤销操作所需的完整值快照仅保存在当前浏览器会话的内存中。

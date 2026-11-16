@@ -1,3 +1,4 @@
+import { t } from "../shared/i18n.js";
 import { getBatchOperationCounts } from "../shared/operation-result.js";
 import { getOperation, listOperations, runOperation, undoOperation } from "../shared/operation-client.js";
 import { operationToBatchResult } from "../shared/operation-presentation.js";
@@ -61,7 +62,7 @@ export function createPopupSiteDataController({
     } else {
       const rows = scope === "selected" ? getSelectedRows() : state.rows;
       if (scope === "selected" && rows.length === 0) {
-        throw new Error("Select at least one item before exporting.");
+        throw new Error(t("Select at least one item before exporting."));
       }
       rowsByKind = { cookies: [], localStorage: [], sessionStorage: [] };
       rowsByKind[dataView] = rows;
@@ -100,13 +101,13 @@ export function createPopupSiteDataController({
 
   async function applyPackage(preview, { strategy, selectedIds, onProgress }) {
     const target = await getVerifiedCurrentTarget(preview?.operationTarget,
-      "The import target changed. Build a new preview before applying this package.");
+      t("The import target changed. Build a new preview before applying this package."));
     const autoRefreshPage = state.autoRefreshPage;
 
     const plan = planSiteDataImport(preview, { strategy, selectedIds });
     suppressCookieWatcher(Math.max(1500, plan.write.length * 30));
     const job = await runOperation({
-      target, label: `Import ${plan.write.length} items`, source: "package-import",
+      target, label: t`Import ${plan.write.length} items`, source: "package-import",
       items: plan.write.map((item) => ({
         id: item.id, kind: item.kind, name: item.name, before: item.current, after: item.incoming
       })),
@@ -127,10 +128,10 @@ export function createPopupSiteDataController({
     const snapshot = latestImportId ? await getOperation(latestImportId)
       : (await listOperations()).find((job) => job.source === "package-import");
     if (!snapshot || !snapshot.items.some((item) => ["applied", "undo-failed", "undo-conflict"].includes(item.state))) {
-      throw new Error("No import snapshot is available in this browser session.");
+      throw new Error(t("No import snapshot is available in this browser session."));
     }
     const target = await getVerifiedCurrentTarget(snapshot.target,
-      "Return to the original target tab, site, and browsing mode before undoing this import.");
+      t("Return to the original target tab, site, and browsing mode before undoing this import."));
     const autoRefreshPage = state.autoRefreshPage;
 
     suppressCookieWatcher(Math.max(1500, snapshot.items.length * 30));
@@ -144,8 +145,8 @@ export function createPopupSiteDataController({
     }
     showStatus(
       result.failed.length > 0
-        ? `Undo restored ${result.success.length} items; ${result.failed.length} failed.`
-        : `Undid ${result.success.length} imported items.`,
+        ? t`Undo restored ${result.success.length} items; ${result.failed.length} failed.`
+        : t`Undid ${result.success.length} imported items.`,
       result.failed.length > 0 ? "error" : "success"
     );
     return { result, complete: result.failed.length === 0 };
@@ -169,7 +170,7 @@ export function createPopupSiteDataController({
 
   function showBatchImportStatus(result) {
     const counts = getBatchOperationCounts(result);
-    const summary = `${counts.success} written, ${counts.failed} failed, ${counts.skipped} skipped.`;
+    const summary = t`${counts.success} written, ${counts.failed} failed, ${counts.skipped} skipped.`;
     showStatus(summary, counts.failed ? "error" : counts.success ? "success" : "warning");
   }
 
@@ -188,15 +189,15 @@ export function createPopupSiteDataController({
 
   async function renameSavedProfile(profile) {
     const name = await requestTextInput({
-      title: "Rename saved state",
-      fieldLabel: "Saved state name",
+      title: t("Rename saved state"),
+      fieldLabel: t("Saved state name"),
       initialValue: profile.name,
-      submitLabel: "Rename",
+      submitLabel: t("Rename"),
       selectValue: true,
       validate: (value) => {
         const trimmed = value.trim();
         if (!trimmed) {
-          throw new Error("Enter a saved state name.");
+          throw new Error(t("Enter a saved state name."));
         }
         return trimmed;
       }
@@ -213,8 +214,8 @@ export function createPopupSiteDataController({
 
   async function deleteSavedProfile(profile) {
     const confirmed = await requestDeleteConfirmation({
-      title: "Delete saved state?",
-      message: `"${profile.name}" will be permanently deleted.`,
+      title: t("Delete saved state?"),
+      message: t`"${profile.name}" will be permanently deleted.`,
       detail: profile.source.origin
     });
     if (!confirmed) {

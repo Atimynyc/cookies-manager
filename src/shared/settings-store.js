@@ -1,9 +1,11 @@
+import { t } from "./i18n.js";
 import { callChrome } from "./chrome-call.js";
 import { normalizeFavoriteItemIds } from "./favorites.js";
 import { getSiteOrigin } from "./url.js";
 import { withStorageWriteLock } from "./storage-write-coordinator.js";
 
 export const FAVORITE_SITE_DATA_IDS_KEY = "favoriteSiteDataIds";
+export const SITE_ACCESS_CONSENTS_KEY = "siteAccessConsents";
 export const LAST_VIEWED_SITE_DATA_KEY_PREFIX = "lastViewedSiteData:";
 const SITE_DATA_VIEWS = ["cookies", "localStorage", "sessionStorage"];
 const DEFAULT_PREFERENCES = {
@@ -19,6 +21,46 @@ export async function getPreferences() {
 
 export async function savePreferences(nextPreferences) {
   await callChrome("storage.local.set", nextPreferences);
+}
+
+export async function getSiteAccessConsents() {
+  const result = await callChrome("storage.local.get", {
+    [SITE_ACCESS_CONSENTS_KEY]: []
+  });
+  return normalizeSiteAccessConsents(result[SITE_ACCESS_CONSENTS_KEY]);
+}
+
+export async function hasSiteAccessConsent(url) {
+  const origin = getSiteOrigin(url);
+  if (!origin) {
+    return false;
+  }
+  return (await getSiteAccessConsents()).includes(origin);
+}
+
+export async function grantSiteAccessConsent(url) {
+  const origin = getSiteOrigin(url);
+  if (!origin) {
+    return false;
+  }
+
+  await withStorageWriteLock(SITE_ACCESS_CONSENTS_KEY, async () => {
+    const current = await getSiteAccessConsents();
+    if (current.includes(origin)) {
+      return;
+    }
+    await callChrome("storage.local.set", {
+      [SITE_ACCESS_CONSENTS_KEY]: [...current, origin]
+    });
+  });
+  return true;
+}
+
+function normalizeSiteAccessConsents(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return [...new Set(value.filter((origin) => typeof origin === "string" && origin.length > 0))];
 }
 
 export async function getFavoriteSiteDataIds() {
@@ -38,7 +80,7 @@ export async function saveFavoriteSiteDataIds(itemIds) {
 
 export async function setFavoriteSiteDataId(itemId, enabled) {
   if (typeof itemId !== "string" || !itemId || typeof enabled !== "boolean") {
-    throw new TypeError("A favorite item ID and enabled state are required.");
+    throw new TypeError(t("A favorite item ID and enabled state are required."));
   }
   return withStorageWriteLock(FAVORITE_SITE_DATA_IDS_KEY, async () => {
     const current = await getFavoriteSiteDataIds();

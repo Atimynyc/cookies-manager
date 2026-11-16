@@ -2,7 +2,7 @@ Cookie Controller
 
 Short description
 
-View, edit, import, export, and delete cookies and web storage for the current page.
+Manage cookies and web storage for the current page.
 
 Detailed description
 

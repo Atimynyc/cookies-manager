@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 import { callChrome } from "./chrome-call.js";
 
 export const OPERATION_MESSAGE_CHANNEL = "cookie-controller-operations-v1";
@@ -53,7 +54,7 @@ async function waitForOperation(initialJob, onProgress) {
     await new Promise((resolve) => setTimeout(resolve, 100));
     job = await getOperation(job.id);
   }
-  throw new Error("The operation history is no longer available in this browser session.");
+  throw new Error(t("The operation history is no longer available in this browser session."));
 }
 
 async function request(command, payload = {}) {
@@ -63,7 +64,7 @@ async function request(command, payload = {}) {
     ...payload
   });
   if (!response?.ok) {
-    const error = new Error(response?.error?.message || "The background operation service is unavailable. Reopen the extension and try again.");
+    const error = new Error(response?.error?.message || t("The background operation service is unavailable. Reopen the extension and try again."));
     if (response?.error?.code) error.code = response.error.code;
     throw error;
   }

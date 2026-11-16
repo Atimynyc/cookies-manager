@@ -1,15 +1,21 @@
+import { t, initializeI18n, localizeDocument, onLanguageChanged } from "../shared/i18n.js";
+import { createSettingsController } from "./popup-settings.js";
 import {
   activateTab,
   getActiveTab,
   getWindowHttpTabs,
   hasSitePermission,
   openSidePanel,
+  requestSitePermission,
+  reloadTab,
   watchCookieChanges
 } from "../shared/cookie-api.js";
 import {
   FAVORITE_SITE_DATA_IDS_KEY,
   getFavoriteSiteDataIds,
+  grantSiteAccessConsent,
   getLastViewedSiteData,
+  hasSiteAccessConsent,
   getPreferences,
   normalizeLastViewedSiteData,
   setFavoriteSiteDataId,
@@ -97,16 +103,18 @@ const state = {
   activeValueView: "raw",
   toolOutputText: "",
   toolOutputTitle: "",
-  emptyMessage: "No cookies for this page",
+  emptyMessage: t("No cookies for this page"),
   ignoreCookieChangesUntil: 0,
   loading: false,
-  busy: false
+  busy: false,
+  sitePermissionGranted: false,
+  siteAccessConsentGranted: false
 };
 
 const COPY_MODES = Object.freeze({
-  value: "Copy value",
-  pair: "Copy name=value",
-  json: "Copy JSON"
+  get value() { return t("Copy value"); },
+  get pair() { return t("Copy name=value"); },
+  get json() { return t("Copy JSON"); }
 });
 
 const VALUE_WORKSPACE_DEFAULT_HEIGHT = 146;
@@ -119,6 +127,7 @@ let workbenchOpening = false;
 let selectedCopyMode = "value";
 let refreshRequestId = 0;
 let cookieRefreshTimer = 0;
+let sitePermissionRequestPending = false;
 let renderedEditor = null;
 const editorDrafts = createEditorDraftStore();
 const pendingFavoriteIds = new Set();
@@ -132,12 +141,14 @@ const elements = {
   searchInput: document.querySelector("#searchInput"),
   refreshControl: document.querySelector("#refreshControl"),
   refreshButton: document.querySelector("#refreshButton"),
-  refreshMenuButton: document.querySelector("#refreshMenuButton"),
-  refreshMenu: document.querySelector("#refreshMenu"),
   openSidePanelButton: document.querySelector("#openSidePanelButton"),
   autoRefreshToggle: document.querySelector("#autoRefreshToggle"),
-  permissionBanner: document.querySelector("#permissionBanner"),
-  permissionMessage: document.querySelector("#permissionMessage"),
+  siteAccessDialog: document.querySelector("#siteAccessDialog"),
+  siteAccessDialogDetail: document.querySelector("#siteAccessDialogDetail"),
+  siteAccessDialogError: document.querySelector("#siteAccessDialogError"),
+  siteAccessDialogAllowButton: document.querySelector("#siteAccessDialogAllowButton"),
+  siteAccessDialogCancelButton: document.querySelector("#siteAccessDialogCancelButton"),
+  siteAccessState: document.querySelector("#siteAccessState"),
   requestPermissionButton: document.querySelector("#requestPermissionButton"),
   statusBar: document.querySelector("#statusBar"),
   statusMessage: document.querySelector("#statusMessage"),
@@ -308,7 +319,14 @@ const operationsView = createOperationsView({
 document.addEventListener("DOMContentLoaded", initialize);
 
 async function initialize() {
+  await initializeI18n();
+  localizeDocument();
   bindEvents();
+  const settings = createSettingsController({ onOpen: () => {
+    setCopyMenuOpen(false);
+    setValueToolsMenuOpen(false);
+  } });
+  onLanguageChanged(renderLanguage);
   operationsView.initialize();
 
   const historyPromise = historyController.loadRecentChanges();
@@ -320,6 +338,23 @@ async function initialize() {
   await historyPromise;
   startCookieWatcher();
   startFavoriteWatcher();
+}
+
+function renderLanguage() {
+  rememberEditorDraft();
+  localizeDocument();
+  state.rows = state.rows.map(row => row.type ? toStorageRow(row.raw) : toCookieRow(row.raw));
+  state.emptyMessage = getCurrentView().emptyMessage;
+  renderViewChrome();
+  renderHeader(state.tab);
+  renderTable();
+  renderSelectedItem();
+  historyView.localize();
+  operationsView.render();
+  updateRefreshControlState();
+  updateCopyControl();
+  updateValueToolControl();
+  if (workbenchPromise) void workbenchPromise.then(workbench => workbench.localize());
 }
 
 async function loadPreferences() {
@@ -365,13 +400,22 @@ function bindEvents() {
     button.addEventListener("click", () => setDataView(button.dataset.view));
   }
   elements.siteSelect.addEventListener("change", switchToSelectedSite);
-  elements.refreshButton.addEventListener("click", refreshData);
-  elements.refreshMenuButton.addEventListener("click", (event) => {
-    event.stopPropagation();
-    setRefreshMenuOpen(elements.refreshMenu.hidden);
-  });
+  elements.refreshButton.addEventListener("click", () => void reloadCurrentPage());
   elements.openSidePanelButton.addEventListener("click", openCurrentSidePanel);
-  elements.requestPermissionButton.addEventListener("click", refreshData);
+  elements.siteAccessDialogAllowButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    void requestCurrentSitePermission();
+  });
+  elements.requestPermissionButton.addEventListener("click", () => showSiteAccessDialog(state.tab?.url));
+  elements.siteAccessDialog.addEventListener("close", () => {
+    if (elements.siteAccessDialog.returnValue !== "allow") elements.requestPermissionButton.focus();
+  });
+  elements.siteAccessDialog.addEventListener("cancel", (event) => {
+    if (sitePermissionRequestPending) event.preventDefault();
+  });
+  elements.siteAccessDialog.addEventListener("click", (event) => {
+    if (!sitePermissionRequestPending) cancelDialogFromBackdrop(event);
+  });
   elements.closeStatusButton.addEventListener("click", clearStatus);
   elements.selectAllCheckbox.addEventListener("change", toggleSelectAllVisible);
   elements.selectionCount.addEventListener("click", toggleSelectedOnly);
@@ -451,9 +495,6 @@ function bindEvents() {
     button.addEventListener("click", () => button.closest("dialog")?.close("cancel"));
   }
   document.addEventListener("click", (event) => {
-    if (!elements.refreshControl.contains(event.target)) {
-      setRefreshMenuOpen(false);
-    }
     if (!elements.copyControl.contains(event.target)) {
       setCopyMenuOpen(false);
     }
@@ -469,9 +510,6 @@ function bindEvents() {
       } else if (!elements.valueToolsMenu.hidden) {
         setValueToolsMenuOpen(false);
         elements.valueToolsButton.focus();
-      } else if (!elements.refreshMenu.hidden) {
-        setRefreshMenuOpen(false);
-        elements.refreshMenuButton.focus();
       }
     }
   });
@@ -504,7 +542,7 @@ function selectCopyMode(mode) {
 function updateCopyControl() {
   resetCopyFeedback(elements.copyButton);
   const showResult = state.activeValueView === "result" && Boolean(state.toolOutputText);
-  const label = showResult ? "Copy result" : COPY_MODES[selectedCopyMode];
+  const label = showResult ? t("Copy result") : COPY_MODES[selectedCopyMode];
   elements.copyControl.classList.toggle("is-result", showResult);
   elements.copyMenuButton.hidden = showResult;
   if (showResult) {
@@ -628,17 +666,53 @@ function handleValueToolsMenuKeydown(event) {
   }
 }
 
-function setRefreshMenuOpen(open) {
-  elements.refreshMenu.hidden = !open;
-  elements.refreshMenuButton.setAttribute("aria-expanded", String(open));
+function updateRefreshControlState() {
+  const label = t`Refresh ${t("Current page")}`;
+  elements.refreshButton.title = label;
+  elements.refreshButton.setAttribute("aria-label", label);
 }
 
-function updateRefreshControlState() {
-  elements.refreshControl.classList.toggle("is-auto", state.autoRefreshPage);
-  const stateLabel = state.autoRefreshPage ? "on" : "off";
-  elements.refreshMenuButton.title = `Reload after changes: ${stateLabel}`;
-  elements.refreshMenuButton.setAttribute("aria-label", `Reload after changes: ${stateLabel}`);
-  elements.refreshButton.title = state.autoRefreshPage ? "Refresh data (page reload is on)" : "Refresh data";
+async function reloadCurrentPage() {
+  if (state.busy || state.loading || !Number.isInteger(state.tab?.id)) {
+    return;
+  }
+
+  const tabId = state.tab.id;
+  try {
+    await reloadTab(tabId);
+    await waitForTabLoad(tabId);
+    if (surface === "sidepanel" && state.tab?.id === tabId) {
+      await refreshData({ preserveStatus: true });
+    }
+  } catch (error) {
+    showStatus(error?.message || t("Refresh data"), "error");
+  }
+}
+
+function waitForTabLoad(tabId, timeout = 10000) {
+  if (!chrome.tabs?.onUpdated) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = () => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      chrome.tabs.onUpdated.removeListener(listener);
+      window.clearTimeout(timer);
+      resolve();
+    };
+    const listener = (updatedTabId, changeInfo) => {
+      if (updatedTabId === tabId && changeInfo.status === "complete") {
+        finish();
+      }
+    };
+    const timer = window.setTimeout(finish, timeout);
+    chrome.tabs.onUpdated.addListener(listener);
+  });
 }
 
 async function restoreLastViewedSiteData(url, requestId) {
@@ -724,7 +798,8 @@ async function refreshData({ preserveStatus = false } = {}) {
   const requestId = ++refreshRequestId;
   setLoading(true);
   if (!preserveStatus) clearStatus();
-  setPermissionBanner(false);
+  state.sitePermissionGranted = false;
+  state.siteAccessConsentGranted = false;
   renderViewChrome();
 
   try {
@@ -732,16 +807,26 @@ async function refreshData({ preserveStatus = false } = {}) {
     if (requestId !== refreshRequestId) {
       return;
     }
+    const previousTarget = state.tab ? `${state.tab.id}:${state.tab.url}` : "";
+    const nextTarget = tab ? `${tab.id}:${tab.url}` : "";
     state.tab = tab;
+    if (previousTarget !== nextTarget) {
+      if (elements.siteAccessDialog.open) elements.siteAccessDialog.close("cancel");
+      state.rows = [];
+      state.selectedId = "";
+      state.selectedIds.clear();
+      state.cookieStoreId = "";
+      renderTable();
+      renderSelectedItem();
+    }
     globalThis.cookieControllerTheme?.setActiveTabIncognito(tab?.incognito);
     state.cookieStoreId = "";
     renderHeader(tab);
 
     const supportedPage = Boolean(tab?.url && isSupportedPageUrl(tab.url));
-    const [, , cookieStoreId] = await Promise.all([
+    await Promise.all([
       restoreLastViewedSiteData(tab?.url, requestId),
-      refreshSiteOptions(tab?.id, requestId),
-      supportedPage ? resolveCookieStoreId(tab) : Promise.resolve("")
+      refreshSiteOptions(tab?.id, requestId)
     ]);
     if (requestId !== refreshRequestId) {
       return;
@@ -751,7 +836,7 @@ async function refreshData({ preserveStatus = false } = {}) {
     if (!supportedPage) {
       state.rows = [];
       state.selectedId = "";
-      state.emptyMessage = "This page is not supported";
+      state.emptyMessage = t("This page is not supported");
       renderHeader(tab);
       renderTable();
       renderSelectedItem();
@@ -759,6 +844,31 @@ async function refreshData({ preserveStatus = false } = {}) {
       return;
     }
 
+    const [sitePermissionGranted, siteAccessConsentGranted] = await Promise.all([
+      safeHasSitePermission(tab.url),
+      safeHasSiteAccessConsent(tab.url)
+    ]);
+    if (requestId !== refreshRequestId) {
+      return;
+    }
+    state.sitePermissionGranted = sitePermissionGranted;
+    state.siteAccessConsentGranted = siteAccessConsentGranted;
+    if (!sitePermissionGranted || !siteAccessConsentGranted) {
+      state.rows = [];
+      state.cookieStoreId = "";
+      state.selectedId = "";
+      state.emptyMessage = t("Site permission is required for this page.");
+      renderHeader(tab);
+      renderTable();
+      renderSelectedItem();
+      showSiteAccessDialog(tab.url);
+      return;
+    }
+
+    const cookieStoreId = await resolveCookieStoreId(tab);
+    if (requestId !== refreshRequestId) {
+      return;
+    }
     state.cookieStoreId = cookieStoreId;
     const rows = await readSiteDataRows(tab, state.dataView, state.cookieStoreId);
     if (requestId !== refreshRequestId) {
@@ -851,7 +961,7 @@ async function openWorkbench(view) {
     const workbench = await getWorkbench();
     await workbench.open(view);
   } catch (error) {
-    showStatus(error?.message || "Failed to open site data tools.", "error");
+    showStatus(error?.message || t("Failed to open site data tools."), "error");
   } finally {
     workbenchOpening = false;
   }
@@ -907,16 +1017,16 @@ async function switchToSelectedSite() {
     resetSelectedOnly();
     await refreshData();
   } catch (error) {
-    showStatus(error?.message || "Failed to switch site.", "error");
+    showStatus(error?.message || t("Failed to switch site."), "error");
   }
 }
 
 async function openCurrentSidePanel() {
   try {
     await openSidePanel(state.tab?.id);
-    showStatus("Opened side panel.", "success");
+    showStatus(t("Opened side panel."), "success");
   } catch (error) {
-    showStatus(error?.message || "Failed to open side panel.", "error");
+    showStatus(error?.message || t("Failed to open side panel."), "error");
   }
 }
 
@@ -926,10 +1036,12 @@ async function handleReadError(error) {
 
   if (canRequestPermission) {
     const alreadyGranted = await safeHasSitePermission(state.tab.url);
-    setPermissionBanner(
-      !alreadyGranted,
-      `${message} Reload this extension in chrome://extensions after updating the manifest.`
-    );
+    state.sitePermissionGranted = alreadyGranted;
+    const consentGranted = await safeHasSiteAccessConsent(state.tab.url);
+    state.siteAccessConsentGranted = consentGranted;
+    if (!alreadyGranted || !consentGranted) {
+      showSiteAccessDialog(state.tab.url);
+    }
   }
 
   showStatus(message, "error");
@@ -943,10 +1055,46 @@ async function safeHasSitePermission(url) {
   }
 }
 
+async function safeHasSiteAccessConsent(url) {
+  try {
+    return await hasSiteAccessConsent(url);
+  } catch {
+    return false;
+  }
+}
+
+async function requestCurrentSitePermission() {
+  const url = elements.siteAccessDialog.dataset.url;
+  if (!url || !isSupportedPageUrl(url) || state.loading || state.busy || sitePermissionRequestPending) {
+    return;
+  }
+
+  sitePermissionRequestPending = true;
+  elements.siteAccessDialogAllowButton.disabled = true;
+  elements.siteAccessDialogCancelButton.disabled = true;
+  elements.siteAccessDialogError.hidden = true;
+  try {
+    const granted = await requestSitePermission(url);
+    if (!granted) {
+      showSiteAccessDialogError(t("Site permission is required for this page."));
+      return;
+    }
+    await grantSiteAccessConsent(url);
+    elements.siteAccessDialog.close("allow");
+    await refreshData();
+  } catch (error) {
+    showSiteAccessDialogError(error?.message || t("Site permission is required for this page."));
+  } finally {
+    sitePermissionRequestPending = false;
+    elements.siteAccessDialogCancelButton.disabled = false;
+    elements.siteAccessDialogAllowButton.disabled = state.loading || state.busy;
+  }
+}
+
 function getWorkbenchContext() {
   return {
     targetUrl: state.tab?.url || "",
-    targetLabel: state.tab?.url ? `${getDisplayHost(state.tab.url)} · ${getCurrentView().title}` : "No supported target",
+    targetLabel: state.tab?.url ? `${getDisplayHost(state.tab.url)} · ${getCurrentView().title}` : t("No supported target"),
     currentViewLabel: getCurrentView().title,
     currentKind: state.dataView,
     currentCount: state.rows.length,
@@ -970,7 +1118,7 @@ function updateExportSelection(ids) {
 
 async function importQuickEntries(input) {
   if (!state.tab?.url || !isSupportedPageUrl(state.tab.url)) {
-    throw new Error(`Open an http:// or https:// page before importing ${getCurrentView().plural}.`);
+    throw new Error(t`Open an http:// or https:// page before importing ${getCurrentView().plural}.`);
   }
 
   const pairs = validateQuickInputRows(input, isCookieView() ? "cookie" : "storage");
@@ -986,7 +1134,7 @@ async function importQuickEntries(input) {
     const currentRows = await readSiteDataRows({ id: target.tabId, url: target.url }, kind, target.cookieStoreId);
     const previousRows = new Map(pairs.map((pair) => [pair.name, findLikelyImportedRow(pair.name, currentRows, target, kind)]));
     const job = await runOperation({
-      target, label: `Import ${pairs.length} ${pairs.length === 1 ? "item" : "items"}`, source: "quick-import",
+      target, label: pairs.length === 1 ? t`Import ${pairs.length} item` : t`Import ${pairs.length} items`, source: "quick-import",
       items: pairs.map((pair) => {
         const after = kind === "cookies" ? {
           name: pair.name, value: pair.value, domain: new URL(target.url).hostname,
@@ -1012,7 +1160,7 @@ async function importQuickEntries(input) {
 
     showImportStatus(pairs, result);
   } catch (error) {
-    showStatus(error?.message || `Failed to import ${getCurrentView().singular}.`, "error");
+    showStatus(error?.message || t`Failed to import ${getCurrentView().singular}.`, "error");
     throw error;
   } finally {
     setBusy(false);
@@ -1022,7 +1170,7 @@ async function importQuickEntries(input) {
 function validateQuickInputRows(rows, kind) {
   const cookies = kind === "cookie";
   const createPair = cookies ? createCookiePair : createStoragePair;
-  const nameLabel = cookies ? "Cookie name" : "Storage key";
+  const nameLabel = cookies ? t("Cookie name") : t("Storage key");
   const pairs = [];
   const names = new Set();
   for (const [index, row] of rows.entries()) {
@@ -1035,12 +1183,12 @@ function validateQuickInputRows(rows, kind) {
     try {
       pair = createPair(name, value);
     } catch (error) {
-      error.message = `Row ${index + 1}: ${error.message}`;
+      error.message = t`Row ${index + 1}: ${error.message}`;
       error.rowIndex = index;
       throw error;
     }
     if (names.has(pair.name)) {
-      const error = new TypeError(`Row ${index + 1}: ${nameLabel} "${pair.name}" is duplicated.`);
+      const error = new TypeError(t`Row ${index + 1}: ${nameLabel} "${pair.name}" is duplicated.`);
       error.rowIndex = index;
       throw error;
     }
@@ -1048,7 +1196,7 @@ function validateQuickInputRows(rows, kind) {
     pairs.push(pair);
   }
   if (pairs.length === 0) {
-    const error = new TypeError(`Enter at least one ${nameLabel.toLowerCase()}.`);
+    const error = new TypeError(t`Enter at least one ${nameLabel.toLowerCase()}.`);
     error.rowIndex = 0;
     throw error;
   }
@@ -1059,10 +1207,10 @@ function showImportStatus(pairs, result) {
   const counts = getBatchOperationCounts(result);
   if (pairs.length === 1) {
     if (counts.success === 1) {
-      showStatus(`Imported ${pairs[0].name}.`, "success");
+      showStatus(t`Imported ${pairs[0].name}.`, "success");
     } else {
       showStatus(
-        result.failed[0]?.error?.message || `Failed to import ${getCurrentView().singular}.`,
+        result.failed[0]?.error?.message || t`Failed to import ${getCurrentView().singular}.`,
         "error"
       );
     }
@@ -1070,14 +1218,14 @@ function showImportStatus(pairs, result) {
   }
   if (counts.failed === 0) {
     const view = getCurrentView();
-    showStatus(`Imported ${counts.success} ${counts.success === 1 ? view.singular : view.plural}.`, "success");
+    showStatus(t`Imported ${counts.success} ${counts.success === 1 ? view.singular : view.plural}.`, "success");
     return;
   }
   const view = getCurrentView();
   const itemLabel = counts.success === 1 ? view.singular : view.plural;
   const firstError = result.failed[0]?.error?.message;
   showStatus(
-    `Imported ${counts.success} ${itemLabel}, ${counts.failed} failed.${firstError ? ` ${firstError}` : ""}`,
+    t`Imported ${counts.success} ${itemLabel}, ${counts.failed} failed.${firstError ? ` ${firstError}` : ""}`,
     "error"
   );
 }
@@ -1114,10 +1262,10 @@ function runSelectedValueTool(mode = state.valueToolMode) {
     };
 
     showToolOutput(result.title, result.text, true);
-    showStatus(`${result.title} ready.`, "success");
+    showStatus(t`${result.title} ready.`, "success");
   } catch (error) {
     clearToolOutput();
-    showStatus(error?.message || "Unable to parse this value.", "error");
+    showStatus(error?.message || t("Unable to parse this value."), "error");
   }
 }
 
@@ -1154,7 +1302,7 @@ function clearToolOutput() {
   elements.valueViewToggleButton.disabled = true;
   elements.valueViewToggleIcon.hidden = true;
   elements.valueViewToggleButton.removeAttribute("title");
-  elements.valueViewToggleButton.setAttribute("aria-label", "Show result");
+  elements.valueViewToggleButton.setAttribute("aria-label", t("Show result"));
   setActiveValueView("raw");
 }
 
@@ -1169,11 +1317,11 @@ function setActiveValueView(view) {
   if (!showResult) {
     updateValueWorkspaceHeight();
   }
-  elements.valueViewLabel.textContent = showResult ? state.toolOutputTitle : "Raw";
+  elements.valueViewLabel.textContent = showResult ? state.toolOutputTitle : t("Raw");
   if (state.toolOutputText) {
-    const nextViewLabel = showResult ? "raw value" : state.toolOutputTitle;
-    elements.valueViewToggleButton.title = `Show ${nextViewLabel}`;
-    elements.valueViewToggleButton.setAttribute("aria-label", `Show ${nextViewLabel}`);
+    const nextViewLabel = showResult ? t("raw value") : state.toolOutputTitle;
+    elements.valueViewToggleButton.title = t`Show ${nextViewLabel}`;
+    elements.valueViewToggleButton.setAttribute("aria-label", t`Show ${nextViewLabel}`);
   }
 }
 
@@ -1204,7 +1352,7 @@ async function copyToolOutput() {
     showCopyFeedback(elements.copyButton);
   } catch (error) {
     resetCopyFeedback(elements.copyButton);
-    showStatus(error?.message || "Failed to copy.", "error");
+    showStatus(error?.message || t("Failed to copy."), "error");
   }
 }
 
@@ -1228,14 +1376,13 @@ function renderViewChrome() {
   document.body.dataset.view = state.dataView;
   elements.loadingState.textContent = view.loadingMessage;
   elements.searchInput.placeholder = isCookieView()
-    ? state.selectedOnly ? "Search selected cookies" : "Search name, value, domain, path"
-    : state.selectedOnly ? "Search selected items" : "Search key, value, origin";
-  elements.refreshButton.title = `Refresh ${view.plural}`;
-  elements.refreshButton.setAttribute("aria-label", `Refresh ${view.plural}`);
-  elements.importButton.setAttribute("aria-label", "Import");
-  elements.importButton.dataset.tooltip = "Import";
-  elements.detailsView.setAttribute("aria-label", `${view.title} editor`);
-  elements.detailPlaceholder.textContent = `Select a ${view.singular}`;
+    ? state.selectedOnly ? t("Search selected cookies") : t("Search name, value, domain, path")
+    : state.selectedOnly ? t("Search selected items") : t("Search key, value, origin");
+  updateRefreshControlState();
+  elements.importButton.setAttribute("aria-label", t("Import"));
+  elements.importButton.dataset.tooltip = t("Import");
+  elements.detailsView.setAttribute("aria-label", t`${view.title} editor`);
+  elements.detailPlaceholder.textContent = t`Select a ${view.singular}`;
   elements.expirationEditorCell.hidden = !cookieView;
   elements.metaExpires.hidden = cookieView;
 
@@ -1259,8 +1406,8 @@ function renderViewChrome() {
       header.insertBefore(document.createTextNode(view.tableLabels[index]), handle || null);
     }
     if (handle) {
-      handle.title = `Resize ${view.tableLabels[index]} column`;
-      handle.setAttribute("aria-label", `Resize ${view.tableLabels[index]} column`);
+      handle.title = t`Resize ${view.tableLabels[index]} column`;
+      handle.setAttribute("aria-label", t`Resize ${view.tableLabels[index]} column`);
     }
   });
   updateNameSortControl();
@@ -1282,8 +1429,8 @@ function initializeColumnResizers() {
     const handle = document.createElement("button");
     handle.type = "button";
     handle.className = "column-resizer";
-    handle.title = `Resize ${header.textContent.trim()} column`;
-    handle.setAttribute("aria-label", `Resize ${header.textContent.trim()} column`);
+    handle.title = t`Resize ${header.textContent.trim()} column`;
+    handle.setAttribute("aria-label", t`Resize ${header.textContent.trim()} column`);
     handle.addEventListener("pointerdown", (event) => startColumnResize(event, index));
     handle.addEventListener("keydown", (event) => resizeColumnWithKeyboard(event, index));
     header.append(handle);
@@ -1336,9 +1483,14 @@ async function resizeColumnWithKeyboard(event, index) {
 }
 
 function renderHeader(tab) {
-  const view = getCurrentView();
   elements.hostLabel.textContent = getDisplayHost(tab?.url);
-  elements.cookieCount.textContent = `${state.rows.length} ${state.rows.length === 1 ? view.singular : view.plural}`;
+  const count = state.rows.length;
+  const counts = {
+    cookies: count === 1 ? t`${count} cookie` : t`${count} cookies`,
+    localStorage: count === 1 ? t`${count} local storage item` : t`${count} local storage items`,
+    sessionStorage: count === 1 ? t`${count} session storage item` : t`${count} session storage items`
+  };
+  elements.cookieCount.textContent = counts[state.dataView];
   renderSiteIcon(tab);
 }
 
@@ -1376,7 +1528,10 @@ function renderTable() {
     onToggle: toggleRowSelection
   });
   elements.emptyState.textContent = state.emptyMessage;
-  elements.emptyState.hidden = state.loading || visibleRows.length > 0;
+  const needsSiteAccess = Boolean(state.tab?.url && isSupportedPageUrl(state.tab.url))
+    && (!state.sitePermissionGranted || !state.siteAccessConsentGranted);
+  elements.emptyState.hidden = state.loading || needsSiteAccess || visibleRows.length > 0;
+  elements.siteAccessState.hidden = state.loading || !needsSiteAccess;
   renderHeader(state.tab);
   updateActionAvailability();
   updateSelectionSummary(visibleRows);
@@ -1415,7 +1570,7 @@ function updateNameSortControl() {
   const label = getCurrentView().tableLabels[0];
   const direction = state.nameSortDirections[state.dataView];
   const nextDirection = direction === "ascending" ? "descending" : "ascending";
-  const actionLabel = `Sort ${label} ${nextDirection}`;
+  const actionLabel = nextDirection === "ascending" ? t`Sort ${label} ascending` : t`Sort ${label} descending`;
   elements.nameSortHeader.setAttribute("aria-sort", direction);
   elements.nameSortLabel.textContent = label;
   elements.nameSortButton.title = actionLabel;
@@ -1448,7 +1603,7 @@ async function toggleFavorite(itemId, favorite) {
     state.favoriteItemIds = previousFavorites;
     renderTable();
     updateEditorFavoriteButton();
-    showStatus("Failed to update favorites.", "error");
+    showStatus(t("Failed to update favorites."), "error");
   } finally {
     pendingFavoriteIds.delete(favoriteItemId);
     updateEditorFavoriteButton();
@@ -1591,10 +1746,10 @@ function updateSelectionSummary(visibleRows = null) {
     ? visibleRows.filter((row) => state.selectedIds.has(row.id)).length
     : elements.cookieTableBody.querySelectorAll(".select-cell input:checked").length;
   const hiddenSelectedCount = Math.max(0, selectedCount - visibleSelectedCount);
-  elements.selectionCountLabel.textContent = `${selectedCount} selected${hiddenSelectedCount ? ` · ${hiddenSelectedCount} hidden` : ""}`;
+  elements.selectionCountLabel.textContent = t`${selectedCount} selected${hiddenSelectedCount ? t` · ${hiddenSelectedCount} hidden` : ""}`;
   elements.selectionCount.disabled = selectedCount === 0;
   elements.selectionCount.setAttribute("aria-pressed", String(state.selectedOnly));
-  elements.selectionCount.title = state.selectedOnly ? "Show all items" : "Show selected items";
+  elements.selectionCount.title = state.selectedOnly ? t("Show all items") : t("Show selected items");
   elements.batchActions.hidden = selectedCount === 0;
   elements.batchEditButton.disabled = state.busy || state.loading || selectedCount === 0;
   elements.batchDeleteButton.disabled = state.busy || state.loading || selectedCount === 0;
@@ -1646,7 +1801,7 @@ async function prepareRowForSave(row, target) {
     const rows = await readSiteDataRows({ id: target.tabId, url: target.url }, kind, target.cookieStoreId);
     const current = rows.find((item) => item.id === row.id);
     if (!current) {
-      throw new Error("This item was removed from the page. Your draft was kept.");
+      throw new Error(t("This item was removed from the page. Your draft was kept."));
     }
     return current;
   };
@@ -1654,12 +1809,12 @@ async function prepareRowForSave(row, target) {
   const key = getEditorDraftKey(target, kind, row.id);
   if (editorDrafts.hasConflict(key, current) || getEditorRowSignature(row) !== getEditorRowSignature(current)) {
     const confirmed = await requestDeleteConfirmation({
-      title: "Overwrite changed item?",
-      message: `"${row.name}" changed on the page after editing started.`,
+      title: t("Overwrite changed item?"),
+      message: t`"${row.name}" changed on the page after editing started.`,
       detail: kind === "cookies"
-        ? "The current value and expiration will be replaced by your draft."
-        : "The current page value will be replaced by your draft.",
-      confirmLabel: "Overwrite"
+        ? t("The current value and expiration will be replaced by your draft.")
+        : t("The current page value will be replaced by your draft."),
+      confirmLabel: t("Overwrite")
     });
     if (!confirmed) {
       return null;
@@ -1667,7 +1822,7 @@ async function prepareRowForSave(row, target) {
     await assertOperationContext(target);
     const latest = await readCurrentRow();
     if (getEditorRowSignature(latest) !== getEditorRowSignature(current)) {
-      throw new Error("This item changed again. Refresh and review it before saving. Your draft was kept.");
+      throw new Error(t("This item changed again. Refresh and review it before saving. Your draft was kept."));
     }
   }
   return current;
@@ -1705,7 +1860,7 @@ function renderSelectedItem() {
     updateExpirationValidity();
   }
   if (editorDrafts.hasConflict(key, row)) {
-    showStatus("This item changed on the page. Your draft was kept.", "warning");
+    showStatus(t("This item changed on the page. Your draft was kept."), "warning");
   }
   updateAutoToolOutput();
   updateValueWorkspaceHeight();
@@ -1716,7 +1871,7 @@ function renderSelectedItem() {
   elements.metaExpires.textContent = row.expires;
   elements.metaExpires.title = row.expires;
   elements.metaSameSite.textContent = row.sameSite || "-";
-  elements.metaStore.textContent = row.storeId || "Default";
+  elements.metaStore.textContent = row.storeId || t("Default");
   elements.metaSize.textContent = `${row.size} B`;
 
   renderEditorChips(row);
@@ -1728,8 +1883,8 @@ function updateEditorFavoriteButton() {
   const row = getSelectedRow();
   const favorite = Boolean(row && isFavorite(row.id));
   const itemName = row?.name || "item";
-  const label = favorite ? `Remove ${itemName} from favorites` : `Favorite ${itemName}`;
-  const tooltip = isCookieView() ? `My favorite cookie ${itemName}` : label;
+  const label = favorite ? t`Remove ${itemName} from favorites` : t`Favorite ${itemName}`;
+  const tooltip = isCookieView() ? t`My favorite cookie ${itemName}` : label;
 
   elements.editorFavoriteButton.classList.toggle("is-favorite", favorite);
   elements.editorFavoriteButton.setAttribute("aria-pressed", String(favorite));
@@ -1751,7 +1906,7 @@ function renderEditorChips(row) {
       chips.push({ label: "Secure", className: "is-accent" });
     }
     if (row.session) {
-      chips.push({ label: "Session", className: "" });
+      chips.push({ label: t("Session"), className: "" });
     }
     if (row.partitioned) {
       chips.push({ label: "Partitioned", className: "" });
@@ -1808,9 +1963,9 @@ function updateExpirationValidity() {
 
   const expirationDate = new Date(elements.expirationInput.value).getTime();
   if (!Number.isFinite(expirationDate)) {
-    elements.expirationInput.setCustomValidity("Enter a valid expiration date and time.");
+    elements.expirationInput.setCustomValidity(t("Enter a valid expiration date and time."));
   } else if (expirationDate <= Date.now()) {
-    elements.expirationInput.setCustomValidity("Expiration must be in the future.");
+    elements.expirationInput.setCustomValidity(t("Expiration must be in the future."));
   }
 }
 
@@ -1915,6 +2070,8 @@ function startCookieWatcher() {
   watchCookieChanges((changeInfo) => {
     if (
       !isCookieView() ||
+      !state.sitePermissionGranted ||
+      !state.siteAccessConsentGranted ||
       state.busy ||
       state.loading ||
       Date.now() < state.ignoreCookieChangesUntil ||
@@ -1962,6 +2119,8 @@ function setLoading(isLoading) {
   elements.loadingState.hidden = !isLoading;
   elements.refreshButton.disabled = state.busy || isLoading;
   elements.siteSelect.disabled = state.busy || isLoading || state.tabs.length <= 1;
+  elements.requestPermissionButton.disabled = state.busy || isLoading;
+  elements.siteAccessDialogAllowButton.disabled = state.busy || isLoading || sitePermissionRequestPending;
   elements.dataViewButtons.forEach((button) => { button.disabled = state.busy || isLoading; });
   elements.valueInput.disabled = state.busy || isLoading;
   elements.expirationInput.disabled = state.busy || isLoading;
@@ -1974,15 +2133,18 @@ function setLoading(isLoading) {
 
 function updateActionAvailability() {
   const supportedPage = Boolean(state.tab?.url && isSupportedPageUrl(state.tab.url));
-  elements.exportButton.disabled = state.busy || state.loading || !supportedPage;
-  elements.importButton.disabled = state.busy || state.loading || !supportedPage;
-  elements.profilesButton.disabled = state.busy || state.loading || !supportedPage;
+  const canAccessSite = supportedPage && state.sitePermissionGranted && state.siteAccessConsentGranted;
+  elements.exportButton.disabled = state.busy || state.loading || !canAccessSite;
+  elements.importButton.disabled = state.busy || state.loading || !canAccessSite;
+  elements.profilesButton.disabled = state.busy || state.loading || !canAccessSite;
 }
 
 function setBusy(isBusy) {
   state.busy = isBusy;
   elements.refreshButton.disabled = isBusy || state.loading;
   elements.siteSelect.disabled = isBusy || state.loading || state.tabs.length <= 1;
+  elements.requestPermissionButton.disabled = isBusy || state.loading;
+  elements.siteAccessDialogAllowButton.disabled = isBusy || state.loading || sitePermissionRequestPending;
   elements.valueInput.disabled = isBusy || state.loading;
   elements.expirationInput.disabled = isBusy || state.loading;
   renderHistory();
@@ -2020,7 +2182,18 @@ function setBusy(isBusy) {
   updateSelectionSummary();
 }
 
-function setPermissionBanner(visible, message = "Site permission is required for this page.") {
-  elements.permissionBanner.hidden = !visible;
-  elements.permissionMessage.textContent = message;
+function showSiteAccessDialog(url) {
+  if (!isSupportedPageUrl(url)) return;
+  elements.siteAccessDialog.dataset.url = url;
+  elements.siteAccessDialogDetail.textContent = getSiteOrigin(url);
+  elements.siteAccessDialogError.hidden = true;
+  if (!elements.siteAccessDialog.open) {
+    elements.siteAccessDialog.returnValue = "cancel";
+    elements.siteAccessDialog.showModal();
+  }
+}
+
+function showSiteAccessDialogError(message) {
+  elements.siteAccessDialogError.textContent = message;
+  elements.siteAccessDialogError.hidden = false;
 }

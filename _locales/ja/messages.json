@@ -1,0 +1,2903 @@
+{
+  "m_only_this_extension_can_request_site_data_operat_af2557a": {
+    "message": "サイトデータの操作をリクエストできるのは、この拡張機能のみです。",
+    "description": "Only this extension can request site data operations."
+  },
+  "m_unknown_operation_command_820758d": {
+    "message": "不明な操作コマンドです。",
+    "description": "Unknown operation command."
+  },
+  "m_operation_failed_3b96e637": {
+    "message": "操作に失敗しました。",
+    "description": "Operation failed."
+  },
+  "m_url_decoded_value_23b88df9": {
+    "message": "URLデコード後の値",
+    "description": "URL decoded value"
+  },
+  "m_url_encoded_value_34861f0d": {
+    "message": "URLエンコードされた値",
+    "description": "URL encoded value"
+  },
+  "m_formatted_json_b53536a7": {
+    "message": "フォーマット済みのJSON",
+    "description": "Formatted JSON"
+  },
+  "m_compacted_json_bec19963": {
+    "message": "圧縮されたJSON",
+    "description": "Compacted JSON"
+  },
+  "m_jwt_payload_2cce1860": {
+    "message": "JWTのペイロード",
+    "description": "JWT payload"
+  },
+  "m_cookie_77a740bf": {
+    "message": "cookie",
+    "description": "cookie"
+  },
+  "m_cookies_284b0124": {
+    "message": "cookies",
+    "description": "cookies"
+  },
+  "m_cookie_bdbabadf": {
+    "message": "Cookie",
+    "description": "Cookie"
+  },
+  "m_reading_cookies_5d1246a0": {
+    "message": "cookiesを読み込んでいます",
+    "description": "Reading cookies"
+  },
+  "m_no_cookies_for_this_page_d6b33cd9": {
+    "message": "このページには cookies が見つかりませんでした",
+    "description": "No cookies for this page"
+  },
+  "m_cookies_unavailable_86e2c35e": {
+    "message": "Cookies は利用できません",
+    "description": "Cookies unavailable"
+  },
+  "m_only_http_and_https_pages_support_cookie_operati_7f8f266c": {
+    "message": "http:// および https:// ページのみが cookie 操作に対応しています。",
+    "description": "Only http:// and https:// pages support cookie operations."
+  },
+  "m_failed_to_read_cookies_ec17682": {
+    "message": "cookies の読み取りに失敗しました。",
+    "description": "Failed to read cookies."
+  },
+  "m_name_fe07306": {
+    "message": "項目名",
+    "description": "Name"
+  },
+  "m_value_d147f96a": {
+    "message": "データ値",
+    "description": "Value"
+  },
+  "m_domain_be1c8911": {
+    "message": "ドメイン名",
+    "description": "Domain"
+  },
+  "m_path_eb66e456": {
+    "message": "URLのパス",
+    "description": "Path"
+  },
+  "m_expires_c7aa0523": {
+    "message": "有効期限",
+    "description": "Expires"
+  },
+  "m_flags_4222ebcc": {
+    "message": "属性",
+    "description": "Flags"
+  },
+  "m_size_a6478e7c": {
+    "message": "データサイズ",
+    "description": "Size"
+  },
+  "m_store_6da32dce": {
+    "message": "Cookieの保存先",
+    "description": "Store"
+  },
+  "m_local_storage_item_980fa25c": {
+    "message": "ローカルストレージの項目",
+    "description": "local storage item"
+  },
+  "m_local_storage_items_8f9c4ffd": {
+    "message": "ローカルストレージ内の項目",
+    "description": "local storage items"
+  },
+  "m_local_storage_c6c2fa19": {
+    "message": "ローカルストレージ",
+    "description": "Local Storage"
+  },
+  "m_reading_local_storage_85a66635": {
+    "message": "ローカルストレージの読み取り",
+    "description": "Reading local storage"
+  },
+  "m_no_local_storage_for_this_page_81f3287c": {
+    "message": "このページに関するローカルストレージのエントリが見つかりませんでした",
+    "description": "No local storage for this page"
+  },
+  "m_local_storage_unavailable_be2258cf": {
+    "message": "ローカルストレージが利用できません",
+    "description": "Local storage unavailable"
+  },
+  "m_only_http_and_https_pages_support_storage_operat_1fb0cf9f": {
+    "message": "http:// および https:// のページのみが、ストレージ操作に対応しています。",
+    "description": "Only http:// and https:// pages support storage operations."
+  },
+  "m_failed_to_read_local_storage_5600c819": {
+    "message": "ローカルストレージの読み取りに失敗しました。",
+    "description": "Failed to read local storage."
+  },
+  "m_key_cd1ac90c": {
+    "message": "エントリ名",
+    "description": "Key"
+  },
+  "m_origin_1f93146f": {
+    "message": "Webサイトのソース",
+    "description": "Origin"
+  },
+  "m_storage_34eddf06": {
+    "message": "ストレージ",
+    "description": "Storage"
+  },
+  "m_scope_63e6658b": {
+    "message": "適用範囲",
+    "description": "Scope"
+  },
+  "m_type_d155d06d": {
+    "message": "種類",
+    "description": "Type"
+  },
+  "m_session_storage_item_abc5a459": {
+    "message": "セッションストレージ項目",
+    "description": "session storage item"
+  },
+  "m_session_storage_items_92216e1e": {
+    "message": "セッションストレージの項目",
+    "description": "session storage items"
+  },
+  "m_session_storage_c99fc216": {
+    "message": "セッションストレージ",
+    "description": "Session Storage"
+  },
+  "m_reading_session_storage_58eeddc2": {
+    "message": "セッションストレージの読み取り",
+    "description": "Reading session storage"
+  },
+  "m_no_session_storage_for_this_page_81d58bab": {
+    "message": "このページに関するセッションストレージのエントリが見つかりませんでした",
+    "description": "No session storage for this page"
+  },
+  "m_session_storage_unavailable_22a66cec": {
+    "message": "セッションストレージが利用できません",
+    "description": "Session storage unavailable"
+  },
+  "m_failed_to_read_session_storage_9a5d1b9c": {
+    "message": "セッションストレージの読み取りに失敗しました。",
+    "description": "Failed to read session storage."
+  },
+  "m_delete_5797ea6a": {
+    "message": "削除",
+    "description": "Delete"
+  },
+  "m_enter_a_valid_value_21accea5": {
+    "message": "有効な値を入力してください。",
+    "description": "Enter a valid value."
+  },
+  "m_items_3a79338f": {
+    "message": "項目",
+    "description": "items"
+  },
+  "m_selected_1_eac1029b": {
+    "message": "選択された $slot_1$",
+    "description": "Selected $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_unnamed_727f184c": {
+    "message": "（名なし）",
+    "description": "(unnamed)"
+  },
+  "m_local_28b223a8": {
+    "message": "ローカルデータ",
+    "description": "Local"
+  },
+  "m_session_2048cc97": {
+    "message": "セッション",
+    "description": "Session"
+  },
+  "m_all_cookies_96f0f90b": {
+    "message": "すべての cookies",
+    "description": "All cookies"
+  },
+  "m_all_site_data_37826d75": {
+    "message": "サイトの全データ",
+    "description": "All site data"
+  },
+  "m_copy_netscape_3515f66b": {
+    "message": "Netscapeをコピー",
+    "description": "Copy Netscape"
+  },
+  "m_copy_json_e595bc8e": {
+    "message": "JSONをコピー",
+    "description": "Copy JSON"
+  },
+  "m_save_cookies_txt_686a7b51": {
+    "message": "cookies.txt を保存",
+    "description": "Save cookies.txt"
+  },
+  "m_save_json_a889c0da": {
+    "message": "JSONを保存",
+    "description": "Save JSON"
+  },
+  "m_cookies_58f3dcc4": {
+    "message": "Cookies",
+    "description": "Cookies"
+  },
+  "m_current_view_1_9eee4e3d": {
+    "message": "現在のビュー($slot_1$)",
+    "description": "Current view($1)",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_hide_items_d1e5ea99": {
+    "message": "項目を非表示にする",
+    "description": "Hide items"
+  },
+  "m_choose_items_73f07ad4": {
+    "message": "商品を選ぶ",
+    "description": "Choose items"
+  },
+  "m_1_of_2_selected_8d353d4c": {
+    "message": "$slot_2$件中 $slot_1$件が選択されています",
+    "description": "$1 of $2 selected",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_select_1_fcc09d68": {
+    "message": "$slot_1$ を選択",
+    "description": "Select $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_item_1f648006": {
+    "message": "品目",
+    "description": "Item"
+  },
+  "m_1_cookies_in_the_current_view_a8926f6b": {
+    "message": "現在のビュー内の $slot_1$ cookies",
+    "description": "$1 cookies in the current view",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_selected_cookies_121bff00": {
+    "message": "$slot_1$ が cookies として選択されました",
+    "description": "$1 selected cookies",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_all_cookies_for_the_current_target_3d500f07": {
+    "message": "現在のターゲットに関するすべての cookies",
+    "description": "All cookies for the current target"
+  },
+  "m_samesite_partitioned_chips_and_cookie_store_are__c9b688b": {
+    "message": "。SameSite、Partitioned/CHIPS、および Cookie のストアは表示されていません。",
+    "description": ". SameSite, Partitioned/CHIPS, and Cookie store are not represented."
+  },
+  "m_1_2_in_the_current_view_47e460ee": {
+    "message": "現在のビュー内の $slot_1$ $slot_2$",
+    "description": "$1 $2 in the current view",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_1_selected_2_f3f350b7": {
+    "message": "$slot_1$ が $slot_2$ を選択しました",
+    "description": "$1 selected $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_cookies_local_storage_and_session_storage_for_th_70999cbc": {
+    "message": "現在のターゲットに対する Cookies、Local Storage、および Session Storage",
+    "description": "Cookies, Local Storage, and Session Storage for the current target"
+  },
+  "m_preparing_preview_ecfabd6b": {
+    "message": "プレビューの準備中...",
+    "description": "Preparing preview..."
+  },
+  "m_failed_to_build_export_preview_56fd5cdd": {
+    "message": "エクスポートプレビューの生成に失敗しました。",
+    "description": "Failed to build export preview."
+  },
+  "m_copied_1_2_7c37d74c": {
+    "message": "$slot_1$ $slot_2$ をコピーしました。",
+    "description": "Copied $1 $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_saved_1_2_84ae4f6b": {
+    "message": "$slot_1$ $slot_2$ を保存しました。",
+    "description": "Saved $1 $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_failed_to_export_site_data_132c6226": {
+    "message": "サイトのデータのエクスポートに失敗しました。",
+    "description": "Failed to export site data."
+  },
+  "m_copied_8dc21305": {
+    "message": "コピーしました",
+    "description": "Copied"
+  },
+  "m_copied_to_clipboard_35a67762": {
+    "message": "クリップボードにコピーされました。",
+    "description": "Copied to clipboard."
+  },
+  "m_clipboard_is_unavailable_80f97fb5": {
+    "message": "クリップボードが利用できません。",
+    "description": "Clipboard is unavailable."
+  },
+  "m_operation_history_could_not_be_loaded_5e027316": {
+    "message": "操作履歴を読み込めませんでした。",
+    "description": "Operation history could not be loaded."
+  },
+  "m_this_older_change_has_no_operation_journal_and_c_68e243a8": {
+    "message": "この以前の変更には操作ログがなく、安全に元に戻すことはできません。",
+    "description": "This older change has no operation journal and cannot be safely undone."
+  },
+  "m_the_change_could_not_be_undone_b52cca32": {
+    "message": "その変更は元に戻すことができなかった。",
+    "description": "The change could not be undone."
+  },
+  "m_undid_the_selected_change_87c607c7": {
+    "message": "選択した変更を元に戻しました。",
+    "description": "Undid the selected change."
+  },
+  "m_failed_to_undo_change_d52af123": {
+    "message": "変更の取り消しに失敗しました。",
+    "description": "Failed to undo change."
+  },
+  "m_1_history_cleared_fe217fd8": {
+    "message": "$slot_1$ の履歴がクリアされました。",
+    "description": "$1 history cleared.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_clear_recent_changes_8140e2d8": {
+    "message": "直近の変更を消去できませんでした。",
+    "description": "Failed to clear recent changes."
+  },
+  "m_back_to_details_c7da44f9": {
+    "message": "詳細に戻る",
+    "description": "Back to details"
+  },
+  "m_1_unread_changes_3b48aa9c": {
+    "message": "$slot_1$ の未読の変更",
+    "description": "$1 unread changes",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_recent_changes_b8075d47": {
+    "message": "最近の変更",
+    "description": "Recent changes"
+  },
+  "m_change_detail_38f8e0a6": {
+    "message": "詳細を変更する",
+    "description": "Change detail"
+  },
+  "m_details_ec24245": {
+    "message": "詳細",
+    "description": "Details"
+  },
+  "m_unknown_scope_32aea031": {
+    "message": "範囲不明",
+    "description": "Unknown scope"
+  },
+  "m_undo_71fd4acf": {
+    "message": "元に戻す",
+    "description": "Undo"
+  },
+  "m_undo_this_change_7d5c83f": {
+    "message": "この変更を元に戻す",
+    "description": "Undo this change"
+  },
+  "m_action_a77a91f": {
+    "message": "アクション",
+    "description": "Action"
+  },
+  "m_before_expiration_26ac998b": {
+    "message": "有効期限切れ前",
+    "description": "Before expiration"
+  },
+  "m_after_expiration_f68ca912": {
+    "message": "有効期限切れ後",
+    "description": "After expiration"
+  },
+  "m_default_19dc307e": {
+    "message": "デフォルト",
+    "description": "Default"
+  },
+  "m_host_302af18f": {
+    "message": "ホスト",
+    "description": "Host"
+  },
+  "m_changed_89c5203b": {
+    "message": "変更されました",
+    "description": "Changed"
+  },
+  "m_cookie_id_4eda8c38": {
+    "message": "Cookie ID",
+    "description": "Cookie ID"
+  },
+  "m_item_id_e7a83b9f": {
+    "message": "商品ID",
+    "description": "Item ID"
+  },
+  "m_original_tab_b29944a5": {
+    "message": "元のタブ",
+    "description": "Original tab"
+  },
+  "m_browsing_mode_8e47a543": {
+    "message": "閲覧モード",
+    "description": "Browsing mode"
+  },
+  "m_incognito_ed905099": {
+    "message": "インコグニート",
+    "description": "Incognito"
+  },
+  "m_regular_e750f2b7": {
+    "message": "通常",
+    "description": "Regular"
+  },
+  "m_value_snapshots_are_only_available_during_the_cu_61f70835": {
+    "message": "値のスナップショットは、現在のブラウザセッション中のみ利用可能です。",
+    "description": "Value snapshots are only available during the current browser session."
+  },
+  "m_unknown_cc200e59": {
+    "message": "不明",
+    "description": "Unknown"
+  },
+  "m_edit_c2c76cb1": {
+    "message": "編集",
+    "description": "Edit"
+  },
+  "m_import_create_fa45a268": {
+    "message": "インポートの作成",
+    "description": "Import create"
+  },
+  "m_import_overwrite_bc473479": {
+    "message": "インポート時の上書き",
+    "description": "Import overwrite"
+  },
+  "m_change_a1de2fdd": {
+    "message": "変更",
+    "description": "Change"
+  },
+  "m_edit_1_70f54d7c": {
+    "message": "$slot_1$ を編集",
+    "description": "Edit $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_saved_1_146f391f": {
+    "message": "$slot_1$ を保存しました。",
+    "description": "Saved $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_save_1_a7d79009": {
+    "message": "$slot_1$ の保存に失敗しました。",
+    "description": "Failed to save $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_delete_1_aae09c76": {
+    "message": "$slot_1$ を削除しますか？",
+    "description": "Delete $1?",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_will_be_deleted_c4fd26b6": {
+    "message": "「$slot_1$」が削除されます。",
+    "description": "\"$1\" will be deleted.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_delete_1_e576134d": {
+    "message": "$slot_1$を削除しますか？",
+    "description": "Delete $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_deleted_1_60ffd4f9": {
+    "message": "$slot_1$ を削除しました。",
+    "description": "Deleted $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_delete_1_d656ba17": {
+    "message": "$slot_1$ の削除に失敗しました。",
+    "description": "Failed to delete $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_set_value_64db79c6": {
+    "message": "値の設定",
+    "description": "Set value"
+  },
+  "m_value_for_1_selected_2_d0eb34dd": {
+    "message": "選択した項目に割り当てる値（数：$slot_1$、タイプ：$slot_2$）",
+    "description": "Value for $1 selected $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_edit_1_items_849caea8": {
+    "message": "$slot_1$の項目を編集",
+    "description": "Edit $1 items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_updated_513083d0": {
+    "message": "更新されました",
+    "description": "Updated"
+  },
+  "m_failed_to_update_selected_1_d1101454": {
+    "message": "選択した $slot_1$ の更新に失敗しました。",
+    "description": "Failed to update selected $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_delete_selected_1_fe5c7abb": {
+    "message": "選択した $slot_1$ を削除しますか？",
+    "description": "Delete selected $1?",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_selected_2_will_be_deleted_232e6b57": {
+    "message": "選択した $slot_1$ の $slot_2$ が削除されます。",
+    "description": "$1 selected $2 will be deleted.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_delete_1_items_4b46c619": {
+    "message": "$slot_1$ の項目を削除",
+    "description": "Delete $1 items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_deleted_f225740a": {
+    "message": "削除済み",
+    "description": "Deleted"
+  },
+  "m_failed_to_delete_selected_1_3dc9d492": {
+    "message": "選択した $slot_1$ の削除に失敗しました。",
+    "description": "Failed to delete selected $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_2_selected_3_f233475c": {
+    "message": "$slot_1$ $slot_2$ が $slot_3$ を選択しました。",
+    "description": "$1 $2 selected $3.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_1_failed_daf125e3": {
+    "message": "$slot_1$ の処理に失敗しました",
+    "description": "$1 failed",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_skipped_4823a4a": {
+    "message": "$slot_1$ をスキップしました",
+    "description": "$1 skipped",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_copy_f7803f90": {
+    "message": "コピーに失敗しました。",
+    "description": "Failed to copy."
+  },
+  "m_the_item_s_origin_does_not_match_the_target_page_1a1ea3ad": {
+    "message": "この項目の出典が対象ページと一致していません。編集する前にページを更新してください。",
+    "description": "The item's origin does not match the target page. Refresh before editing."
+  },
+  "m_the_cookie_does_not_belong_to_the_target_page_an_a7a414cf": {
+    "message": "cookie は対象ページおよび cookie ストアに属していません。編集する前にページを更新してください。",
+    "description": "The cookie does not belong to the target page and cookie store. Refresh before editing."
+  },
+  "m_queued_9e437c74": {
+    "message": "キューに入れられました",
+    "description": "Queued"
+  },
+  "m_writing_3c4e7def": {
+    "message": "書き込み中",
+    "description": "Writing"
+  },
+  "m_written_e27a560": {
+    "message": "書き込み完了",
+    "description": "Written"
+  },
+  "m_failed_5579c3d4": {
+    "message": "失敗しました",
+    "description": "Failed"
+  },
+  "m_conflict_77d3e0ef": {
+    "message": "競合",
+    "description": "Conflict"
+  },
+  "m_undoing_2053d2e9": {
+    "message": "元に戻しています",
+    "description": "Undoing"
+  },
+  "m_undone_94b5c3a2": {
+    "message": "元に戻しました",
+    "description": "Undone"
+  },
+  "m_undo_failed_75fa16cc": {
+    "message": "元に戻せませんでした",
+    "description": "Undo failed"
+  },
+  "m_undo_conflict_e5fe1187": {
+    "message": "元に戻す操作の競合",
+    "description": "Undo conflict"
+  },
+  "m_1_tab_2_3_49b4634e": {
+    "message": "$slot_1$ | Tab $slot_2$ | $slot_3$",
+    "description": "$1 | Tab $2 | $3",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_retry_failed_a53fbd96": {
+    "message": "再試行に失敗しました",
+    "description": "Retry failed"
+  },
+  "m_undo_unchanged_items_in_this_operation_f2f1f31e": {
+    "message": "この操作で変更されていない項目を元に戻す",
+    "description": "Undo unchanged items in this operation"
+  },
+  "m_remove_record_e8883f8e": {
+    "message": "レコードを削除",
+    "description": "Remove record"
+  },
+  "m_items_1_4d7b976b": {
+    "message": "項目 ($slot_1$)",
+    "description": "Items ($1)",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_resume_454d1d8a": {
+    "message": "再開",
+    "description": "Resume"
+  },
+  "m_remove_operation_record_fc8a6952": {
+    "message": "操作レコードを削除しますか？",
+    "description": "Remove operation record?"
+  },
+  "m_1_will_no_longer_be_retryable_or_undoable_63f756e8": {
+    "message": "「$slot_1$」は、再試行や取り消しができなくなります。",
+    "description": "\"$1\" will no longer be retryable or undoable.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_operation_record_removed_657ba6df": {
+    "message": "操作記録が削除されました。",
+    "description": "Operation record removed."
+  },
+  "m_1_items_still_need_attention_9744ebf8": {
+    "message": "$slot_1$件の項目については、引き続き対応が必要です。",
+    "description": "$1 items still need attention.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_operation_undone_6eaa3429": {
+    "message": "操作が元に戻されました。",
+    "description": "Operation undone."
+  },
+  "m_retry_complete_d6be7652": {
+    "message": "再試行が完了しました。",
+    "description": "Retry complete."
+  },
+  "m_the_operation_could_not_be_completed_9dfb6413": {
+    "message": "操作を完了できませんでした。",
+    "description": "The operation could not be completed."
+  },
+  "m_failed_to_load_saved_states_eba79a18": {
+    "message": "保存された状態の読み込みに失敗しました。",
+    "description": "Failed to load saved states."
+  },
+  "m_failed_to_save_state_f7ddf0e7": {
+    "message": "状態の保存に失敗しました。",
+    "description": "Failed to save state."
+  },
+  "m_1_saved_70a9d181": {
+    "message": "$slot_1$ が保存されました",
+    "description": "$1 saved",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_apply_ca77bbdb": {
+    "message": "適用",
+    "description": "Apply"
+  },
+  "m_rename_c80631f3": {
+    "message": "名前を変更",
+    "description": "Rename"
+  },
+  "m_copy_658f3664": {
+    "message": "コピー",
+    "description": "Copy"
+  },
+  "m_export_e86349d3": {
+    "message": "エクスポート",
+    "description": "Export"
+  },
+  "m_failed_to_update_saved_states_915ee649": {
+    "message": "保存済み状態の更新に失敗しました。",
+    "description": "Failed to update saved states."
+  },
+  "m_failed_to_prepare_saved_state_4e725642": {
+    "message": "保存済み状態の準備に失敗しました。",
+    "description": "Failed to prepare saved state."
+  },
+  "m_select_at_least_one_item_before_exporting_c009f5e7": {
+    "message": "エクスポートする前に、少なくとも1つの項目を選択してください。",
+    "description": "Select at least one item before exporting."
+  },
+  "m_the_import_target_changed_build_a_new_preview_be_608d4006": {
+    "message": "インポート先が変更されました。このパッケージを適用する前に、新しいプレビューを生成してください。",
+    "description": "The import target changed. Build a new preview before applying this package."
+  },
+  "m_import_1_items_b55a9d0b": {
+    "message": "$slot_1$ 個のアイテムをインポートします",
+    "description": "Import $1 items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_no_import_snapshot_is_available_in_this_browser__69690989": {
+    "message": "このブラウザセッションには、インポート用スナップショットがありません。",
+    "description": "No import snapshot is available in this browser session."
+  },
+  "m_return_to_the_original_target_tab_site_and_brows_eb117f96": {
+    "message": "このインポートを元に戻す前に、元のターゲットタブ、サイト、および閲覧モードに戻ってください。",
+    "description": "Return to the original target tab, site, and browsing mode before undoing this import."
+  },
+  "m_undo_restored_1_items_2_failed_ab5a808a": {
+    "message": "復元された $slot_1$ 項目を元に戻しました。$slot_2$ は失敗しました。",
+    "description": "Undo restored $1 items; $2 failed.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_undid_1_imported_items_f6bd9698": {
+    "message": "$slot_1$個のインポート済み項目を元に戻しました。",
+    "description": "Undid $1 imported items.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_written_2_failed_3_skipped_304b4a05": {
+    "message": "$slot_1$を書き込みました。$slot_2$は失敗し、$slot_3$はスキップされました。",
+    "description": "$1 written, $2 failed, $3 skipped.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_rename_saved_state_5dfd733d": {
+    "message": "保存済み状態の名前を変更",
+    "description": "Rename saved state"
+  },
+  "m_saved_state_name_3d927c88": {
+    "message": "保存済み状態の名前",
+    "description": "Saved state name"
+  },
+  "m_enter_a_saved_state_name_9fd29047": {
+    "message": "保存済み状態の名前を入力してください。",
+    "description": "Enter a saved state name."
+  },
+  "m_delete_saved_state_84940685": {
+    "message": "保存状態を削除しますか？",
+    "description": "Delete saved state?"
+  },
+  "m_1_will_be_permanently_deleted_a8c73725": {
+    "message": "「$slot_1$」は完全に削除されます。",
+    "description": "\"$1\" will be permanently deleted.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_bytes_73e126d1": {
+    "message": "$slot_1$ バイト",
+    "description": "$1 bytes",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_jwt_value_f3ae0363": {
+    "message": "JWT の値",
+    "description": "JWT value"
+  },
+  "m_json_value_f2431466": {
+    "message": "JSON の値",
+    "description": "JSON value"
+  },
+  "m_favorite_7c6c19ed": {
+    "message": "お気に入り",
+    "description": "Favorite"
+  },
+  "m_new_8b242db1": {
+    "message": "新規",
+    "description": "New"
+  },
+  "m_modified_dd13a6b2": {
+    "message": "変更済み",
+    "description": "Modified"
+  },
+  "m_same_4d38965b": {
+    "message": "同じ",
+    "description": "Same"
+  },
+  "m_unsupported_3f4e39d0": {
+    "message": "未対応",
+    "description": "Unsupported"
+  },
+  "m_import_573e0af4": {
+    "message": "インポート",
+    "description": "Import"
+  },
+  "m_saved_states_93462486": {
+    "message": "保存済み状態",
+    "description": "Saved States"
+  },
+  "m_cookie_name_daf59b6e": {
+    "message": "Cookie 名前",
+    "description": "Cookie name"
+  },
+  "m_storage_key_df0caa39": {
+    "message": "ストレージエントリ名",
+    "description": "Storage key"
+  },
+  "m_cookie_value_cfa44712": {
+    "message": "Cookieの値",
+    "description": "Cookie value"
+  },
+  "m_storage_value_e83fba3b": {
+    "message": "ストレージの値",
+    "description": "Storage value"
+  },
+  "m_enter_valid_site_data_dffd0cc8": {
+    "message": "有効なサイトデータを入力してください。",
+    "description": "Enter valid site data."
+  },
+  "m_drop_one_import_file_at_a_time_d54fa864": {
+    "message": "インポートファイルは一度に1つずつドロップしてください。",
+    "description": "Drop one import file at a time."
+  },
+  "m_netscape_curl_files_can_only_be_imported_from_co_bb4fa060": {
+    "message": "Netscape / cURL ファイルは Cookies からのみインポート可能です。",
+    "description": "Netscape / cURL files can only be imported from Cookies."
+  },
+  "m_failed_to_read_the_selected_file_d34a98a9": {
+    "message": "選択したファイルの読み取りに失敗しました。",
+    "description": "Failed to read the selected file."
+  },
+  "m_invalid_site_data_package_3913772d": {
+    "message": "サイトデータパッケージが無効です。",
+    "description": "Invalid site data package."
+  },
+  "m_failed_to_build_import_preview_a2a2a0f8": {
+    "message": "インポートプレビューの生成に失敗しました。",
+    "description": "Failed to build import preview."
+  },
+  "m_target_1_3691ef59": {
+    "message": "対象: $slot_1$",
+    "description": "Target: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_selected_5f70e77b": {
+    "message": "$slot_1$ が選択されました",
+    "description": "$1 selected",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_applying_site_data_eac81ccc": {
+    "message": "サイトデータを適用中",
+    "description": "Applying site data"
+  },
+  "m_preparing_batch_61d07c13": {
+    "message": "バッチの準備中",
+    "description": "Preparing batch"
+  },
+  "m_import_complete_5d213773": {
+    "message": "インポート完了",
+    "description": "Import complete"
+  },
+  "m_import_failed_9ffdaa11": {
+    "message": "インポートに失敗しました",
+    "description": "Import failed"
+  },
+  "m_the_batch_could_not_be_applied_417dafd2": {
+    "message": "バッチを適用できませんでした。",
+    "description": "The batch could not be applied."
+  },
+  "m_1_of_2_359557ff": {
+    "message": "$slot_2$ の $slot_1$",
+    "description": "$1 of $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_1_succeeded_2_failed_3_skipped_218f4367": {
+    "message": "$slot_1$ は成功、$slot_2$ は失敗、$slot_3$ はスキップされました",
+    "description": "$1 succeeded, $2 failed, $3 skipped",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_site_data_item_59051e8d": {
+    "message": "サイトデータ項目",
+    "description": "Site data item"
+  },
+  "m_success_3a5fbf10": {
+    "message": "成功",
+    "description": "success"
+  },
+  "m_failed_e0accfb4": {
+    "message": "失敗",
+    "description": "failed"
+  },
+  "m_skipped_22ec9b7": {
+    "message": "スキップ",
+    "description": "skipped"
+  },
+  "m_undoing_import_79ebb952": {
+    "message": "インポートを元に戻します",
+    "description": "Undoing import"
+  },
+  "m_import_undone_76ad3b2b": {
+    "message": "インポートが元に戻されました",
+    "description": "Import undone"
+  },
+  "m_undo_incomplete_341418ed": {
+    "message": "元に戻す処理が完了していません",
+    "description": "Undo incomplete"
+  },
+  "m_the_batch_could_not_be_undone_e7c1877a": {
+    "message": "バッチの取り消しはできませんでした。",
+    "description": "The batch could not be undone."
+  },
+  "m_or_drop_a_file_here_929523b2": {
+    "message": "または、ここにファイルをドロップしてください",
+    "description": "or drop a file here"
+  },
+  "m_netscape_cookie_jar_6ff3f335": {
+    "message": "Netscape cookie jar",
+    "description": "Netscape cookie jar"
+  },
+  "m_package_json_7a60c07f": {
+    "message": "JSON をパッケージ化",
+    "description": "Package JSON"
+  },
+  "m_paste_netscape_curl_cookie_data_31a18196": {
+    "message": "Netscape / cURL cookie データを貼り付け",
+    "description": "Paste Netscape / cURL cookie data"
+  },
+  "m_paste_a_site_data_package_bd31982": {
+    "message": "サイトデータパッケージを貼り付け",
+    "description": "Paste a site data package"
+  },
+  "m_copy_value_8902f3e5": {
+    "message": "値をコピー",
+    "description": "Copy value"
+  },
+  "m_copy_name_value_6c98eeaf": {
+    "message": "name=valueをコピー",
+    "description": "Copy name=value"
+  },
+  "m_copy_result_4fd54b5": {
+    "message": "結果をコピー",
+    "description": "Copy result"
+  },
+  "m_reload_after_changes_on_1de03620": {
+    "message": "変更後の再読み込み：オン",
+    "description": "Reload after changes: on"
+  },
+  "m_reload_after_changes_off_7e09437a": {
+    "message": "変更後の再読み込み：オフ",
+    "description": "Reload after changes: off"
+  },
+  "m_refresh_data_page_reload_is_on_cece4e4c": {
+    "message": "データを更新（ページの再読み込みがオンになっています）",
+    "description": "Refresh data (page reload is on)"
+  },
+  "m_refresh_data_f7e27804": {
+    "message": "データを更新",
+    "description": "Refresh data"
+  },
+  "m_this_page_is_not_supported_c8ca9e9f": {
+    "message": "このページはサポートされていません",
+    "description": "This page is not supported"
+  },
+  "m_failed_to_open_site_data_tools_82dfa4d9": {
+    "message": "サイトデータツールの起動に失敗しました。",
+    "description": "Failed to open site data tools."
+  },
+  "m_failed_to_switch_site_b20d98c8": {
+    "message": "サイトの切り替えに失敗しました。",
+    "description": "Failed to switch site."
+  },
+  "m_opened_side_panel_7e401ebd": {
+    "message": "サイドパネルを開きました。",
+    "description": "Opened side panel."
+  },
+  "m_failed_to_open_side_panel_f092d38e": {
+    "message": "サイドパネルの開く操作に失敗しました。",
+    "description": "Failed to open side panel."
+  },
+  "m_1_reload_this_extension_in_chrome_extensions_aft_7b6e4c77": {
+    "message": "$slot_1$ マニフェストを更新した後、chrome://extensionsでこの拡張機能を再読み込みしてください。",
+    "description": "$1 Reload this extension in chrome://extensions after updating the manifest.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_no_supported_target_dc598e35": {
+    "message": "サポートされているターゲットがありません",
+    "description": "No supported target"
+  },
+  "m_open_an_http_or_https_page_before_importing_1_157b51a6": {
+    "message": "$slot_1$ をインポートする前に、http:// または https:// のページを開いてください。",
+    "description": "Open an http:// or https:// page before importing $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_import_1_item_d94801da": {
+    "message": "$slot_1$ アイテムをインポート",
+    "description": "Import $1 item",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_import_1_5398384d": {
+    "message": "$slot_1$ のインポートに失敗しました。",
+    "description": "Failed to import $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_row_1_2_943d7d0a": {
+    "message": "行 $slot_1$: $slot_2$",
+    "description": "Row $1: $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_row_1_2_3_is_duplicated_23e8d788": {
+    "message": "行 $slot_1$: $slot_2$ 「$slot_3$」は重複しています。",
+    "description": "Row $1: $2 \"$3\" is duplicated.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_enter_at_least_one_1_f54799b0": {
+    "message": "少なくとも1つの $slot_1$ を入力してください。",
+    "description": "Enter at least one $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_imported_1_7eecd17a": {
+    "message": "$slot_1$ をインポートしました。",
+    "description": "Imported $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_imported_1_2_875cc7ac": {
+    "message": "$slot_1$ $slot_2$ をインポートしました。",
+    "description": "Imported $1 $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_imported_1_2_3_failed_4_4ed60786": {
+    "message": "$slot_1$ $slot_2$ をインポートしました。$slot_3$ のインポートに失敗しました。$slot_4$",
+    "description": "Imported $1 $2, $3 failed.$4",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      },
+      "slot_4": {
+        "content": "$4"
+      }
+    }
+  },
+  "m_1_ready_2ec8dfb5": {
+    "message": "$slot_1$ の準備が整いました。",
+    "description": "$1 ready.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_unable_to_parse_this_value_88fdaac5": {
+    "message": "この値を解析できませんでした。",
+    "description": "Unable to parse this value."
+  },
+  "m_show_result_b85e67ad": {
+    "message": "結果を表示",
+    "description": "Show result"
+  },
+  "m_raw_a689aa91": {
+    "message": "生データ",
+    "description": "Raw"
+  },
+  "m_raw_value_c5a32700": {
+    "message": "生データ",
+    "description": "raw value"
+  },
+  "m_show_1_a598d193": {
+    "message": "$slot_1$を表示",
+    "description": "Show $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_search_selected_cookies_a8e71275": {
+    "message": "選択した cookies を検索",
+    "description": "Search selected cookies"
+  },
+  "m_search_name_value_domain_path_3fd69442": {
+    "message": "名前、値、ドメイン、パスを検索",
+    "description": "Search name, value, domain, path"
+  },
+  "m_search_selected_items_c4b3e72a": {
+    "message": "選択した項目を検索",
+    "description": "Search selected items"
+  },
+  "m_search_key_value_origin_a6484085": {
+    "message": "キー、値、発信元を検索",
+    "description": "Search key, value, origin"
+  },
+  "m_refresh_1_4d5efd5b": {
+    "message": "$slot_1$ を更新",
+    "description": "Refresh $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_editor_86069f43": {
+    "message": "$slot_1$ エディタ",
+    "description": "$1 editor",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_select_a_1_c629d055": {
+    "message": "$slot_1$ を選択",
+    "description": "Select a $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_resize_1_column_a7150cf6": {
+    "message": "$slot_1$ 列のサイズ変更",
+    "description": "Resize $1 column",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_cookie_dccfa860": {
+    "message": "$slot_1$ cookie",
+    "description": "$1 cookie",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_cookies_ade595e9": {
+    "message": "$slot_1$ cookies",
+    "description": "$1 cookies",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_local_storage_item_2393a4f7": {
+    "message": "$slot_1$ ローカルストレージ項目",
+    "description": "$1 local storage item",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_local_storage_items_856bfbcc": {
+    "message": "$slot_1$ ローカルストレージ項目",
+    "description": "$1 local storage items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_session_storage_item_549260e6": {
+    "message": "$slot_1$ セッションストレージ項目",
+    "description": "$1 session storage item",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_session_storage_items_b76e0a8f": {
+    "message": "$slot_1$ セッションストレージ項目",
+    "description": "$1 session storage items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_sort_1_ascending_9526e2a6": {
+    "message": "$slot_1$ を昇順で並べ替え",
+    "description": "Sort $1 ascending",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_sort_1_descending_c2ff5ce6": {
+    "message": "$slot_1$ を降順で並べ替え",
+    "description": "Sort $1 descending",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_update_favorites_5e1b6823": {
+    "message": "お気に入りの更新に失敗しました。",
+    "description": "Failed to update favorites."
+  },
+  "m_1_selected_2_e507aad": {
+    "message": "$slot_1$ が選択されました$slot_2$",
+    "description": "$1 selected$2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_1_hidden_eef079a1": {
+    "message": " · $slot_1$ を非表示",
+    "description": " · $1 hidden",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_show_all_items_36117eb7": {
+    "message": "すべての項目を表示",
+    "description": "Show all items"
+  },
+  "m_show_selected_items_7a2ae1e9": {
+    "message": "選択した項目を表示",
+    "description": "Show selected items"
+  },
+  "m_this_item_was_removed_from_the_page_your_draft_w_586055b6": {
+    "message": "この項目はページから削除されました。下書きは保持されています。",
+    "description": "This item was removed from the page. Your draft was kept."
+  },
+  "m_overwrite_changed_item_a01cac5e": {
+    "message": "変更された項目を上書きしますか？",
+    "description": "Overwrite changed item?"
+  },
+  "m_1_changed_on_the_page_after_editing_started_56a44a84": {
+    "message": "編集開始後、ページ上の「$slot_1$」が変更されました。",
+    "description": "\"$1\" changed on the page after editing started.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_the_current_value_and_expiration_will_be_replace_28509cd8": {
+    "message": "現在の値と有効期限は、あなたの下書きで置き換えられます。",
+    "description": "The current value and expiration will be replaced by your draft."
+  },
+  "m_the_current_page_value_will_be_replaced_by_your__cbc560ff": {
+    "message": "現在のページの値は、あなたの下書きで置き換えられます。",
+    "description": "The current page value will be replaced by your draft."
+  },
+  "m_overwrite_78ff0e92": {
+    "message": "上書き",
+    "description": "Overwrite"
+  },
+  "m_this_item_changed_again_refresh_and_review_it_be_fcda25ab": {
+    "message": "この項目が再度変更されました。保存する前にページを更新して確認してください。下書きは保持されました。",
+    "description": "This item changed again. Refresh and review it before saving. Your draft was kept."
+  },
+  "m_this_item_changed_on_the_page_your_draft_was_kep_614fc574": {
+    "message": "この項目がページ上で変更されました。下書きは保持されました。",
+    "description": "This item changed on the page. Your draft was kept."
+  },
+  "m_remove_1_from_favorites_3f3873c5": {
+    "message": "お気に入りから $slot_1$ を削除",
+    "description": "Remove $1 from favorites",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_favorite_1_748a9488": {
+    "message": "お気に入り $slot_1$",
+    "description": "Favorite $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_my_favorite_cookie_1_bcb78c80": {
+    "message": "私のお気に入り cookie $slot_1$",
+    "description": "My favorite cookie $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_enter_a_valid_expiration_date_and_time_117dcc4b": {
+    "message": "有効な有効期限の日時を入力してください。",
+    "description": "Enter a valid expiration date and time."
+  },
+  "m_expiration_must_be_in_the_future_87176fbd": {
+    "message": "有効期限は将来の日時でなければなりません。",
+    "description": "Expiration must be in the future."
+  },
+  "m_site_permission_is_required_for_this_page_6af52a2e": {
+    "message": "このページにはサイト権限が必要です。",
+    "description": "Site permission is required for this page."
+  },
+  "m_skipped_32d7a557": {
+    "message": "スキップされました",
+    "description": "Skipped"
+  },
+  "m_batch_operation_items_must_be_an_array_8927061c": {
+    "message": "一括処理の対象は配列でなければなりません。",
+    "description": "Batch operation items must be an array."
+  },
+  "m_batch_operation_handler_must_be_a_function_2a2e2b1": {
+    "message": "一括処理ハンドラは関数でなければなりません。",
+    "description": "Batch operation handler must be a function."
+  },
+  "m_a_persistent_cookie_requires_a_valid_expiration__69a955bd": {
+    "message": "永続的な cookie には、有効な有効期限が必要です。",
+    "description": "A persistent cookie requires a valid expiration date."
+  },
+  "m_side_panel_is_not_available_in_this_browser_1deaac7f": {
+    "message": "このブラウザではサイドパネルは利用できません。",
+    "description": "Side panel is not available in this browser."
+  },
+  "m_unspecified_646386c": {
+    "message": "未指定",
+    "description": "Unspecified"
+  },
+  "m_a_supported_data_view_and_item_id_are_required_1efa8375": {
+    "message": "サポートされているデータビューとアイテム ID が必要です。",
+    "description": "A supported data view and item ID are required."
+  },
+  "m_unsupported_site_data_kind_1_99f7b534": {
+    "message": "サポートされていないサイトデータの種類: $slot_1$",
+    "description": "Unsupported site data kind: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_line_1_2_3e08f18e": {
+    "message": "行 $slot_1$: $slot_2$",
+    "description": "Line $1: $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_netscape_cookie_data_must_be_text_91c54441": {
+    "message": "Netscape cookie のデータはテキストでなければなりません。",
+    "description": "Netscape cookie data must be text."
+  },
+  "m_expected_7_tab_separated_fields_12f054d4": {
+    "message": "タブ区切りのフィールドが 7 つある必要があります。",
+    "description": "Expected 7 tab-separated fields."
+  },
+  "m_path_must_start_with_f0000f56": {
+    "message": "パスは / で始まる必要があります。",
+    "description": "Path must start with /."
+  },
+  "m_duplicate_cookie_1_for_2_3_55aa331f": {
+    "message": "$slot_2$$slot_3$ に対して cookie $slot_1$ が重複しています。",
+    "description": "Duplicate cookie $1 for $2$3.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_no_netscape_cookie_rows_were_found_7d90721b": {
+    "message": "Netscape cookie の行が見つかりませんでした。",
+    "description": "No Netscape cookie rows were found."
+  },
+  "m_the_selected_scope_does_not_contain_any_cookies_f3791e8": {
+    "message": "選択された範囲には cookies が含まれていません。",
+    "description": "The selected scope does not contain any cookies."
+  },
+  "m_expiration_must_be_a_non_negative_integer_unix_t_43e6d38c": {
+    "message": "有効期限は、非負の整数である Unix タイムスタンプでなければなりません。",
+    "description": "Expiration must be a non-negative integer Unix timestamp."
+  },
+  "m_cookie_domain_is_invalid_411f9532": {
+    "message": "Cookie ドメインは無効です。",
+    "description": "Cookie domain is invalid."
+  },
+  "m_1_must_be_true_or_false_51a26bf8": {
+    "message": "$slot_1$ は TRUE または FALSE でなければなりません。",
+    "description": "$1 must be TRUE or FALSE.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_expiration_is_outside_the_supported_range_8cfc8697": {
+    "message": "有効期限がサポートされている範囲外です。",
+    "description": "Expiration is outside the supported range."
+  },
+  "m_1_cannot_be_represented_in_netscape_format_e7a8a446": {
+    "message": "$slot_1$ は Netscape 形式で表現できません。",
+    "description": "$1 cannot be represented in Netscape format.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_the_operation_history_is_no_longer_available_in__7160ca61": {
+    "message": "このブラウザセッションでは、操作履歴を利用できなくなりました。",
+    "description": "The operation history is no longer available in this browser session."
+  },
+  "m_the_background_operation_service_is_unavailable__2418d24d": {
+    "message": "バックグラウンド操作サービスが利用できません。拡張機能を再起動して、もう一度お試しください。",
+    "description": "The background operation service is unavailable. Reopen the extension and try again."
+  },
+  "m_select_an_http_or_https_tab_before_changing_site_78b8790a": {
+    "message": "サイトデータを変更する前に、http:// または https:// のタブを選択してください。",
+    "description": "Select an http:// or https:// tab before changing site data."
+  },
+  "m_the_operation_target_is_unavailable_refresh_and__ea7bb94d": {
+    "message": "操作対象が利用できません。ページを更新して、もう一度お試しください。",
+    "description": "The operation target is unavailable. Refresh and try again."
+  },
+  "m_the_target_tab_changed_sites_refresh_and_try_aga_45abf2d3": {
+    "message": "対象のタブでサイトが変更されました。ページを更新して、もう一度お試しください。",
+    "description": "The target tab changed sites. Refresh and try again."
+  },
+  "m_the_target_tab_changed_browsing_modes_refresh_an_9b421ca": {
+    "message": "対象のタブで閲覧モードが変更されました。ページを更新して、もう一度お試しください。",
+    "description": "The target tab changed browsing modes. Refresh and try again."
+  },
+  "m_the_target_cookie_store_changed_refresh_and_try__d7c5bc8d": {
+    "message": "対象のブラウザのクッキー保存場所が変更されました。ページを更新して、もう一度お試しください。",
+    "description": "The target cookie store changed. Refresh and try again."
+  },
+  "m_this_change_can_no_longer_be_undone_in_this_brow_54389916": {
+    "message": "この変更は、このブラウザセッションでは元に戻せません。",
+    "description": "This change can no longer be undone in this browser session."
+  },
+  "m_this_older_change_has_no_verified_target_informa_19604fe9": {
+    "message": "この以前の変更には、確認済みの対象情報がなく、元に戻すことはできません。",
+    "description": "This older change has no verified target information and cannot be undone."
+  },
+  "m_undo_is_only_available_for_1_f2a63182": {
+    "message": "元に戻す操作は $slot_1$ でのみ利用可能です。",
+    "description": "Undo is only available for $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_switch_to_the_original_browsing_mode_before_undo_870755c9": {
+    "message": "この変更を元に戻す前に、元の閲覧モードに切り替えてください。",
+    "description": "Switch to the original browsing mode before undoing this change."
+  },
+  "m_session_storage_undo_requires_the_original_tab_1_2fdf9bd9": {
+    "message": "Session Storageの取り消しには、元のタブ（$slot_1$）が必要です。",
+    "description": "Session Storage undo requires the original tab ($1).",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_this_change_has_incomplete_cookie_target_informa_a2dd5586": {
+    "message": "この変更には不完全なcookieの保存先情報が含まれており、元に戻すことはできません。",
+    "description": "This change has incomplete cookie target information and cannot be undone."
+  },
+  "m_switch_to_the_original_cookie_store_before_undoi_d2820a6a": {
+    "message": "この変更を元に戻す前に、元のcookieストアに切り替えてください。",
+    "description": "Switch to the original cookie store before undoing this change."
+  },
+  "m_this_change_has_incomplete_storage_target_inform_55298dcd": {
+    "message": "この変更には不完全なストレージターゲット情報が含まれており、元に戻すことはできません。",
+    "description": "This change has incomplete storage target information and cannot be undone."
+  },
+  "m_the_operation_requires_a_complete_verified_targe_c2dd669c": {
+    "message": "この操作には、完全かつ検証済みのターゲットが必要です。",
+    "description": "The operation requires a complete verified target."
+  },
+  "m_the_operation_target_origin_is_invalid_d22ef5f": {
+    "message": "操作の対象元が無効です。",
+    "description": "The operation target origin is invalid."
+  },
+  "m_the_operation_item_type_is_not_supported_7da692f3": {
+    "message": "操作対象のアイテムタイプはサポートされていません。",
+    "description": "The operation item type is not supported."
+  },
+  "m_an_operation_item_requires_its_before_and_after__f10583a8": {
+    "message": "操作対象には、その「前」と「後」の状態が必要です。",
+    "description": "An operation item requires its before and after states."
+  },
+  "m_an_operation_cannot_change_an_item_s_identity_de_98312c57": {
+    "message": "操作によって項目の識別子を変更することはできません。代わりに、項目を削除してから新しい項目を作成してください。",
+    "description": "An operation cannot change an item's identity. Delete and create separate items instead."
+  },
+  "m_undo_requires_the_original_site_cookie_store_and_5fcd5b1a": {
+    "message": "元に戻す操作には、元のサイト、cookie ストア、および閲覧モードが必要です。",
+    "description": "Undo requires the original site, cookie store, and browsing mode."
+  },
+  "m_session_storage_undo_requires_the_original_tab_c5074cf1": {
+    "message": "Session Storage の取り消しには、元のタブが必要です。",
+    "description": "Session Storage undo requires the original tab."
+  },
+  "m_the_cookie_changed_during_writing_or_chrome_norm_9c28e63c": {
+    "message": "cookie が書き込み中に変更されたか、Chrome がサポートされていない属性を正規化しました。再試行する前に、現在の状態を確認してください。",
+    "description": "The cookie changed during writing or Chrome normalized unsupported attributes. Review its current state before retrying."
+  },
+  "m_chrome_would_remove_a_different_same_name_cookie_1f0e6ca9": {
+    "message": "Chrome は、別の同名の cookie を削除しました。そのデータは保持されています。",
+    "description": "Chrome would remove a different same-name cookie. Its data was preserved."
+  },
+  "m_the_cookie_changed_during_writing_or_chrome_norm_c0f5c111": {
+    "message": "書き込み中に cookie が変更されたか、Chrome がその属性を正規化しました。再試行する前に、現在の状態を確認してください。",
+    "description": "The cookie changed during writing or Chrome normalized its attributes. Review its current state before retrying."
+  },
+  "m_this_item_changed_after_the_operation_was_prepar_6afc1ff6": {
+    "message": "このアイテムは、操作の準備後に変更されました。現在のデータは保持されています。",
+    "description": "This item changed after the operation was prepared. Its current data was preserved."
+  },
+  "m_operation_item_states_must_be_objects_or_null_648de299": {
+    "message": "操作項目の状態は、オブジェクトまたはnullでなければなりません。",
+    "description": "Operation item states must be objects or null."
+  },
+  "m_storage_operations_require_a_key_and_a_string_va_be861fef": {
+    "message": "ストレージ操作には、キーと文字列値が必要です。",
+    "description": "Storage operations require a key and a string value."
+  },
+  "m_the_storage_item_belongs_to_a_different_origin_c5770dcf": {
+    "message": "ストレージ項目は別のオリジンに属しています。",
+    "description": "The storage item belongs to a different origin."
+  },
+  "m_cookie_operations_require_a_name_value_and_domai_ad606296": {
+    "message": "Cookie 操作には、名前、値、およびドメインが必要です。",
+    "description": "Cookie operations require a name, value, and domain."
+  },
+  "m_the_cookie_store_does_not_match_the_target_brows_8b6d58d0": {
+    "message": "cookie ストアは、ターゲットのブラウジングコンテキストと一致しません。",
+    "description": "The cookie store does not match the target browsing context."
+  },
+  "m_the_cookie_domain_is_outside_the_target_site_2c893fc": {
+    "message": "cookie ドメインは、ターゲットサイトの範囲外です。",
+    "description": "The cookie domain is outside the target site."
+  },
+  "m_the_cookie_scope_is_not_supported_by_the_target__5ed5f691": {
+    "message": "cookie スコープは、ターゲットサイトではサポートされていません。",
+    "description": "The cookie scope is not supported by the target site."
+  },
+  "m_this_operation_id_already_belongs_to_another_req_26aec4b6": {
+    "message": "この操作 ID はすでに別のリクエストに割り当てられています。",
+    "description": "This operation ID already belongs to another request."
+  },
+  "m_the_undo_selection_contains_an_unknown_operation_7a61fd74": {
+    "message": "元に戻す選択範囲に、不明な操作項目が含まれています。",
+    "description": "The undo selection contains an unknown operation item."
+  },
+  "m_select_at_least_one_site_data_item_before_starti_3a6505e4": {
+    "message": "操作を開始する前に、少なくとも 1 つのサイトデータ項目を選択してください。",
+    "description": "Select at least one site data item before starting an operation."
+  },
+  "m_operation_item_ids_must_be_unique_within_the_bat_c80b02fe": {
+    "message": "操作項目の ID は、バッチ内で一意である必要があります。",
+    "description": "Operation item IDs must be unique within the batch."
+  },
+  "m_a_batch_cannot_contain_the_same_site_data_item_m_12586bbb": {
+    "message": "1 つのバッチに、同じサイトデータ項目を 2 回以上含めることはできません。",
+    "description": "A batch cannot contain the same site data item more than once."
+  },
+  "m_site_data_change_85c94fa": {
+    "message": "サイトデータの変更",
+    "description": "Site data change"
+  },
+  "m_this_operation_is_no_longer_available_in_the_cur_dd0b5906": {
+    "message": "現在のブラウザセッションでは、この操作は利用できなくなりました。",
+    "description": "This operation is no longer available in the current browser session."
+  },
+  "m_wait_for_the_operation_to_finish_before_retrying_4e00d481": {
+    "message": "操作を再試行、元に戻す、またはクリアするには、操作が完了するまでお待ちください。",
+    "description": "Wait for the operation to finish before retrying, undoing, or clearing it."
+  },
+  "m_the_operation_failed_ab9ab784": {
+    "message": "操作に失敗しました。",
+    "description": "The operation failed."
+  },
+  "m_the_operation_journal_cannot_be_read_existing_hi_5f7bdebd": {
+    "message": "操作ログを読み取ることができません。既存の履歴は保持されています。",
+    "description": "The operation journal cannot be read. Existing history has been preserved."
+  },
+  "m_operation_history_is_limited_to_1_batches_5f70f1c6": {
+    "message": "操作履歴は $slot_1$ バッチまでです。",
+    "description": "Operation history is limited to $1 batches.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_session_storage_does_not_have_enough_room_to_rec_baffb4f6": {
+    "message": "セッションストレージに、この操作を安全に記録するための十分な空き容量がありません。",
+    "description": "Session storage does not have enough room to record this operation safely."
+  },
+  "m_chrome_could_not_reserve_operation_history_space_cb06e6c2": {
+    "message": "Chrome は操作履歴用の領域を確保できませんでした。",
+    "description": "Chrome could not reserve operation history space."
+  },
+  "m_session_storage_is_required_for_recoverable_site_a5071db5": {
+    "message": "復元可能なサイトデータ操作には、セッションストレージが必要です。",
+    "description": "Session storage is required for recoverable site data operations."
+  },
+  "m_1_clear_completed_batches_in_history_and_try_aga_8d7c6029": {
+    "message": "$slot_1$ 履歴から完了したバッチを削除して、再試行してください。",
+    "description": "$1 Clear completed batches in History and try again.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_the_operation_was_not_completed_open_operations__1ba12ca0": {
+    "message": "操作は完了しませんでした。「操作」を開いて結果を確認してください。",
+    "description": "The operation was not completed. Open Operations to review its result."
+  },
+  "m_unknown_error_ce512b43": {
+    "message": "不明なエラー",
+    "description": "Unknown error"
+  },
+  "m_invalid_batch_operation_result_2c7f1d9c": {
+    "message": "バッチ操作の結果が無効です。",
+    "description": "Invalid batch operation result."
+  },
+  "m_enter_a_valid_1_a42ed343": {
+    "message": "有効な $slot_1$ を入力してください。",
+    "description": "Enter a valid $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_enter_a_cookie_name_829f0c23": {
+    "message": "cookieの名前を入力してください。",
+    "description": "Enter a cookie name."
+  },
+  "m_cookie_name_is_invalid_dafca5ad": {
+    "message": "Cookieの名前が無効です。",
+    "description": "Cookie name is invalid."
+  },
+  "m_enter_a_storage_key_42911d0a": {
+    "message": "ストレージエントリ名を入力してください。",
+    "description": "Enter a storage key."
+  },
+  "m_a_favorite_item_id_and_enabled_state_are_require_d025e94a": {
+    "message": "お気に入りアイテムの ID および有効状態の指定が必要です。",
+    "description": "A favorite item ID and enabled state are required."
+  },
+  "m_unsupported_import_conflict_strategy_1_11eb35cf": {
+    "message": "サポートされていないインポート競合戦略: $slot_1$",
+    "description": "Unsupported import conflict strategy: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_item_is_not_supported_3c19884d": {
+    "message": "このアイテムはサポートされていません。",
+    "description": "Item is not supported."
+  },
+  "m_not_selected_88a4320b": {
+    "message": "選択されていません。",
+    "description": "Not selected."
+  },
+  "m_already_identical_4051b14a": {
+    "message": "すでに同一のアイテムが存在します。",
+    "description": "Already identical."
+  },
+  "m_only_new_items_are_enabled_71d46290": {
+    "message": "有効にできるのは新しいアイテムのみです。",
+    "description": "Only new items are enabled."
+  },
+  "m_existing_item_was_kept_8d637d38": {
+    "message": "既存のアイテムが保持されました。",
+    "description": "Existing item was kept."
+  },
+  "m_conflict_was_not_selected_41b4cfaa": {
+    "message": "競合するアイテムは選択されませんでした。",
+    "description": "Conflict was not selected."
+  },
+  "m_the_package_contains_the_same_stable_item_more_t_5819a2cf": {
+    "message": "パッケージには、同一の安定版アイテムが複数含まれています。",
+    "description": "The package contains the same stable item more than once."
+  },
+  "m_no_changes_23de827f": {
+    "message": "変更はありません。",
+    "description": "No changes."
+  },
+  "m_value_will_change_67c2db88": {
+    "message": "値が変更されます。",
+    "description": "Value will change."
+  },
+  "m_cookie_attributes_differ_from_the_target_343b62be": {
+    "message": "Cookie の属性が対象と異なります。",
+    "description": "Cookie attributes differ from the target."
+  },
+  "m_source_origin_1_does_not_match_2_d97e2856": {
+    "message": "ソースのオリジン $slot_1$ が $slot_2$ と一致しません。",
+    "description": "Source origin $1 does not match $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_storage_origin_1_cannot_be_written_to_2_5e2f32f1": {
+    "message": "ストレージのオリジン $slot_1$ を $slot_2$ に書き込むことはできません。",
+    "description": "Storage origin $1 cannot be written to $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_secure_cookies_require_an_https_target_42458c0f": {
+    "message": "セキュアな cookies には、HTTPS のターゲットが必要です。",
+    "description": "Secure cookies require an HTTPS target."
+  },
+  "m_samesite_none_cookies_require_secure_b0e3af34": {
+    "message": "SameSite=None cookies には、セキュア設定が必要です。",
+    "description": "SameSite=None cookies require Secure."
+  },
+  "m_persistent_cookies_require_a_valid_expiration_da_59fa4574": {
+    "message": "永続的な cookies には、有効な有効期限が必要です。",
+    "description": "Persistent cookies require a valid expiration date."
+  },
+  "m_the_cookie_expiration_date_is_in_the_past_fb6631d3": {
+    "message": "cookie の有効期限が過ぎています。",
+    "description": "The cookie expiration date is in the past."
+  },
+  "m_the_partition_key_is_not_supported_f5b3f532": {
+    "message": "パーティションキーはサポートされていません。",
+    "description": "The partition key is not supported."
+  },
+  "m_cookie_domain_1_is_not_valid_for_2_87a7b1d8": {
+    "message": "Cookie ドメイン $slot_1$ は $slot_2$ に対して無効です。",
+    "description": "Cookie domain $1 is not valid for $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_a_valid_http_or_https_target_url_is_required_d1af520b": {
+    "message": "有効な HTTP または HTTPS ターゲット URL が必要です。",
+    "description": "A valid HTTP or HTTPS target URL is required."
+  },
+  "m_site_data_package_is_not_valid_json_1_205edefc": {
+    "message": "サイトデータパッケージが JSON として無効です: $slot_1$",
+    "description": "Site data package is not valid JSON: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_site_data_package_must_be_a_json_object_4b3bb0fc": {
+    "message": "サイトデータパッケージは JSON オブジェクトでなければなりません。",
+    "description": "Site data package must be a JSON object."
+  },
+  "m_unsupported_site_data_schema_version_1_1e133de1": {
+    "message": "サポートされていないサイトデータスキーマのバージョン: $slot_1$",
+    "description": "Unsupported site data schema version: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_parse_site_data_package_13a1fb6f": {
+    "message": "サイトデータパッケージの解析に失敗しました。",
+    "description": "Failed to parse site data package."
+  },
+  "m_cookie_must_be_an_object_2f03109b": {
+    "message": "Cookie はオブジェクトでなければなりません。",
+    "description": "Cookie must be an object."
+  },
+  "m_cookie_domain_c25955b9": {
+    "message": "Cookie ドメイン",
+    "description": "Cookie domain"
+  },
+  "m_storage_item_must_be_an_object_1cfa84f9": {
+    "message": "ストレージ項目はオブジェクトでなければなりません。",
+    "description": "Storage item must be an object."
+  },
+  "m_site_data_package_data_must_be_an_object_e66f478": {
+    "message": "サイトデータパッケージのデータはオブジェクトでなければなりません。",
+    "description": "Site data package data must be an object."
+  },
+  "m_site_data_package_source_must_be_an_object_56cfeb13": {
+    "message": "サイトデータパッケージのソースはオブジェクトでなければなりません。",
+    "description": "Site data package source must be an object."
+  },
+  "m_source_url_199c3119": {
+    "message": "ソース URL",
+    "description": "Source URL"
+  },
+  "m_source_url_is_invalid_79058912": {
+    "message": "ソース URL は無効です。",
+    "description": "Source URL is invalid."
+  },
+  "m_source_url_must_use_http_or_https_402a5c35": {
+    "message": "ソース URL には http または https を使用する必要があります。",
+    "description": "Source URL must use http or https."
+  },
+  "m_source_origin_does_not_match_the_source_url_ddb08ac2": {
+    "message": "ソースのオリジンがソース URL と一致しません。",
+    "description": "Source origin does not match the source URL."
+  },
+  "m_export_time_14390320": {
+    "message": "エクスポート日時",
+    "description": "Export time"
+  },
+  "m_export_time_is_invalid_966ca827": {
+    "message": "エクスポート日時が無効です。",
+    "description": "Export time is invalid."
+  },
+  "m_storage_origin_is_invalid_c2b74933": {
+    "message": "保存元の指定が無効です。",
+    "description": "Storage origin is invalid."
+  },
+  "m_1_must_be_an_array_e1b4fde0": {
+    "message": "$slot_1$ は配列でなければなりません。",
+    "description": "$1 must be an array.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_must_be_a_string_7db28ee6": {
+    "message": "$slot_1$ は文字列でなければなりません。",
+    "description": "$1 must be a string.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_cannot_be_empty_e318fe17": {
+    "message": "$slot_1$ は空にできません。",
+    "description": "$1 cannot be empty.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_a_saved_state_with_this_id_already_exists_reload_d5d699bd": {
+    "message": "この ID の保存済み状態はすでに存在します。「保存済み状態」を再読み込みして、もう一度お試しください。",
+    "description": "A saved state with this ID already exists. Reload Saved States and try again."
+  },
+  "m_this_saved_state_no_longer_exists_reload_saved_s_2606c3f0": {
+    "message": "この保存済み状態は存在しません。「保存済み状態」を再読み込みして、別の状態を選択してください。",
+    "description": "This saved state no longer exists. Reload Saved States and select another state."
+  },
+  "m_saved_states_is_limited_to_1_states_return_to_th_c6f09f4f": {
+    "message": "「保存済み状態」は $slot_1$ 個までです。「保存済み状態」リストに戻り、別の状態を保存またはコピーする前に、使用していない状態を削除してください。既存の状態は変更されていません。",
+    "description": "Saved States is limited to $1 states. Return to the Saved States list and delete unused states before saving or copying another state. Your existing states have not been changed.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_chrome_limit_1_2_3949d5f2": {
+    "message": " (Chromeの制限: $slot_1$$slot_2$)",
+    "description": " (Chrome limit: $1$2)",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_extension_storage_is_full_1_return_to_the_saved__c0d6cf4b": {
+    "message": "拡張機能のストレージが満杯です$slot_1$。「保存済み状態」リストに戻り、使用していない状態を削除するか、保存するサイトデータのエントリ数を減らしてから、もう一度お試しください。既存の状態は変更されていません。",
+    "description": "Extension storage is full$1. Return to the Saved States list and delete unused states, or save fewer site data entries, then try again. Your existing states have not been changed.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_profile_must_be_an_object_d72872c": {
+    "message": "プロファイルはオブジェクトである必要があります。",
+    "description": "Profile must be an object."
+  },
+  "m_profile_name_is_required_19a1effa": {
+    "message": "プロファイル名の入力が必須です。",
+    "description": "Profile name is required."
+  },
+  "m_enter_a_value_for_1_91a86c1b": {
+    "message": "$slot_1$ の値を入力してください。",
+    "description": "Enter a value for $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_missing_profile_variables_1_1592cd58": {
+    "message": "欠落しているプロファイル変数: $slot_1$。",
+    "description": "Missing profile variables: $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_variable_line_1_must_use_name_value_2dec1abd": {
+    "message": "変数行 $slot_1$ では name=value を使用する必要があります。",
+    "description": "Variable line $1 must use name=value.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_variable_name_1_is_invalid_56f993ec": {
+    "message": "変数名 $slot_1$ は無効です。",
+    "description": "Variable name $1 is invalid.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_variable_1_is_duplicated_2d297b8b": {
+    "message": "変数 $slot_1$ が重複しています。",
+    "description": "Variable $1 is duplicated.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_variable_1_needs_a_captured_value_516edb55": {
+    "message": "変数 $slot_1$ にはキャプチャ値が必要です。",
+    "description": "Variable $1 needs a captured value.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_copy_3f7d3a3f": {
+    "message": "$slot_1$ のコピー",
+    "description": "$1 copy",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_profile_variables_require_a_valid_name_and_captu_58575d16": {
+    "message": "プロファイル変数には、有効な名前とキャプチャされた値が必要です。",
+    "description": "Profile variables require a valid name and captured value."
+  },
+  "m_profile_variable_names_must_be_valid_and_unique_dbee74c8": {
+    "message": "プロファイル変数の名前は、有効かつ一意でなければなりません。",
+    "description": "Profile variable names must be valid and unique."
+  },
+  "m_conditional_storage_values_must_be_strings_or_nu_f66e578c": {
+    "message": "条件付きストレージの値は、文字列または null でなければなりません。",
+    "description": "Conditional storage values must be strings or null."
+  },
+  "m_storage_operation_did_not_return_a_verified_resu_a0d8584c": {
+    "message": "ストレージ操作が検証済みの結果を返しません。ページを更新して、もう一度試してください。",
+    "description": "Storage operation did not return a verified result. Refresh and try again."
+  },
+  "m_no_active_tab_is_available_7fb08c70": {
+    "message": "アクティブなタブがありません。",
+    "description": "No active tab is available."
+  },
+  "m_storage_type_is_not_supported_6565b571": {
+    "message": "このストレージタイプはサポートされていません。",
+    "description": "Storage type is not supported."
+  },
+  "m_storage_key_is_required_9a984642": {
+    "message": "ストレージキーが必要です。",
+    "description": "Storage key is required."
+  },
+  "m_tab_session_79252400": {
+    "message": "タブセッション",
+    "description": "Tab session"
+  },
+  "m_persistent_b9d8a5e0": {
+    "message": "永続的",
+    "description": "Persistent"
+  },
+  "m_a_storage_key_and_update_action_are_required_bcf52f8d": {
+    "message": "ストレージエントリ名と更新アクションの入力が必要です。",
+    "description": "A storage key and update action are required."
+  },
+  "m_storage_write_coordination_is_unavailable_reload_a3049af7": {
+    "message": "ストレージへの書き込み調整が利用できません。最新のChromeブラウザで拡張機能を再読み込みし、もう一度お試しください。",
+    "description": "Storage write coordination is unavailable. Reload the extension in an up-to-date Chrome browser and try again."
+  },
+  "m_unsupported_page_ba4049fb": {
+    "message": "サポートされていないページ",
+    "description": "Unsupported page"
+  },
+  "m_value_is_not_valid_url_encoded_text_410c8c5c": {
+    "message": "値は有効な URL エンコードされたテキストではありません。",
+    "description": "Value is not valid URL-encoded text."
+  },
+  "m_value_is_not_valid_json_4ebcf7b9": {
+    "message": "値は有効な JSON ではありません。",
+    "description": "Value is not valid JSON."
+  },
+  "m_value_is_not_a_jwt_ced21751": {
+    "message": "値は JWT ではありません。",
+    "description": "Value is not a JWT."
+  },
+  "m_jwt_payload_could_not_be_decoded_c3f891e7": {
+    "message": "JWT ペイロードをデコードできませんでした。",
+    "description": "JWT payload could not be decoded."
+  },
+  "m_loading_page_9a85b9e6": {
+    "message": "ページを読み込み中",
+    "description": "Loading page"
+  },
+  "m_0_cookies_82c7dfac": {
+    "message": "0 cookies",
+    "description": "0 cookies"
+  },
+  "m_current_page_fe92f855": {
+    "message": "現在のページ",
+    "description": "Current page"
+  },
+  "m_switch_active_tab_site_fbd36ba9": {
+    "message": "アクティブなタブのサイトを切り替える",
+    "description": "Switch active tab site"
+  },
+  "m_switch_site_d8886748": {
+    "message": "サイトを切り替える",
+    "description": "Switch site"
+  },
+  "m_data_type_9af022c7": {
+    "message": "データ型",
+    "description": "Data type"
+  },
+  "m_search_c646a2c9": {
+    "message": "検索",
+    "description": "Search"
+  },
+  "m_reload_settings_b738e329": {
+    "message": "設定の再読み込み",
+    "description": "Reload settings"
+  },
+  "m_open_reload_settings_4892e4a3": {
+    "message": "設定の再読み込みを開く",
+    "description": "Open reload settings"
+  },
+  "m_reload_after_changes_bf61c657": {
+    "message": "変更後に再読み込み",
+    "description": "Reload after changes"
+  },
+  "m_reload_the_active_page_after_editing_data_b1f353e4": {
+    "message": "データ編集後にアクティブなページを再読み込み",
+    "description": "Reload the active page after editing data"
+  },
+  "m_open_side_panel_6c80bafe": {
+    "message": "サイドパネルを開く",
+    "description": "Open side panel"
+  },
+  "m_history_7d96597f": {
+    "message": "履歴",
+    "description": "History"
+  },
+  "m_show_recent_changes_aa3be0a2": {
+    "message": "最近の変更を表示",
+    "description": "Show recent changes"
+  },
+  "m_site_access_is_required_to_read_cookies_a1440a5d": {
+    "message": "cookies を閲覧するにはサイトへのアクセスが必要です。",
+    "description": "Site access is required to read cookies."
+  },
+  "m_retry_8036af59": {
+    "message": "再試行",
+    "description": "Retry"
+  },
+  "m_dismiss_message_df912220": {
+    "message": "メッセージを閉じる",
+    "description": "Dismiss message"
+  },
+  "m_site_data_actions_6b44a8f5": {
+    "message": "サイトデータの操作",
+    "description": "Site data actions"
+  },
+  "m_select_all_visible_rows_2f22967d": {
+    "message": "表示されている行をすべて選択",
+    "description": "Select all visible rows"
+  },
+  "m_sort_name_ascending_68daec8a": {
+    "message": "名前で昇順に並べ替え",
+    "description": "Sort Name ascending"
+  },
+  "m_0_selected_326ec79c": {
+    "message": "選択項目：0件",
+    "description": "0 selected"
+  },
+  "m_delete_selected_97a78547": {
+    "message": "選択項目を削除",
+    "description": "Delete selected"
+  },
+  "m_selected_item_actions_93276b88": {
+    "message": "選択項目の操作",
+    "description": "Selected item actions"
+  },
+  "m_cookie_list_e8aca549": {
+    "message": "Cookie リスト",
+    "description": "Cookie list"
+  },
+  "m_select_a_cookie_21e3db4c": {
+    "message": "cookie を選択",
+    "description": "Select a cookie"
+  },
+  "m_favorite_item_639ee370": {
+    "message": "お気に入りアイテム",
+    "description": "Favorite item"
+  },
+  "m_choose_copy_format_c244c130": {
+    "message": "コピー形式を選択",
+    "description": "Choose copy format"
+  },
+  "m_copy_format_85aa5ff": {
+    "message": "コピー形式",
+    "description": "Copy format"
+  },
+  "m_reset_ac8a560": {
+    "message": "リセット",
+    "description": "Reset"
+  },
+  "m_save_4d2d5d68": {
+    "message": "保存",
+    "description": "Save"
+  },
+  "m_editor_actions_e49fe113": {
+    "message": "エディタの操作",
+    "description": "Editor actions"
+  },
+  "m_tools_950196fc": {
+    "message": "ツール",
+    "description": "Tools"
+  },
+  "m_value_tools_462d8191": {
+    "message": "値ツール",
+    "description": "Value tools"
+  },
+  "m_url_decode_21cf2a4c": {
+    "message": "URLのデコード",
+    "description": "URL decode"
+  },
+  "m_url_encode_e1baee70": {
+    "message": "URLのエンコード",
+    "description": "URL encode"
+  },
+  "m_format_json_c6800e10": {
+    "message": "JSONの書式設定",
+    "description": "Format JSON"
+  },
+  "m_compact_json_3e7be4cc": {
+    "message": "JSONの圧縮",
+    "description": "Compact JSON"
+  },
+  "m_cookie_expiration_date_and_time_29a11076": {
+    "message": "Cookieの有効期限（日時）",
+    "description": "Cookie expiration date and time"
+  },
+  "m_clear_the_time_to_use_a_session_cookie_cfc8ce4f": {
+    "message": "セッション Cookie を使用する場合は、有効期限を空欄にしてください",
+    "description": "Clear the time to use a session cookie"
+  },
+  "m_cookie_editor_1dce6a00": {
+    "message": "Cookieエディタ",
+    "description": "Cookie editor"
+  },
+  "m_operations_a78e754f": {
+    "message": "操作",
+    "description": "Operations"
+  },
+  "m_history_view_122e9250": {
+    "message": "履歴表示",
+    "description": "History view"
+  },
+  "m_clear_4a57fc2": {
+    "message": "クリア",
+    "description": "Clear"
+  },
+  "m_no_recent_changes_1ba3108": {
+    "message": "最近の変更はありません",
+    "description": "No recent changes"
+  },
+  "m_no_operations_in_this_session_9f373445": {
+    "message": "このセッションでの操作はありません",
+    "description": "No operations in this session"
+  },
+  "m_close_cd86acc3": {
+    "message": "閉じる",
+    "description": "Close"
+  },
+  "m_before_25a2cf5e": {
+    "message": "以前",
+    "description": "Before"
+  },
+  "m_after_a7dd3a69": {
+    "message": "変更後",
+    "description": "After"
+  },
+  "m_recent_cookie_changes_948aeb99": {
+    "message": "cookieの最近の変更",
+    "description": "Recent cookie changes"
+  },
+  "m_cookie_workspace_934f6bae": {
+    "message": "Cookieワークスペース",
+    "description": "Cookie workspace"
+  },
+  "m_delete_item_9112cfa6": {
+    "message": "この項目を削除しますか？",
+    "description": "Delete item?"
+  },
+  "m_selected_items_401a0220": {
+    "message": "選択した項目",
+    "description": "Selected items"
+  },
+  "m_cancel_35afca3b": {
+    "message": "キャンセル",
+    "description": "Cancel"
+  },
+  "m_enter_value_4f11af6c": {
+    "message": "値を入力してください",
+    "description": "Enter value"
+  },
+  "m_continue_ab43d664": {
+    "message": "続行",
+    "description": "Continue"
+  },
+  "m_import_method_d6e65675": {
+    "message": "インポート方法",
+    "description": "Import method"
+  },
+  "m_1_quick_entry_c1ce8719": {
+    "message": "$slot_1$ クイック入力",
+    "description": "$1 Quick entry",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_json_package_5fd092bc": {
+    "message": "$slot_1$ JSON パッケージ",
+    "description": "$1 JSON package",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_netscape_curl_8c6f0afa": {
+    "message": "$slot_1$ Netscape / cURL",
+    "description": "$1 Netscape / cURL",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_add_9dc3aa14": {
+    "message": "追加",
+    "description": "Add"
+  },
+  "m_remove_cookie_row_2371fc81": {
+    "message": "cookieの行を削除",
+    "description": "Remove cookie row"
+  },
+  "m_cookies_only_domains_from_the_file_must_be_valid_7598760a": {
+    "message": "Cookiesのみ。ファイル内のドメインは、現在のターゲットに対して有効である必要があります。",
+    "description": "Cookies only. Domains from the file must be valid for the current target."
+  },
+  "m_choose_file_7ccb86d6": {
+    "message": "ファイルを選択",
+    "description": "Choose file"
+  },
+  "m_choose_or_drop_an_import_file_cb7cec54": {
+    "message": "インポートファイルを選択またはドロップ",
+    "description": "Choose or drop an import file"
+  },
+  "m_preview_fdda4cf7": {
+    "message": "プレビュー",
+    "description": "Preview"
+  },
+  "m_change_source_389c45d2": {
+    "message": "ソースを変更",
+    "description": "Change source"
+  },
+  "m_map_source_origin_to_current_target_b4c34739": {
+    "message": "ソースの起源を現在のターゲットにマッピング",
+    "description": "Map source origin to current target"
+  },
+  "m_conflicts_3e8a9594": {
+    "message": "競合",
+    "description": "Conflicts"
+  },
+  "m_skip_c197c7e2": {
+    "message": "スキップ",
+    "description": "Skip"
+  },
+  "m_add_only_fc8d6796": {
+    "message": "追加のみ",
+    "description": "Add only"
+  },
+  "m_individual_4debea66": {
+    "message": "個別",
+    "description": "Individual"
+  },
+  "m_apply_selected_14d0d990": {
+    "message": "選択したものを適用",
+    "description": "Apply selected"
+  },
+  "m_undo_batch_9db3f173": {
+    "message": "バッチ操作を元に戻す",
+    "description": "Undo batch"
+  },
+  "m_import_another_33095ef7": {
+    "message": "別のものをインポート",
+    "description": "Import another"
+  },
+  "m_format_ffb0ff72": {
+    "message": "フォーマット",
+    "description": "Format"
+  },
+  "m_export_format_918e82a6": {
+    "message": "エクスポート形式",
+    "description": "Export format"
+  },
+  "m_export_scope_6080fad7": {
+    "message": "エクスポート範囲",
+    "description": "Export scope"
+  },
+  "m_current_view_cookies_b8f50c77": {
+    "message": "現在のビュー(Cookies)",
+    "description": "Current view(Cookies)"
+  },
+  "m_select_items_to_export_bbcae900": {
+    "message": "エクスポートする項目を選択",
+    "description": "Select items to export"
+  },
+  "m_select_all_visible_90496e48": {
+    "message": "表示されているすべてを選択",
+    "description": "Select all visible"
+  },
+  "m_filter_items_910b807f": {
+    "message": "項目をフィルタリング",
+    "description": "Filter items"
+  },
+  "m_filter_items_to_export_95e0b822": {
+    "message": "エクスポートする項目をフィルタリング",
+    "description": "Filter items to export"
+  },
+  "m_no_items_in_the_current_view_51e3b0f4": {
+    "message": "現在のビューには項目がありません",
+    "description": "No items in the current view"
+  },
+  "m_export_preview_33afc7c3": {
+    "message": "エクスポートのプレビュー",
+    "description": "Export preview"
+  },
+  "m_saved_states_a5eae766": {
+    "message": "保存済み状態",
+    "description": "Saved states"
+  },
+  "m_how_saved_states_work_7efa7c25": {
+    "message": "保存済み状態の仕組み",
+    "description": "How saved states work"
+  },
+  "m_0_saved_43d1ba2c": {
+    "message": "保存済み：0件",
+    "description": "0 saved"
+  },
+  "m_save_current_state_27cc8b68": {
+    "message": "現在の状態を保存",
+    "description": "Save current state"
+  },
+  "m_no_saved_states_3f60a5e1": {
+    "message": "保存された状態はありません",
+    "description": "No saved states"
+  },
+  "m_tags_76bda0c0": {
+    "message": "タグ",
+    "description": "Tags"
+  },
+  "m_description_66de7a09": {
+    "message": "説明",
+    "description": "Description"
+  },
+  "m_capture_2fbb5e61": {
+    "message": "キャプチャ範囲",
+    "description": "Capture"
+  },
+  "m_current_view_d4b5b48f": {
+    "message": "現在のビュー",
+    "description": "Current view"
+  },
+  "m_default_conflicts_5dc68821": {
+    "message": "デフォルトの競合処理",
+    "description": "Default conflicts"
+  },
+  "m_variables_7996f062": {
+    "message": "変数",
+    "description": "Variables"
+  },
+  "m_save_state_fb44729d": {
+    "message": "状態の保存",
+    "description": "Save state"
+  },
+  "m_apply_saved_state_f8327dc5": {
+    "message": "保存された状態の適用",
+    "description": "Apply saved state"
+  },
+  "m_map_saved_origin_to_current_target_367fc6c1": {
+    "message": "保存されたウェブサイトのオリジンを現在のターゲットウェブサイトにマッピングします",
+    "description": "Map saved origin to current target"
+  },
+  "m_preview_changes_964c14fa": {
+    "message": "変更内容のプレビュー",
+    "description": "Preview changes"
+  },
+  "m_a_saved_state_keeps_a_reusable_set_of_cookies_lo_7feb125b": {
+    "message": "保存された状態には、サイトごとに再利用可能な Cookies、Local Storage、および Session Storage のセットが保持されます。",
+    "description": "A saved state keeps a reusable set of Cookies, Local Storage, and Session Storage for a site."
+  },
+  "m_save_the_current_state_166690d7": {
+    "message": "現在の状態を保存します",
+    "description": "Save the current state"
+  },
+  "m_open_the_site_state_you_want_to_reuse_then_selec_5ce0052": {
+    "message": "再利用したいサイトの状態を開き、$slot_1$ を選択してください。",
+    "description": "Open the site state you want to reuse, then select $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_choose_the_capture_scope_the_current_data_view_s_529cd2f6": {
+    "message": "キャプチャの範囲を選択してください：現在のデータビュー、選択した項目、またはサイトの全データ。",
+    "description": "Choose the capture scope: the current data view, selected items, or all site data."
+  },
+  "m_add_optional_variables_then_save_saved_states_st_dd227e3": {
+    "message": "オプションの変数を追加してから保存してください。保存された状態は、エクスポートしない限りこのブラウザ内に残ります。",
+    "description": "Add optional variables, then save. Saved states stay in this browser unless you export them."
+  },
+  "m_enter_one_captured_value_per_line_matching_value_22f4016": {
+    "message": "1行につき1つのキャプチャ値を入力してください。保存されたデータ内の一致する値は、変数に置き換えられます。",
+    "description": "Enter one captured value per line. Matching values in the saved data are replaced with a variable."
+  },
+  "m_prefills_1_when_applying_the_saved_state_e33e2ad4": {
+    "message": "保存された状態を適用する際に、$slot_1$に事前入力します。",
+    "description": "Prefills $1 when applying the saved state.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_asks_for_the_value_every_time_and_does_not_store_cb4d0df3": {
+    "message": "毎回値の入力を求め、$slot_1$を保存された状態に保存しません。",
+    "description": "Asks for the value every time and does not store $1 in the saved state.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_apply_a_saved_state_504c0672": {
+    "message": "保存された状態を適用します",
+    "description": "Apply a saved state"
+  },
+  "m_select_1_and_enter_any_requested_variables_c8ff81f6": {
+    "message": "$slot_1$ を選択し、要求された変数を入力してください。",
+    "description": "Select $1 and enter any requested variables.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_for_a_different_origin_explicitly_enable_origin__b4821030": {
+    "message": "異なるオリジンの場合は、オリジンマッピングを明示的に有効にしてください。",
+    "description": "For a different origin, explicitly enable origin mapping."
+  },
+  "m_preview_the_changes_and_conflict_handling_before_29ad5a": {
+    "message": "変更内容と競合処理を適用する前にプレビューしてください。",
+    "description": "Preview the changes and conflict handling before applying them."
+  },
+  "m_the_storage_change_could_not_be_verified_after_w_7a7ef6a4": {
+    "message": "書き込み後、保存値の検証に失敗しました。",
+    "description": "The storage change could not be verified after writing."
+  },
+  "m_the_storage_value_could_not_be_verified_after_sa_77c05f71": {
+    "message": "保存後にストレージの値を検証できませんでした。",
+    "description": "The storage value could not be verified after saving."
+  },
+  "m_the_storage_item_could_not_be_verified_as_delete_6d3355a2": {
+    "message": "ストレージ項目が削除されたことを確認できませんでした。",
+    "description": "The storage item could not be verified as deleted."
+  },
+  "m_storage_is_unavailable_in_the_target_page_cee7872a": {
+    "message": "対象ページではストレージが利用できません。",
+    "description": "Storage is unavailable in the target page."
+  },
+  "extensionName": {
+    "message": "Cookie Controller",
+    "description": "Cookie Controller"
+  },
+  "extensionDescription": {
+    "message": "現在のページについて、cookies、Local Storage、およびSession Storageを管理してください。",
+    "description": "Manage cookies, Local Storage, and Session Storage for the current page."
+  },
+  "m_settings_4b058728": {
+    "message": "設定",
+    "description": "Settings"
+  },
+  "m_language_9a73db9b": {
+    "message": "言語",
+    "description": "Language"
+  },
+  "m_automatic_616a6784": {
+    "message": "自動",
+    "description": "Automatic"
+  },
+  "m_could_not_save_settings_please_try_again_960d71ae": {
+    "message": "設定を保存できませんでした。もう一度お試しください。",
+    "description": "Could not save settings. Please try again."
+  },
+  "m_could_not_load_this_language_please_try_again_fe3d5f54": {
+    "message": "この言語を読み込めませんでした。もう一度お試しください。",
+    "description": "Could not load this language. Please try again."
+  },
+  "m_color_theme_5f51d6fd": {
+    "message": "カラーテーマ",
+    "description": "Color theme"
+  },
+  "m_light_theme_f8e348fa": {
+    "message": "ライトテーマ",
+    "description": "Light theme"
+  },
+  "m_dark_theme_5a026490": {
+    "message": "ダークテーマ",
+    "description": "Dark theme"
+  },
+  "m_allow_access_d2983970": {
+    "message": "アクセスを許可",
+    "description": "Allow access"
+  }
+,
+  "m_site_access_is_required_to_read_this_site_s_data_acf058b1": {
+    "message": "このサイトのデータを読み取るにはサイトへのアクセスが必要です。",
+    "description": "Site access is required to read this site's data."
+  }
+,
+  "m_allow_this_extension_to_read_this_site_s_data_a1c9bac0": {
+    "message": "この拡張機能によるサイトデータの読み取りを許可しますか？",
+    "description": "Allow this extension to read this site's data?"
+  },
+  "m_allow_site_data_access_75dd19dc": {
+    "message": "サイトデータへのアクセスを許可しますか？",
+    "description": "Allow site data access?"
+  },
+  "m_back_c2954bc2": {
+    "message": "戻る",
+    "description": "Back"
+  },
+  "m_cookies_local_storage_and_session_storage_data_s_e67cf99e": {
+    "message": "Cookie、Local Storage、Session Storage を読み取れます。データはこの端末内で処理されます。",
+    "description": "Cookies, Local Storage, and Session Storage. Data stays on your device."
+  }
+}

@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 import { isSupportedPageUrl } from "./url.js";
 import { callChrome } from "./chrome-call.js";
 
@@ -32,7 +33,7 @@ export async function compareAndSetStorageItem(tabId, url, type, key, expected, 
   assertStorageKey(key);
   for (const value of [expected, desired]) {
     if (value !== null && typeof value !== "string") {
-      throw new TypeError("Conditional storage values must be strings or null.");
+      throw new TypeError(t("Conditional storage values must be strings or null."));
     }
   }
   const result = await executeStorageOperation(tabId, url, type, "compare-set", key, desired, expected);
@@ -52,28 +53,28 @@ async function executeStorageOperation(tabId, url, type, action, key = "", value
   });
   const result = injections?.[0]?.result;
   if (!result?.ok || result.origin !== expectedOrigin) {
-    throw new Error(result?.error || "Storage operation did not return a verified result. Refresh and try again.");
+    throw new Error(result?.error ? t(result.error) : t("Storage operation did not return a verified result. Refresh and try again."));
   }
   return result;
 }
 
 function assertStorageRequest(tabId, url, type) {
   if (!Number.isInteger(tabId) || tabId < 0) {
-    throw new Error("No active tab is available.");
+    throw new Error(t("No active tab is available."));
   }
 
   if (!isSupportedPageUrl(url)) {
-    throw new Error("Only http:// and https:// pages support storage operations.");
+    throw new Error(t("Only http:// and https:// pages support storage operations."));
   }
 
   if (!STORAGE_TYPES.has(type)) {
-    throw new Error("Storage type is not supported.");
+    throw new Error(t("Storage type is not supported."));
   }
 }
 
 function assertStorageKey(key) {
   if (!String(key || "")) {
-    throw new Error("Storage key is required.");
+    throw new Error(t("Storage key is required."));
   }
 }
 

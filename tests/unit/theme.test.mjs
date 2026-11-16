@@ -23,6 +23,102 @@ test("keeps every theme palette token-complete and component colors tokenized", 
   assert.doesNotMatch(componentCss, /#[0-9a-f]{3,8}|rgba?\(/i);
 });
 
+test("regular and incognito choices stay independent and ignore system appearance", () => {
+  const documentElement = { dataset: {} };
+  const context = {
+    document: { documentElement },
+    matchMedia: () => { throw new Error("System appearance must not affect mode defaults"); },
+    chrome: { extension: { inIncognitoContext: false } }
+  };
+  vm.runInNewContext(themeScript, context);
+  const controller = context.cookieControllerTheme;
+  assert.equal(documentElement.dataset.theme, "light");
+  controller.setPreference("dark");
+  assert.equal(documentElement.dataset.theme, "incognito");
+  assert.equal(controller.getStorageKey(), "uiThemeRegular");
+  controller.setActiveTabIncognito(true);
+  assert.equal(documentElement.dataset.theme, "incognito");
+  assert.equal(controller.getStorageKey(), "uiThemeIncognito");
+  controller.setPreference("light");
+  assert.equal(documentElement.dataset.theme, "light");
+  controller.setActiveTabIncognito(false);
+  assert.equal(documentElement.dataset.theme, "incognito");
+  controller.setActiveTabIncognito(true);
+  assert.equal(documentElement.dataset.theme, "light");
+  assert.equal(controller.getPreference("regular"), "dark");
+  assert.equal(controller.getPreference("incognito"), "light");
+});
+
+test("stored mode choices survive reopening and synchronize only their own mode", async () => {
+  const stored = { uiThemeRegular: "dark", uiThemeIncognito: "light" };
+  const listeners = [];
+  const create = () => {
+    const context = {
+      document: { documentElement: { dataset: {} } },
+      chrome: { runtime: {}, storage: {
+        local: { get(defaults, callback) { callback({ ...defaults, ...stored }); } },
+        onChanged: { addListener(listener) { listeners.push(listener); } }
+      } }
+    };
+    vm.runInNewContext(themeScript, context);
+    return context;
+  };
+  const first = create();
+  const second = create();
+  await Promise.all([first.cookieControllerTheme.ready, second.cookieControllerTheme.ready]);
+  const controller = second.cookieControllerTheme;
+  const dataset = second.document.documentElement.dataset;
+  assert.equal(dataset.theme, "incognito");
+  controller.setActiveTabIncognito(true);
+  assert.equal(dataset.theme, "light");
+  for (const listener of listeners) listener({ uiThemeRegular: { newValue: "light" } }, "local");
+  assert.equal(dataset.theme, "light");
+  assert.equal(first.document.documentElement.dataset.theme, "light");
+  for (const listener of listeners) listener({ uiThemeIncognito: { newValue: "dark" } }, "local");
+  assert.equal(dataset.theme, "incognito");
+  assert.equal(first.document.documentElement.dataset.theme, "light");
+  for (const listener of listeners) listener({ uiThemeRegular: { newValue: "dark" } }, "sync");
+  assert.equal(first.document.documentElement.dataset.theme, "light");
+});
+
+test("late startup reads cannot overwrite mode changes or a newer active tab", async () => {
+  let readStorage;
+  let readTabs;
+  const context = {
+    document: { documentElement: { dataset: {} } },
+    chrome: {
+      runtime: {},
+      storage: { local: { get(defaults, callback) { readStorage = callback; } } },
+      tabs: { query(options, callback) { readTabs = callback; } }
+    }
+  };
+  vm.runInNewContext(themeScript, context);
+  const controller = context.cookieControllerTheme;
+  controller.setActiveTabIncognito(true);
+  controller.setPreference("light");
+  readStorage({ uiThemeRegular: "dark", uiThemeIncognito: "dark" });
+  readTabs([{ incognito: false }]);
+  await controller.ready;
+  assert.equal(controller.getScope(), "incognito");
+  assert.equal(controller.getPreference(), "light");
+  controller.setActiveTabIncognito(false);
+  assert.equal(controller.getPreference(), "dark");
+});
+
+test("removing a saved choice restores each mode's own default", () => {
+  const documentElement = { dataset: {} };
+  const context = { document: { documentElement } };
+  vm.runInNewContext(themeScript, context);
+  const controller = context.cookieControllerTheme;
+  controller.setPreference("dark");
+  controller.setPreference(null);
+  assert.equal(documentElement.dataset.theme, "light");
+  controller.setActiveTabIncognito(true);
+  controller.setPreference("light");
+  controller.setPreference(null);
+  assert.equal(documentElement.dataset.theme, "incognito");
+});
+
 function runThemeScript(options = null) {
   const documentElement = { dataset: {} };
   const context = {

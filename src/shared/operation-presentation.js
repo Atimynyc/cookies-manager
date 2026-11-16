@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 import { createBatchOperationResult, addOperationSuccess, addOperationFailure, addOperationSkip } from "./operation-result.js";
 
 export function operationItemFromRow(row, after) {
@@ -17,7 +18,7 @@ export function operationToBatchResult(job, { undo = false, itemIds = null } = {
     if (item.state === (undo ? "undone" : "applied")) {
       addOperationSuccess(result, item, undo ? item.before : item.after);
     } else if (["failed", "conflict", "undo-failed", "undo-conflict"].includes(item.state)) {
-      addOperationFailure(result, item, item.error || "The operation could not be completed.");
+      addOperationFailure(result, item, item.error || t("The operation could not be completed."));
     }
   }
   if (!undo) {
@@ -30,6 +31,6 @@ export function operationToBatchResult(job, { undo = false, itemIds = null } = {
 
 export function assertOperationSucceeded(job) {
   const failure = job.items.find((item) => item.state !== "applied");
-  if (failure) throw new Error(failure.error || "The operation was not completed. Open Operations to review its result.");
+  if (failure) throw new Error(failure.error || t("The operation was not completed. Open Operations to review its result."));
   return job;
 }

@@ -210,9 +210,11 @@ cookiesManager/
 
 1. popup 打开时查询当前激活 tab。
 2. 校验 URL 是否为 `http:` 或 `https:`。
-3. 调用 `chrome.cookies.getAll({ url })`。
-4. 按 `domain + path + name` 排序。
-5. 将 Cookie 转换为 UI 可展示模型。
+3. 调用 `chrome.permissions.contains` 检查当前站点权限；未授权时显示授权按钮并停止读取。
+4. 用户点击授权按钮后，通过 `chrome.permissions.request` 申请当前站点权限。
+5. 授权成功后调用 `chrome.cookies.getAll({ url })`。
+6. 按 `domain + path + name` 排序。
+7. 将 Cookie 转换为 UI 可展示模型。
 
 示例：
 

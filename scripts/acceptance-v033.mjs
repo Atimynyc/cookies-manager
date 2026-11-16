@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
+import { createAcceptanceExtension } from "./acceptance-extension-fixture.mjs";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const artifactDir = path.join(projectRoot, ".tmp", "v033-acceptance");
@@ -22,16 +23,19 @@ let targetPage;
 let inspector;
 let cdp;
 let operationTarget;
+let extensionFixture;
 
 try {
   await mkdir(artifactDir, { recursive: true });
+  extensionFixture = await createAcceptanceExtension(projectRoot);
   origin = await startServer();
   profileDir = await mkdtemp(path.join(tmpdir(), "cookie-controller-v033-"));
   context = await chromium.launchPersistentContext(profileDir, {
+    locale: "en-US",
     channel: "chromium",
     headless: process.env.HEADED !== "1",
     viewport: { width: 760, height: 800 },
-    args: [`--disable-extensions-except=${projectRoot}`, `--load-extension=${projectRoot}`]
+    args: ["--lang=en-US", `--disable-extensions-except=${extensionFixture.extensionRoot}`, `--load-extension=${extensionFixture.extensionRoot}`]
   });
   context.on("page", watchPage);
   context.pages().forEach(watchPage);
@@ -74,6 +78,7 @@ try {
   if (context) await context.close();
   if (server) await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
   if (profileDir) await rm(profileDir, { recursive: true, force: true });
+  if (extensionFixture) await extensionFixture.cleanup();
 }
 
 async function startServer() {
@@ -102,6 +107,10 @@ async function openExtensionPage() {
   await targetPage.bringToFront();
   await page.reload();
   await page.waitForFunction(() => document.querySelector("#loadingState")?.hidden === true);
+  if (await page.locator("#siteAccessDialog").isVisible()) {
+    await page.locator("#siteAccessDialogAllowButton").click();
+    await page.waitForFunction(() => document.querySelector("#siteAccessDialog")?.open === false);
+  }
   return page;
 }
 

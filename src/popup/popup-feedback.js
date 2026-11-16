@@ -1,3 +1,4 @@
+import { t } from "../shared/i18n.js";
 const COPY_FEEDBACK_DURATION = 2000;
 const STATUS_EXIT_DURATION = 120;
 const STATUS_DURATIONS = {
@@ -73,14 +74,14 @@ export function createClipboardFeedback(copyAnnouncement) {
     };
 
     button.classList.add("is-copied");
-    button.setAttribute("aria-label", "Copied");
+    button.setAttribute("aria-label", t("Copied"));
     if (button.hasAttribute("data-tooltip")) {
-      button.dataset.tooltip = "Copied";
+      button.dataset.tooltip = t("Copied");
     }
 
     copyAnnouncement.textContent = "";
     window.requestAnimationFrame(() => {
-      copyAnnouncement.textContent = "Copied to clipboard.";
+      copyAnnouncement.textContent = t("Copied to clipboard.");
     });
 
     const timerId = window.setTimeout(() => resetCopyFeedback(button), COPY_FEEDBACK_DURATION);
@@ -124,7 +125,7 @@ export async function writeClipboard(text) {
   textarea.remove();
 
   if (!copied) {
-    throw new Error("Clipboard is unavailable.");
+    throw new Error(t("Clipboard is unavailable."));
   }
 }
 

@@ -1,0 +1,2903 @@
+{
+  "m_only_this_extension_can_request_site_data_operat_af2557a": {
+    "message": "Nur diese Erweiterung kann Operationen mit Website-Daten anfordern.",
+    "description": "Only this extension can request site data operations."
+  },
+  "m_unknown_operation_command_820758d": {
+    "message": "Unbekannter Befehl.",
+    "description": "Unknown operation command."
+  },
+  "m_operation_failed_3b96e637": {
+    "message": "Der Vorgang ist fehlgeschlagen.",
+    "description": "Operation failed."
+  },
+  "m_url_decoded_value_23b88df9": {
+    "message": "Decodierter URL-Wert",
+    "description": "URL decoded value"
+  },
+  "m_url_encoded_value_34861f0d": {
+    "message": "URL-kodierter Wert",
+    "description": "URL encoded value"
+  },
+  "m_formatted_json_b53536a7": {
+    "message": "Formatiertes JSON",
+    "description": "Formatted JSON"
+  },
+  "m_compacted_json_bec19963": {
+    "message": "Komprimiertes JSON",
+    "description": "Compacted JSON"
+  },
+  "m_jwt_payload_2cce1860": {
+    "message": "JWT-Nutzdaten",
+    "description": "JWT payload"
+  },
+  "m_cookie_77a740bf": {
+    "message": "cookie",
+    "description": "cookie"
+  },
+  "m_cookies_284b0124": {
+    "message": "cookies",
+    "description": "cookies"
+  },
+  "m_cookie_bdbabadf": {
+    "message": "Cookie",
+    "description": "Cookie"
+  },
+  "m_reading_cookies_5d1246a0": {
+    "message": "cookies wird gelesen",
+    "description": "Reading cookies"
+  },
+  "m_no_cookies_for_this_page_d6b33cd9": {
+    "message": "Für diese Seite wurde kein cookies gefunden",
+    "description": "No cookies for this page"
+  },
+  "m_cookies_unavailable_86e2c35e": {
+    "message": "Cookies ist nicht verfügbar",
+    "description": "Cookies unavailable"
+  },
+  "m_only_http_and_https_pages_support_cookie_operati_7f8f266c": {
+    "message": "Nur http://- und https://-Seiten unterstützen cookie-Operationen.",
+    "description": "Only http:// and https:// pages support cookie operations."
+  },
+  "m_failed_to_read_cookies_ec17682": {
+    "message": "Das Lesen von cookies ist fehlgeschlagen.",
+    "description": "Failed to read cookies."
+  },
+  "m_name_fe07306": {
+    "message": "Elementname",
+    "description": "Name"
+  },
+  "m_value_d147f96a": {
+    "message": "Datenwert",
+    "description": "Value"
+  },
+  "m_domain_be1c8911": {
+    "message": "Domänenname",
+    "description": "Domain"
+  },
+  "m_path_eb66e456": {
+    "message": "Pfad zu URL",
+    "description": "Path"
+  },
+  "m_expires_c7aa0523": {
+    "message": "Läuft ab",
+    "description": "Expires"
+  },
+  "m_flags_4222ebcc": {
+    "message": "Attribute",
+    "description": "Flags"
+  },
+  "m_size_a6478e7c": {
+    "message": "Datengröße",
+    "description": "Size"
+  },
+  "m_store_6da32dce": {
+    "message": "Cookie-Speicherplatz",
+    "description": "Store"
+  },
+  "m_local_storage_item_980fa25c": {
+    "message": "Lokaler Speicherposten",
+    "description": "local storage item"
+  },
+  "m_local_storage_items_8f9c4ffd": {
+    "message": "lokale Speicherelemente",
+    "description": "local storage items"
+  },
+  "m_local_storage_c6c2fa19": {
+    "message": "Lokaler Speicher",
+    "description": "Local Storage"
+  },
+  "m_reading_local_storage_85a66635": {
+    "message": "Lokalen Speicher lesen",
+    "description": "Reading local storage"
+  },
+  "m_no_local_storage_for_this_page_81f3287c": {
+    "message": "Für diese Seite wurden keine Einträge im lokalen Speicher gefunden",
+    "description": "No local storage for this page"
+  },
+  "m_local_storage_unavailable_be2258cf": {
+    "message": "Lokaler Speicher nicht verfügbar",
+    "description": "Local storage unavailable"
+  },
+  "m_only_http_and_https_pages_support_storage_operat_1fb0cf9f": {
+    "message": "Nur die Seiten „http://“ und „https://“ unterstützen Speicheroperationen.",
+    "description": "Only http:// and https:// pages support storage operations."
+  },
+  "m_failed_to_read_local_storage_5600c819": {
+    "message": "Das Lesen des lokalen Speichers ist fehlgeschlagen.",
+    "description": "Failed to read local storage."
+  },
+  "m_key_cd1ac90c": {
+    "message": "Eintragsname",
+    "description": "Key"
+  },
+  "m_origin_1f93146f": {
+    "message": "Herkunft der Website",
+    "description": "Origin"
+  },
+  "m_storage_34eddf06": {
+    "message": "Lagerung",
+    "description": "Storage"
+  },
+  "m_scope_63e6658b": {
+    "message": "Geltungsbereich",
+    "description": "Scope"
+  },
+  "m_type_d155d06d": {
+    "message": "Typ",
+    "description": "Type"
+  },
+  "m_session_storage_item_abc5a459": {
+    "message": "Sitzungsspeicherelement",
+    "description": "session storage item"
+  },
+  "m_session_storage_items_92216e1e": {
+    "message": "Elemente des Sitzungsspeichers",
+    "description": "session storage items"
+  },
+  "m_session_storage_c99fc216": {
+    "message": "Sitzungsspeicher",
+    "description": "Session Storage"
+  },
+  "m_reading_session_storage_58eeddc2": {
+    "message": "Speicher für Lesesitzungen",
+    "description": "Reading session storage"
+  },
+  "m_no_session_storage_for_this_page_81d58bab": {
+    "message": "Für diese Seite wurden keine Einträge im Sitzungsspeicher gefunden",
+    "description": "No session storage for this page"
+  },
+  "m_session_storage_unavailable_22a66cec": {
+    "message": "Sitzungsspeicher nicht verfügbar",
+    "description": "Session storage unavailable"
+  },
+  "m_failed_to_read_session_storage_9a5d1b9c": {
+    "message": "Der Lesevorgang des Sitzungsspeichers ist fehlgeschlagen.",
+    "description": "Failed to read session storage."
+  },
+  "m_delete_5797ea6a": {
+    "message": "Löschen",
+    "description": "Delete"
+  },
+  "m_enter_a_valid_value_21accea5": {
+    "message": "Geben Sie einen gültigen Wert ein.",
+    "description": "Enter a valid value."
+  },
+  "m_items_3a79338f": {
+    "message": "Artikel",
+    "description": "items"
+  },
+  "m_selected_1_eac1029b": {
+    "message": "Ausgewähltes $slot_1$",
+    "description": "Selected $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_unnamed_727f184c": {
+    "message": "(unbenannt)",
+    "description": "(unnamed)"
+  },
+  "m_local_28b223a8": {
+    "message": "Lokale Daten",
+    "description": "Local"
+  },
+  "m_session_2048cc97": {
+    "message": "Sitzung",
+    "description": "Session"
+  },
+  "m_all_cookies_96f0f90b": {
+    "message": "Alle cookies",
+    "description": "All cookies"
+  },
+  "m_all_site_data_37826d75": {
+    "message": "Alle Standortdaten",
+    "description": "All site data"
+  },
+  "m_copy_netscape_3515f66b": {
+    "message": "Netscape kopieren",
+    "description": "Copy Netscape"
+  },
+  "m_copy_json_e595bc8e": {
+    "message": "JSON kopieren",
+    "description": "Copy JSON"
+  },
+  "m_save_cookies_txt_686a7b51": {
+    "message": "cookies.txt speichern",
+    "description": "Save cookies.txt"
+  },
+  "m_save_json_a889c0da": {
+    "message": "JSON speichern",
+    "description": "Save JSON"
+  },
+  "m_cookies_58f3dcc4": {
+    "message": "Cookies",
+    "description": "Cookies"
+  },
+  "m_current_view_1_9eee4e3d": {
+    "message": "Aktuelle Ansicht ($slot_1$)",
+    "description": "Current view($1)",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_hide_items_d1e5ea99": {
+    "message": "Elemente ausblenden",
+    "description": "Hide items"
+  },
+  "m_choose_items_73f07ad4": {
+    "message": "Artikel auswählen",
+    "description": "Choose items"
+  },
+  "m_1_of_2_selected_8d353d4c": {
+    "message": "$slot_1$ von $slot_2$ ausgewählt",
+    "description": "$1 of $2 selected",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_select_1_fcc09d68": {
+    "message": "$slot_1$ auswählen",
+    "description": "Select $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_item_1f648006": {
+    "message": "Artikel",
+    "description": "Item"
+  },
+  "m_1_cookies_in_the_current_view_a8926f6b": {
+    "message": "$slot_1$ cookies in der aktuellen Ansicht",
+    "description": "$1 cookies in the current view",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_selected_cookies_121bff00": {
+    "message": "$slot_1$ hat cookies ausgewählt",
+    "description": "$1 selected cookies",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_all_cookies_for_the_current_target_3d500f07": {
+    "message": "Alle cookies für das aktuelle Ziel",
+    "description": "All cookies for the current target"
+  },
+  "m_samesite_partitioned_chips_and_cookie_store_are__c9b688b": {
+    "message": ". SameSite, Partitioned/CHIPS und Cookie sind nicht vertreten.",
+    "description": ". SameSite, Partitioned/CHIPS, and Cookie store are not represented."
+  },
+  "m_1_2_in_the_current_view_47e460ee": {
+    "message": "$slot_1$ $slot_2$ in der aktuellen Ansicht",
+    "description": "$1 $2 in the current view",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_1_selected_2_f3f350b7": {
+    "message": "$slot_1$ hat $slot_2$ ausgewählt",
+    "description": "$1 selected $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_cookies_local_storage_and_session_storage_for_th_70999cbc": {
+    "message": "Cookies, Local Storage und Session Storage für das aktuelle Ziel",
+    "description": "Cookies, Local Storage, and Session Storage for the current target"
+  },
+  "m_preparing_preview_ecfabd6b": {
+    "message": "Vorschau wird vorbereitet...",
+    "description": "Preparing preview..."
+  },
+  "m_failed_to_build_export_preview_56fd5cdd": {
+    "message": "Die Exportvorschau konnte nicht erstellt werden.",
+    "description": "Failed to build export preview."
+  },
+  "m_copied_1_2_7c37d74c": {
+    "message": "$slot_1$ $slot_2$ wurden kopiert.",
+    "description": "Copied $1 $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_saved_1_2_84ae4f6b": {
+    "message": "$slot_1$ $slot_2$ gespeichert.",
+    "description": "Saved $1 $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_failed_to_export_site_data_132c6226": {
+    "message": "Der Export der Website-Daten ist fehlgeschlagen.",
+    "description": "Failed to export site data."
+  },
+  "m_copied_8dc21305": {
+    "message": "Kopiert",
+    "description": "Copied"
+  },
+  "m_copied_to_clipboard_35a67762": {
+    "message": "In die Zwischenablage kopiert.",
+    "description": "Copied to clipboard."
+  },
+  "m_clipboard_is_unavailable_80f97fb5": {
+    "message": "Die Zwischenablage ist nicht verfügbar.",
+    "description": "Clipboard is unavailable."
+  },
+  "m_operation_history_could_not_be_loaded_5e027316": {
+    "message": "Die Operationshistorie konnte nicht geladen werden.",
+    "description": "Operation history could not be loaded."
+  },
+  "m_this_older_change_has_no_operation_journal_and_c_68e243a8": {
+    "message": "Für diese ältere Änderung liegt kein Änderungsprotokoll vor, sodass sie nicht sicher rückgängig gemacht werden kann.",
+    "description": "This older change has no operation journal and cannot be safely undone."
+  },
+  "m_the_change_could_not_be_undone_b52cca32": {
+    "message": "Die Änderung konnte nicht rückgängig gemacht werden.",
+    "description": "The change could not be undone."
+  },
+  "m_undid_the_selected_change_87c607c7": {
+    "message": "Die ausgewählte Änderung wurde rückgängig gemacht.",
+    "description": "Undid the selected change."
+  },
+  "m_failed_to_undo_change_d52af123": {
+    "message": "Die Änderung konnte nicht rückgängig gemacht werden.",
+    "description": "Failed to undo change."
+  },
+  "m_1_history_cleared_fe217fd8": {
+    "message": "Verlauf von $slot_1$ gelöscht.",
+    "description": "$1 history cleared.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_clear_recent_changes_8140e2d8": {
+    "message": "Die letzten Änderungen konnten nicht gelöscht werden.",
+    "description": "Failed to clear recent changes."
+  },
+  "m_back_to_details_c7da44f9": {
+    "message": "Zurück zu den Details",
+    "description": "Back to details"
+  },
+  "m_1_unread_changes_3b48aa9c": {
+    "message": "Ungelesene Änderungen an $slot_1$",
+    "description": "$1 unread changes",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_recent_changes_b8075d47": {
+    "message": "Aktuelle Änderungen",
+    "description": "Recent changes"
+  },
+  "m_change_detail_38f8e0a6": {
+    "message": "Details ändern",
+    "description": "Change detail"
+  },
+  "m_details_ec24245": {
+    "message": "Details",
+    "description": "Details"
+  },
+  "m_unknown_scope_32aea031": {
+    "message": "Unbekannter Geltungsbereich",
+    "description": "Unknown scope"
+  },
+  "m_undo_71fd4acf": {
+    "message": "Rückgängig",
+    "description": "Undo"
+  },
+  "m_undo_this_change_7d5c83f": {
+    "message": "Diese Änderung rückgängig machen",
+    "description": "Undo this change"
+  },
+  "m_action_a77a91f": {
+    "message": "Aktion",
+    "description": "Action"
+  },
+  "m_before_expiration_26ac998b": {
+    "message": "Vor Ablauf",
+    "description": "Before expiration"
+  },
+  "m_after_expiration_f68ca912": {
+    "message": "Nach Ablauf",
+    "description": "After expiration"
+  },
+  "m_default_19dc307e": {
+    "message": "Standard",
+    "description": "Default"
+  },
+  "m_host_302af18f": {
+    "message": "Gastgeber",
+    "description": "Host"
+  },
+  "m_changed_89c5203b": {
+    "message": "Geändert",
+    "description": "Changed"
+  },
+  "m_cookie_id_4eda8c38": {
+    "message": "Cookie-ID",
+    "description": "Cookie ID"
+  },
+  "m_item_id_e7a83b9f": {
+    "message": "Artikel-ID",
+    "description": "Item ID"
+  },
+  "m_original_tab_b29944a5": {
+    "message": "Original-Registerkarte",
+    "description": "Original tab"
+  },
+  "m_browsing_mode_8e47a543": {
+    "message": "Browsing-Modus",
+    "description": "Browsing mode"
+  },
+  "m_incognito_ed905099": {
+    "message": "Inkognito",
+    "description": "Incognito"
+  },
+  "m_regular_e750f2b7": {
+    "message": "Regulär",
+    "description": "Regular"
+  },
+  "m_value_snapshots_are_only_available_during_the_cu_61f70835": {
+    "message": "Wert-Snapshots sind nur während der aktuellen Browsersitzung verfügbar.",
+    "description": "Value snapshots are only available during the current browser session."
+  },
+  "m_unknown_cc200e59": {
+    "message": "Unbekannt",
+    "description": "Unknown"
+  },
+  "m_edit_c2c76cb1": {
+    "message": "Bearbeiten",
+    "description": "Edit"
+  },
+  "m_import_create_fa45a268": {
+    "message": "Import erstellen",
+    "description": "Import create"
+  },
+  "m_import_overwrite_bc473479": {
+    "message": "Import überschreiben",
+    "description": "Import overwrite"
+  },
+  "m_change_a1de2fdd": {
+    "message": "Ändern",
+    "description": "Change"
+  },
+  "m_edit_1_70f54d7c": {
+    "message": "$slot_1$ bearbeiten",
+    "description": "Edit $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_saved_1_146f391f": {
+    "message": "$slot_1$ wurde gespeichert.",
+    "description": "Saved $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_save_1_a7d79009": {
+    "message": "Das Speichern von $slot_1$ ist fehlgeschlagen.",
+    "description": "Failed to save $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_delete_1_aae09c76": {
+    "message": "$slot_1$ löschen?",
+    "description": "Delete $1?",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_will_be_deleted_c4fd26b6": {
+    "message": "„$slot_1$“ wird gelöscht.",
+    "description": "\"$1\" will be deleted.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_delete_1_e576134d": {
+    "message": "$slot_1$ löschen",
+    "description": "Delete $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_deleted_1_60ffd4f9": {
+    "message": "$slot_1$ wurde gelöscht.",
+    "description": "Deleted $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_delete_1_d656ba17": {
+    "message": "Das Löschen von $slot_1$ ist fehlgeschlagen.",
+    "description": "Failed to delete $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_set_value_64db79c6": {
+    "message": "Wert festlegen",
+    "description": "Set value"
+  },
+  "m_value_for_1_selected_2_d0eb34dd": {
+    "message": "Wert, der den ausgewählten Elementen zugewiesen werden soll (Anzahl: $slot_1$, Typ: $slot_2$)",
+    "description": "Value for $1 selected $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_edit_1_items_849caea8": {
+    "message": "Elemente von $slot_1$ bearbeiten",
+    "description": "Edit $1 items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_updated_513083d0": {
+    "message": "Aktualisiert",
+    "description": "Updated"
+  },
+  "m_failed_to_update_selected_1_d1101454": {
+    "message": "Das Aktualisieren des ausgewählten $slot_1$ ist fehlgeschlagen.",
+    "description": "Failed to update selected $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_delete_selected_1_fe5c7abb": {
+    "message": "Ausgewählte $slot_1$ löschen?",
+    "description": "Delete selected $1?",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_selected_2_will_be_deleted_232e6b57": {
+    "message": "Zu löschende Daten: $slot_1$ $slot_2$.",
+    "description": "$1 selected $2 will be deleted.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_delete_1_items_4b46c619": {
+    "message": "$slot_1$-Elemente löschen",
+    "description": "Delete $1 items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_deleted_f225740a": {
+    "message": "Gelöscht",
+    "description": "Deleted"
+  },
+  "m_failed_to_delete_selected_1_3dc9d492": {
+    "message": "Das Löschen des ausgewählten $slot_1$ ist fehlgeschlagen.",
+    "description": "Failed to delete selected $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_2_selected_3_f233475c": {
+    "message": "$slot_1$ $slot_2$ ausgewähltes $slot_3$.",
+    "description": "$1 $2 selected $3.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_1_failed_daf125e3": {
+    "message": "$slot_1$ fehlgeschlagen",
+    "description": "$1 failed",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_skipped_4823a4a": {
+    "message": "$slot_1$ übersprungen",
+    "description": "$1 skipped",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_copy_f7803f90": {
+    "message": "Das Kopieren ist fehlgeschlagen.",
+    "description": "Failed to copy."
+  },
+  "m_the_item_s_origin_does_not_match_the_target_page_1a1ea3ad": {
+    "message": "Die Herkunft des Artikels stimmt nicht mit der Zielseite überein. Bitte aktualisieren Sie die Seite, bevor Sie Änderungen vornehmen.",
+    "description": "The item's origin does not match the target page. Refresh before editing."
+  },
+  "m_the_cookie_does_not_belong_to_the_target_page_an_a7a414cf": {
+    "message": "Der Begriff cookie gehört nicht zur Zielseite und zum Speicher cookie. Bitte aktualisieren Sie die Seite, bevor Sie bearbeiten.",
+    "description": "The cookie does not belong to the target page and cookie store. Refresh before editing."
+  },
+  "m_queued_9e437c74": {
+    "message": "In der Warteschlange",
+    "description": "Queued"
+  },
+  "m_writing_3c4e7def": {
+    "message": "Wird geschrieben",
+    "description": "Writing"
+  },
+  "m_written_e27a560": {
+    "message": "Geschrieben",
+    "description": "Written"
+  },
+  "m_failed_5579c3d4": {
+    "message": "Fehlgeschlagen",
+    "description": "Failed"
+  },
+  "m_conflict_77d3e0ef": {
+    "message": "Konflikt",
+    "description": "Conflict"
+  },
+  "m_undoing_2053d2e9": {
+    "message": "Rückgängig machen",
+    "description": "Undoing"
+  },
+  "m_undone_94b5c3a2": {
+    "message": "Rückgängig gemacht",
+    "description": "Undone"
+  },
+  "m_undo_failed_75fa16cc": {
+    "message": "Rückgängigmachen fehlgeschlagen",
+    "description": "Undo failed"
+  },
+  "m_undo_conflict_e5fe1187": {
+    "message": "Konflikt beim Rückgängigmachen",
+    "description": "Undo conflict"
+  },
+  "m_1_tab_2_3_49b4634e": {
+    "message": "$slot_1$ | Registerkarte $slot_2$ | $slot_3$",
+    "description": "$1 | Tab $2 | $3",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_retry_failed_a53fbd96": {
+    "message": "Wiederholungsversuch fehlgeschlagen",
+    "description": "Retry failed"
+  },
+  "m_undo_unchanged_items_in_this_operation_f2f1f31e": {
+    "message": "Unveränderte Elemente dieses Vorgangs rückgängig machen",
+    "description": "Undo unchanged items in this operation"
+  },
+  "m_remove_record_e8883f8e": {
+    "message": "Datensatz entfernen",
+    "description": "Remove record"
+  },
+  "m_items_1_4d7b976b": {
+    "message": "Elemente ($slot_1$)",
+    "description": "Items ($1)",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_resume_454d1d8a": {
+    "message": "Fortsetzen",
+    "description": "Resume"
+  },
+  "m_remove_operation_record_fc8a6952": {
+    "message": "Vorgang löschen?",
+    "description": "Remove operation record?"
+  },
+  "m_1_will_no_longer_be_retryable_or_undoable_63f756e8": {
+    "message": "„$slot_1$“ kann dann nicht mehr wiederholt oder rückgängig gemacht werden.",
+    "description": "\"$1\" will no longer be retryable or undoable.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_operation_record_removed_657ba6df": {
+    "message": "Vorgangsprotokoll entfernt.",
+    "description": "Operation record removed."
+  },
+  "m_1_items_still_need_attention_9744ebf8": {
+    "message": "$slot_1$ Elemente erfordern weiterhin Ihre Aufmerksamkeit.",
+    "description": "$1 items still need attention.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_operation_undone_6eaa3429": {
+    "message": "Vorgang rückgängig gemacht.",
+    "description": "Operation undone."
+  },
+  "m_retry_complete_d6be7652": {
+    "message": "Wiederholung abgeschlossen.",
+    "description": "Retry complete."
+  },
+  "m_the_operation_could_not_be_completed_9dfb6413": {
+    "message": "Der Vorgang konnte nicht abgeschlossen werden.",
+    "description": "The operation could not be completed."
+  },
+  "m_failed_to_load_saved_states_eba79a18": {
+    "message": "Das Laden der gespeicherten Zustände ist fehlgeschlagen.",
+    "description": "Failed to load saved states."
+  },
+  "m_failed_to_save_state_f7ddf0e7": {
+    "message": "Das Speichern des Zustands ist fehlgeschlagen.",
+    "description": "Failed to save state."
+  },
+  "m_1_saved_70a9d181": {
+    "message": "$slot_1$ gespeichert",
+    "description": "$1 saved",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_apply_ca77bbdb": {
+    "message": "Übernehmen",
+    "description": "Apply"
+  },
+  "m_rename_c80631f3": {
+    "message": "Umbenennen",
+    "description": "Rename"
+  },
+  "m_copy_658f3664": {
+    "message": "Kopieren",
+    "description": "Copy"
+  },
+  "m_export_e86349d3": {
+    "message": "Exportieren",
+    "description": "Export"
+  },
+  "m_failed_to_update_saved_states_915ee649": {
+    "message": "Die gespeicherten Zustände konnten nicht aktualisiert werden.",
+    "description": "Failed to update saved states."
+  },
+  "m_failed_to_prepare_saved_state_4e725642": {
+    "message": "Die Vorbereitung des gespeicherten Zustands ist fehlgeschlagen.",
+    "description": "Failed to prepare saved state."
+  },
+  "m_select_at_least_one_item_before_exporting_c009f5e7": {
+    "message": "Wählen Sie vor dem Exportieren mindestens ein Element aus.",
+    "description": "Select at least one item before exporting."
+  },
+  "m_the_import_target_changed_build_a_new_preview_be_608d4006": {
+    "message": "Das Importziel hat sich geändert. Erstellen Sie eine neue Vorschau, bevor Sie dieses Paket anwenden.",
+    "description": "The import target changed. Build a new preview before applying this package."
+  },
+  "m_import_1_items_b55a9d0b": {
+    "message": "$slot_1$ Elemente importieren",
+    "description": "Import $1 items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_no_import_snapshot_is_available_in_this_browser__69690989": {
+    "message": "In dieser Browsersitzung ist kein Import-Snapshot verfügbar.",
+    "description": "No import snapshot is available in this browser session."
+  },
+  "m_return_to_the_original_target_tab_site_and_brows_eb117f96": {
+    "message": "Kehren Sie zum ursprünglichen Ziel-Tab, zur Website und zum Browsing-Modus zurück, bevor Sie diesen Import rückgängig machen.",
+    "description": "Return to the original target tab, site, and browsing mode before undoing this import."
+  },
+  "m_undo_restored_1_items_2_failed_ab5a808a": {
+    "message": "$slot_1$ Elemente wurden rückgängig gemacht; $slot_2$ ist fehlgeschlagen.",
+    "description": "Undo restored $1 items; $2 failed.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_undid_1_imported_items_f6bd9698": {
+    "message": "$slot_1$ importierte Elemente wurden rückgängig gemacht.",
+    "description": "Undid $1 imported items.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_written_2_failed_3_skipped_304b4a05": {
+    "message": "$slot_1$ geschrieben, $slot_2$ fehlgeschlagen, $slot_3$ übersprungen.",
+    "description": "$1 written, $2 failed, $3 skipped.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_rename_saved_state_5dfd733d": {
+    "message": "Gespeicherten Zustand umbenennen",
+    "description": "Rename saved state"
+  },
+  "m_saved_state_name_3d927c88": {
+    "message": "Name des gespeicherten Zustands",
+    "description": "Saved state name"
+  },
+  "m_enter_a_saved_state_name_9fd29047": {
+    "message": "Geben Sie einen Namen für den gespeicherten Zustand ein.",
+    "description": "Enter a saved state name."
+  },
+  "m_delete_saved_state_84940685": {
+    "message": "Gespeicherten Zustand löschen?",
+    "description": "Delete saved state?"
+  },
+  "m_1_will_be_permanently_deleted_a8c73725": {
+    "message": "„$slot_1$“ wird endgültig gelöscht.",
+    "description": "\"$1\" will be permanently deleted.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_bytes_73e126d1": {
+    "message": "$slot_1$ Bytes",
+    "description": "$1 bytes",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_jwt_value_f3ae0363": {
+    "message": "Wert von JWT",
+    "description": "JWT value"
+  },
+  "m_json_value_f2431466": {
+    "message": "Wert von JSON",
+    "description": "JSON value"
+  },
+  "m_favorite_7c6c19ed": {
+    "message": "Favorit",
+    "description": "Favorite"
+  },
+  "m_new_8b242db1": {
+    "message": "Neu",
+    "description": "New"
+  },
+  "m_modified_dd13a6b2": {
+    "message": "Geändert",
+    "description": "Modified"
+  },
+  "m_same_4d38965b": {
+    "message": "Unverändert",
+    "description": "Same"
+  },
+  "m_unsupported_3f4e39d0": {
+    "message": "Nicht unterstützt",
+    "description": "Unsupported"
+  },
+  "m_import_573e0af4": {
+    "message": "Import",
+    "description": "Import"
+  },
+  "m_saved_states_93462486": {
+    "message": "Gespeicherte Zustände",
+    "description": "Saved States"
+  },
+  "m_cookie_name_daf59b6e": {
+    "message": "Cookie-Name",
+    "description": "Cookie name"
+  },
+  "m_storage_key_df0caa39": {
+    "message": "Name des Speichereintrags",
+    "description": "Storage key"
+  },
+  "m_cookie_value_cfa44712": {
+    "message": "Cookie-Wert",
+    "description": "Cookie value"
+  },
+  "m_storage_value_e83fba3b": {
+    "message": "Speicherwert",
+    "description": "Storage value"
+  },
+  "m_enter_valid_site_data_dffd0cc8": {
+    "message": "Geben Sie gültige Standortdaten ein.",
+    "description": "Enter valid site data."
+  },
+  "m_drop_one_import_file_at_a_time_d54fa864": {
+    "message": "Laden Sie jeweils nur eine Importdatei hoch.",
+    "description": "Drop one import file at a time."
+  },
+  "m_netscape_curl_files_can_only_be_imported_from_co_bb4fa060": {
+    "message": "Netscape- und cURL-Dateien können nur aus Cookies importiert werden.",
+    "description": "Netscape / cURL files can only be imported from Cookies."
+  },
+  "m_failed_to_read_the_selected_file_d34a98a9": {
+    "message": "Die ausgewählte Datei konnte nicht gelesen werden.",
+    "description": "Failed to read the selected file."
+  },
+  "m_invalid_site_data_package_3913772d": {
+    "message": "Ungültiges Website-Datenpaket.",
+    "description": "Invalid site data package."
+  },
+  "m_failed_to_build_import_preview_a2a2a0f8": {
+    "message": "Die Importvorschau konnte nicht erstellt werden.",
+    "description": "Failed to build import preview."
+  },
+  "m_target_1_3691ef59": {
+    "message": "Ziel: $slot_1$",
+    "description": "Target: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_selected_5f70e77b": {
+    "message": "$slot_1$ ausgewählt",
+    "description": "$1 selected",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_applying_site_data_eac81ccc": {
+    "message": "Standortdaten werden angewendet",
+    "description": "Applying site data"
+  },
+  "m_preparing_batch_61d07c13": {
+    "message": "Stapel wird vorbereitet",
+    "description": "Preparing batch"
+  },
+  "m_import_complete_5d213773": {
+    "message": "Import abgeschlossen",
+    "description": "Import complete"
+  },
+  "m_import_failed_9ffdaa11": {
+    "message": "Import fehlgeschlagen",
+    "description": "Import failed"
+  },
+  "m_the_batch_could_not_be_applied_417dafd2": {
+    "message": "Der Stapel konnte nicht verarbeitet werden.",
+    "description": "The batch could not be applied."
+  },
+  "m_1_of_2_359557ff": {
+    "message": "$slot_1$ von $slot_2$",
+    "description": "$1 of $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_1_succeeded_2_failed_3_skipped_218f4367": {
+    "message": "$slot_1$ erfolgreich, $slot_2$ fehlgeschlagen, $slot_3$ übersprungen",
+    "description": "$1 succeeded, $2 failed, $3 skipped",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_site_data_item_59051e8d": {
+    "message": "Website-Datenelement",
+    "description": "Site data item"
+  },
+  "m_success_3a5fbf10": {
+    "message": "erfolgreich",
+    "description": "success"
+  },
+  "m_failed_e0accfb4": {
+    "message": "fehlgeschlagen",
+    "description": "failed"
+  },
+  "m_skipped_22ec9b7": {
+    "message": "übersprungen",
+    "description": "skipped"
+  },
+  "m_undoing_import_79ebb952": {
+    "message": "Import rückgängig machen",
+    "description": "Undoing import"
+  },
+  "m_import_undone_76ad3b2b": {
+    "message": "Import rückgängig gemacht",
+    "description": "Import undone"
+  },
+  "m_undo_incomplete_341418ed": {
+    "message": "Rückgängigmachung unvollständig",
+    "description": "Undo incomplete"
+  },
+  "m_the_batch_could_not_be_undone_e7c1877a": {
+    "message": "Der Stapelvorgang konnte nicht rückgängig gemacht werden.",
+    "description": "The batch could not be undone."
+  },
+  "m_or_drop_a_file_here_929523b2": {
+    "message": "oder eine Datei hier ablegen",
+    "description": "or drop a file here"
+  },
+  "m_netscape_cookie_jar_6ff3f335": {
+    "message": "Netscape cookie-JAR",
+    "description": "Netscape cookie jar"
+  },
+  "m_package_json_7a60c07f": {
+    "message": "Paket JSON",
+    "description": "Package JSON"
+  },
+  "m_paste_netscape_curl_cookie_data_31a18196": {
+    "message": "Netscape / cURL cookie-Daten einfügen",
+    "description": "Paste Netscape / cURL cookie data"
+  },
+  "m_paste_a_site_data_package_bd31982": {
+    "message": "Ein Website-Datenpaket einfügen",
+    "description": "Paste a site data package"
+  },
+  "m_copy_value_8902f3e5": {
+    "message": "Wert kopieren",
+    "description": "Copy value"
+  },
+  "m_copy_name_value_6c98eeaf": {
+    "message": "name=value kopieren",
+    "description": "Copy name=value"
+  },
+  "m_copy_result_4fd54b5": {
+    "message": "Ergebnis kopieren",
+    "description": "Copy result"
+  },
+  "m_reload_after_changes_on_1de03620": {
+    "message": "Nach Änderungen neu laden: ein",
+    "description": "Reload after changes: on"
+  },
+  "m_reload_after_changes_off_7e09437a": {
+    "message": "Nach Änderungen neu laden: aus",
+    "description": "Reload after changes: off"
+  },
+  "m_refresh_data_page_reload_is_on_cece4e4c": {
+    "message": "Daten aktualisieren (Seitenneuladen ist aktiviert)",
+    "description": "Refresh data (page reload is on)"
+  },
+  "m_refresh_data_f7e27804": {
+    "message": "Daten aktualisieren",
+    "description": "Refresh data"
+  },
+  "m_this_page_is_not_supported_c8ca9e9f": {
+    "message": "Diese Seite wird nicht unterstützt",
+    "description": "This page is not supported"
+  },
+  "m_failed_to_open_site_data_tools_82dfa4d9": {
+    "message": "Die Website-Daten-Tools konnten nicht geöffnet werden.",
+    "description": "Failed to open site data tools."
+  },
+  "m_failed_to_switch_site_b20d98c8": {
+    "message": "Der Wechsel der Website ist fehlgeschlagen.",
+    "description": "Failed to switch site."
+  },
+  "m_opened_side_panel_7e401ebd": {
+    "message": "Seitenleiste geöffnet.",
+    "description": "Opened side panel."
+  },
+  "m_failed_to_open_side_panel_f092d38e": {
+    "message": "Das Öffnen der Seitenleiste ist fehlgeschlagen.",
+    "description": "Failed to open side panel."
+  },
+  "m_1_reload_this_extension_in_chrome_extensions_aft_7b6e4c77": {
+    "message": "$slot_1$ Laden Sie diese Erweiterung in chrome://extensions neu, nachdem Sie das Manifest aktualisiert haben.",
+    "description": "$1 Reload this extension in chrome://extensions after updating the manifest.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_no_supported_target_dc598e35": {
+    "message": "Kein unterstütztes Ziel",
+    "description": "No supported target"
+  },
+  "m_open_an_http_or_https_page_before_importing_1_157b51a6": {
+    "message": "Öffnen Sie eine http://- oder https://-Seite, bevor Sie $slot_1$ importieren.",
+    "description": "Open an http:// or https:// page before importing $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_import_1_item_d94801da": {
+    "message": "Element $slot_1$ importieren",
+    "description": "Import $1 item",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_import_1_5398384d": {
+    "message": "Der Import von $slot_1$ ist fehlgeschlagen.",
+    "description": "Failed to import $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_row_1_2_943d7d0a": {
+    "message": "Zeile $slot_1$: $slot_2$",
+    "description": "Row $1: $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_row_1_2_3_is_duplicated_23e8d788": {
+    "message": "Zeile $slot_1$: $slot_2$ „$slot_3$“ ist bereits vorhanden.",
+    "description": "Row $1: $2 \"$3\" is duplicated.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_enter_at_least_one_1_f54799b0": {
+    "message": "Geben Sie mindestens ein $slot_1$ ein.",
+    "description": "Enter at least one $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_imported_1_7eecd17a": {
+    "message": "$slot_1$ wurde importiert.",
+    "description": "Imported $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_imported_1_2_875cc7ac": {
+    "message": "$slot_1$ $slot_2$ wurde importiert.",
+    "description": "Imported $1 $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_imported_1_2_3_failed_4_4ed60786": {
+    "message": "$slot_1$ $slot_2$ importiert, $slot_3$ fehlgeschlagen.$slot_4$",
+    "description": "Imported $1 $2, $3 failed.$4",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      },
+      "slot_4": {
+        "content": "$4"
+      }
+    }
+  },
+  "m_1_ready_2ec8dfb5": {
+    "message": "$slot_1$ bereit.",
+    "description": "$1 ready.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_unable_to_parse_this_value_88fdaac5": {
+    "message": "Dieser Wert kann nicht analysiert werden.",
+    "description": "Unable to parse this value."
+  },
+  "m_show_result_b85e67ad": {
+    "message": "Ergebnis anzeigen",
+    "description": "Show result"
+  },
+  "m_raw_a689aa91": {
+    "message": "Rohwert",
+    "description": "Raw"
+  },
+  "m_raw_value_c5a32700": {
+    "message": "Rohwert",
+    "description": "raw value"
+  },
+  "m_show_1_a598d193": {
+    "message": "$slot_1$ anzeigen",
+    "description": "Show $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_search_selected_cookies_a8e71275": {
+    "message": "Ausgewähltes cookies suchen",
+    "description": "Search selected cookies"
+  },
+  "m_search_name_value_domain_path_3fd69442": {
+    "message": "Nach Name, Wert, Domäne, Pfad suchen",
+    "description": "Search name, value, domain, path"
+  },
+  "m_search_selected_items_c4b3e72a": {
+    "message": "Ausgewählte Elemente suchen",
+    "description": "Search selected items"
+  },
+  "m_search_key_value_origin_a6484085": {
+    "message": "Nach Schlüssel, Wert, Herkunft suchen",
+    "description": "Search key, value, origin"
+  },
+  "m_refresh_1_4d5efd5b": {
+    "message": "$slot_1$ aktualisieren",
+    "description": "Refresh $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_editor_86069f43": {
+    "message": "$slot_1$-Editor",
+    "description": "$1 editor",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_select_a_1_c629d055": {
+    "message": "$slot_1$ auswählen",
+    "description": "Select a $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_resize_1_column_a7150cf6": {
+    "message": "Spaltenbreite von $slot_1$ anpassen",
+    "description": "Resize $1 column",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_cookie_dccfa860": {
+    "message": "$slot_1$ cookie",
+    "description": "$1 cookie",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_cookies_ade595e9": {
+    "message": "$slot_1$ cookies",
+    "description": "$1 cookies",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_local_storage_item_2393a4f7": {
+    "message": "$slot_1$ Element im lokalen Speicher",
+    "description": "$1 local storage item",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_local_storage_items_856bfbcc": {
+    "message": "$slot_1$ Elemente im lokalen Speicher",
+    "description": "$1 local storage items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_session_storage_item_549260e6": {
+    "message": "$slot_1$ Element im Sitzungsspeicher",
+    "description": "$1 session storage item",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_session_storage_items_b76e0a8f": {
+    "message": "$slot_1$ Elemente im Sitzungsspeicher",
+    "description": "$1 session storage items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_sort_1_ascending_9526e2a6": {
+    "message": "$slot_1$ aufsteigend sortieren",
+    "description": "Sort $1 ascending",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_sort_1_descending_c2ff5ce6": {
+    "message": "$slot_1$ absteigend sortieren",
+    "description": "Sort $1 descending",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_update_favorites_5e1b6823": {
+    "message": "Die Favoriten konnten nicht aktualisiert werden.",
+    "description": "Failed to update favorites."
+  },
+  "m_1_selected_2_e507aad": {
+    "message": "$slot_1$ ausgewählt$slot_2$",
+    "description": "$1 selected$2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_1_hidden_eef079a1": {
+    "message": " · $slot_1$ ausgeblendet",
+    "description": " · $1 hidden",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_show_all_items_36117eb7": {
+    "message": "Alle Elemente anzeigen",
+    "description": "Show all items"
+  },
+  "m_show_selected_items_7a2ae1e9": {
+    "message": "Ausgewählte Elemente anzeigen",
+    "description": "Show selected items"
+  },
+  "m_this_item_was_removed_from_the_page_your_draft_w_586055b6": {
+    "message": "Dieses Element wurde von der Seite entfernt. Ihr Entwurf wurde beibehalten.",
+    "description": "This item was removed from the page. Your draft was kept."
+  },
+  "m_overwrite_changed_item_a01cac5e": {
+    "message": "Geändertes Element überschreiben?",
+    "description": "Overwrite changed item?"
+  },
+  "m_1_changed_on_the_page_after_editing_started_56a44a84": {
+    "message": "„$slot_1$“ wurde auf der Seite nach Beginn der Bearbeitung geändert.",
+    "description": "\"$1\" changed on the page after editing started.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_the_current_value_and_expiration_will_be_replace_28509cd8": {
+    "message": "Der aktuelle Wert und das Ablaufdatum werden durch Ihren Entwurf ersetzt.",
+    "description": "The current value and expiration will be replaced by your draft."
+  },
+  "m_the_current_page_value_will_be_replaced_by_your__cbc560ff": {
+    "message": "Der aktuelle Seitenwert wird durch Ihren Entwurf ersetzt.",
+    "description": "The current page value will be replaced by your draft."
+  },
+  "m_overwrite_78ff0e92": {
+    "message": "Überschreiben",
+    "description": "Overwrite"
+  },
+  "m_this_item_changed_again_refresh_and_review_it_be_fcda25ab": {
+    "message": "Dieser Eintrag hat sich erneut geändert. Aktualisieren Sie die Seite und überprüfen Sie den Eintrag, bevor Sie speichern. Ihr Entwurf wurde beibehalten.",
+    "description": "This item changed again. Refresh and review it before saving. Your draft was kept."
+  },
+  "m_this_item_changed_on_the_page_your_draft_was_kep_614fc574": {
+    "message": "Dieser Eintrag hat sich auf der Seite geändert. Ihr Entwurf wurde beibehalten.",
+    "description": "This item changed on the page. Your draft was kept."
+  },
+  "m_remove_1_from_favorites_3f3873c5": {
+    "message": "$slot_1$ aus den Favoriten entfernen",
+    "description": "Remove $1 from favorites",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_favorite_1_748a9488": {
+    "message": "Favorit $slot_1$",
+    "description": "Favorite $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_my_favorite_cookie_1_bcb78c80": {
+    "message": "Mein Favorit cookie $slot_1$",
+    "description": "My favorite cookie $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_enter_a_valid_expiration_date_and_time_117dcc4b": {
+    "message": "Geben Sie ein gültiges Ablaufdatum und eine gültige Ablaufzeit ein.",
+    "description": "Enter a valid expiration date and time."
+  },
+  "m_expiration_must_be_in_the_future_87176fbd": {
+    "message": "Das Ablaufdatum muss in der Zukunft liegen.",
+    "description": "Expiration must be in the future."
+  },
+  "m_site_permission_is_required_for_this_page_6af52a2e": {
+    "message": "Für diese Seite ist eine Website-Berechtigung erforderlich.",
+    "description": "Site permission is required for this page."
+  },
+  "m_skipped_32d7a557": {
+    "message": "Übersprungen",
+    "description": "Skipped"
+  },
+  "m_batch_operation_items_must_be_an_array_8927061c": {
+    "message": "Elemente für die Stapelverarbeitung müssen ein Array sein.",
+    "description": "Batch operation items must be an array."
+  },
+  "m_batch_operation_handler_must_be_a_function_2a2e2b1": {
+    "message": "Der Handler für die Stapelverarbeitung muss eine Funktion sein.",
+    "description": "Batch operation handler must be a function."
+  },
+  "m_a_persistent_cookie_requires_a_valid_expiration__69a955bd": {
+    "message": "Ein persistenter cookie erfordert ein gültiges Ablaufdatum.",
+    "description": "A persistent cookie requires a valid expiration date."
+  },
+  "m_side_panel_is_not_available_in_this_browser_1deaac7f": {
+    "message": "Das Seitenpanel ist in diesem Browser nicht verfügbar.",
+    "description": "Side panel is not available in this browser."
+  },
+  "m_unspecified_646386c": {
+    "message": "Nicht angegeben",
+    "description": "Unspecified"
+  },
+  "m_a_supported_data_view_and_item_id_are_required_1efa8375": {
+    "message": "Eine unterstützte Datenansicht und eine Element-ID sind erforderlich.",
+    "description": "A supported data view and item ID are required."
+  },
+  "m_unsupported_site_data_kind_1_99f7b534": {
+    "message": "Nicht unterstützter Website-Datentyp: $slot_1$",
+    "description": "Unsupported site data kind: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_line_1_2_3e08f18e": {
+    "message": "Zeile $slot_1$: $slot_2$",
+    "description": "Line $1: $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_netscape_cookie_data_must_be_text_91c54441": {
+    "message": "Die Daten für Netscape cookie müssen Text sein.",
+    "description": "Netscape cookie data must be text."
+  },
+  "m_expected_7_tab_separated_fields_12f054d4": {
+    "message": "Es werden 7 durch Tabulatoren getrennte Felder erwartet.",
+    "description": "Expected 7 tab-separated fields."
+  },
+  "m_path_must_start_with_f0000f56": {
+    "message": "Der Pfad muss mit / beginnen.",
+    "description": "Path must start with /."
+  },
+  "m_duplicate_cookie_1_for_2_3_55aa331f": {
+    "message": "Doppelte Einträge für cookie $slot_1$ bei $slot_2$$slot_3$.",
+    "description": "Duplicate cookie $1 for $2$3.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_no_netscape_cookie_rows_were_found_7d90721b": {
+    "message": "Es wurden keine Zeilen für Netscape cookie gefunden.",
+    "description": "No Netscape cookie rows were found."
+  },
+  "m_the_selected_scope_does_not_contain_any_cookies_f3791e8": {
+    "message": "Der ausgewählte Bereich enthält kein cookies.",
+    "description": "The selected scope does not contain any cookies."
+  },
+  "m_expiration_must_be_a_non_negative_integer_unix_t_43e6d38c": {
+    "message": "Das Ablaufdatum muss ein nicht-negativer ganzzahliger Unix-Zeitstempel sein.",
+    "description": "Expiration must be a non-negative integer Unix timestamp."
+  },
+  "m_cookie_domain_is_invalid_411f9532": {
+    "message": "Die Domain Cookie ist ungültig.",
+    "description": "Cookie domain is invalid."
+  },
+  "m_1_must_be_true_or_false_51a26bf8": {
+    "message": "$slot_1$ muss TRUE oder FALSE sein.",
+    "description": "$1 must be TRUE or FALSE.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_expiration_is_outside_the_supported_range_8cfc8697": {
+    "message": "Das Ablaufdatum liegt außerhalb des unterstützten Bereichs.",
+    "description": "Expiration is outside the supported range."
+  },
+  "m_1_cannot_be_represented_in_netscape_format_e7a8a446": {
+    "message": "$slot_1$ kann nicht im Netscape-Format dargestellt werden.",
+    "description": "$1 cannot be represented in Netscape format.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_the_operation_history_is_no_longer_available_in__7160ca61": {
+    "message": "Der Vorgangsverlauf ist in dieser Browsersitzung nicht mehr verfügbar.",
+    "description": "The operation history is no longer available in this browser session."
+  },
+  "m_the_background_operation_service_is_unavailable__2418d24d": {
+    "message": "Der Hintergrunddienst ist nicht verfügbar. Öffnen Sie die Erweiterung erneut und versuchen Sie es noch einmal.",
+    "description": "The background operation service is unavailable. Reopen the extension and try again."
+  },
+  "m_select_an_http_or_https_tab_before_changing_site_78b8790a": {
+    "message": "Wählen Sie eine Registerkarte http:// oder https:// aus, bevor Sie die Website-Daten ändern.",
+    "description": "Select an http:// or https:// tab before changing site data."
+  },
+  "m_the_operation_target_is_unavailable_refresh_and__ea7bb94d": {
+    "message": "Das Ziel der Aktion ist nicht verfügbar. Aktualisieren Sie die Seite und versuchen Sie es erneut.",
+    "description": "The operation target is unavailable. Refresh and try again."
+  },
+  "m_the_target_tab_changed_sites_refresh_and_try_aga_45abf2d3": {
+    "message": "Die Zielregisterkarte hat die Website gewechselt. Aktualisieren Sie die Seite und versuchen Sie es erneut.",
+    "description": "The target tab changed sites. Refresh and try again."
+  },
+  "m_the_target_tab_changed_browsing_modes_refresh_an_9b421ca": {
+    "message": "Die Zielregisterkarte hat den Browsing-Modus gewechselt. Aktualisieren Sie die Seite und versuchen Sie es erneut.",
+    "description": "The target tab changed browsing modes. Refresh and try again."
+  },
+  "m_the_target_cookie_store_changed_refresh_and_try__d7c5bc8d": {
+    "message": "Der Speicherort für Browser-Cookies hat sich geändert. Aktualisieren Sie die Seite und versuchen Sie es erneut.",
+    "description": "The target cookie store changed. Refresh and try again."
+  },
+  "m_this_change_can_no_longer_be_undone_in_this_brow_54389916": {
+    "message": "Diese Änderung kann in dieser Browsersitzung nicht mehr rückgängig gemacht werden.",
+    "description": "This change can no longer be undone in this browser session."
+  },
+  "m_this_older_change_has_no_verified_target_informa_19604fe9": {
+    "message": "Für diese ältere Änderung liegen keine verifizierten Zielinformationen vor, sodass sie nicht rückgängig gemacht werden kann.",
+    "description": "This older change has no verified target information and cannot be undone."
+  },
+  "m_undo_is_only_available_for_1_f2a63182": {
+    "message": "Die Rückgängig-Funktion ist nur für $slot_1$ verfügbar.",
+    "description": "Undo is only available for $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_switch_to_the_original_browsing_mode_before_undo_870755c9": {
+    "message": "Wechseln Sie in den ursprünglichen Browsing-Modus, bevor Sie diese Änderung rückgängig machen.",
+    "description": "Switch to the original browsing mode before undoing this change."
+  },
+  "m_session_storage_undo_requires_the_original_tab_1_2fdf9bd9": {
+    "message": "Das Rückgängigmachen von Session Storage erfordert den ursprünglichen Tab ($slot_1$).",
+    "description": "Session Storage undo requires the original tab ($1).",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_this_change_has_incomplete_cookie_target_informa_a2dd5586": {
+    "message": "Diese Änderung weist unvollständige cookie-Zielinformationen auf und kann nicht rückgängig gemacht werden.",
+    "description": "This change has incomplete cookie target information and cannot be undone."
+  },
+  "m_switch_to_the_original_cookie_store_before_undoi_d2820a6a": {
+    "message": "Wechseln Sie zum ursprünglichen cookie-Speicher, bevor Sie diese Änderung rückgängig machen.",
+    "description": "Switch to the original cookie store before undoing this change."
+  },
+  "m_this_change_has_incomplete_storage_target_inform_55298dcd": {
+    "message": "Diese Änderung enthält unvollständige Informationen zum Speicherziel und kann nicht rückgängig gemacht werden.",
+    "description": "This change has incomplete storage target information and cannot be undone."
+  },
+  "m_the_operation_requires_a_complete_verified_targe_c2dd669c": {
+    "message": "Der Vorgang erfordert ein vollständiges, verifiziertes Ziel.",
+    "description": "The operation requires a complete verified target."
+  },
+  "m_the_operation_target_origin_is_invalid_d22ef5f": {
+    "message": "Die Herkunft des Ziels der Operation ist ungültig.",
+    "description": "The operation target origin is invalid."
+  },
+  "m_the_operation_item_type_is_not_supported_7da692f3": {
+    "message": "Der Typ des Operationseintrags wird nicht unterstützt.",
+    "description": "The operation item type is not supported."
+  },
+  "m_an_operation_item_requires_its_before_and_after__f10583a8": {
+    "message": "Ein Vorgangsobjekt erfordert einen Zustand vor und nach dem Vorgang.",
+    "description": "An operation item requires its before and after states."
+  },
+  "m_an_operation_cannot_change_an_item_s_identity_de_98312c57": {
+    "message": "Ein Vorgang kann die Identität eines Objekts nicht ändern. Löschen Sie stattdessen das Objekt und erstellen Sie ein neues.",
+    "description": "An operation cannot change an item's identity. Delete and create separate items instead."
+  },
+  "m_undo_requires_the_original_site_cookie_store_and_5fcd5b1a": {
+    "message": "Zum Rückgängigmachen sind die ursprüngliche Seite, der cookie-Speicher und der Browsing-Modus erforderlich.",
+    "description": "Undo requires the original site, cookie store, and browsing mode."
+  },
+  "m_session_storage_undo_requires_the_original_tab_c5074cf1": {
+    "message": "Das Rückgängigmachen von Session Storage erfordert den ursprünglichen Tab.",
+    "description": "Session Storage undo requires the original tab."
+  },
+  "m_the_cookie_changed_during_writing_or_chrome_norm_9c28e63c": {
+    "message": "Das cookie hat sich während des Schreibvorgangs geändert oder Chrome hat nicht unterstützte Attribute normalisiert. Überprüfen Sie den aktuellen Zustand, bevor Sie es erneut versuchen.",
+    "description": "The cookie changed during writing or Chrome normalized unsupported attributes. Review its current state before retrying."
+  },
+  "m_chrome_would_remove_a_different_same_name_cookie_1f0e6ca9": {
+    "message": "Chrome würde ein anderes cookie mit demselben Namen entfernen. Dessen Daten wurden beibehalten.",
+    "description": "Chrome would remove a different same-name cookie. Its data was preserved."
+  },
+  "m_the_cookie_changed_during_writing_or_chrome_norm_c0f5c111": {
+    "message": "Das cookie hat sich während des Schreibvorgangs geändert oder Chrome hat seine Attribute normalisiert. Überprüfen Sie den aktuellen Zustand, bevor Sie es erneut versuchen.",
+    "description": "The cookie changed during writing or Chrome normalized its attributes. Review its current state before retrying."
+  },
+  "m_this_item_changed_after_the_operation_was_prepar_6afc1ff6": {
+    "message": "Dieser Eintrag hat sich nach der Vorbereitung des Vorgangs geändert. Seine aktuellen Daten wurden beibehalten.",
+    "description": "This item changed after the operation was prepared. Its current data was preserved."
+  },
+  "m_operation_item_states_must_be_objects_or_null_648de299": {
+    "message": "Die Zustände der Vorgangseinträge müssen Objekte oder „null“ sein.",
+    "description": "Operation item states must be objects or null."
+  },
+  "m_storage_operations_require_a_key_and_a_string_va_be861fef": {
+    "message": "Speichervorgänge erfordern einen Schlüssel und einen Zeichenfolgenwert.",
+    "description": "Storage operations require a key and a string value."
+  },
+  "m_the_storage_item_belongs_to_a_different_origin_c5770dcf": {
+    "message": "Das Speicherelement gehört zu einer anderen Herkunft.",
+    "description": "The storage item belongs to a different origin."
+  },
+  "m_cookie_operations_require_a_name_value_and_domai_ad606296": {
+    "message": "Cookie-Operationen erfordern einen Namen, einen Wert und eine Domäne.",
+    "description": "Cookie operations require a name, value, and domain."
+  },
+  "m_the_cookie_store_does_not_match_the_target_brows_8b6d58d0": {
+    "message": "Der cookie-Speicher stimmt nicht mit dem Ziel-Browsing-Kontext überein.",
+    "description": "The cookie store does not match the target browsing context."
+  },
+  "m_the_cookie_domain_is_outside_the_target_site_2c893fc": {
+    "message": "Die cookie-Domäne liegt außerhalb der Ziel-Website.",
+    "description": "The cookie domain is outside the target site."
+  },
+  "m_the_cookie_scope_is_not_supported_by_the_target__5ed5f691": {
+    "message": "Der cookie-Gültigkeitsbereich wird von der Ziel-Website nicht unterstützt.",
+    "description": "The cookie scope is not supported by the target site."
+  },
+  "m_this_operation_id_already_belongs_to_another_req_26aec4b6": {
+    "message": "Diese Vorgangs-ID gehört bereits zu einer anderen Anfrage.",
+    "description": "This operation ID already belongs to another request."
+  },
+  "m_the_undo_selection_contains_an_unknown_operation_7a61fd74": {
+    "message": "Die Auswahl zum Rückgängigmachen enthält ein unbekanntes Vorgangselement.",
+    "description": "The undo selection contains an unknown operation item."
+  },
+  "m_select_at_least_one_site_data_item_before_starti_3a6505e4": {
+    "message": "Wählen Sie mindestens ein Website-Datenelement aus, bevor Sie einen Vorgang starten.",
+    "description": "Select at least one site data item before starting an operation."
+  },
+  "m_operation_item_ids_must_be_unique_within_the_bat_c80b02fe": {
+    "message": "Vorgangs-IDs müssen innerhalb des Stapels eindeutig sein.",
+    "description": "Operation item IDs must be unique within the batch."
+  },
+  "m_a_batch_cannot_contain_the_same_site_data_item_m_12586bbb": {
+    "message": "Ein Stapel darf dasselbe Standortdatenelement nicht mehr als einmal enthalten.",
+    "description": "A batch cannot contain the same site data item more than once."
+  },
+  "m_site_data_change_85c94fa": {
+    "message": "Standortdaten ändern",
+    "description": "Site data change"
+  },
+  "m_this_operation_is_no_longer_available_in_the_cur_dd0b5906": {
+    "message": "Dieser Vorgang ist in der aktuellen Browsersitzung nicht mehr verfügbar.",
+    "description": "This operation is no longer available in the current browser session."
+  },
+  "m_wait_for_the_operation_to_finish_before_retrying_4e00d481": {
+    "message": "Warten Sie, bis der Vorgang abgeschlossen ist, bevor Sie ihn erneut versuchen, rückgängig machen oder löschen.",
+    "description": "Wait for the operation to finish before retrying, undoing, or clearing it."
+  },
+  "m_the_operation_failed_ab9ab784": {
+    "message": "Der Vorgang ist fehlgeschlagen.",
+    "description": "The operation failed."
+  },
+  "m_the_operation_journal_cannot_be_read_existing_hi_5f7bdebd": {
+    "message": "Das Vorgangsprotokoll kann nicht gelesen werden. Der vorhandene Verlauf wurde beibehalten.",
+    "description": "The operation journal cannot be read. Existing history has been preserved."
+  },
+  "m_operation_history_is_limited_to_1_batches_5f70f1c6": {
+    "message": "Der Vorgangshistorienumfang ist auf $slot_1$ Stapel begrenzt.",
+    "description": "Operation history is limited to $1 batches.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_session_storage_does_not_have_enough_room_to_rec_baffb4f6": {
+    "message": "Der Sitzungsspeicher verfügt nicht über genügend Platz, um diesen Vorgang sicher aufzuzeichnen.",
+    "description": "Session storage does not have enough room to record this operation safely."
+  },
+  "m_chrome_could_not_reserve_operation_history_space_cb06e6c2": {
+    "message": "Chrome konnte keinen Speicherplatz für die Vorgangshistorie reservieren.",
+    "description": "Chrome could not reserve operation history space."
+  },
+  "m_session_storage_is_required_for_recoverable_site_a5071db5": {
+    "message": "Der Sitzungsspeicher ist für Vorgänge mit wiederherstellbaren Website-Daten erforderlich.",
+    "description": "Session storage is required for recoverable site data operations."
+  },
+  "m_1_clear_completed_batches_in_history_and_try_aga_8d7c6029": {
+    "message": "$slot_1$ Löschen Sie abgeschlossene Stapel im Verlauf und versuchen Sie es erneut.",
+    "description": "$1 Clear completed batches in History and try again.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_the_operation_was_not_completed_open_operations__1ba12ca0": {
+    "message": "Der Vorgang wurde nicht abgeschlossen. Öffnen Sie „Vorgänge“, um das Ergebnis zu überprüfen.",
+    "description": "The operation was not completed. Open Operations to review its result."
+  },
+  "m_unknown_error_ce512b43": {
+    "message": "Unbekannter Fehler",
+    "description": "Unknown error"
+  },
+  "m_invalid_batch_operation_result_2c7f1d9c": {
+    "message": "Ungültiges Ergebnis des Stapelvorgangs.",
+    "description": "Invalid batch operation result."
+  },
+  "m_enter_a_valid_1_a42ed343": {
+    "message": "Geben Sie einen gültigen $slot_1$ ein.",
+    "description": "Enter a valid $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_enter_a_cookie_name_829f0c23": {
+    "message": "Geben Sie einen cookie-Namen ein.",
+    "description": "Enter a cookie name."
+  },
+  "m_cookie_name_is_invalid_dafca5ad": {
+    "message": "Der Cookie-Name ist ungültig.",
+    "description": "Cookie name is invalid."
+  },
+  "m_enter_a_storage_key_42911d0a": {
+    "message": "Geben Sie einen Namen für den Speichereintrag ein.",
+    "description": "Enter a storage key."
+  },
+  "m_a_favorite_item_id_and_enabled_state_are_require_d025e94a": {
+    "message": "Eine Favoriten-ID und der Status „Aktiviert“ sind erforderlich.",
+    "description": "A favorite item ID and enabled state are required."
+  },
+  "m_unsupported_import_conflict_strategy_1_11eb35cf": {
+    "message": "Nicht unterstützte Strategie bei Importkonflikten: $slot_1$",
+    "description": "Unsupported import conflict strategy: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_item_is_not_supported_3c19884d": {
+    "message": "Das Element wird nicht unterstützt.",
+    "description": "Item is not supported."
+  },
+  "m_not_selected_88a4320b": {
+    "message": "Nicht ausgewählt.",
+    "description": "Not selected."
+  },
+  "m_already_identical_4051b14a": {
+    "message": "Bereits identisch.",
+    "description": "Already identical."
+  },
+  "m_only_new_items_are_enabled_71d46290": {
+    "message": "Nur neue Elemente werden aktiviert.",
+    "description": "Only new items are enabled."
+  },
+  "m_existing_item_was_kept_8d637d38": {
+    "message": "Das vorhandene Element wurde beibehalten.",
+    "description": "Existing item was kept."
+  },
+  "m_conflict_was_not_selected_41b4cfaa": {
+    "message": "Der Konflikt wurde nicht ausgewählt.",
+    "description": "Conflict was not selected."
+  },
+  "m_the_package_contains_the_same_stable_item_more_t_5819a2cf": {
+    "message": "Das Paket enthält dasselbe stabile Element mehr als einmal.",
+    "description": "The package contains the same stable item more than once."
+  },
+  "m_no_changes_23de827f": {
+    "message": "Keine Änderungen.",
+    "description": "No changes."
+  },
+  "m_value_will_change_67c2db88": {
+    "message": "Der Wert wird sich ändern.",
+    "description": "Value will change."
+  },
+  "m_cookie_attributes_differ_from_the_target_343b62be": {
+    "message": "Die Attribute von Cookie weichen vom Ziel ab.",
+    "description": "Cookie attributes differ from the target."
+  },
+  "m_source_origin_1_does_not_match_2_d97e2856": {
+    "message": "Die Quelle $slot_1$ stimmt nicht mit $slot_2$ überein.",
+    "description": "Source origin $1 does not match $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_storage_origin_1_cannot_be_written_to_2_5e2f32f1": {
+    "message": "Der Speicherort $slot_1$ kann nicht in $slot_2$ geschrieben werden.",
+    "description": "Storage origin $1 cannot be written to $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_secure_cookies_require_an_https_target_42458c0f": {
+    "message": "Sichere cookies erfordern ein HTTPS-Ziel.",
+    "description": "Secure cookies require an HTTPS target."
+  },
+  "m_samesite_none_cookies_require_secure_b0e3af34": {
+    "message": "SameSite=None cookies erfordern „Sicher“.",
+    "description": "SameSite=None cookies require Secure."
+  },
+  "m_persistent_cookies_require_a_valid_expiration_da_59fa4574": {
+    "message": "Persistente cookies erfordern ein gültiges Ablaufdatum.",
+    "description": "Persistent cookies require a valid expiration date."
+  },
+  "m_the_cookie_expiration_date_is_in_the_past_fb6631d3": {
+    "message": "Das Ablaufdatum von cookie liegt in der Vergangenheit.",
+    "description": "The cookie expiration date is in the past."
+  },
+  "m_the_partition_key_is_not_supported_f5b3f532": {
+    "message": "Der Partitionsschlüssel wird nicht unterstützt.",
+    "description": "The partition key is not supported."
+  },
+  "m_cookie_domain_1_is_not_valid_for_2_87a7b1d8": {
+    "message": "Die Cookie-Domäne $slot_1$ ist für $slot_2$ ungültig.",
+    "description": "Cookie domain $1 is not valid for $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_a_valid_http_or_https_target_url_is_required_d1af520b": {
+    "message": "Ein gültiges HTTP- oder HTTPS-Ziel URL ist erforderlich.",
+    "description": "A valid HTTP or HTTPS target URL is required."
+  },
+  "m_site_data_package_is_not_valid_json_1_205edefc": {
+    "message": "Das Standortdatenpaket ist ungültig JSON: $slot_1$",
+    "description": "Site data package is not valid JSON: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_site_data_package_must_be_a_json_object_4b3bb0fc": {
+    "message": "Das Standortdatenpaket muss ein JSON-Objekt sein.",
+    "description": "Site data package must be a JSON object."
+  },
+  "m_unsupported_site_data_schema_version_1_1e133de1": {
+    "message": "Nicht unterstützte Version des Standortdatenschemas: $slot_1$",
+    "description": "Unsupported site data schema version: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_parse_site_data_package_13a1fb6f": {
+    "message": "Das Standortdatenpaket konnte nicht analysiert werden.",
+    "description": "Failed to parse site data package."
+  },
+  "m_cookie_must_be_an_object_2f03109b": {
+    "message": "Cookie muss ein Objekt sein.",
+    "description": "Cookie must be an object."
+  },
+  "m_cookie_domain_c25955b9": {
+    "message": "Cookie-Domäne",
+    "description": "Cookie domain"
+  },
+  "m_storage_item_must_be_an_object_1cfa84f9": {
+    "message": "Das Speicherelement muss ein Objekt sein.",
+    "description": "Storage item must be an object."
+  },
+  "m_site_data_package_data_must_be_an_object_e66f478": {
+    "message": "Die Daten des Standortdatenpakets müssen ein Objekt sein.",
+    "description": "Site data package data must be an object."
+  },
+  "m_site_data_package_source_must_be_an_object_56cfeb13": {
+    "message": "Die Quelle des Standortdatenpakets muss ein Objekt sein.",
+    "description": "Site data package source must be an object."
+  },
+  "m_source_url_199c3119": {
+    "message": "Quelle URL",
+    "description": "Source URL"
+  },
+  "m_source_url_is_invalid_79058912": {
+    "message": "Die Quelle URL ist ungültig.",
+    "description": "Source URL is invalid."
+  },
+  "m_source_url_must_use_http_or_https_402a5c35": {
+    "message": "Die Quelle URL muss http oder https verwenden.",
+    "description": "Source URL must use http or https."
+  },
+  "m_source_origin_does_not_match_the_source_url_ddb08ac2": {
+    "message": "Die Herkunft der Quelle stimmt nicht mit der Quelle URL überein.",
+    "description": "Source origin does not match the source URL."
+  },
+  "m_export_time_14390320": {
+    "message": "Exportzeitpunkt",
+    "description": "Export time"
+  },
+  "m_export_time_is_invalid_966ca827": {
+    "message": "Der Exportzeitpunkt ist ungültig.",
+    "description": "Export time is invalid."
+  },
+  "m_storage_origin_is_invalid_c2b74933": {
+    "message": "Die Speicherquelle ist ungültig.",
+    "description": "Storage origin is invalid."
+  },
+  "m_1_must_be_an_array_e1b4fde0": {
+    "message": "$slot_1$ muss ein Array sein.",
+    "description": "$1 must be an array.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_must_be_a_string_7db28ee6": {
+    "message": "$slot_1$ muss eine Zeichenkette sein.",
+    "description": "$1 must be a string.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_cannot_be_empty_e318fe17": {
+    "message": "$slot_1$ darf nicht leer sein.",
+    "description": "$1 cannot be empty.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_a_saved_state_with_this_id_already_exists_reload_d5d699bd": {
+    "message": "Ein gespeicherter Zustand mit dieser ID existiert bereits. Lade die gespeicherten Zustände neu und versuche es erneut.",
+    "description": "A saved state with this ID already exists. Reload Saved States and try again."
+  },
+  "m_this_saved_state_no_longer_exists_reload_saved_s_2606c3f0": {
+    "message": "Dieser gespeicherte Zustand existiert nicht mehr. Lade die gespeicherten Zustände neu und wähle einen anderen Zustand aus.",
+    "description": "This saved state no longer exists. Reload Saved States and select another state."
+  },
+  "m_saved_states_is_limited_to_1_states_return_to_th_c6f09f4f": {
+    "message": "„Gespeicherte Zustände“ ist auf $slot_1$ Zustände begrenzt. Kehren Sie zur Liste „Gespeicherte Zustände“ zurück und löschen Sie nicht verwendete Zustände, bevor Sie einen weiteren Zustand speichern oder kopieren. Ihre bestehenden Zustände wurden nicht verändert.",
+    "description": "Saved States is limited to $1 states. Return to the Saved States list and delete unused states before saving or copying another state. Your existing states have not been changed.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_chrome_limit_1_2_3949d5f2": {
+    "message": " (Chrome-Beschränkung: $slot_1$$slot_2$)",
+    "description": " (Chrome limit: $1$2)",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_extension_storage_is_full_1_return_to_the_saved__c0d6cf4b": {
+    "message": "Der Speicher der Erweiterung ist voll$slot_1$. Kehren Sie zur Liste der gespeicherten Zustände zurück und löschen Sie nicht verwendete Zustände oder speichern Sie weniger Website-Dateneinträge und versuchen Sie es dann erneut. Ihre bestehenden Zustände wurden nicht verändert.",
+    "description": "Extension storage is full$1. Return to the Saved States list and delete unused states, or save fewer site data entries, then try again. Your existing states have not been changed.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_profile_must_be_an_object_d72872c": {
+    "message": "Das Profil muss ein Objekt sein.",
+    "description": "Profile must be an object."
+  },
+  "m_profile_name_is_required_19a1effa": {
+    "message": "Der Profilname ist erforderlich.",
+    "description": "Profile name is required."
+  },
+  "m_enter_a_value_for_1_91a86c1b": {
+    "message": "Geben Sie einen Wert für $slot_1$ ein.",
+    "description": "Enter a value for $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_missing_profile_variables_1_1592cd58": {
+    "message": "Fehlende Profilvariablen: $slot_1$.",
+    "description": "Missing profile variables: $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_variable_line_1_must_use_name_value_2dec1abd": {
+    "message": "Die Variablenzeile $slot_1$ muss name=value verwenden.",
+    "description": "Variable line $1 must use name=value.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_variable_name_1_is_invalid_56f993ec": {
+    "message": "Der Variablenname $slot_1$ ist ungültig.",
+    "description": "Variable name $1 is invalid.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_variable_1_is_duplicated_2d297b8b": {
+    "message": "Die Variable $slot_1$ ist doppelt vorhanden.",
+    "description": "Variable $1 is duplicated.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_variable_1_needs_a_captured_value_516edb55": {
+    "message": "Für die Variable $slot_1$ ist ein erfasster Wert erforderlich.",
+    "description": "Variable $1 needs a captured value.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_copy_3f7d3a3f": {
+    "message": "$slot_1$ kopieren",
+    "description": "$1 copy",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_profile_variables_require_a_valid_name_and_captu_58575d16": {
+    "message": "Profilvariablen erfordern einen gültigen Namen und einen erfassten Wert.",
+    "description": "Profile variables require a valid name and captured value."
+  },
+  "m_profile_variable_names_must_be_valid_and_unique_dbee74c8": {
+    "message": "Namen von Profilvariablen müssen gültig und eindeutig sein.",
+    "description": "Profile variable names must be valid and unique."
+  },
+  "m_conditional_storage_values_must_be_strings_or_nu_f66e578c": {
+    "message": "Bedingte Speicherwerte müssen Zeichenfolgen oder null sein.",
+    "description": "Conditional storage values must be strings or null."
+  },
+  "m_storage_operation_did_not_return_a_verified_resu_a0d8584c": {
+    "message": "Die Speicheroperation hat kein verifiziertes Ergebnis zurückgegeben. Aktualisieren Sie die Seite und versuchen Sie es erneut.",
+    "description": "Storage operation did not return a verified result. Refresh and try again."
+  },
+  "m_no_active_tab_is_available_7fb08c70": {
+    "message": "Es ist keine aktive Registerkarte verfügbar.",
+    "description": "No active tab is available."
+  },
+  "m_storage_type_is_not_supported_6565b571": {
+    "message": "Der Speichertyp wird nicht unterstützt.",
+    "description": "Storage type is not supported."
+  },
+  "m_storage_key_is_required_9a984642": {
+    "message": "Ein Speicherschlüssel ist erforderlich.",
+    "description": "Storage key is required."
+  },
+  "m_tab_session_79252400": {
+    "message": "Registerkartensitzung",
+    "description": "Tab session"
+  },
+  "m_persistent_b9d8a5e0": {
+    "message": "Persistent",
+    "description": "Persistent"
+  },
+  "m_a_storage_key_and_update_action_are_required_bcf52f8d": {
+    "message": "Ein Name für den Speichereintrag und eine Aktualisierungsaktion sind erforderlich.",
+    "description": "A storage key and update action are required."
+  },
+  "m_storage_write_coordination_is_unavailable_reload_a3049af7": {
+    "message": "Die Koordination von Schreibvorgängen im Speicher ist nicht verfügbar. Laden Sie die Erweiterung in einem aktuellen Chrome-Browser neu und versuchen Sie es erneut.",
+    "description": "Storage write coordination is unavailable. Reload the extension in an up-to-date Chrome browser and try again."
+  },
+  "m_unsupported_page_ba4049fb": {
+    "message": "Nicht unterstützte Seite",
+    "description": "Unsupported page"
+  },
+  "m_value_is_not_valid_url_encoded_text_410c8c5c": {
+    "message": "Der Wert ist kein gültiger URL-kodierter Text.",
+    "description": "Value is not valid URL-encoded text."
+  },
+  "m_value_is_not_valid_json_4ebcf7b9": {
+    "message": "Der Wert ist kein gültiges JSON.",
+    "description": "Value is not valid JSON."
+  },
+  "m_value_is_not_a_jwt_ced21751": {
+    "message": "Der Wert ist kein JWT.",
+    "description": "Value is not a JWT."
+  },
+  "m_jwt_payload_could_not_be_decoded_c3f891e7": {
+    "message": "Die JWT-Nutzlast konnte nicht dekodiert werden.",
+    "description": "JWT payload could not be decoded."
+  },
+  "m_loading_page_9a85b9e6": {
+    "message": "Seite wird geladen",
+    "description": "Loading page"
+  },
+  "m_0_cookies_82c7dfac": {
+    "message": "0 cookies",
+    "description": "0 cookies"
+  },
+  "m_current_page_fe92f855": {
+    "message": "Aktuelle Seite",
+    "description": "Current page"
+  },
+  "m_switch_active_tab_site_fbd36ba9": {
+    "message": "Aktive Registerkarte wechseln",
+    "description": "Switch active tab site"
+  },
+  "m_switch_site_d8886748": {
+    "message": "Website wechseln",
+    "description": "Switch site"
+  },
+  "m_data_type_9af022c7": {
+    "message": "Datentyp",
+    "description": "Data type"
+  },
+  "m_search_c646a2c9": {
+    "message": "Suchen",
+    "description": "Search"
+  },
+  "m_reload_settings_b738e329": {
+    "message": "Einstellungen neu laden",
+    "description": "Reload settings"
+  },
+  "m_open_reload_settings_4892e4a3": {
+    "message": "Einstellungen zum Neuladen öffnen",
+    "description": "Open reload settings"
+  },
+  "m_reload_after_changes_bf61c657": {
+    "message": "Nach Änderungen neu laden",
+    "description": "Reload after changes"
+  },
+  "m_reload_the_active_page_after_editing_data_b1f353e4": {
+    "message": "Die aktive Seite nach der Bearbeitung der Daten neu laden",
+    "description": "Reload the active page after editing data"
+  },
+  "m_open_side_panel_6c80bafe": {
+    "message": "Seitenleiste öffnen",
+    "description": "Open side panel"
+  },
+  "m_history_7d96597f": {
+    "message": "Verlauf",
+    "description": "History"
+  },
+  "m_show_recent_changes_aa3be0a2": {
+    "message": "Letzte Änderungen anzeigen",
+    "description": "Show recent changes"
+  },
+  "m_site_access_is_required_to_read_cookies_a1440a5d": {
+    "message": "Zum Lesen von cookies ist ein Zugriff auf die Website erforderlich.",
+    "description": "Site access is required to read cookies."
+  },
+  "m_retry_8036af59": {
+    "message": "Erneut versuchen",
+    "description": "Retry"
+  },
+  "m_dismiss_message_df912220": {
+    "message": "Meldung schließen",
+    "description": "Dismiss message"
+  },
+  "m_site_data_actions_6b44a8f5": {
+    "message": "Aktionen für Website-Daten",
+    "description": "Site data actions"
+  },
+  "m_select_all_visible_rows_2f22967d": {
+    "message": "Alle sichtbaren Zeilen auswählen",
+    "description": "Select all visible rows"
+  },
+  "m_sort_name_ascending_68daec8a": {
+    "message": "Nach Name aufsteigend sortieren",
+    "description": "Sort Name ascending"
+  },
+  "m_0_selected_326ec79c": {
+    "message": "0 ausgewählt",
+    "description": "0 selected"
+  },
+  "m_delete_selected_97a78547": {
+    "message": "Ausgewählte löschen",
+    "description": "Delete selected"
+  },
+  "m_selected_item_actions_93276b88": {
+    "message": "Aktionen für ausgewählte Elemente",
+    "description": "Selected item actions"
+  },
+  "m_cookie_list_e8aca549": {
+    "message": "Cookie-Liste",
+    "description": "Cookie list"
+  },
+  "m_select_a_cookie_21e3db4c": {
+    "message": "Wählen Sie ein cookie aus",
+    "description": "Select a cookie"
+  },
+  "m_favorite_item_639ee370": {
+    "message": "Zu den Favoriten hinzufügen",
+    "description": "Favorite item"
+  },
+  "m_choose_copy_format_c244c130": {
+    "message": "Kopierformat auswählen",
+    "description": "Choose copy format"
+  },
+  "m_copy_format_85aa5ff": {
+    "message": "Kopierformat",
+    "description": "Copy format"
+  },
+  "m_reset_ac8a560": {
+    "message": "Zurücksetzen",
+    "description": "Reset"
+  },
+  "m_save_4d2d5d68": {
+    "message": "Speichern",
+    "description": "Save"
+  },
+  "m_editor_actions_e49fe113": {
+    "message": "Editor-Aktionen",
+    "description": "Editor actions"
+  },
+  "m_tools_950196fc": {
+    "message": "Werkzeuge",
+    "description": "Tools"
+  },
+  "m_value_tools_462d8191": {
+    "message": "Wert-Werkzeuge",
+    "description": "Value tools"
+  },
+  "m_url_decode_21cf2a4c": {
+    "message": "URL dekodieren",
+    "description": "URL decode"
+  },
+  "m_url_encode_e1baee70": {
+    "message": "URL kodieren",
+    "description": "URL encode"
+  },
+  "m_format_json_c6800e10": {
+    "message": "JSON formatieren",
+    "description": "Format JSON"
+  },
+  "m_compact_json_3e7be4cc": {
+    "message": "JSON komprimieren",
+    "description": "Compact JSON"
+  },
+  "m_cookie_expiration_date_and_time_29a11076": {
+    "message": "Cookie Ablaufdatum und -zeit",
+    "description": "Cookie expiration date and time"
+  },
+  "m_clear_the_time_to_use_a_session_cookie_cfc8ce4f": {
+    "message": "Lassen Sie das Feld „Ablaufzeit“ leer, um ein Sitzungs-Cookie zu verwenden.",
+    "description": "Clear the time to use a session cookie"
+  },
+  "m_cookie_editor_1dce6a00": {
+    "message": "Cookie-Editor",
+    "description": "Cookie editor"
+  },
+  "m_operations_a78e754f": {
+    "message": "Vorgänge",
+    "description": "Operations"
+  },
+  "m_history_view_122e9250": {
+    "message": "Verlauf anzeigen",
+    "description": "History view"
+  },
+  "m_clear_4a57fc2": {
+    "message": "Löschen",
+    "description": "Clear"
+  },
+  "m_no_recent_changes_1ba3108": {
+    "message": "Keine letzten Änderungen",
+    "description": "No recent changes"
+  },
+  "m_no_operations_in_this_session_9f373445": {
+    "message": "Keine Vorgänge in dieser Sitzung",
+    "description": "No operations in this session"
+  },
+  "m_close_cd86acc3": {
+    "message": "Schließen",
+    "description": "Close"
+  },
+  "m_before_25a2cf5e": {
+    "message": "Vorher",
+    "description": "Before"
+  },
+  "m_after_a7dd3a69": {
+    "message": "Danach",
+    "description": "After"
+  },
+  "m_recent_cookie_changes_948aeb99": {
+    "message": "Letzte Änderungen an cookie",
+    "description": "Recent cookie changes"
+  },
+  "m_cookie_workspace_934f6bae": {
+    "message": "Cookie-Arbeitsbereich",
+    "description": "Cookie workspace"
+  },
+  "m_delete_item_9112cfa6": {
+    "message": "Element löschen?",
+    "description": "Delete item?"
+  },
+  "m_selected_items_401a0220": {
+    "message": "Ausgewählte Elemente",
+    "description": "Selected items"
+  },
+  "m_cancel_35afca3b": {
+    "message": "Abbrechen",
+    "description": "Cancel"
+  },
+  "m_enter_value_4f11af6c": {
+    "message": "Wert eingeben",
+    "description": "Enter value"
+  },
+  "m_continue_ab43d664": {
+    "message": "Weiter",
+    "description": "Continue"
+  },
+  "m_import_method_d6e65675": {
+    "message": "Importmethode",
+    "description": "Import method"
+  },
+  "m_1_quick_entry_c1ce8719": {
+    "message": "$slot_1$ Schnelleingabe",
+    "description": "$1 Quick entry",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_json_package_5fd092bc": {
+    "message": "$slot_1$ JSON-Paket",
+    "description": "$1 JSON package",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_netscape_curl_8c6f0afa": {
+    "message": "$slot_1$ Netscape / cURL",
+    "description": "$1 Netscape / cURL",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_add_9dc3aa14": {
+    "message": "Hinzufügen",
+    "description": "Add"
+  },
+  "m_remove_cookie_row_2371fc81": {
+    "message": "Zeile cookie entfernen",
+    "description": "Remove cookie row"
+  },
+  "m_cookies_only_domains_from_the_file_must_be_valid_7598760a": {
+    "message": "Nur Cookies. Die Domains aus der Datei müssen für das aktuelle Ziel gültig sein.",
+    "description": "Cookies only. Domains from the file must be valid for the current target."
+  },
+  "m_choose_file_7ccb86d6": {
+    "message": "Datei auswählen",
+    "description": "Choose file"
+  },
+  "m_choose_or_drop_an_import_file_cb7cec54": {
+    "message": "Importdatei auswählen oder ablegen",
+    "description": "Choose or drop an import file"
+  },
+  "m_preview_fdda4cf7": {
+    "message": "Vorschau",
+    "description": "Preview"
+  },
+  "m_change_source_389c45d2": {
+    "message": "Quelle ändern",
+    "description": "Change source"
+  },
+  "m_map_source_origin_to_current_target_b4c34739": {
+    "message": "Quellherkunft dem aktuellen Ziel zuordnen",
+    "description": "Map source origin to current target"
+  },
+  "m_conflicts_3e8a9594": {
+    "message": "Konflikte",
+    "description": "Conflicts"
+  },
+  "m_skip_c197c7e2": {
+    "message": "Überspringen",
+    "description": "Skip"
+  },
+  "m_add_only_fc8d6796": {
+    "message": "Nur hinzufügen",
+    "description": "Add only"
+  },
+  "m_individual_4debea66": {
+    "message": "Einzeln",
+    "description": "Individual"
+  },
+  "m_apply_selected_14d0d990": {
+    "message": "Auswahl anwenden",
+    "description": "Apply selected"
+  },
+  "m_undo_batch_9db3f173": {
+    "message": "Stapel rückgängig machen",
+    "description": "Undo batch"
+  },
+  "m_import_another_33095ef7": {
+    "message": "Einen weiteren importieren",
+    "description": "Import another"
+  },
+  "m_format_ffb0ff72": {
+    "message": "Format",
+    "description": "Format"
+  },
+  "m_export_format_918e82a6": {
+    "message": "Exportformat",
+    "description": "Export format"
+  },
+  "m_export_scope_6080fad7": {
+    "message": "Exportumfang",
+    "description": "Export scope"
+  },
+  "m_current_view_cookies_b8f50c77": {
+    "message": "Aktuelle Ansicht (Cookies)",
+    "description": "Current view(Cookies)"
+  },
+  "m_select_items_to_export_bbcae900": {
+    "message": "Zu exportierende Elemente auswählen",
+    "description": "Select items to export"
+  },
+  "m_select_all_visible_90496e48": {
+    "message": "Alle sichtbaren auswählen",
+    "description": "Select all visible"
+  },
+  "m_filter_items_910b807f": {
+    "message": "Elemente filtern",
+    "description": "Filter items"
+  },
+  "m_filter_items_to_export_95e0b822": {
+    "message": "Zu exportierende Elemente filtern",
+    "description": "Filter items to export"
+  },
+  "m_no_items_in_the_current_view_51e3b0f4": {
+    "message": "Keine Elemente in der aktuellen Ansicht",
+    "description": "No items in the current view"
+  },
+  "m_export_preview_33afc7c3": {
+    "message": "Exportvorschau",
+    "description": "Export preview"
+  },
+  "m_saved_states_a5eae766": {
+    "message": "Gespeicherte Zustände",
+    "description": "Saved states"
+  },
+  "m_how_saved_states_work_7efa7c25": {
+    "message": "So funktionieren gespeicherte Zustände",
+    "description": "How saved states work"
+  },
+  "m_0_saved_43d1ba2c": {
+    "message": "0 gespeichert",
+    "description": "0 saved"
+  },
+  "m_save_current_state_27cc8b68": {
+    "message": "Aktuellen Zustand speichern",
+    "description": "Save current state"
+  },
+  "m_no_saved_states_3f60a5e1": {
+    "message": "Keine gespeicherten Zustände",
+    "description": "No saved states"
+  },
+  "m_tags_76bda0c0": {
+    "message": "Tags",
+    "description": "Tags"
+  },
+  "m_description_66de7a09": {
+    "message": "Beschreibung",
+    "description": "Description"
+  },
+  "m_capture_2fbb5e61": {
+    "message": "Erfassungsbereich",
+    "description": "Capture"
+  },
+  "m_current_view_d4b5b48f": {
+    "message": "Aktuelle Ansicht",
+    "description": "Current view"
+  },
+  "m_default_conflicts_5dc68821": {
+    "message": "Standardmäßige Konfliktbehandlung",
+    "description": "Default conflicts"
+  },
+  "m_variables_7996f062": {
+    "message": "Variablen",
+    "description": "Variables"
+  },
+  "m_save_state_fb44729d": {
+    "message": "Zustand speichern",
+    "description": "Save state"
+  },
+  "m_apply_saved_state_f8327dc5": {
+    "message": "Gespeicherten Zustand anwenden",
+    "description": "Apply saved state"
+  },
+  "m_map_saved_origin_to_current_target_367fc6c1": {
+    "message": "Ordnen Sie die gespeicherte Website-Quelle der aktuellen Ziel-Website zu",
+    "description": "Map saved origin to current target"
+  },
+  "m_preview_changes_964c14fa": {
+    "message": "Änderungen in der Vorschau anzeigen",
+    "description": "Preview changes"
+  },
+  "m_a_saved_state_keeps_a_reusable_set_of_cookies_lo_7feb125b": {
+    "message": "Ein gespeicherter Zustand enthält einen wiederverwendbaren Satz aus Cookies, Local Storage und Session Storage für eine Website.",
+    "description": "A saved state keeps a reusable set of Cookies, Local Storage, and Session Storage for a site."
+  },
+  "m_save_the_current_state_166690d7": {
+    "message": "Aktuellen Zustand speichern",
+    "description": "Save the current state"
+  },
+  "m_open_the_site_state_you_want_to_reuse_then_selec_5ce0052": {
+    "message": "Öffnen Sie den Website-Zustand, den Sie wiederverwenden möchten, und wählen Sie dann $slot_1$ aus.",
+    "description": "Open the site state you want to reuse, then select $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_choose_the_capture_scope_the_current_data_view_s_529cd2f6": {
+    "message": "Wählen Sie den Erfassungsbereich aus: die aktuelle Datenansicht, ausgewählte Elemente oder alle Website-Daten.",
+    "description": "Choose the capture scope: the current data view, selected items, or all site data."
+  },
+  "m_add_optional_variables_then_save_saved_states_st_dd227e3": {
+    "message": "Fügen Sie optionale Variablen hinzu und speichern Sie anschließend. Gespeicherte Zustände verbleiben in diesem Browser, sofern Sie sie nicht exportieren.",
+    "description": "Add optional variables, then save. Saved states stay in this browser unless you export them."
+  },
+  "m_enter_one_captured_value_per_line_matching_value_22f4016": {
+    "message": "Geben Sie pro Zeile einen erfassten Wert ein. Übereinstimmende Werte in den gespeicherten Daten werden durch eine Variable ersetzt.",
+    "description": "Enter one captured value per line. Matching values in the saved data are replaced with a variable."
+  },
+  "m_prefills_1_when_applying_the_saved_state_e33e2ad4": {
+    "message": "Füllt $slot_1$ automatisch aus, wenn der gespeicherte Zustand angewendet wird.",
+    "description": "Prefills $1 when applying the saved state.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_asks_for_the_value_every_time_and_does_not_store_cb4d0df3": {
+    "message": "Fragt jedes Mal nach dem Wert und speichert $slot_1$ nicht im gespeicherten Zustand.",
+    "description": "Asks for the value every time and does not store $1 in the saved state.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_apply_a_saved_state_504c0672": {
+    "message": "Einen gespeicherten Zustand anwenden",
+    "description": "Apply a saved state"
+  },
+  "m_select_1_and_enter_any_requested_variables_c8ff81f6": {
+    "message": "Wählen Sie $slot_1$ aus und geben Sie alle angeforderten Variablen ein.",
+    "description": "Select $1 and enter any requested variables.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_for_a_different_origin_explicitly_enable_origin__b4821030": {
+    "message": "Aktivieren Sie für eine andere Quelle explizit die Quellenzuordnung.",
+    "description": "For a different origin, explicitly enable origin mapping."
+  },
+  "m_preview_the_changes_and_conflict_handling_before_29ad5a": {
+    "message": "Zeigen Sie eine Vorschau der Änderungen und der Konfliktbehandlung an, bevor Sie diese anwenden.",
+    "description": "Preview the changes and conflict handling before applying them."
+  },
+  "m_the_storage_change_could_not_be_verified_after_w_7a7ef6a4": {
+    "message": "Die Speicherkorrektur konnte nach dem Schreiben nicht überprüft werden.",
+    "description": "The storage change could not be verified after writing."
+  },
+  "m_the_storage_value_could_not_be_verified_after_sa_77c05f71": {
+    "message": "Der Speicherwert konnte nach dem Speichern nicht überprüft werden.",
+    "description": "The storage value could not be verified after saving."
+  },
+  "m_the_storage_item_could_not_be_verified_as_delete_6d3355a2": {
+    "message": "Das Speicherelement konnte nicht als gelöscht überprüft werden.",
+    "description": "The storage item could not be verified as deleted."
+  },
+  "m_storage_is_unavailable_in_the_target_page_cee7872a": {
+    "message": "Der Speicher ist auf der Zielseite nicht verfügbar.",
+    "description": "Storage is unavailable in the target page."
+  },
+  "extensionName": {
+    "message": "Cookie Controller",
+    "description": "Cookie Controller"
+  },
+  "extensionDescription": {
+    "message": "Verwalten Sie cookies, Local Storage und Session Storage für die aktuelle Seite.",
+    "description": "Manage cookies, Local Storage, and Session Storage for the current page."
+  },
+  "m_settings_4b058728": {
+    "message": "Einstellungen",
+    "description": "Settings"
+  },
+  "m_language_9a73db9b": {
+    "message": "Sprache",
+    "description": "Language"
+  },
+  "m_automatic_616a6784": {
+    "message": "Automatisch",
+    "description": "Automatic"
+  },
+  "m_could_not_save_settings_please_try_again_960d71ae": {
+    "message": "Die Einstellungen konnten nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+    "description": "Could not save settings. Please try again."
+  },
+  "m_could_not_load_this_language_please_try_again_fe3d5f54": {
+    "message": "Diese Sprache konnte nicht geladen werden. Bitte versuchen Sie es erneut.",
+    "description": "Could not load this language. Please try again."
+  },
+  "m_color_theme_5f51d6fd": {
+    "message": "Farbschema",
+    "description": "Color theme"
+  },
+  "m_light_theme_f8e348fa": {
+    "message": "Helles Design",
+    "description": "Light theme"
+  },
+  "m_dark_theme_5a026490": {
+    "message": "Dunkles Design",
+    "description": "Dark theme"
+  },
+  "m_allow_access_d2983970": {
+    "message": "Zugriff erlauben",
+    "description": "Allow access"
+  }
+,
+  "m_site_access_is_required_to_read_this_site_s_data_acf058b1": {
+    "message": "Zum Lesen der Daten dieser Website ist Websitezugriff erforderlich.",
+    "description": "Site access is required to read this site's data."
+  }
+,
+  "m_allow_this_extension_to_read_this_site_s_data_a1c9bac0": {
+    "message": "Darf diese Erweiterung die Daten dieser Website lesen?",
+    "description": "Allow this extension to read this site's data?"
+  },
+  "m_allow_site_data_access_75dd19dc": {
+    "message": "Zugriff auf Websitedaten erlauben?",
+    "description": "Allow site data access?"
+  },
+  "m_back_c2954bc2": {
+    "message": "Zurück",
+    "description": "Back"
+  },
+  "m_cookies_local_storage_and_session_storage_data_s_e67cf99e": {
+    "message": "Cookies, Local Storage und Session Storage. Die Daten bleiben auf Ihrem Gerät.",
+    "description": "Cookies, Local Storage, and Session Storage. Data stays on your device."
+  }
+}

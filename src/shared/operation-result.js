@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 export function createBatchOperationResult() {
   return {
     success: [],
@@ -33,7 +34,7 @@ export function addOperationSkip(result, item, reason) {
   const entry = {
     itemId: getResultItemId(item),
     item,
-    reason: String(reason || "Skipped")
+    reason: String(reason || t("Skipped"))
   };
   result.skipped.push(entry);
   return entry;
@@ -43,7 +44,7 @@ export function normalizeOperationError(error) {
   if (error instanceof Error) {
     return {
       name: error.name || "Error",
-      message: error.message || "Unknown error",
+      message: error.message || t("Unknown error"),
       ...(Object.hasOwn(error, "code") ? { code: error.code } : {})
     };
   }
@@ -51,14 +52,14 @@ export function normalizeOperationError(error) {
   if (error && typeof error === "object") {
     return {
       name: String(error.name || "Error"),
-      message: String(error.message || error.code || "Unknown error"),
+      message: String(error.message || error.code || t("Unknown error")),
       ...(Object.hasOwn(error, "code") ? { code: error.code } : {})
     };
   }
 
   return {
     name: "Error",
-    message: String(error || "Unknown error")
+    message: String(error || t("Unknown error"))
   };
 }
 
@@ -74,7 +75,7 @@ export function getBatchOperationCounts(result) {
 
 function assertBatchOperationResult(result) {
   if (!result || !Array.isArray(result.success) || !Array.isArray(result.failed) || !Array.isArray(result.skipped)) {
-    throw new TypeError("Invalid batch operation result.");
+    throw new TypeError(t("Invalid batch operation result."));
   }
 }
 

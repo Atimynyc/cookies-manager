@@ -21,6 +21,8 @@ Main features
 - Optionally reload the page automatically after a change.
 - Use the extension from either its popup or the Chrome side panel.
 
+Open the gear button at the top right for Settings. On first install, the extension selects and saves a supported language based on Chrome's language, falling back to English if none matches. The language list contains English, Simplified Chinese, Traditional Chinese, Spanish, Brazilian Portuguese, German, French, Japanese, and Romanian. Romanian browser locales, including `ro-RO` and `ro-MD`, select Romanian. You can change this saved choice at any time. Click the sun/moon button to switch themes: sun means light, moon means dark. Regular mode defaults to light and incognito mode defaults to dark; each mode remembers its own choice independently of the operating system. Choices are saved locally and synchronize across open extension surfaces in the same mode; language changes preserve editor drafts. All translations ship with the extension and work offline.
+
 Cookie Controller 是一款面向开发者、测试人员和高级用户的站点数据管理工具。它可以在弹出窗口或 Chrome 侧边栏中查看和管理当前网页的 Cookie、Local Storage 与 Session Storage，无需打开完整的开发者工具。
 
 主要功能
@@ -41,22 +43,30 @@ Cookie Controller 是一款面向开发者、测试人员和高级用户的站�
 - 可选自动刷新页面，让修改后的站点状态立即生效。
 - 同时支持扩展弹出窗口和 Chrome 侧边栏模式。
 
+点击右上角齿轮打开设置。首次安装时会按 Chrome 的语言自动选择并保存合适的语言，未匹配时默认英语。语言列表包含英语、简体中文、繁体中文、西班牙语、巴西葡萄牙语、德语、法语、日语和罗马尼亚语，可随时手动更改。罗马尼亚语浏览器（包括 `ro-RO`、`ro-MD`）会自动选中罗马尼亚语，也可手动选择 Română。点击太阳/月亮按钮切换皮肤：太阳表示白色，月亮表示黑色。普通模式默认白色，隐私模式默认黑色，两种模式分别记住自己的选择，不跟随系统外观。选择会保存在本地并同步到同模式下已打开的扩展界面，切换语言不会清空编辑草稿。翻译随扩展打包，使用时无需连接翻译服务。
+
 Development
 
 - Run `npm run lint` for undefined JavaScript identifier checks.
 - Run `npm test` for the unit-test baseline covering parsing, identifiers, package validation, conflicts, batch results, favorites, and recent-change normalization.
+- Run `npm run test:locales` for source coverage, catalog keys, placeholders, and store text length checks.
+- Run `npm run test:locales:browser` for all nine languages and English fallback, including manual language/theme settings, preference persistence, cross-surface updates, draft preservation, literal Cookie/Storage data, editing, import/export, and a 380px side panel. Screenshots and results are saved in `output/playwright/locales/`.
+- Run `npm run test:theme:browser` for sun/moon switching, independent regular/incognito defaults and saved choices, native incognito action popup reopening, synchronization, keyboard controls, and save failure rollback. Screenshots and results are saved in `output/playwright/themes/`.
 - Run `npm run test:acceptance` for the full Chrome extension workflow.
 - Run `npm run test:acceptance:v032` for target isolation, editor drafts, history undo, and Saved States capacity regressions.
 - Run `npm run test:acceptance:v033` for operation recovery, worker interruption, concurrent writes, retry, undo conflicts, and result views.
 - Run `npm run test:acceptance:v030` for the focused data-package and saved-state workflow.
 - The versioned site data interchange contract is documented in `docs/site-data-package-v1.md`.
+- Translation maintenance is documented in [docs/localization.md](docs/localization.md).
 - Acceptance screenshots are written to `.tmp/` by default. Set `ACCEPTANCE_ARTIFACT_DIR` to choose another artifact directory for the full workflow.
 
-v0.3.5 release preparation
+v0.3.6 release preparation
 
-- Manifest version is `0.3.5` and the supported Chrome baseline is version 114 or newer.
-- The upload package contains only `manifest.json`, `assets/`, and `src/`; release checks exclude tests, scripts, docs, temporary files, and dependencies.
+- Manifest version is `0.3.6` and the supported Chrome baseline is version 114 or newer.
+- Upload `release/cookie-controller-0.3.6.zip`; package details are in [v0.3.6 release notes](docs/release-notes-v0.3.6.md).
+- The upload package contains only `manifest.json`, `assets/`, `src/`, and `_locales/`; release checks exclude tests, scripts, docs, temporary files, and dependencies.
 - Chrome Web Store copy and four 1280×800 feature images are in `store-assets/`.
+- Localized store copy is available in `store-assets/store-listing-{locale}.txt`. The existing feature images use English.
 
 v0.3.3 operation reliability
 

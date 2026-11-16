@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 export function parseHttpUrl(value) {
   if (!value) {
     return null;
@@ -21,7 +22,7 @@ export function isSupportedPageUrl(value) {
 export function getDisplayHost(value) {
   const url = parseHttpUrl(value);
   if (!url) {
-    return "Unsupported page";
+    return t("Unsupported page");
   }
   return url.host;
 }

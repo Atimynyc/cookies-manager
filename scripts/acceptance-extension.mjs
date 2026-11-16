@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
+import { createAcceptanceExtension } from "./acceptance-extension-fixture.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,31 +14,38 @@ const fixturePath = path.join(projectRoot, "tests", "fixtures", "cookie-test-pag
 const faviconPath = path.join(projectRoot, "assets", "icon-16.png");
 const artifactDir = path.resolve(
   projectRoot,
-  process.env.ACCEPTANCE_ARTIFACT_DIR || path.join(".tmp", "acceptance-artifacts")
+  process.env.ACCEPTANCE_ARTIFACT_DIR || (process.argv.includes("--site-access-only")
+    ? path.join("output", "playwright", "site-access") : path.join(".tmp", "acceptance-artifacts"))
 );
-const extensionPath = projectRoot;
+let extensionPath = projectRoot;
 const runId = Date.now().toString(36);
 const favoritesOnly = process.argv.includes("--favorites-only");
 const v030Only = process.argv.includes("--v030-only");
 const selectionOnly = process.argv.includes("--selection-only");
+const siteAccessOnly = process.argv.includes("--site-access-only");
 const jwt =
   "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VyIjoiZGV2Iiwicm9sZXMiOlsicWEiXX0.";
 
 let server;
 let context;
 let userDataDir;
+let extensionFixture;
 const pageErrors = [];
 
 try {
   const { baseUrl, closeServer } = await startCookieServer();
   server = { close: closeServer };
+  extensionFixture = await createAcceptanceExtension(projectRoot);
+  extensionPath = extensionFixture.extensionRoot;
 
   userDataDir = await mkdtemp(path.join(tmpdir(), "cookie-controller-profile-"));
   context = await chromium.launchPersistentContext(userDataDir, {
     channel: "chromium",
+    locale: "en-US",
     headless: process.env.HEADED !== "1",
     viewport: { width: 1100, height: 800 },
     args: [
+      "--lang=en-US",
       `--disable-extensions-except=${extensionPath}`,
       `--load-extension=${extensionPath}`
     ]
@@ -52,14 +60,18 @@ try {
   await waitForCookie(context, baseUrl, "plain");
 
   const popupModuleRequests = trackPopupModuleRequests(context);
+  if (siteAccessOnly) await context.addInitScript(instrumentSiteDataReads);
   const popup = await openPopupForActiveTab(context, testPage, extensionId);
+  if (siteAccessOnly) await assertSiteAccessFlow(popup, context, testPage, baseUrl);
   await waitForPopupReady(popup, "127.0.0.1");
   await assertSiteIcon(popup);
   await assertThemeSystem(popup);
   await assertWorkbenchLoadsLazily(popup, popupModuleRequests);
   await assertPopupListsSeededCookies(popup);
   await assertValueTypeIndicators(popup);
-  if (selectionOnly) {
+  if (siteAccessOnly) {
+    console.log("site access: modal, cancel, retry, denial, consent persistence, and narrow layout verified");
+  } else if (selectionOnly) {
     await assertLargeCookieSelectionStaysLocal(popup, context, baseUrl);
   } else if (favoritesOnly) {
     await assertFavoriteFlow(popup);
@@ -121,6 +133,9 @@ try {
   }
   if (userDataDir) {
     await rm(userDataDir, { recursive: true, force: true });
+  }
+  if (extensionFixture) {
+    await extensionFixture.cleanup();
   }
 }
 
@@ -245,11 +260,107 @@ async function openPopupTabForActivePage(context, activePage, extensionId) {
 }
 
 async function waitForPopupReady(popup, expectedHost) {
-  await popup.waitForSelector("#cookieTableBody tr", { timeout: 10000 });
   await popup.waitForFunction((host) => {
     const label = document.querySelector("#hostLabel");
-    return label?.textContent?.includes(host);
+    const loading = document.querySelector("#loadingState");
+    const permission = document.querySelector("#siteAccessDialog");
+    const hasRows = document.querySelectorAll("#cookieTableBody tr").length > 0;
+    return loading?.hidden && label?.textContent?.includes(host) && (hasRows || permission?.open);
   }, expectedHost);
+  const permissionDialog = popup.locator("#siteAccessDialog");
+  if (await permissionDialog.isVisible()) {
+    await popup.locator("#siteAccessDialogAllowButton").click();
+    await popup.waitForFunction(() => document.querySelector("#siteAccessDialog")?.open === false);
+  }
+  await popup.waitForSelector("#cookieTableBody tr", { timeout: 10000 });
+}
+
+function instrumentSiteDataReads() {
+  if (!globalThis.chrome?.cookies || !globalThis.chrome?.scripting) return;
+  globalThis.siteAccessReadCounts = { cookies: 0, storage: 0 };
+  for (const [api, method, field] of [[chrome.cookies, "getAll", "cookies"], [chrome.scripting, "executeScript", "storage"]]) {
+    const original = api[method].bind(api);
+    api[method] = (...args) => {
+      globalThis.siteAccessReadCounts[field] += 1;
+      return original(...args);
+    };
+  }
+}
+
+async function assertSiteAccessFlow(popup, browserContext, site, baseUrl) {
+  await popup.setViewportSize({ width: 760, height: 560 });
+  await popup.waitForFunction(() => document.querySelector("#siteAccessDialog")?.open && document.querySelector("#loadingState")?.hidden);
+  const readCounts = () => popup.evaluate(() => globalThis.siteAccessReadCounts);
+  assert.deepEqual(await readCounts(), { cookies: 0, storage: 0 }, "No site data may be read before consent, including with pre-existing host permissions");
+  assert.equal(await popup.locator("#siteAccessDialogDetail").textContent(), new URL(baseUrl).origin);
+  assert.equal(await popup.locator("#siteAccessDialog").evaluate(dialog => dialog.matches(":modal")), true);
+  assert.equal(await popup.locator("#siteAccessDialogCancelButton").evaluate(button => button === document.activeElement), true);
+  await screenshot(popup, "site-access-popup.png");
+
+  await popup.locator("#siteAccessDialogCancelButton").click();
+  await popup.waitForFunction(() => !document.querySelector("#siteAccessDialog").open);
+  assert.deepEqual(await readCounts(), { cookies: 0, storage: 0 });
+  assert.equal(await popup.locator("#importButton").isDisabled(), true);
+  assert.equal(await popup.locator("#cookieTableBody tr").count(), 0);
+  await popup.locator("#requestPermissionButton").click();
+  await popup.keyboard.press("Escape");
+  assert.equal(await popup.locator("#siteAccessDialog").isVisible(), false);
+  await popup.locator("#requestPermissionButton").click();
+  await popup.evaluate(() => {
+    globalThis.originalSiteAccessRequest = chrome.permissions.request.bind(chrome.permissions);
+    chrome.permissions.request = (_options, callback) => callback(false);
+  });
+  await popup.locator("#siteAccessDialogAllowButton").click();
+  await popup.locator("#siteAccessDialogError").waitFor({ state: "visible" });
+  assert.deepEqual(await readCounts(), { cookies: 0, storage: 0 }, "Rejected host permission must not trigger reads");
+  assert.deepEqual(await popup.evaluate(async () => (await chrome.storage.local.get("siteAccessConsents")).siteAccessConsents || []), []);
+  await popup.evaluate(() => { chrome.permissions.request = globalThis.originalSiteAccessRequest; });
+  await popup.locator("#siteAccessDialogAllowButton").click();
+  await popup.waitForSelector("#cookieTableBody tr");
+  assert.equal(await popup.locator("#siteAccessDialog").isVisible(), false);
+  assert.ok((await readCounts()).cookies > 0);
+
+  await site.bringToFront();
+  await popup.reload();
+  await popup.waitForSelector("#cookieTableBody tr");
+  assert.equal(await popup.locator("#siteAccessDialog").isVisible(), false, "Confirmed sites should stay authorized on reopen");
+  await popup.locator('#localStorageViewButton').click();
+  await popup.waitForFunction(() => document.body.dataset.view === "localStorage" && document.querySelector("#loadingState").hidden);
+  assert.ok((await readCounts()).storage > 0);
+
+  await popup.evaluate(async () => {
+    await chrome.storage.local.remove("siteAccessConsents");
+    await chrome.storage.local.set({ uiLanguage: "zh_CN" });
+  });
+  const popupUrl = popup.url();
+  await site.bringToFront();
+  await popup.goto(`${popupUrl.split("?")[0]}?surface=sidepanel`);
+  await popup.setViewportSize({ width: 380, height: 800 });
+  await popup.waitForFunction(() => document.querySelector("#siteAccessDialog")?.open && document.querySelector("#loadingState")?.hidden);
+  assert.deepEqual(await readCounts(), { cookies: 0, storage: 0 });
+  const dialog = popup.locator("#siteAccessDialog");
+  const bounds = await dialog.boundingBox();
+  assert.ok(bounds.x >= 0 && bounds.x + bounds.width <= 380);
+  assert.equal(await dialog.evaluate(element => element.scrollWidth <= element.clientWidth), true);
+  await screenshot(popup, "site-access-sidepanel-zh-CN.png");
+  await popup.evaluate(() => globalThis.cookieControllerTheme.setPreference("dark"));
+  await screenshot(popup, "site-access-sidepanel-dark.png");
+  await popup.locator("#siteAccessDialogAllowButton").click();
+  await popup.waitForFunction(() => !document.querySelector("#siteAccessDialog").open && document.querySelector("#loadingState").hidden);
+  await popup.locator('#cookiesViewButton').click();
+  await popup.waitForSelector("#cookieTableBody tr");
+  await popup.evaluate(async () => {
+    await chrome.storage.local.set({ uiLanguage: "en" });
+    globalThis.cookieControllerTheme.setPreference("light");
+  });
+  await site.bringToFront();
+  await popup.setViewportSize({ width: 760, height: 560 });
+  await popup.goto(popupUrl);
+  await popup.waitForFunction(() => document.querySelector("#loadingState")?.hidden);
+  await popup.locator('#cookiesViewButton').click();
+  await popup.waitForFunction(() => document.body.dataset.view === "cookies" && document.querySelector("#loadingState").hidden
+    && [...document.querySelectorAll(".name-cell-text")].some(element => element.textContent === "plain"));
+  assert.ok((await browserContext.cookies(baseUrl)).length > 0);
 }
 
 async function assertSiteIcon(popup) {
@@ -780,15 +891,15 @@ async function assertWorkspaceNavigation(popup) {
   assert.equal(layout.siteSwitchDisplay, "none", JSON.stringify(layout));
   assert.equal(layout.detailUsesFullPane, true, JSON.stringify(layout));
 
-  await popup.locator("#refreshMenuButton").click();
-  assert.equal(await popup.locator("#refreshMenu").isHidden(), false);
-  assert.equal(await popup.locator("#refreshMenuButton").getAttribute("aria-expanded"), "true");
+  await popup.locator("#settingsButton").click();
+  assert.equal(await popup.locator("#settingsMenu").isHidden(), false);
+  assert.equal(await popup.locator(".settings-refresh-row").count(), 1);
   await popup.locator("#autoRefreshToggle").check();
-  await popup.waitForFunction(() => document.querySelector("#refreshControl")?.classList.contains("is-auto"));
+  await popup.waitForFunction(async () => (await chrome.storage.local.get("autoRefreshPage")).autoRefreshPage === true);
   await popup.locator("#autoRefreshToggle").uncheck();
-  await popup.waitForFunction(() => !document.querySelector("#refreshControl")?.classList.contains("is-auto"));
+  await popup.waitForFunction(async () => (await chrome.storage.local.get("autoRefreshPage")).autoRefreshPage === false);
   await popup.locator("#hostLabel").click();
-  assert.equal(await popup.locator("#refreshMenu").isHidden(), true);
+  assert.equal(await popup.locator("#settingsMenu").isHidden(), true);
 
   await popup.locator("#historyViewButton").click();
   assert.equal(await popup.locator("#historyPanel").isHidden(), false);
@@ -1645,6 +1756,7 @@ async function assertSidePanelWorkbench(context, activePage, extensionId) {
       exportButton: rect("#exportButton"),
       profilesButton: rect("#profilesButton"),
       refreshControl: rect("#refreshControl"),
+      settingsButton: rect("#settingsButton"),
       tablePane: rect(".table-pane"),
       detailPane: rect(".detail-pane"),
       topbar: rect(".topbar"),
@@ -1661,9 +1773,11 @@ async function assertSidePanelWorkbench(context, activePage, extensionId) {
   assert.ok(narrowMainLayout.topbar.right <= narrowMainLayout.viewportWidth, JSON.stringify(narrowMainLayout));
   assert.equal(narrowMainLayout.sidePanelButtonDisplay, "none", JSON.stringify(narrowMainLayout));
   assert.ok(
-    narrowMainLayout.topbar.right - narrowMainLayout.refreshControl.right <= 13,
+    narrowMainLayout.topbar.right - narrowMainLayout.settingsButton.right <= 13,
     JSON.stringify(narrowMainLayout)
   );
+  assert.ok(narrowMainLayout.refreshControl.right < narrowMainLayout.settingsButton.left, JSON.stringify(narrowMainLayout));
+  assert.ok(Math.abs(narrowMainLayout.refreshControl.top - narrowMainLayout.settingsButton.top) <= 1, JSON.stringify(narrowMainLayout));
   assert.ok(narrowMainLayout.tablePane.right <= narrowMainLayout.viewportWidth, JSON.stringify(narrowMainLayout));
   assert.ok(narrowMainLayout.detailPane.right <= narrowMainLayout.viewportWidth, JSON.stringify(narrowMainLayout));
   assert.ok(narrowMainLayout.detailPane.top >= narrowMainLayout.tablePane.bottom, JSON.stringify(narrowMainLayout));
@@ -1689,6 +1803,7 @@ async function assertSidePanelWorkbench(context, activePage, extensionId) {
   await firstSidePanelCheckbox.uncheck();
   await sidePanel.locator("#batchActions").waitFor({ state: "hidden" });
   await sidePanel.locator("#importButton").click();
+  await sidePanel.locator("#quickEntryRows .cookie-import-row").first().waitFor({ state: "visible" });
   const initialCookieImportLayout = await sidePanel.locator("#workbenchDialog").evaluate((dialog) => {
     const rect = dialog.getBoundingClientRect();
     const addRect = document.querySelector("#quickEntryAddButton").getBoundingClientRect();

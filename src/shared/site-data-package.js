@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 import { getSiteDataItemId } from "./item-identity.js";
 
 export const SITE_DATA_SCHEMA_VERSION = 1;
@@ -61,18 +62,18 @@ export function parseSiteDataPackage(input) {
     try {
       value = JSON.parse(input);
     } catch (error) {
-      throw new SiteDataPackageError(`Site data package is not valid JSON: ${error.message}`, {
+      throw new SiteDataPackageError(t`Site data package is not valid JSON: ${error.message}`, {
         code: "INVALID_JSON"
       });
     }
   }
 
   if (!isPlainObject(value)) {
-    throw new SiteDataPackageError("Site data package must be a JSON object.");
+    throw new SiteDataPackageError(t("Site data package must be a JSON object."));
   }
 
   if (value.schemaVersion !== SITE_DATA_SCHEMA_VERSION) {
-    throw new SiteDataPackageError(`Unsupported site data schema version: ${String(value.schemaVersion)}`, {
+    throw new SiteDataPackageError(t`Unsupported site data schema version: ${String(value.schemaVersion)}`, {
       code: "UNSUPPORTED_SCHEMA_VERSION",
       path: "schemaVersion"
     });
@@ -90,7 +91,7 @@ export function tryParseSiteDataPackage(input) {
       data: null,
       error: error instanceof SiteDataPackageError
         ? error
-        : new SiteDataPackageError(error?.message || "Failed to parse site data package.")
+        : new SiteDataPackageError(error?.message || t("Failed to parse site data package."))
     };
   }
 }
@@ -98,7 +99,7 @@ export function tryParseSiteDataPackage(input) {
 export function serializeCookie(cookieOrRow) {
   const cookie = cookieOrRow?.raw || cookieOrRow;
   if (!isPlainObject(cookie)) {
-    throw new SiteDataPackageError("Cookie must be an object.", { path: "data.cookies" });
+    throw new SiteDataPackageError(t("Cookie must be an object."), { path: "data.cookies" });
   }
 
   const serialized = {};
@@ -108,9 +109,9 @@ export function serializeCookie(cookieOrRow) {
     }
   }
 
-  assertNonEmptyString(serialized.name, "Cookie name", "data.cookies[].name");
-  assertString(serialized.value, "Cookie value", "data.cookies[].value");
-  assertNonEmptyString(serialized.domain, "Cookie domain", "data.cookies[].domain");
+  assertNonEmptyString(serialized.name, t("Cookie name"), "data.cookies[].name");
+  assertString(serialized.value, t("Cookie value"), "data.cookies[].value");
+  assertNonEmptyString(serialized.domain, t("Cookie domain"), "data.cookies[].domain");
   serialized.path = typeof serialized.path === "string" && serialized.path ? serialized.path : "/";
   serialized.storeId = typeof serialized.storeId === "string" ? serialized.storeId : "";
   return serialized;
@@ -119,12 +120,12 @@ export function serializeCookie(cookieOrRow) {
 export function serializeStorageItem(itemOrRow) {
   const item = itemOrRow?.raw || itemOrRow;
   if (!isPlainObject(item)) {
-    throw new SiteDataPackageError("Storage item must be an object.", { path: "data.storage" });
+    throw new SiteDataPackageError(t("Storage item must be an object."), { path: "data.storage" });
   }
 
   const key = item.key ?? item.name;
-  assertString(key, "Storage key", "data.storage[].key");
-  assertString(item.value, "Storage value", "data.storage[].value");
+  assertString(key, t("Storage key"), "data.storage[].key");
+  assertString(item.value, t("Storage value"), "data.storage[].value");
   const serialized = {
     key: String(key),
     value: String(item.value)
@@ -160,7 +161,7 @@ function validateSiteDataPackageV1(value) {
   const exportedAt = normalizeExportedAt(value.exportedAt);
   const source = normalizeSource(value.source);
   if (!isPlainObject(value.data)) {
-    throw new SiteDataPackageError("Site data package data must be an object.", { path: "data" });
+    throw new SiteDataPackageError(t("Site data package data must be an object."), { path: "data" });
   }
 
   const cookies = requireArray(value.data.cookies, "data.cookies").map(serializeCookie);
@@ -179,34 +180,34 @@ function validateSiteDataPackageV1(value) {
 
 function normalizeSource(source = {}) {
   if (!isPlainObject(source)) {
-    throw new SiteDataPackageError("Site data package source must be an object.", { path: "source" });
+    throw new SiteDataPackageError(t("Site data package source must be an object."), { path: "source" });
   }
 
-  assertNonEmptyString(source.url, "Source URL", "source.url");
+  assertNonEmptyString(source.url, t("Source URL"), "source.url");
   let parsedUrl;
   try {
     parsedUrl = new URL(source.url);
   } catch {
-    throw new SiteDataPackageError("Source URL is invalid.", { path: "source.url" });
+    throw new SiteDataPackageError(t("Source URL is invalid."), { path: "source.url" });
   }
 
   if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
-    throw new SiteDataPackageError("Source URL must use http or https.", { path: "source.url" });
+    throw new SiteDataPackageError(t("Source URL must use http or https."), { path: "source.url" });
   }
 
   const origin = source.origin || parsedUrl.origin;
   if (origin !== parsedUrl.origin) {
-    throw new SiteDataPackageError("Source origin does not match the source URL.", { path: "source.origin" });
+    throw new SiteDataPackageError(t("Source origin does not match the source URL."), { path: "source.origin" });
   }
 
   return { url: parsedUrl.href, origin };
 }
 
 function normalizeExportedAt(value) {
-  assertNonEmptyString(value, "Export time", "exportedAt");
+  assertNonEmptyString(value, t("Export time"), "exportedAt");
   const date = new Date(value);
   if (!Number.isFinite(date.getTime())) {
-    throw new SiteDataPackageError("Export time is invalid.", { path: "exportedAt" });
+    throw new SiteDataPackageError(t("Export time is invalid."), { path: "exportedAt" });
   }
   return date.toISOString();
 }
@@ -219,27 +220,27 @@ function normalizeOrigin(value, path) {
     }
     return url.origin;
   } catch {
-    throw new SiteDataPackageError("Storage origin is invalid.", { path });
+    throw new SiteDataPackageError(t("Storage origin is invalid."), { path });
   }
 }
 
 function requireArray(value, path) {
   if (!Array.isArray(value)) {
-    throw new SiteDataPackageError(`${path} must be an array.`, { path });
+    throw new SiteDataPackageError(t`${path} must be an array.`, { path });
   }
   return value;
 }
 
 function assertString(value, label, path) {
   if (typeof value !== "string") {
-    throw new SiteDataPackageError(`${label} must be a string.`, { path });
+    throw new SiteDataPackageError(t`${label} must be a string.`, { path });
   }
 }
 
 function assertNonEmptyString(value, label, path) {
   assertString(value, label, path);
   if (!value) {
-    throw new SiteDataPackageError(`${label} cannot be empty.`, { path });
+    throw new SiteDataPackageError(t`${label} cannot be empty.`, { path });
   }
 }
 

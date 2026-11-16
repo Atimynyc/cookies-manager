@@ -1,3 +1,4 @@
+import { t } from "../shared/i18n.js";
 import { formatBytes } from "../shared/recent-changes.js";
 import { getStorageTypeLabel } from "../shared/storage-format.js";
 import { getUndoUnavailableReason } from "../shared/operation-context.js";
@@ -41,10 +42,10 @@ export function createHistoryView({
     const visibleBadgeCount = elements.historyCountBadge.hidden ? 0 : elements.historyCountBadge.textContent;
     const count = unreadCount === null ? visibleBadgeCount : unreadCount;
     const label = isHistoryView
-      ? "Back to details"
+      ? t("Back to details")
       : count
-        ? `${count} unread changes`
-        : "Recent changes";
+        ? t`${count} unread changes`
+        : t("Recent changes");
     elements.historyViewButton.title = label;
     elements.historyViewButton.setAttribute("aria-label", label);
   }
@@ -58,7 +59,7 @@ export function createHistoryView({
 
     state.selectedHistoryId = "";
     elements.historyDetail.hidden = true;
-    elements.historyDetailTitle.textContent = "Change detail";
+    elements.historyDetailTitle.textContent = t("Change detail");
     elements.historyDetailGrid.replaceChildren();
     elements.historyBeforeValue.replaceChildren();
     elements.historyAfterValue.replaceChildren();
@@ -106,7 +107,7 @@ export function createHistoryView({
     delta.className = "history-delta";
     detailButton.type = "button";
     detailButton.className = "history-detail-button";
-    detailButton.textContent = "Details";
+    detailButton.textContent = t("Details");
     detailButton.setAttribute("aria-controls", "historyDetail");
     detailButton.setAttribute("aria-expanded", String(state.selectedHistoryId === change.id));
     detailButton.addEventListener("click", () => showHistoryDetail(change.id));
@@ -117,7 +118,7 @@ export function createHistoryView({
     time.dateTime = new Date(change.timestamp).toISOString();
 
     const location = getChangeLocation(change);
-    scope.textContent = location || "Unknown scope";
+    scope.textContent = location || t("Unknown scope");
     scope.title = location || "";
     delta.textContent = `${formatBytes(change.beforeSize)} -> ${formatBytes(change.afterSize)}`;
 
@@ -128,10 +129,10 @@ export function createHistoryView({
       const unavailableReason = getUndoUnavailableReason(state.undoSnapshots.get(change.id), state.tab, state.cookieStoreId);
       undoButton.type = "button";
       undoButton.className = "history-undo-button";
-      undoButton.textContent = "Undo";
+      undoButton.textContent = t("Undo");
       undoButton.disabled = Boolean(state.busy || state.loading || unavailableReason);
-      undoButton.title = unavailableReason || "Undo this change";
-      undoButton.setAttribute("aria-label", unavailableReason || "Undo this change");
+      undoButton.title = unavailableReason || t("Undo this change");
+      undoButton.setAttribute("aria-label", unavailableReason || t("Undo this change"));
       undoButton.addEventListener("click", () => onUndo(change.id));
       sub.append(undoButton);
     }
@@ -180,34 +181,34 @@ export function createHistoryView({
 
   function renderHistoryDetailGrid(change) {
     const rows = isCookieChange(change) ? [
-      ["Action", formatChangeAction(change.action)],
-      ["Cookie", change.name || ""],
-      ["Domain", change.domain || ""],
-      ["Path", change.path || ""],
+      [t("Action"), formatChangeAction(change.action)],
+      [t("Cookie"), change.name || ""],
+      [t("Domain"), change.domain || ""],
+      [t("Path"), change.path || ""],
       ...(change.hasExpirationDetails ? [
-        ["Before expiration", formatHistoryExpiration(change.beforeSession, change.beforeExpirationDate)],
-        ["After expiration", formatHistoryExpiration(change.afterSession, change.afterExpirationDate)]
+        [t("Before expiration"), formatHistoryExpiration(change.beforeSession, change.beforeExpirationDate)],
+        [t("After expiration"), formatHistoryExpiration(change.afterSession, change.afterExpirationDate)]
       ] : []),
-      ["Store", change.storeId || "Default"],
-      ["Origin", change.origin || ""],
-      ["Host", change.host || ""],
-      ["Changed", formatFullHistoryTime(change.timestamp)],
-      ["Size", `${formatBytes(change.beforeSize)} -> ${formatBytes(change.afterSize)}`],
-      ["Cookie ID", change.cookieId || ""]
+      [t("Store"), change.storeId || t("Default")],
+      [t("Origin"), change.origin || ""],
+      [t("Host"), change.host || ""],
+      [t("Changed"), formatFullHistoryTime(change.timestamp)],
+      [t("Size"), `${formatBytes(change.beforeSize)} -> ${formatBytes(change.afterSize)}`],
+      [t("Cookie ID"), change.cookieId || ""]
     ] : [
-      ["Action", formatChangeAction(change.action)],
-      ["Key", change.name || ""],
-      ["Storage", getStorageTypeLabel(change.storageType)],
-      ["Origin", change.origin || ""],
-      ["Host", change.host || ""],
-      ["Changed", formatFullHistoryTime(change.timestamp)],
-      ["Size", `${formatBytes(change.beforeSize)} -> ${formatBytes(change.afterSize)}`],
-      ["Item ID", change.itemId || ""]
+      [t("Action"), formatChangeAction(change.action)],
+      [t("Key"), change.name || ""],
+      [t("Storage"), getStorageTypeLabel(change.storageType)],
+      [t("Origin"), change.origin || ""],
+      [t("Host"), change.host || ""],
+      [t("Changed"), formatFullHistoryTime(change.timestamp)],
+      [t("Size"), `${formatBytes(change.beforeSize)} -> ${formatBytes(change.afterSize)}`],
+      [t("Item ID"), change.itemId || ""]
     ];
 
     if (Number.isInteger(change.targetTabId)) {
-      rows.push(["Original tab", String(change.targetTabId)]);
-      rows.push(["Browsing mode", change.targetIncognito ? "Incognito" : "Regular"]);
+      rows.push([t("Original tab"), String(change.targetTabId)]);
+      rows.push([t("Browsing mode"), change.targetIncognito ? t("Incognito") : t("Regular")]);
     }
 
     const fragment = document.createDocumentFragment();
@@ -239,23 +240,27 @@ export function createHistoryView({
     elements.historyValueDetail.hidden = true;
     elements.historyDetailNote.hidden = false;
     elements.historyDetailNote.textContent =
-      "Value snapshots are only available during the current browser session.";
+      t("Value snapshots are only available during the current browser session.");
   }
 
   return {
     clearHistoryDetail,
     getVisibleRecentChanges,
     renderHistory,
+    localize() {
+      renderHistory();
+      if (state.selectedHistoryId && !elements.historyDetail.hidden) showHistoryDetail(state.selectedHistoryId);
+    },
     updateHistoryButtonState
   };
 }
 
 function formatHistoryExpiration(session, expirationDate) {
   if (session) {
-    return "Session";
+    return t("Session");
   }
   if (!Number.isFinite(expirationDate)) {
-    return "Unknown";
+    return t("Unknown");
   }
   return new Date(expirationDate * 1000).toLocaleString();
 }
@@ -265,7 +270,7 @@ function isCookieChange(change) {
 }
 
 function getChangeItemLabel(change) {
-  return isCookieChange(change) ? "Cookie" : getStorageTypeLabel(change.storageType);
+  return isCookieChange(change) ? t("Cookie") : getStorageTypeLabel(change.storageType);
 }
 
 function getChangeLocation(change) {
@@ -326,11 +331,11 @@ function createDiffNodes(value, diffStart, diffEnd, className) {
 
 function formatChangeAction(action) {
   return {
-    edit: "Edit",
-    delete: "Delete",
-    "import-create": "Import create",
-    "import-overwrite": "Import overwrite"
-  }[action] || "Change";
+    edit: t("Edit"),
+    delete: t("Delete"),
+    "import-create": t("Import create"),
+    "import-overwrite": t("Import overwrite")
+  }[action] || t("Change");
 }
 
 function formatHistoryTime(timestamp) {

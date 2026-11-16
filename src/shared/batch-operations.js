@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 import {
   addOperationFailure,
   addOperationSkip,
@@ -6,15 +7,15 @@ import {
 } from "./operation-result.js";
 
 export function skipBatchOperation(reason) {
-  return { status: "skipped", reason: String(reason || "Skipped") };
+  return { status: "skipped", reason: String(reason || t("Skipped")) };
 }
 
 export async function executeBatchOperation(items, operate, { onProgress, yieldEvery = 10 } = {}) {
   if (!Array.isArray(items)) {
-    throw new TypeError("Batch operation items must be an array.");
+    throw new TypeError(t("Batch operation items must be an array."));
   }
   if (typeof operate !== "function") {
-    throw new TypeError("Batch operation handler must be a function.");
+    throw new TypeError(t("Batch operation handler must be a function."));
   }
 
   const result = createBatchOperationResult();

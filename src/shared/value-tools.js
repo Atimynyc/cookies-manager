@@ -1,8 +1,9 @@
+import { t } from "./i18n.js";
 export function decodeUrlValue(value) {
   try {
     return decodeURIComponent(value);
   } catch {
-    throw new Error("Value is not valid URL-encoded text.");
+    throw new Error(t("Value is not valid URL-encoded text."));
   }
 }
 
@@ -43,22 +44,22 @@ export function classifyValueType(value) {
 const AUTO_VALUE_TOOL_DEFINITIONS = [
   {
     mode: "jwt",
-    title: "JWT payload",
+    get title() { return t("JWT payload"); },
     run: decodeJwtPayload
   },
   {
     mode: "jsonFormat",
-    title: "Formatted JSON",
+    get title() { return t("Formatted JSON"); },
     run: formatJsonValue
   },
   {
     mode: "jsonCompact",
-    title: "Compacted JSON",
+    get title() { return t("Compacted JSON"); },
     run: compactJsonValue
   },
   {
     mode: "urlDecode",
-    title: "URL decoded value",
+    get title() { return t("URL decoded value"); },
     run: decodeUrlValue
   }
 ];
@@ -109,7 +110,7 @@ function parseJsonCandidate(value) {
     }
   }
 
-  throw new Error("Value is not valid JSON.");
+  throw new Error(t("Value is not valid JSON."));
 }
 
 export function decodeJwtPayload(value) {
@@ -117,7 +118,7 @@ export function decodeJwtPayload(value) {
   const parts = token.split(".");
 
   if (parts.length < 2 || !parts[1]) {
-    throw new Error("Value is not a JWT.");
+    throw new Error(t("Value is not a JWT."));
   }
 
   try {
@@ -128,7 +129,7 @@ export function decodeJwtPayload(value) {
       return payload;
     }
   } catch {
-    throw new Error("JWT payload could not be decoded.");
+    throw new Error(t("JWT payload could not be decoded."));
   }
 }
 

@@ -1,9 +1,10 @@
+import { t } from "../shared/i18n.js";
 export function createDialogController(elements) {
   function requestConfirmation({
     title,
     message,
     detail = "",
-    confirmLabel = "Delete",
+    confirmLabel = t("Delete"),
     danger = true,
     selection = null
   }) {
@@ -59,7 +60,7 @@ export function createDialogController(elements) {
           result = validate(elements.textInputDialogInput.value);
           elements.textInputDialog.close("submit");
         } catch (error) {
-          elements.textInputDialogError.textContent = error?.message || "Enter a valid value.";
+          elements.textInputDialogError.textContent = error?.message || t("Enter a valid value.");
           elements.textInputDialogError.hidden = false;
           elements.textInputDialogInput.focus();
         }
@@ -101,8 +102,8 @@ function renderSelectionReview(dialog, selection) {
     return;
   }
 
-  const label = selection?.label || "items";
-  review.querySelector("[data-selection-review-label]").textContent = `Selected ${label}`;
+  const label = selection?.label || t("items");
+  review.querySelector("[data-selection-review-label]").textContent = t`Selected ${label}`;
   review.querySelector("[data-selection-review-count]").textContent = String(rows.length);
   review.querySelector("[data-selection-review-list]").replaceChildren(
     ...rows.map(createSelectionReviewItem)
@@ -113,8 +114,8 @@ function createSelectionReviewItem(row) {
   const item = document.createElement("li");
   const name = document.createElement("strong");
   const location = document.createElement("span");
-  name.textContent = row.name || "(unnamed)";
-  name.title = row.name || "(unnamed)";
+  name.textContent = row.name || t("(unnamed)");
+  name.title = row.name || t("(unnamed)");
   location.textContent = row.location || "";
   location.title = row.location || "";
   item.append(name, location);

@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 import { getCookieScopedUrl, getOriginPermissionPattern, isSupportedPageUrl } from "./url.js";
 import { callChrome } from "./chrome-call.js";
 
@@ -43,7 +44,7 @@ export async function activateTab(tabId) {
 
 export async function getCookiesForUrl(url, storeId = "") {
   if (!isSupportedPageUrl(url)) {
-    throw new Error("Only http:// and https:// pages support cookie operations.");
+    throw new Error(t("Only http:// and https:// pages support cookie operations."));
   }
 
   const details = { url };
@@ -70,7 +71,7 @@ export async function setCookieValue(url, cookie, value, overrides = {}) {
 
 export async function setCookieData(url, cookie) {
   if (!isSupportedPageUrl(url)) {
-    throw new Error("Only http:// and https:// pages support cookie operations.");
+    throw new Error(t("Only http:// and https:// pages support cookie operations."));
   }
 
   const details = {
@@ -101,7 +102,7 @@ export async function setCookieData(url, cookie) {
     : !Number.isFinite(cookie.expirationDate);
   if (!session) {
     if (!Number.isFinite(cookie.expirationDate)) {
-      throw new Error("A persistent cookie requires a valid expiration date.");
+      throw new Error(t("A persistent cookie requires a valid expiration date."));
     }
     details.expirationDate = cookie.expirationDate;
   }
@@ -115,7 +116,7 @@ export async function setCookieData(url, cookie) {
 
 export async function setCookiePair(url, name, value, storeId = "") {
   if (!isSupportedPageUrl(url)) {
-    throw new Error("Only http:// and https:// pages support cookie operations.");
+    throw new Error(t("Only http:// and https:// pages support cookie operations."));
   }
 
   const details = {
@@ -155,7 +156,7 @@ export async function reloadTab(tabId) {
 
 export async function openSidePanel(tabId) {
   if (!chrome.sidePanel?.open || !tabId) {
-    throw new Error("Side panel is not available in this browser.");
+    throw new Error(t("Side panel is not available in this browser."));
   }
 
   const tab = await callChrome("tabs.get", tabId);
@@ -180,6 +181,17 @@ export async function hasSitePermission(url) {
   }
 
   return callChrome("permissions.contains", {
+    origins: [origin]
+  });
+}
+
+export async function requestSitePermission(url) {
+  const origin = getOriginPermissionPattern(url);
+  if (!origin) {
+    return false;
+  }
+
+  return callChrome("permissions.request", {
     origins: [origin]
   });
 }

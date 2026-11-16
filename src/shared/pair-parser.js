@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 export function parseNameValuePair(text, { kind = "cookie" } = {}) {
   const line = String(text || "")
     .split(/\r?\n/)
@@ -5,7 +6,7 @@ export function parseNameValuePair(text, { kind = "cookie" } = {}) {
     .find(Boolean);
 
   if (!line) {
-    throw new TypeError(`Enter a valid ${getPairLabel(kind)}.`);
+    throw new TypeError(t`Enter a valid ${getPairLabel(kind)}.`);
   }
 
   const pair = kind === "cookie"
@@ -14,7 +15,7 @@ export function parseNameValuePair(text, { kind = "cookie" } = {}) {
   const separatorIndex = pair.indexOf("=");
 
   if (separatorIndex <= 0) {
-    throw new TypeError(`Enter a valid ${getPairLabel(kind)}.`);
+    throw new TypeError(t`Enter a valid ${getPairLabel(kind)}.`);
   }
 
   const name = pair.slice(0, separatorIndex).trim();
@@ -29,10 +30,10 @@ export function parseNameValuePair(text, { kind = "cookie" } = {}) {
 export function createCookiePair(name, value = "") {
   const normalizedName = String(name || "").trim();
   if (!normalizedName) {
-    throw new TypeError("Enter a cookie name.");
+    throw new TypeError(t("Enter a cookie name."));
   }
   if (/[\s;=]/.test(normalizedName)) {
-    throw new TypeError("Cookie name is invalid.");
+    throw new TypeError(t("Cookie name is invalid."));
   }
   return { name: normalizedName, value: String(value ?? "") };
 }
@@ -40,7 +41,7 @@ export function createCookiePair(name, value = "") {
 export function createStoragePair(name, value = "") {
   const normalizedName = String(name || "").trim();
   if (!normalizedName) {
-    throw new TypeError("Enter a storage key.");
+    throw new TypeError(t("Enter a storage key."));
   }
   return { name: normalizedName, value: String(value ?? "") };
 }

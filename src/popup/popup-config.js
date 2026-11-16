@@ -1,3 +1,4 @@
+import { t } from "../shared/i18n.js";
 import {
   compactJsonValue,
   decodeJwtPayload,
@@ -7,58 +8,58 @@ import {
 } from "../shared/value-tools.js";
 
 export const VALUE_TOOL_DEFINITIONS = {
-  urlDecode: { title: "URL decoded value", run: decodeUrlValue },
-  urlEncode: { title: "URL encoded value", run: encodeUrlValue },
-  jsonFormat: { title: "Formatted JSON", run: formatJsonValue },
-  jsonCompact: { title: "Compacted JSON", run: compactJsonValue },
-  jwt: { title: "JWT payload", run: decodeJwtPayload }
+  urlDecode: { get title() { return t("URL decoded value"); }, run: decodeUrlValue },
+  urlEncode: { get title() { return t("URL encoded value"); }, run: encodeUrlValue },
+  jsonFormat: { get title() { return t("Formatted JSON"); }, run: formatJsonValue },
+  jsonCompact: { get title() { return t("Compacted JSON"); }, run: compactJsonValue },
+  jwt: { get title() { return t("JWT payload"); }, run: decodeJwtPayload }
 };
 
 export const DATA_VIEWS = {
   cookies: {
     storageType: "",
-    singular: "cookie",
-    plural: "cookies",
-    title: "Cookie",
-    loadingMessage: "Reading cookies",
-    emptyMessage: "No cookies for this page",
-    unavailableMessage: "Cookies unavailable",
-    unsupportedMessage: "Only http:// and https:// pages support cookie operations.",
-    readErrorMessage: "Failed to read cookies.",
+    get singular() { return t("cookie"); },
+    get plural() { return t("cookies"); },
+    get title() { return t("Cookie"); },
+    get loadingMessage() { return t("Reading cookies"); },
+    get emptyMessage() { return t("No cookies for this page"); },
+    get unavailableMessage() { return t("Cookies unavailable"); },
+    get unsupportedMessage() { return t("Only http:// and https:// pages support cookie operations."); },
+    get readErrorMessage() { return t("Failed to read cookies."); },
     exportKey: "cookies",
-    pairLabel: "cookies",
-    tableLabels: ["Name", "Value", "Domain", "Path", "Expires", "Flags", "Size"],
-    metaLabels: ["Domain", "Path", "Expires", "SameSite", "Store", "Size"]
+    get pairLabel() { return t("cookies"); },
+    get tableLabels() { return [t("Name"), t("Value"), t("Domain"), t("Path"), t("Expires"), t("Flags"), t("Size")]; },
+    get metaLabels() { return [t("Domain"), t("Path"), t("Expires"), "SameSite", t("Store"), t("Size")]; }
   },
   localStorage: {
     storageType: "local",
-    singular: "local storage item",
-    plural: "local storage items",
-    title: "Local Storage",
-    loadingMessage: "Reading local storage",
-    emptyMessage: "No local storage for this page",
-    unavailableMessage: "Local storage unavailable",
-    unsupportedMessage: "Only http:// and https:// pages support storage operations.",
-    readErrorMessage: "Failed to read local storage.",
+    get singular() { return t("local storage item"); },
+    get plural() { return t("local storage items"); },
+    get title() { return t("Local Storage"); },
+    get loadingMessage() { return t("Reading local storage"); },
+    get emptyMessage() { return t("No local storage for this page"); },
+    get unavailableMessage() { return t("Local storage unavailable"); },
+    get unsupportedMessage() { return t("Only http:// and https:// pages support storage operations."); },
+    get readErrorMessage() { return t("Failed to read local storage."); },
     exportKey: "items",
     pairLabel: "key=value",
-    tableLabels: ["Key", "Value", "Origin", "Storage", "Scope", "Flags", "Size"],
-    metaLabels: ["Origin", "Storage", "Scope", "SameSite", "Type", "Size"]
+    get tableLabels() { return [t("Key"), t("Value"), t("Origin"), t("Storage"), t("Scope"), t("Flags"), t("Size")]; },
+    get metaLabels() { return [t("Origin"), t("Storage"), t("Scope"), "SameSite", t("Type"), t("Size")]; }
   },
   sessionStorage: {
     storageType: "session",
-    singular: "session storage item",
-    plural: "session storage items",
-    title: "Session Storage",
-    loadingMessage: "Reading session storage",
-    emptyMessage: "No session storage for this page",
-    unavailableMessage: "Session storage unavailable",
-    unsupportedMessage: "Only http:// and https:// pages support storage operations.",
-    readErrorMessage: "Failed to read session storage.",
+    get singular() { return t("session storage item"); },
+    get plural() { return t("session storage items"); },
+    get title() { return t("Session Storage"); },
+    get loadingMessage() { return t("Reading session storage"); },
+    get emptyMessage() { return t("No session storage for this page"); },
+    get unavailableMessage() { return t("Session storage unavailable"); },
+    get unsupportedMessage() { return t("Only http:// and https:// pages support storage operations."); },
+    get readErrorMessage() { return t("Failed to read session storage."); },
     exportKey: "items",
     pairLabel: "key=value",
-    tableLabels: ["Key", "Value", "Origin", "Storage", "Scope", "Flags", "Size"],
-    metaLabels: ["Origin", "Storage", "Scope", "SameSite", "Type", "Size"]
+    get tableLabels() { return [t("Key"), t("Value"), t("Origin"), t("Storage"), t("Scope"), t("Flags"), t("Size")]; },
+    get metaLabels() { return [t("Origin"), t("Storage"), t("Scope"), "SameSite", t("Type"), t("Size")]; }
   }
 };
 

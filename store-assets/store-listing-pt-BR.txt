@@ -1,0 +1,38 @@
+Cookie Controller
+
+Breve descrição
+
+Gerenciar cookies e armazenamento na web da página atual.
+
+Descrição detalhada
+
+Cookie Controller é uma ferramenta de gerenciamento de dados do site para desenvolvedores, testadores e usuários avançados. Ela permite que você inspecione e gerencie cookies, Local Storage e Session Storage da página atual a partir de uma janela pop-up ou do painel lateral do Chrome, sem precisar abrir as ferramentas de desenvolvedor completas.
+
+Principais recursos
+
+- Visualize cookies para a página atual e faça uma busca rápida por nome, valor, domínio ou caminho.
+- Edite um valor individual de cookie, preservando seus atributos de domínio, caminho, validade, SameSite, Secure e HttpOnly.
+- Crie ou exclua cookies, exclua vários cookies selecionados e defina valores em lotes.
+- Visualize, crie, edite e remova entradas de Local Storage e Session Storage.
+- Marque como favoritos os cookies e as entradas Locais/Session Storage usados com frequência para que permaneçam no topo de cada lista.
+- Alternar o alvo de gerenciamento entre as guias HTTP/HTTPS na janela atual do navegador.
+- Exportar a visualização atual, os itens selecionados ou todos os dados do site como um pacote JSON versionado e, em seguida, importá-lo com pré-visualização de diferenças, controles de conflito, resultados por item e desfazer em lote.
+- Importe e exporte Cookies no formato comum Netscape/cURL cookie-jar, incluindo as convenções cURL HttpOnly e sessão-cookie. Os metadados de armazenamento SameSite, Partitioned/CHIPS e Cookie permanecem disponíveis apenas por meio de pacotes JSON.
+- Salve perfis de site reutilizáveis localmente com tags, regras de origem, comportamento padrão em caso de conflito e variáveis de tempo de aplicação; renomeie, duplique, exporte, aplique ou exclua-os.
+- Importe rapidamente um ou mais Cookies com campos separados de Nome e Valor; o armazenamento suporta key=value para importações pontuais.
+- Copie um valor cookie, um par name=value ou JSON estruturado com uma única ação.
+- Use as ferramentas integradas de codificação/decodificação de URL, formatação/compactação de JSON e decodificação de carga útil de JWT.
+- Salve estados de sites reutilizáveis com tags, regras de origem e variáveis de tempo de aplicação; renomeie, duplique, exporte, aplique e exclua.
+- Analise alterações recentes e diferenças entre o antes e o depois, além de desfazer alterações durante a sessão atual do navegador.
+- Opcionalmente, recarregue a página automaticamente após uma alteração.
+- Use a extensão tanto pelo pop-up quanto pelo painel lateral do Chrome.
+
+Privacidade
+
+O Cookie Controller não contém publicidade, análises ou rastreamento de usuários e não requer uma conta. Os dados do Cookies e do armazenamento da web acessados pela extensão são processados apenas no dispositivo do usuário. Eles não são enviados, vendidos ou compartilhados com o desenvolvedor ou com servidores de terceiros. As preferências de interface, os identificadores de dados de sites favoritos (que não contêm cookie nem valores de armazenamento), os perfis de sites explicitamente salvos pelo usuário e os registros de alterações recentes são armazenados no armazenamento local de extensões do navegador e podem ser removidos limpando-se os dados da extensão ou desinstalando-a. Instantâneos completos de desfazer em lote permanecem apenas no armazenamento da sessão do navegador.
+
+Notas de uso
+
+A extensão acessa dados de um site selecionado somente quando o usuário a abre e a utiliza. Cookies e o armazenamento da web podem conter informações confidenciais, como o status de login; portanto, use a extensão apenas em dispositivos confiáveis e proteja quaisquer dados exportados.
+
+A ferramenta JWT decodifica a carga útil apenas para inspeção. Ela não verifica assinaturas nem determina se um token é confiável ou válido. Os instantâneos de valores completos necessários para visualização de diferenças e reversão são mantidos apenas na memória durante a sessão atual do navegador.

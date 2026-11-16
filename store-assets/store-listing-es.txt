@@ -1,0 +1,38 @@
+Cookie Controller
+
+Breve descripción
+
+Gestionar las cookies y el almacenamiento web de la página actual.
+
+Descripción detallada
+
+Cookie Controller es una herramienta de gestión de datos del sitio web para desarrolladores, probadores y usuarios avanzados. Te permite inspeccionar y gestionar cookies, Local Storage y Session Storage de la página actual desde una ventana emergente o desde el panel lateral de Chrome, sin necesidad de abrir las herramientas de desarrollo completas.
+
+Características principales
+
+- Ver cookies para la página actual y realizar búsquedas rápidas por nombre, valor, dominio o ruta.
+- Editar un valor individual de cookie conservando sus atributos de dominio, ruta, caducidad, SameSite, «Seguro» y HttpOnly.
+- Crea o elimina cookies, elimina varios cookies seleccionados y establece valores por lotes.
+- Visualiza, crea, edita y elimina entradas de Local Storage y Session Storage.
+- Marca como favoritos los cookies y las entradas locales/Session Storage que utilizas con frecuencia para que permanezcan en la parte superior de cada lista.
+- Cambiar el objetivo de gestión entre las pestañas HTTP/HTTPS en la ventana actual del navegador.
+- Exportar la vista actual, los elementos seleccionados o todos los datos del sitio como un paquete JSON versionado y, a continuación, importarlo con una vista previa de diferencias, controles de conflictos, resultados por elemento y deshacer por lotes.
+- Importar y exportar Cookies en el formato común Netscape/cURL cookie-jar, incluyendo las convenciones cURL HttpOnly y sesión-cookie. Los metadatos de almacenamiento de SameSite, Partitioned/CHIPS y Cookie siguen estando disponibles únicamente a través de paquetes JSON.
+- Guarda localmente perfiles de sitio reutilizables con etiquetas, reglas de origen, comportamiento predeterminado ante conflictos y variables de tiempo de aplicación; cámbiales el nombre, duplícalos, expórtalos, aplícalos o elimínalos.
+- Importa rápidamente uno o más Cookies con campos de Nombre y Valor independientes; el almacenamiento admite key=value para importaciones puntuales.
+- Copia un valor cookie, un par name=value o un JSON estructurado con una sola acción.
+- Utiliza las herramientas integradas de codificación/decodificación de URL, formateo/compresión de JSON y decodificación de la carga útil de JWT.
+- Guarda estados de sitios reutilizables con etiquetas, reglas de origen y variables de tiempo de aplicación; renómbralos, duplícalos, expórtalos, aplícalos y elimínalos.
+- Revisa los cambios recientes y las diferencias entre el antes y el después, y deshaz los cambios realizados durante la sesión actual del navegador.
+- Si lo deseas, recarga la página automáticamente tras un cambio.
+- Utiliza la extensión desde su ventana emergente o desde el panel lateral de Chrome.
+
+Privacidad
+
+Cookie Controller no contiene publicidad, análisis ni seguimiento de usuarios, y no requiere una cuenta. Los datos de Cookies y del almacenamiento web a los que accede la extensión se procesan únicamente en el dispositivo del usuario. No se suben, venden ni comparten con el desarrollador ni con servidores de terceros. Las preferencias de la interfaz, los identificadores de datos de sitios favoritos (que no contienen cookie ni valores de almacenamiento), los perfiles de sitios guardados explícitamente por el usuario y los registros de cambios recientes se almacenan en el almacenamiento local de extensiones del navegador y pueden eliminarse borrando los datos de la extensión o desinstalándola. Las instantáneas completas de deshacer por lotes permanecen únicamente en el almacenamiento de la sesión del navegador.
+
+Notas de uso
+
+La extensión accede a los datos de un sitio web seleccionado únicamente cuando el usuario la abre y la utiliza. Cookies y el almacenamiento web pueden contener información confidencial, como el estado de inicio de sesión, por lo que se recomienda utilizar la extensión solo en dispositivos de confianza y proteger cualquier dato exportado.
+
+La herramienta JWT descodifica la carga útil únicamente con fines de inspección. No verifica firmas ni determina si un token es fiable o válido. Las instantáneas de valores completos necesarias para visualizar diferencias y deshacer acciones se conservan únicamente en la memoria durante la sesión actual del navegador.

@@ -1,8 +1,9 @@
+import { t } from "./i18n.js";
 const DATA_VIEWS = new Set(["cookies", "localStorage", "sessionStorage"]);
 
 export function makeFavoriteItemId(dataView, itemId) {
   if (!DATA_VIEWS.has(dataView) || typeof itemId !== "string" || !itemId) {
-    throw new TypeError("A supported data view and item ID are required.");
+    throw new TypeError(t("A supported data view and item ID are required."));
   }
 
   return `${dataView}:${itemId}`;

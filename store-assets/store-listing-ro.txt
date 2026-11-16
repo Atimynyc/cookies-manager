@@ -1,0 +1,38 @@
+Cookie Controller
+
+Scurtă descriere
+
+Gestionați cookies și spațiul de stocare web pentru pagina curentă.
+
+Descriere detaliată
+
+Cookie Controller este un instrument de gestionare a datelor site-ului destinat dezvoltatorilor, testerilor și utilizatorilor avansați. Acesta vă permite să inspectați și să gestionați cookies, Local Storage și Session Storage pentru pagina curentă dintr-o fereastră pop-up sau din panoul lateral al Chrome, fără a deschide instrumentele complete pentru dezvoltatori.
+
+Caracteristici principale
+
+- Vizualizați cookies pentru pagina curentă și efectuați căutări rapide după nume, valoare, domeniu sau cale.
+- Editați o valoare individuală cookie, păstrând în același timp atributele sale de domeniu, cale, expirare, SameSite, Secure și HttpOnly.
+- Creați sau ștergeți cookies, ștergeți mai multe intrări cookies selectate și setați valori în loturi.
+- Vizualizați, creați, editați și eliminați intrările Local Storage și Session Storage.
+- Adăugați la favorite intrările cookies și Local/Session Storage utilizate frecvent, astfel încât acestea să rămână în partea de sus a fiecărei liste.
+- Comutați obiectul de gestionare între filele HTTP/HTTPS din fereastra curentă a browserului.
+- Exportați vizualizarea curentă, elementele selectate sau toate datele site-ului ca pachet JSON cu versiuni, apoi importați-l cu previzualizare a diferențelor, controale de conflicte, rezultate pentru fiecare element și anulare în lot.
+- Importați și exportați Cookies în formatul comun Netscape/cURL cookie-jar, inclusiv convențiile cURL HttpOnly și sesiune-cookie. Metadatele de stocare SameSite, Partitioned/CHIPS și Cookie rămân disponibile numai prin intermediul pachetelor JSON.
+- Salvați local profilurile de site reutilizabile împreună cu etichete, reguli de origine, comportamentul implicit în caz de conflict și variabile de aplicare; redenumiți-le, duplicați-le, exportați-le, aplicați-le sau ștergeți-le.
+- Importați rapid unul sau mai multe Cookies cu câmpuri separate pentru Nume și Valoare; Storage acceptă key=value pentru importuri unice.
+- Copiați o valoare cookie, o pereche name=value sau un JSON structurat printr-o singură acțiune.
+- Utilizați instrumentele încorporate de codificare/decodificare URL, formatare/compactare JSON și decodare a încărcăturii utile JWT.
+- Salvați stări reutilizabile ale site-ului cu ajutorul etichetelor, regulilor de origine, variabilelor de aplicare, precum și al acțiunilor de redenumire, duplicare, export, aplicare și ștergere.
+- Examinați modificările recente și diferențele „înainte/după” și anulați modificările efectuate în timpul sesiunii curente de navigare.
+- Opțional, reîncărcați pagina automat după o modificare.
+- Utilizați extensia fie din fereastra pop-up, fie din panoul lateral al Chrome.
+
+Confidențialitate
+
+Cookie Controller nu conține reclame, instrumente de analiză sau funcții de urmărire a utilizatorilor și nu necesită un cont. Cookies și datele din spațiul de stocare web accesate de extensie sunt procesate exclusiv pe dispozitivul utilizatorului. Acestea nu sunt încărcate, vândute sau partajate cu dezvoltatorul sau cu servere ale unor terțe părți. Preferințele de interfață, identificatorii datelor site-urilor favorite (care nu conțin cookie sau valori de stocare), profilurile site-urilor salvate în mod explicit de utilizator și înregistrările modificărilor recente sunt stocate în spațiul de stocare local al extensiei din browser și pot fi eliminate prin ștergerea datelor extensiei sau prin dezinstalarea acesteia. Instantaneele complete de anulare în bloc rămân doar în spațiul de stocare al sesiunii browserului.
+
+Note privind utilizarea
+
+Extensia accesează datele unui site web selectat numai atunci când utilizatorul îl deschide și îl folosește. Cookies și spațiul de stocare web pot conține informații sensibile, cum ar fi starea de conectare, așa că folosiți extensia numai pe dispozitive de încredere și protejați orice date exportate.
+
+Instrumentul JWT decodifică conținutul doar în scopul inspectării. Acesta nu verifică semnăturile și nu stabilește dacă un token este de încredere sau valid. Instantaneele complete ale valorilor, necesare pentru vizualizarea diferențelor și pentru anularea operațiunilor, sunt păstrate doar în memorie pe durata sesiunii curente a browserului.

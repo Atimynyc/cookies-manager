@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium, expect } from "playwright/test";
+import { createAcceptanceExtension } from "./acceptance-extension-fixture.mjs";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const artifactDir = path.join(projectRoot, ".tmp", "v032-acceptance");
@@ -13,19 +14,22 @@ const servers = [];
 let context;
 let profileDir;
 let popup;
+let extensionFixture;
 
 try {
   console.log("v0.3.2 acceptance mode: extension page (not native action popup lifecycle)");
   await mkdir(artifactDir, { recursive: true });
+  extensionFixture = await createAcceptanceExtension(projectRoot);
   const fixture = await readFile(path.join(projectRoot, "tests", "fixtures", "cookie-test-page.html"));
   const originA = await startServer(fixture);
   const originB = await startServer(fixture);
   profileDir = await mkdtemp(path.join(tmpdir(), "cookie-controller-v032-"));
   context = await chromium.launchPersistentContext(profileDir, {
+    locale: "en-US",
     channel: "chromium",
     headless: process.env.HEADED !== "1",
     viewport: { width: 760, height: 800 },
-    args: [`--disable-extensions-except=${projectRoot}`, `--load-extension=${projectRoot}`]
+    args: ["--lang=en-US", `--disable-extensions-except=${extensionFixture.extensionRoot}`, `--load-extension=${extensionFixture.extensionRoot}`]
   });
   context.on("page", watchPage);
   context.pages().forEach(watchPage);
@@ -68,6 +72,7 @@ try {
     await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
   }
   if (profileDir) await rm(profileDir, { recursive: true, force: true });
+  if (extensionFixture) await extensionFixture.cleanup();
 }
 
 async function startServer(fixture) {
@@ -91,6 +96,7 @@ async function openExtensionPage(extensionId, activePage, surface = "popup") {
   await extensionPage.reload();
   await expect(extensionPage.locator("#loadingState")).toBeHidden();
   await expect(extensionPage.locator("#hostLabel")).toContainText(new URL(activePage.url()).host);
+  await ensureSitePermission(extensionPage);
   return extensionPage;
 }
 
@@ -99,6 +105,15 @@ async function refreshTarget(page) {
   await popup.locator("#refreshButton").click();
   await expect(popup.locator("#loadingState")).toBeHidden();
   await expect(popup.locator("#hostLabel")).toContainText(new URL(page.url()).host);
+  await ensureSitePermission(popup);
+}
+
+async function ensureSitePermission(page) {
+  const permissionDialog = page.locator("#siteAccessDialog");
+  if (await permissionDialog.isVisible()) {
+    await page.locator("#siteAccessDialogAllowButton").click();
+    await expect(permissionDialog).toBeHidden();
+  }
 }
 
 async function selectItem(name) {

@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 import { callChrome } from "./chrome-call.js";
 
 export const OPERATION_JOURNAL_KEY = "siteDataOperationJournal";
@@ -11,7 +12,7 @@ export function createOperationJournal() {
     const journal = stored[OPERATION_JOURNAL_KEY];
     if (journal === null) return [];
     if (journal?.schemaVersion !== 1 || !Array.isArray(journal.jobs)) {
-      throw new Error("The operation journal cannot be read. Existing history has been preserved.");
+      throw new Error(t("The operation journal cannot be read. Existing history has been preserved."));
     }
     return structuredClone(journal.jobs);
   }
@@ -19,7 +20,7 @@ export function createOperationJournal() {
   async function write(jobs) {
     requireSessionStorage();
     if (!Array.isArray(jobs) || jobs.length > MAX_OPERATION_JOBS) {
-      throw capacityError(`Operation history is limited to ${MAX_OPERATION_JOBS} batches.`);
+      throw capacityError(t`Operation history is limited to ${MAX_OPERATION_JOBS} batches.`);
     }
     const value = { schemaVersion: 1, jobs };
     const capacityBytes = estimateJournalCapacity(jobs);
@@ -33,13 +34,13 @@ export function createOperationJournal() {
     }
     const quota = chrome.storage.session.QUOTA_BYTES || DEFAULT_SESSION_QUOTA;
     if (capacityBytes + otherBytes > quota) {
-      throw capacityError("Session storage does not have enough room to record this operation safely.");
+      throw capacityError(t("Session storage does not have enough room to record this operation safely."));
     }
     try {
       await callChrome("storage.session.set", { [OPERATION_JOURNAL_KEY]: value });
     } catch (error) {
       if (/quota|bytes|storage.*full/i.test(error?.message || "")) {
-        throw capacityError("Chrome could not reserve operation history space.", error);
+        throw capacityError(t("Chrome could not reserve operation history space."), error);
       }
       throw error;
     }
@@ -74,12 +75,12 @@ function estimateJournalCapacity(jobs) {
 
 function requireSessionStorage() {
   if (!chrome.storage?.session) {
-    throw new Error("Session storage is required for recoverable site data operations.");
+    throw new Error(t("Session storage is required for recoverable site data operations."));
   }
 }
 
 function capacityError(message, cause) {
-  const error = new Error(`${message} Clear completed batches in History and try again.`, { cause });
+  const error = new Error(t`${message} Clear completed batches in History and try again.`, { cause });
   error.code = "OPERATION_JOURNAL_FULL";
   return error;
 }

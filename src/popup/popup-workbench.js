@@ -1,3 +1,4 @@
+import { t } from "../shared/i18n.js";
 import { parseSiteDataPackage } from "../shared/site-data-package.js";
 import {
   parseNetscapeCookieFile
@@ -7,17 +8,17 @@ import { createSiteDataExportView } from "./popup-export-view.js";
 import { createSavedStatesView } from "./popup-saved-states-view.js";
 
 const STATUS_LABELS = {
-  new: "New",
-  modified: "Modified",
-  same: "Same",
-  conflict: "Conflict",
-  unsupported: "Unsupported"
+  get new() { return t("New"); },
+  get modified() { return t("Modified"); },
+  get same() { return t("Same"); },
+  get conflict() { return t("Conflict"); },
+  get unsupported() { return t("Unsupported"); }
 };
 
 const KIND_LABELS = {
-  cookies: "Cookie",
-  localStorage: "Local",
-  sessionStorage: "Session"
+  get cookies() { return t("Cookie"); },
+  get localStorage() { return t("Local"); },
+  get sessionStorage() { return t("Session"); }
 };
 
 export function createSiteDataWorkbench({
@@ -44,6 +45,7 @@ export function createSiteDataWorkbench({
   const state = {
     dataPackage: null,
     preview: null,
+    previewProfileId: "",
     selectedIds: new Set(),
     busy: false
   };
@@ -76,6 +78,8 @@ export function createSiteDataWorkbench({
 
   async function open(initialView = "import") {
     const context = getContext();
+    state.previewProfileId = "";
+    elements.backToSavedStatesButton.hidden = true;
     elements.workbenchTarget.textContent = context.targetLabel;
     elements.workbenchTarget.title = context.targetLabel;
     if (initialView === "import") {
@@ -117,6 +121,7 @@ export function createSiteDataWorkbench({
       input.addEventListener("change", updateImportFormat);
     }
     elements.previewPackageButton.addEventListener("click", previewTextPackage);
+    elements.backToSavedStatesButton.addEventListener("click", returnToSavedStates);
     elements.changePackageSourceButton.addEventListener("click", showPackageSource);
     elements.packageMappingToggle.addEventListener("change", refreshPreview);
     elements.packageSelectAll.addEventListener("change", toggleAllPreviewItems);
@@ -129,9 +134,9 @@ export function createSiteDataWorkbench({
   function setView(view) {
     const normalized = ["import", "export", "profiles"].includes(view) ? view : "import";
     elements.workbenchTitle.textContent = {
-      import: "Import",
-      export: "Export",
-      profiles: "Saved States"
+      import: t("Import"),
+      export: t("Export"),
+      profiles: t("Saved States")
     }[normalized];
     for (const view of elements.views) {
       view.hidden = view.dataset.workbenchView !== normalized;
@@ -169,8 +174,8 @@ export function createSiteDataWorkbench({
 
   function updateQuickEntryRows() {
     const cookies = getContext().currentKind === "cookies";
-    const nameLabel = cookies ? "Cookie name" : "Storage key";
-    const valueLabel = cookies ? "Cookie value" : "Storage value";
+    const nameLabel = cookies ? t("Cookie name") : t("Storage key");
+    const valueLabel = cookies ? t("Cookie value") : t("Storage value");
     const rows = Array.from(elements.quickEntryRows.querySelectorAll(".cookie-import-row"));
     rows.forEach((row, index) => {
       const nameInput = row.querySelector(".cookie-import-name");
@@ -194,12 +199,12 @@ export function createSiteDataWorkbench({
     const context = getContext();
     const cookies = context.currentKind === "cookies";
     elements.quickEntryTitle.textContent = {
-      cookies: "Cookies",
-      localStorage: "Local Storage",
-      sessionStorage: "Session Storage"
+      cookies: t("Cookies"),
+      localStorage: t("Local Storage"),
+      sessionStorage: t("Session Storage")
     }[context.currentKind] || context.currentViewLabel;
-    elements.quickEntryNameColumn.textContent = cookies ? "Name" : "Key";
-    elements.quickEntryValueColumn.textContent = "Value";
+    elements.quickEntryNameColumn.textContent = cookies ? t("Name") : t("Key");
+    elements.quickEntryValueColumn.textContent = t("Value");
     updateQuickEntryRows();
   }
 
@@ -218,7 +223,7 @@ export function createSiteDataWorkbench({
       await onQuickImport(input);
       dialog.close("imported");
     } catch (error) {
-      setFeedback(elements.quickImportError, error?.message || "Enter valid site data.");
+      setFeedback(elements.quickImportError, error?.message || t("Enter valid site data."));
       const rows = Array.from(elements.quickEntryRows.querySelectorAll(".cookie-import-row"));
       rows[Number.isInteger(error?.rowIndex) ? error.rowIndex : 0]
         ?.querySelector(".cookie-import-name")?.focus();
@@ -265,7 +270,7 @@ export function createSiteDataWorkbench({
     }
     const files = Array.from(event.dataTransfer.files || []);
     if (files.length !== 1) {
-      setFeedback(elements.packageInputError, "Drop one import file at a time.");
+      setFeedback(elements.packageInputError, t("Drop one import file at a time."));
       return;
     }
     await loadPackageFile(files[0]);
@@ -281,14 +286,14 @@ export function createSiteDataWorkbench({
         setFormat(elements.packageImportFormatInputs, "json");
       } else if (/^\s*# (?:Netscape HTTP Cookie File|HTTP Cookie File)/i.test(text) || /\t(?:TRUE|FALSE)\t/i.test(text)) {
         if (getContext().currentKind !== "cookies") {
-          throw new Error("Netscape / cURL files can only be imported from Cookies.");
+          throw new Error(t("Netscape / cURL files can only be imported from Cookies."));
         }
         setFormat(elements.packageImportFormatInputs, "netscape");
       }
       updateImportFormat();
       setFeedback(elements.packageInputError);
     } catch (error) {
-      setFeedback(elements.packageInputError, error?.message || "Failed to read the selected file.");
+      setFeedback(elements.packageInputError, error?.message || t("Failed to read the selected file."));
     }
   }
 
@@ -304,7 +309,7 @@ export function createSiteDataWorkbench({
       elements.packageMappingToggle.checked = false;
       await refreshPreview();
     } catch (error) {
-      setFeedback(elements.packageInputError, error?.message || "Invalid site data package.");
+      setFeedback(elements.packageInputError, error?.message || t("Invalid site data package."));
     }
   }
 
@@ -326,7 +331,7 @@ export function createSiteDataWorkbench({
       elements.packagePreview.hidden = false;
     } catch (error) {
       showPackageSource();
-      setFeedback(elements.packageInputError, error?.message || "Failed to build import preview.");
+      setFeedback(elements.packageInputError, error?.message || t("Failed to build import preview."));
     } finally {
       setBusy(false);
     }
@@ -334,8 +339,9 @@ export function createSiteDataWorkbench({
 
   function renderPreview() {
     const preview = state.preview;
+    elements.backToSavedStatesButton.hidden = !state.previewProfileId;
     elements.packagePreviewSource.textContent = preview.source.origin;
-    elements.packagePreviewTarget.textContent = `Target: ${preview.target.origin}`;
+    elements.packagePreviewTarget.textContent = t`Target: ${preview.target.origin}`;
     elements.packageMappingControl.hidden = !preview.requiresMapping;
     elements.packagePreviewCounts.replaceChildren(
       ...["new", "modified", "same", "conflict", "unsupported"].map((status) => {
@@ -417,7 +423,7 @@ export function createSiteDataWorkbench({
   function updatePreviewSelection() {
     const writeable = state.preview?.items.filter((item) => item.writeable) || [];
     const selectedCount = writeable.filter((item) => state.selectedIds.has(item.id)).length;
-    elements.packageSelectionCount.textContent = `${selectedCount} selected`;
+    elements.packageSelectionCount.textContent = t`${selectedCount} selected`;
     elements.packageSelectAll.checked = writeable.length > 0 && selectedCount === writeable.length;
     elements.packageSelectAll.indeterminate = selectedCount > 0 && selectedCount < writeable.length;
     updateApplyState();
@@ -434,8 +440,8 @@ export function createSiteDataWorkbench({
     setBusy(true);
     elements.packagePreview.hidden = true;
     elements.packageResult.hidden = false;
-    elements.packageResultTitle.textContent = "Applying site data";
-    elements.packageResultSummary.textContent = "Preparing batch";
+    elements.packageResultTitle.textContent = t("Applying site data");
+    elements.packageResultSummary.textContent = t("Preparing batch");
     elements.packageResultList.replaceChildren();
     elements.packageProgress.max = 1;
     elements.packageProgress.value = 0;
@@ -446,11 +452,11 @@ export function createSiteDataWorkbench({
         selectedIds: [...state.selectedIds],
         onProgress: updateProgress
       });
-      renderResult(outcome.result, "Import complete");
+      renderResult(outcome.result, t("Import complete"));
       elements.undoPackageButton.hidden = !outcome.canUndo;
     } catch (error) {
-      elements.packageResultTitle.textContent = "Import failed";
-      elements.packageResultSummary.textContent = error?.message || "The batch could not be applied.";
+      elements.packageResultTitle.textContent = t("Import failed");
+      elements.packageResultSummary.textContent = error?.message || t("The batch could not be applied.");
     } finally {
       setBusy(false);
     }
@@ -459,12 +465,12 @@ export function createSiteDataWorkbench({
   function updateProgress({ completed, total }) {
     elements.packageProgress.max = Math.max(total, 1);
     elements.packageProgress.value = completed;
-    elements.packageResultSummary.textContent = `${completed} of ${total}`;
+    elements.packageResultSummary.textContent = t`${completed} of ${total}`;
   }
 
   function renderResult(result, title) {
     const entries = [
-      ...result.success.map((entry) => ({ ...entry, status: "success", message: "Written" })),
+      ...result.success.map((entry) => ({ ...entry, status: "success", message: t("Written") })),
       ...result.failed.map((entry) => ({ ...entry, status: "failed", message: entry.error.message })),
       ...result.skipped.map((entry) => ({ ...entry, status: "skipped", message: entry.reason }))
     ];
@@ -474,7 +480,7 @@ export function createSiteDataWorkbench({
       skipped: result.skipped.length
     };
     elements.packageResultTitle.textContent = title;
-    elements.packageResultSummary.textContent = `${counts.success} succeeded, ${counts.failed} failed, ${counts.skipped} skipped`;
+    elements.packageResultSummary.textContent = t`${counts.success} succeeded, ${counts.failed} failed, ${counts.skipped} skipped`;
     elements.packageProgress.max = Math.max(entries.length, 1);
     elements.packageProgress.value = entries.length;
     elements.packageResultList.replaceChildren(...entries.map(createResultItem));
@@ -486,32 +492,32 @@ export function createSiteDataWorkbench({
     row.className = "result-item";
     const kind = document.createElement("span");
     kind.className = "result-item-kind";
-    kind.textContent = KIND_LABELS[item?.kind] || "Item";
+    kind.textContent = KIND_LABELS[item?.kind] || t("Item");
     const copy = document.createElement("span");
     copy.className = "result-item-copy";
     const name = document.createElement("strong");
-    name.textContent = item?.name || item?.incoming?.name || item?.incoming?.key || "Site data item";
+    name.textContent = item?.name || item?.incoming?.name || item?.incoming?.key || t("Site data item");
     const message = document.createElement("span");
     message.textContent = entry.message;
     message.title = entry.message;
     copy.append(name, message);
     const status = document.createElement("span");
     status.className = `result-status is-status-${entry.status}`;
-    status.textContent = entry.status;
+    status.textContent = { success: t("success"), failed: t("failed"), skipped: t("skipped") }[entry.status] || entry.status;
     row.append(kind, copy, status);
     return row;
   }
 
   async function undoBatch() {
     setBusy(true);
-    elements.packageResultTitle.textContent = "Undoing import";
+    elements.packageResultTitle.textContent = t("Undoing import");
     try {
       const outcome = await onUndo({ onProgress: updateProgress });
-      renderResult(outcome.result, outcome.complete ? "Import undone" : "Undo incomplete");
+      renderResult(outcome.result, outcome.complete ? t("Import undone") : t("Undo incomplete"));
       elements.undoPackageButton.hidden = outcome.complete;
     } catch (error) {
-      elements.packageResultTitle.textContent = "Undo failed";
-      elements.packageResultSummary.textContent = error?.message || "The batch could not be undone.";
+      elements.packageResultTitle.textContent = t("Undo failed");
+      elements.packageResultSummary.textContent = error?.message || t("The batch could not be undone.");
     } finally {
       setBusy(false);
     }
@@ -526,10 +532,12 @@ export function createSiteDataWorkbench({
   function resetImport() {
     state.dataPackage = null;
     state.preview = null;
+    state.previewProfileId = "";
+    elements.backToSavedStatesButton.hidden = true;
     state.selectedIds.clear();
     elements.packageTextInput.value = "";
     elements.packageFileInput.value = "";
-    elements.packageFileName.textContent = "or drop a file here";
+    elements.packageFileName.textContent = t("or drop a file here");
     elements.packageFileName.title = "";
     elements.packageFileDropzone.classList.remove("is-dragging");
     elements.packageMappingToggle.checked = false;
@@ -551,10 +559,10 @@ export function createSiteDataWorkbench({
     elements.packageImportFormatSwitch.classList.toggle("is-storage", !cookies);
     elements.quickImportFields.hidden = !quick;
     elements.packageImportFields.hidden = quick;
-    elements.packageInputLabel.textContent = netscape ? "Netscape cookie jar" : "Package JSON";
+    elements.packageInputLabel.textContent = netscape ? t("Netscape cookie jar") : t("Package JSON");
     elements.packageTextInput.placeholder = netscape
-      ? "Paste Netscape / cURL cookie data"
-      : "Paste a site data package";
+      ? t("Paste Netscape / cURL cookie data")
+      : t("Paste a site data package");
     elements.packageFileInput.accept = netscape
       ? "text/plain,.txt,.cookies"
       : "application/json,.json";
@@ -568,6 +576,7 @@ export function createSiteDataWorkbench({
 
   async function prepareProfile(profile, inputs, mapSourceToTarget) {
     state.dataPackage = await onResolveProfile(profile, inputs);
+    state.previewProfileId = profile.id;
     elements.packageConflictStrategy.value = profile.defaultConflictStrategy;
     elements.packageMappingToggle.checked = mapSourceToTarget;
     setFormat(elements.packageImportFormatInputs, "json");
@@ -575,6 +584,16 @@ export function createSiteDataWorkbench({
     elements.packageTextInput.value = JSON.stringify(state.dataPackage, null, 2);
     setView("import");
     await refreshPreview();
+  }
+
+  async function returnToSavedStates() {
+    if (state.busy || !state.previewProfileId) {
+      return;
+    }
+    const focusProfileId = state.previewProfileId;
+    resetImport();
+    setView("profiles");
+    await savedStatesView.open({ focusProfileId });
   }
 
   function getImportFormat() {
@@ -594,7 +613,16 @@ export function createSiteDataWorkbench({
     }
   }
 
-  return { open };
+  function localize() {
+    const active = elements.views.find(view => !view.hidden)?.dataset.workbenchView || "import";
+    setView(active);
+    updateQuickImportContext();
+    if (state.preview) renderPreview();
+    exportView.localize();
+    savedStatesView.localize();
+  }
+
+  return { open, localize };
 }
 
 function getElements(dialog) {
@@ -631,6 +659,7 @@ function getElements(dialog) {
     packagePreview: byId("packagePreview"),
     packagePreviewSource: byId("packagePreviewSource"),
     packagePreviewTarget: byId("packagePreviewTarget"),
+    backToSavedStatesButton: byId("backToSavedStatesButton"),
     changePackageSourceButton: byId("changePackageSourceButton"),
     packageMappingControl: byId("packageMappingControl"),
     packageMappingToggle: byId("packageMappingToggle"),

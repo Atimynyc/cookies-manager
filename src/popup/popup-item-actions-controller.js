@@ -1,3 +1,4 @@
+import { t } from "../shared/i18n.js";
 import { runOperation } from "../shared/operation-client.js";
 import { assertOperationSucceeded, operationItemFromRow, operationToBatchResult } from "../shared/operation-presentation.js";
 import { getBatchOperationCounts } from "../shared/operation-result.js";
@@ -67,7 +68,7 @@ export function createPopupItemActionsController({
       await assertOperationContext(target);
       assertRowTarget(currentRow, target);
       assertOperationSucceeded(await runOperation({
-        target, label: `Edit ${row.name}`, source: "edit",
+        target, label: t`Edit ${row.name}`, source: "edit",
         items: [operationItemFromRow(currentRow, {
           ...currentRow.raw, value: nextValue, ...(cookieView ? expiration : {})
         })]
@@ -81,9 +82,9 @@ export function createPopupItemActionsController({
         await reloadOperationTarget(target);
       }
 
-      showStatus(`Saved ${row.name}.`, "success");
+      showStatus(t`Saved ${row.name}.`, "success");
     } catch (error) {
-      showStatus(error?.message || `Failed to save ${getCurrentView().singular}.`, "error");
+      showStatus(error?.message || t`Failed to save ${getCurrentView().singular}.`, "error");
     } finally {
       setBusy(false);
     }
@@ -97,8 +98,8 @@ export function createPopupItemActionsController({
 
     const target = createOperationContext(state.tab, state.cookieStoreId);
     const confirmed = await requestDeleteConfirmation({
-      title: `Delete ${getCurrentView().singular}?`,
-      message: `"${row.name}" will be deleted.`,
+      title: t`Delete ${getCurrentView().singular}?`,
+      message: t`"${row.name}" will be deleted.`,
       detail: getRowLocation(row)
     });
     if (!confirmed) {
@@ -113,7 +114,7 @@ export function createPopupItemActionsController({
       await assertOperationContext(target);
       assertRowTarget(row, target);
       assertOperationSucceeded(await runOperation({
-        target, label: `Delete ${row.name}`, source: "delete",
+        target, label: t`Delete ${row.name}`, source: "delete",
         items: [operationItemFromRow(row, null)]
       }));
       await loadRecentChanges();
@@ -126,9 +127,9 @@ export function createPopupItemActionsController({
         await reloadOperationTarget(target);
       }
 
-      showStatus(`Deleted ${row.name}.`, "success");
+      showStatus(t`Deleted ${row.name}.`, "success");
     } catch (error) {
-      showStatus(error?.message || `Failed to delete ${getCurrentView().singular}.`, "error");
+      showStatus(error?.message || t`Failed to delete ${getCurrentView().singular}.`, "error");
     } finally {
       setBusy(false);
     }
@@ -142,9 +143,9 @@ export function createPopupItemActionsController({
 
     const target = createOperationContext(state.tab, state.cookieStoreId);
     const nextValue = await requestTextInput({
-      title: "Set value",
-      fieldLabel: `Value for ${selectedRows.length} selected ${getCurrentView().plural}`,
-      submitLabel: "Set value",
+      title: t("Set value"),
+      fieldLabel: t`Value for ${selectedRows.length} selected ${getCurrentView().plural}`,
+      submitLabel: t("Set value"),
       selection: getSelectionReview(selectedRows)
     });
     if (nextValue === null) {
@@ -157,7 +158,7 @@ export function createPopupItemActionsController({
 
     try {
       const job = await runOperation({
-        target, label: `Edit ${selectedRows.length} items`, source: "batch-edit",
+        target, label: t`Edit ${selectedRows.length} items`, source: "batch-edit",
         items: selectedRows.map((row) => operationItemFromRow(row, { ...row.raw, value: nextValue }))
       });
       const result = operationToBatchResult(job);
@@ -168,9 +169,9 @@ export function createPopupItemActionsController({
       await loadRecentChanges();
       await refreshData();
       if (state.autoRefreshPage && result.success.length > 0) await reloadOperationTarget(target);
-      showBatchOperationStatus("Updated", result);
+      showBatchOperationStatus(t("Updated"), result);
     } catch (error) {
-      showStatus(error?.message || `Failed to update selected ${getCurrentView().plural}.`, "error");
+      showStatus(error?.message || t`Failed to update selected ${getCurrentView().plural}.`, "error");
     } finally {
       setBusy(false);
     }
@@ -184,9 +185,9 @@ export function createPopupItemActionsController({
 
     const target = createOperationContext(state.tab, state.cookieStoreId);
     const confirmed = await requestDeleteConfirmation({
-      title: `Delete selected ${getCurrentView().plural}?`,
-      message: `${selectedRows.length} selected ${getCurrentView().plural} will be deleted.`,
-      confirmLabel: `Delete ${selectedRows.length}`,
+      title: t`Delete selected ${getCurrentView().plural}?`,
+      message: t`${selectedRows.length} selected ${getCurrentView().plural} will be deleted.`,
+      confirmLabel: t`Delete ${selectedRows.length}`,
       selection: getSelectionReview(selectedRows)
     });
     if (!confirmed) {
@@ -199,7 +200,7 @@ export function createPopupItemActionsController({
 
     try {
       const job = await runOperation({
-        target, label: `Delete ${selectedRows.length} items`, source: "batch-delete",
+        target, label: t`Delete ${selectedRows.length} items`, source: "batch-delete",
         items: selectedRows.map((row) => operationItemFromRow(row, null))
       });
       const result = operationToBatchResult(job);
@@ -212,9 +213,9 @@ export function createPopupItemActionsController({
       state.selectedIds = new Set(result.failed.map((entry) => entry.itemId));
       await refreshData();
       if (state.autoRefreshPage && result.success.length > 0) await reloadOperationTarget(target);
-      showBatchOperationStatus("Deleted", result);
+      showBatchOperationStatus(t("Deleted"), result);
     } catch (error) {
-      showStatus(error?.message || `Failed to delete selected ${getCurrentView().plural}.`, "error");
+      showStatus(error?.message || t`Failed to delete selected ${getCurrentView().plural}.`, "error");
     } finally {
       setBusy(false);
     }
@@ -223,14 +224,14 @@ export function createPopupItemActionsController({
   function showBatchOperationStatus(action, result) {
     const counts = getBatchOperationCounts(result);
     if (counts.failed === 0 && counts.skipped === 0) {
-      showStatus(`${action} ${counts.success} selected ${getCurrentView().plural}.`, "success");
+      showStatus(t`${action} ${counts.success} selected ${getCurrentView().plural}.`, "success");
       return;
     }
 
     const summary = [
       `${action} ${counts.success}`,
-      counts.failed ? `${counts.failed} failed` : "",
-      counts.skipped ? `${counts.skipped} skipped` : ""
+      counts.failed ? t`${counts.failed} failed` : "",
+      counts.skipped ? t`${counts.skipped} skipped` : ""
     ].filter(Boolean).join(", ");
     const firstError = result.failed[0]?.error?.message;
     showStatus(`${summary}.${firstError ? ` ${firstError}` : ""}`, counts.failed ? "error" : "warning");
@@ -278,7 +279,7 @@ export function createPopupItemActionsController({
       showCopyFeedback(feedbackButton);
     } catch (error) {
       resetCopyFeedback(feedbackButton);
-      showStatus(error?.message || "Failed to copy.", "error");
+      showStatus(error?.message || t("Failed to copy."), "error");
     }
   }
 
@@ -295,7 +296,7 @@ export function createPopupItemActionsController({
 function assertRowTarget(row, target) {
   if (row.type) {
     if (row.raw.origin !== target.origin) {
-      throw new Error("The item's origin does not match the target page. Refresh before editing.");
+      throw new Error(t("The item's origin does not match the target page. Refresh before editing."));
     }
     return;
   }
@@ -303,6 +304,6 @@ function assertRowTarget(row, target) {
   const domain = row.raw.domain.replace(/^\./, "");
   const matchesDomain = host === domain || (!row.raw.hostOnly && host.endsWith(`.${domain}`));
   if (!target.cookieStoreId || row.raw.storeId !== target.cookieStoreId || !matchesDomain) {
-    throw new Error("The cookie does not belong to the target page and cookie store. Refresh before editing.");
+    throw new Error(t("The cookie does not belong to the target page and cookie store. Refresh before editing."));
   }
 }

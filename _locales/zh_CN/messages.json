@@ -1,0 +1,2903 @@
+{
+  "m_only_this_extension_can_request_site_data_operat_af2557a": {
+    "message": "只有此扩展程序可以请求网站数据操作。",
+    "description": "Only this extension can request site data operations."
+  },
+  "m_unknown_operation_command_820758d": {
+    "message": "未知操作命令。",
+    "description": "Unknown operation command."
+  },
+  "m_operation_failed_3b96e637": {
+    "message": "操作失败。",
+    "description": "Operation failed."
+  },
+  "m_url_decoded_value_23b88df9": {
+    "message": "URL解码后的值",
+    "description": "URL decoded value"
+  },
+  "m_url_encoded_value_34861f0d": {
+    "message": "URL编码值",
+    "description": "URL encoded value"
+  },
+  "m_formatted_json_b53536a7": {
+    "message": "格式化后的 JSON",
+    "description": "Formatted JSON"
+  },
+  "m_compacted_json_bec19963": {
+    "message": "压缩的 JSON",
+    "description": "Compacted JSON"
+  },
+  "m_jwt_payload_2cce1860": {
+    "message": "JWT 有效载荷",
+    "description": "JWT payload"
+  },
+  "m_cookie_77a740bf": {
+    "message": "cookie",
+    "description": "cookie"
+  },
+  "m_cookies_284b0124": {
+    "message": "cookies",
+    "description": "cookies"
+  },
+  "m_cookie_bdbabadf": {
+    "message": "Cookie",
+    "description": "Cookie"
+  },
+  "m_reading_cookies_5d1246a0": {
+    "message": "正在读取 cookies",
+    "description": "Reading cookies"
+  },
+  "m_no_cookies_for_this_page_d6b33cd9": {
+    "message": "未在此页面中找到 cookies",
+    "description": "No cookies for this page"
+  },
+  "m_cookies_unavailable_86e2c35e": {
+    "message": "Cookies 不可用",
+    "description": "Cookies unavailable"
+  },
+  "m_only_http_and_https_pages_support_cookie_operati_7f8f266c": {
+    "message": "仅 http:// 和 https:// 页面支持 cookie 操作。",
+    "description": "Only http:// and https:// pages support cookie operations."
+  },
+  "m_failed_to_read_cookies_ec17682": {
+    "message": "读取 cookies 失败。",
+    "description": "Failed to read cookies."
+  },
+  "m_name_fe07306": {
+    "message": "项目名称",
+    "description": "Name"
+  },
+  "m_value_d147f96a": {
+    "message": "数据值",
+    "description": "Value"
+  },
+  "m_domain_be1c8911": {
+    "message": "域名",
+    "description": "Domain"
+  },
+  "m_path_eb66e456": {
+    "message": "URL 路径",
+    "description": "Path"
+  },
+  "m_expires_c7aa0523": {
+    "message": "有效期至",
+    "description": "Expires"
+  },
+  "m_flags_4222ebcc": {
+    "message": "属性",
+    "description": "Flags"
+  },
+  "m_size_a6478e7c": {
+    "message": "数据大小",
+    "description": "Size"
+  },
+  "m_store_6da32dce": {
+    "message": "Cookie 存储",
+    "description": "Store"
+  },
+  "m_local_storage_item_980fa25c": {
+    "message": "本地存储项",
+    "description": "local storage item"
+  },
+  "m_local_storage_items_8f9c4ffd": {
+    "message": "本地存储项",
+    "description": "local storage items"
+  },
+  "m_local_storage_c6c2fa19": {
+    "message": "本地存储",
+    "description": "Local Storage"
+  },
+  "m_reading_local_storage_85a66635": {
+    "message": "读取本地存储",
+    "description": "Reading local storage"
+  },
+  "m_no_local_storage_for_this_page_81f3287c": {
+    "message": "未找到此页面的本地存储条目",
+    "description": "No local storage for this page"
+  },
+  "m_local_storage_unavailable_be2258cf": {
+    "message": "本地存储不可用",
+    "description": "Local storage unavailable"
+  },
+  "m_only_http_and_https_pages_support_storage_operat_1fb0cf9f": {
+    "message": "仅 http:// 和 https:// 页面支持存储操作。",
+    "description": "Only http:// and https:// pages support storage operations."
+  },
+  "m_failed_to_read_local_storage_5600c819": {
+    "message": "无法读取本地存储。",
+    "description": "Failed to read local storage."
+  },
+  "m_key_cd1ac90c": {
+    "message": "条目名称",
+    "description": "Key"
+  },
+  "m_origin_1f93146f": {
+    "message": "网站来源",
+    "description": "Origin"
+  },
+  "m_storage_34eddf06": {
+    "message": "存储",
+    "description": "Storage"
+  },
+  "m_scope_63e6658b": {
+    "message": "范围",
+    "description": "Scope"
+  },
+  "m_type_d155d06d": {
+    "message": "类型",
+    "description": "Type"
+  },
+  "m_session_storage_item_abc5a459": {
+    "message": "会话存储项",
+    "description": "session storage item"
+  },
+  "m_session_storage_items_92216e1e": {
+    "message": "会话存储项",
+    "description": "session storage items"
+  },
+  "m_session_storage_c99fc216": {
+    "message": "会话存储",
+    "description": "Session Storage"
+  },
+  "m_reading_session_storage_58eeddc2": {
+    "message": "读取会话存储",
+    "description": "Reading session storage"
+  },
+  "m_no_session_storage_for_this_page_81d58bab": {
+    "message": "未找到此页面的会话存储条目",
+    "description": "No session storage for this page"
+  },
+  "m_session_storage_unavailable_22a66cec": {
+    "message": "会话存储不可用",
+    "description": "Session storage unavailable"
+  },
+  "m_failed_to_read_session_storage_9a5d1b9c": {
+    "message": "无法读取会话存储。",
+    "description": "Failed to read session storage."
+  },
+  "m_delete_5797ea6a": {
+    "message": "删除",
+    "description": "Delete"
+  },
+  "m_enter_a_valid_value_21accea5": {
+    "message": "请输入一个有效的值。",
+    "description": "Enter a valid value."
+  },
+  "m_items_3a79338f": {
+    "message": "项目",
+    "description": "items"
+  },
+  "m_selected_1_eac1029b": {
+    "message": "已选中 $slot_1$",
+    "description": "Selected $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_unnamed_727f184c": {
+    "message": "（未命名）",
+    "description": "(unnamed)"
+  },
+  "m_local_28b223a8": {
+    "message": "本地数据",
+    "description": "Local"
+  },
+  "m_session_2048cc97": {
+    "message": "会话",
+    "description": "Session"
+  },
+  "m_all_cookies_96f0f90b": {
+    "message": "所有 cookies",
+    "description": "All cookies"
+  },
+  "m_all_site_data_37826d75": {
+    "message": "所有网站数据",
+    "description": "All site data"
+  },
+  "m_copy_netscape_3515f66b": {
+    "message": "复制 Netscape",
+    "description": "Copy Netscape"
+  },
+  "m_copy_json_e595bc8e": {
+    "message": "复制 JSON",
+    "description": "Copy JSON"
+  },
+  "m_save_cookies_txt_686a7b51": {
+    "message": "保存 cookies.txt",
+    "description": "Save cookies.txt"
+  },
+  "m_save_json_a889c0da": {
+    "message": "保存 JSON",
+    "description": "Save JSON"
+  },
+  "m_cookies_58f3dcc4": {
+    "message": "Cookies",
+    "description": "Cookies"
+  },
+  "m_current_view_1_9eee4e3d": {
+    "message": "当前视图($slot_1$)",
+    "description": "Current view($1)",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_hide_items_d1e5ea99": {
+    "message": "隐藏项目",
+    "description": "Hide items"
+  },
+  "m_choose_items_73f07ad4": {
+    "message": "选择商品",
+    "description": "Choose items"
+  },
+  "m_1_of_2_selected_8d353d4c": {
+    "message": "已选中 $slot_1$ 个中的 $slot_2$ 个",
+    "description": "$1 of $2 selected",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_select_1_fcc09d68": {
+    "message": "选择 $slot_1$",
+    "description": "Select $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_item_1f648006": {
+    "message": "项目",
+    "description": "Item"
+  },
+  "m_1_cookies_in_the_current_view_a8926f6b": {
+    "message": "当前视图中的 $slot_1$ cookies",
+    "description": "$1 cookies in the current view",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_selected_cookies_121bff00": {
+    "message": "已选中 $slot_1$ 的 cookies",
+    "description": "$1 selected cookies",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_all_cookies_for_the_current_target_3d500f07": {
+    "message": "当前目标的所有 cookies",
+    "description": "All cookies for the current target"
+  },
+  "m_samesite_partitioned_chips_and_cookie_store_are__c9b688b": {
+    "message": "。SameSite、Partitioned/CHIPS 和 Cookie 存储未显示。",
+    "description": ". SameSite, Partitioned/CHIPS, and Cookie store are not represented."
+  },
+  "m_1_2_in_the_current_view_47e460ee": {
+    "message": "当前视图中的 $slot_1$ $slot_2$",
+    "description": "$1 $2 in the current view",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_1_selected_2_f3f350b7": {
+    "message": "$slot_1$ 已选中 $slot_2$",
+    "description": "$1 selected $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_cookies_local_storage_and_session_storage_for_th_70999cbc": {
+    "message": "当前目标的 Cookies、Local Storage 和 Session Storage",
+    "description": "Cookies, Local Storage, and Session Storage for the current target"
+  },
+  "m_preparing_preview_ecfabd6b": {
+    "message": "正在准备预览...",
+    "description": "Preparing preview..."
+  },
+  "m_failed_to_build_export_preview_56fd5cdd": {
+    "message": "无法构建导出预览。",
+    "description": "Failed to build export preview."
+  },
+  "m_copied_1_2_7c37d74c": {
+    "message": "已复制 $slot_1$ $slot_2$。",
+    "description": "Copied $1 $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_saved_1_2_84ae4f6b": {
+    "message": "已保存 $slot_1$ $slot_2$。",
+    "description": "Saved $1 $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_failed_to_export_site_data_132c6226": {
+    "message": "导出站点数据失败。",
+    "description": "Failed to export site data."
+  },
+  "m_copied_8dc21305": {
+    "message": "已复制",
+    "description": "Copied"
+  },
+  "m_copied_to_clipboard_35a67762": {
+    "message": "已复制到剪贴板。",
+    "description": "Copied to clipboard."
+  },
+  "m_clipboard_is_unavailable_80f97fb5": {
+    "message": "剪贴板不可用。",
+    "description": "Clipboard is unavailable."
+  },
+  "m_operation_history_could_not_be_loaded_5e027316": {
+    "message": "无法加载手术记录。",
+    "description": "Operation history could not be loaded."
+  },
+  "m_this_older_change_has_no_operation_journal_and_c_68e243a8": {
+    "message": "此项较早的更改没有操作日志，无法安全地撤销。",
+    "description": "This older change has no operation journal and cannot be safely undone."
+  },
+  "m_the_change_could_not_be_undone_b52cca32": {
+    "message": "这一变化无法逆转。",
+    "description": "The change could not be undone."
+  },
+  "m_undid_the_selected_change_87c607c7": {
+    "message": "撤销了所选的更改。",
+    "description": "Undid the selected change."
+  },
+  "m_failed_to_undo_change_d52af123": {
+    "message": "无法撤销该更改。",
+    "description": "Failed to undo change."
+  },
+  "m_1_history_cleared_fe217fd8": {
+    "message": "已清除 $slot_1$ 历史记录。",
+    "description": "$1 history cleared.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_clear_recent_changes_8140e2d8": {
+    "message": "无法清除最近的修改。",
+    "description": "Failed to clear recent changes."
+  },
+  "m_back_to_details_c7da44f9": {
+    "message": "返回详情",
+    "description": "Back to details"
+  },
+  "m_1_unread_changes_3b48aa9c": {
+    "message": "$slot_1$ 未读更改",
+    "description": "$1 unread changes",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_recent_changes_b8075d47": {
+    "message": "最近的更改",
+    "description": "Recent changes"
+  },
+  "m_change_detail_38f8e0a6": {
+    "message": "修改详情",
+    "description": "Change detail"
+  },
+  "m_details_ec24245": {
+    "message": "详情",
+    "description": "Details"
+  },
+  "m_unknown_scope_32aea031": {
+    "message": "未知作用域",
+    "description": "Unknown scope"
+  },
+  "m_undo_71fd4acf": {
+    "message": "撤销",
+    "description": "Undo"
+  },
+  "m_undo_this_change_7d5c83f": {
+    "message": "撤销此更改",
+    "description": "Undo this change"
+  },
+  "m_action_a77a91f": {
+    "message": "动作",
+    "description": "Action"
+  },
+  "m_before_expiration_26ac998b": {
+    "message": "到期前",
+    "description": "Before expiration"
+  },
+  "m_after_expiration_f68ca912": {
+    "message": "到期后",
+    "description": "After expiration"
+  },
+  "m_default_19dc307e": {
+    "message": "默认",
+    "description": "Default"
+  },
+  "m_host_302af18f": {
+    "message": "主持人",
+    "description": "Host"
+  },
+  "m_changed_89c5203b": {
+    "message": "已更改",
+    "description": "Changed"
+  },
+  "m_cookie_id_4eda8c38": {
+    "message": "Cookie ID",
+    "description": "Cookie ID"
+  },
+  "m_item_id_e7a83b9f": {
+    "message": "商品编号",
+    "description": "Item ID"
+  },
+  "m_original_tab_b29944a5": {
+    "message": "原始标签",
+    "description": "Original tab"
+  },
+  "m_browsing_mode_8e47a543": {
+    "message": "浏览模式",
+    "description": "Browsing mode"
+  },
+  "m_incognito_ed905099": {
+    "message": "隐身模式",
+    "description": "Incognito"
+  },
+  "m_regular_e750f2b7": {
+    "message": "常规",
+    "description": "Regular"
+  },
+  "m_value_snapshots_are_only_available_during_the_cu_61f70835": {
+    "message": "值快照仅在当前浏览器会话期间可用。",
+    "description": "Value snapshots are only available during the current browser session."
+  },
+  "m_unknown_cc200e59": {
+    "message": "未知",
+    "description": "Unknown"
+  },
+  "m_edit_c2c76cb1": {
+    "message": "编辑",
+    "description": "Edit"
+  },
+  "m_import_create_fa45a268": {
+    "message": "导入 创建",
+    "description": "Import create"
+  },
+  "m_import_overwrite_bc473479": {
+    "message": "导入并覆盖",
+    "description": "Import overwrite"
+  },
+  "m_change_a1de2fdd": {
+    "message": "更改",
+    "description": "Change"
+  },
+  "m_edit_1_70f54d7c": {
+    "message": "编辑 $slot_1$",
+    "description": "Edit $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_saved_1_146f391f": {
+    "message": "已保存 $slot_1$。",
+    "description": "Saved $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_save_1_a7d79009": {
+    "message": "保存 $slot_1$ 失败。",
+    "description": "Failed to save $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_delete_1_aae09c76": {
+    "message": "删除 $slot_1$？",
+    "description": "Delete $1?",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_will_be_deleted_c4fd26b6": {
+    "message": "“$slot_1$”将被删除。",
+    "description": "\"$1\" will be deleted.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_delete_1_e576134d": {
+    "message": "删除 $slot_1$",
+    "description": "Delete $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_deleted_1_60ffd4f9": {
+    "message": "已删除 $slot_1$。",
+    "description": "Deleted $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_delete_1_d656ba17": {
+    "message": "删除 $slot_1$ 失败。",
+    "description": "Failed to delete $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_set_value_64db79c6": {
+    "message": "设置值",
+    "description": "Set value"
+  },
+  "m_value_for_1_selected_2_d0eb34dd": {
+    "message": "要分配给所选项的值（数量：$slot_1$，类型：$slot_2$）",
+    "description": "Value for $1 selected $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_edit_1_items_849caea8": {
+    "message": "编辑 $slot_1$ 项",
+    "description": "Edit $1 items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_updated_513083d0": {
+    "message": "已更新",
+    "description": "Updated"
+  },
+  "m_failed_to_update_selected_1_d1101454": {
+    "message": "更新所选 $slot_1$ 失败。",
+    "description": "Failed to update selected $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_delete_selected_1_fe5c7abb": {
+    "message": "删除选中的 $slot_1$？",
+    "description": "Delete selected $1?",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_selected_2_will_be_deleted_232e6b57": {
+    "message": "选中的 $slot_1$ $slot_2$ 将被删除。",
+    "description": "$1 selected $2 will be deleted.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_delete_1_items_4b46c619": {
+    "message": "删除 $slot_1$ 项",
+    "description": "Delete $1 items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_deleted_f225740a": {
+    "message": "已删除",
+    "description": "Deleted"
+  },
+  "m_failed_to_delete_selected_1_3dc9d492": {
+    "message": "无法删除所选的 $slot_1$。",
+    "description": "Failed to delete selected $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_2_selected_3_f233475c": {
+    "message": "$slot_1$ $slot_2$ 选中了 $slot_3$。",
+    "description": "$1 $2 selected $3.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_1_failed_daf125e3": {
+    "message": "$slot_1$ 失败",
+    "description": "$1 failed",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_skipped_4823a4a": {
+    "message": "$slot_1$ 已跳过",
+    "description": "$1 skipped",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_copy_f7803f90": {
+    "message": "复制失败。",
+    "description": "Failed to copy."
+  },
+  "m_the_item_s_origin_does_not_match_the_target_page_1a1ea3ad": {
+    "message": "该条目的来源与目标页面不符。请刷新页面后再进行编辑。",
+    "description": "The item's origin does not match the target page. Refresh before editing."
+  },
+  "m_the_cookie_does_not_belong_to_the_target_page_an_a7a414cf": {
+    "message": "cookie 不属于目标页面和 cookie 存储库。请刷新后再进行编辑。",
+    "description": "The cookie does not belong to the target page and cookie store. Refresh before editing."
+  },
+  "m_queued_9e437c74": {
+    "message": "已排队",
+    "description": "Queued"
+  },
+  "m_writing_3c4e7def": {
+    "message": "正在写入",
+    "description": "Writing"
+  },
+  "m_written_e27a560": {
+    "message": "已写入",
+    "description": "Written"
+  },
+  "m_failed_5579c3d4": {
+    "message": "失败",
+    "description": "Failed"
+  },
+  "m_conflict_77d3e0ef": {
+    "message": "冲突",
+    "description": "Conflict"
+  },
+  "m_undoing_2053d2e9": {
+    "message": "撤销中",
+    "description": "Undoing"
+  },
+  "m_undone_94b5c3a2": {
+    "message": "已撤销",
+    "description": "Undone"
+  },
+  "m_undo_failed_75fa16cc": {
+    "message": "撤销失败",
+    "description": "Undo failed"
+  },
+  "m_undo_conflict_e5fe1187": {
+    "message": "撤销冲突",
+    "description": "Undo conflict"
+  },
+  "m_1_tab_2_3_49b4634e": {
+    "message": "$slot_1$ | Tab $slot_2$ | $slot_3$",
+    "description": "$1 | Tab $2 | $3",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_retry_failed_a53fbd96": {
+    "message": "重试失败",
+    "description": "Retry failed"
+  },
+  "m_undo_unchanged_items_in_this_operation_f2f1f31e": {
+    "message": "撤销此操作中未更改的项目",
+    "description": "Undo unchanged items in this operation"
+  },
+  "m_remove_record_e8883f8e": {
+    "message": "删除记录",
+    "description": "Remove record"
+  },
+  "m_items_1_4d7b976b": {
+    "message": "项目 ($slot_1$)",
+    "description": "Items ($1)",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_resume_454d1d8a": {
+    "message": "继续",
+    "description": "Resume"
+  },
+  "m_remove_operation_record_fc8a6952": {
+    "message": "删除操作记录？",
+    "description": "Remove operation record?"
+  },
+  "m_1_will_no_longer_be_retryable_or_undoable_63f756e8": {
+    "message": "“$slot_1$”将无法再重试或撤销。",
+    "description": "\"$1\" will no longer be retryable or undoable.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_operation_record_removed_657ba6df": {
+    "message": "操作记录已删除。",
+    "description": "Operation record removed."
+  },
+  "m_1_items_still_need_attention_9744ebf8": {
+    "message": "仍有 $slot_1$ 个项目需要处理。",
+    "description": "$1 items still need attention.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_operation_undone_6eaa3429": {
+    "message": "操作已撤销。",
+    "description": "Operation undone."
+  },
+  "m_retry_complete_d6be7652": {
+    "message": "重试完成。",
+    "description": "Retry complete."
+  },
+  "m_the_operation_could_not_be_completed_9dfb6413": {
+    "message": "无法完成该操作。",
+    "description": "The operation could not be completed."
+  },
+  "m_failed_to_load_saved_states_eba79a18": {
+    "message": "加载保存的状态失败。",
+    "description": "Failed to load saved states."
+  },
+  "m_failed_to_save_state_f7ddf0e7": {
+    "message": "保存状态失败。",
+    "description": "Failed to save state."
+  },
+  "m_1_saved_70a9d181": {
+    "message": "已保存 $slot_1$",
+    "description": "$1 saved",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_apply_ca77bbdb": {
+    "message": "应用",
+    "description": "Apply"
+  },
+  "m_rename_c80631f3": {
+    "message": "重命名",
+    "description": "Rename"
+  },
+  "m_copy_658f3664": {
+    "message": "复制",
+    "description": "Copy"
+  },
+  "m_export_e86349d3": {
+    "message": "导出",
+    "description": "Export"
+  },
+  "m_failed_to_update_saved_states_915ee649": {
+    "message": "更新保存的状态失败。",
+    "description": "Failed to update saved states."
+  },
+  "m_failed_to_prepare_saved_state_4e725642": {
+    "message": "准备保存状态失败。",
+    "description": "Failed to prepare saved state."
+  },
+  "m_select_at_least_one_item_before_exporting_c009f5e7": {
+    "message": "导出前请至少选择一个项目。",
+    "description": "Select at least one item before exporting."
+  },
+  "m_the_import_target_changed_build_a_new_preview_be_608d4006": {
+    "message": "导入目标已更改。在应用此包之前，请构建新的预览。",
+    "description": "The import target changed. Build a new preview before applying this package."
+  },
+  "m_import_1_items_b55a9d0b": {
+    "message": "导入 $slot_1$ 个项目",
+    "description": "Import $1 items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_no_import_snapshot_is_available_in_this_browser__69690989": {
+    "message": "此浏览器会话中没有可用的导入快照。",
+    "description": "No import snapshot is available in this browser session."
+  },
+  "m_return_to_the_original_target_tab_site_and_brows_eb117f96": {
+    "message": "在撤销此次导入之前，请先返回原始目标标签页、网站和浏览模式。",
+    "description": "Return to the original target tab, site, and browsing mode before undoing this import."
+  },
+  "m_undo_restored_1_items_2_failed_ab5a808a": {
+    "message": "已撤销恢复的 $slot_1$ 个项目；$slot_2$ 操作失败。",
+    "description": "Undo restored $1 items; $2 failed.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_undid_1_imported_items_f6bd9698": {
+    "message": "已撤销 $slot_1$ 个已导入的项目。",
+    "description": "Undid $1 imported items.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_written_2_failed_3_skipped_304b4a05": {
+    "message": "$slot_1$ 已写入，$slot_2$ 失败，$slot_3$ 被跳过。",
+    "description": "$1 written, $2 failed, $3 skipped.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_rename_saved_state_5dfd733d": {
+    "message": "重命名保存的状态",
+    "description": "Rename saved state"
+  },
+  "m_saved_state_name_3d927c88": {
+    "message": "保存的状态名称",
+    "description": "Saved state name"
+  },
+  "m_enter_a_saved_state_name_9fd29047": {
+    "message": "请输入保存的状态名称。",
+    "description": "Enter a saved state name."
+  },
+  "m_delete_saved_state_84940685": {
+    "message": "删除保存的状态？",
+    "description": "Delete saved state?"
+  },
+  "m_1_will_be_permanently_deleted_a8c73725": {
+    "message": "“$slot_1$”将被永久删除。",
+    "description": "\"$1\" will be permanently deleted.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_bytes_73e126d1": {
+    "message": "$slot_1$ 字节",
+    "description": "$1 bytes",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_jwt_value_f3ae0363": {
+    "message": "JWT 的值",
+    "description": "JWT value"
+  },
+  "m_json_value_f2431466": {
+    "message": "JSON 的值",
+    "description": "JSON value"
+  },
+  "m_favorite_7c6c19ed": {
+    "message": "收藏",
+    "description": "Favorite"
+  },
+  "m_new_8b242db1": {
+    "message": "新建",
+    "description": "New"
+  },
+  "m_modified_dd13a6b2": {
+    "message": "已修改",
+    "description": "Modified"
+  },
+  "m_same_4d38965b": {
+    "message": "相同",
+    "description": "Same"
+  },
+  "m_unsupported_3f4e39d0": {
+    "message": "不支持",
+    "description": "Unsupported"
+  },
+  "m_import_573e0af4": {
+    "message": "导入",
+    "description": "Import"
+  },
+  "m_saved_states_93462486": {
+    "message": "已保存的状态",
+    "description": "Saved States"
+  },
+  "m_cookie_name_daf59b6e": {
+    "message": "Cookie 名称",
+    "description": "Cookie name"
+  },
+  "m_storage_key_df0caa39": {
+    "message": "存储条目名称",
+    "description": "Storage key"
+  },
+  "m_cookie_value_cfa44712": {
+    "message": "Cookie 值",
+    "description": "Cookie value"
+  },
+  "m_storage_value_e83fba3b": {
+    "message": "存储值",
+    "description": "Storage value"
+  },
+  "m_enter_valid_site_data_dffd0cc8": {
+    "message": "请输入有效的站点数据。",
+    "description": "Enter valid site data."
+  },
+  "m_drop_one_import_file_at_a_time_d54fa864": {
+    "message": "每次仅可导入一个文件。",
+    "description": "Drop one import file at a time."
+  },
+  "m_netscape_curl_files_can_only_be_imported_from_co_bb4fa060": {
+    "message": "Netscape / cURL 文件只能从 Cookies 导入。",
+    "description": "Netscape / cURL files can only be imported from Cookies."
+  },
+  "m_failed_to_read_the_selected_file_d34a98a9": {
+    "message": "无法读取所选文件。",
+    "description": "Failed to read the selected file."
+  },
+  "m_invalid_site_data_package_3913772d": {
+    "message": "站点数据包无效。",
+    "description": "Invalid site data package."
+  },
+  "m_failed_to_build_import_preview_a2a2a0f8": {
+    "message": "无法生成导入预览。",
+    "description": "Failed to build import preview."
+  },
+  "m_target_1_3691ef59": {
+    "message": "目标：$slot_1$",
+    "description": "Target: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_selected_5f70e77b": {
+    "message": "已选中 $slot_1$",
+    "description": "$1 selected",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_applying_site_data_eac81ccc": {
+    "message": "正在应用站点数据",
+    "description": "Applying site data"
+  },
+  "m_preparing_batch_61d07c13": {
+    "message": "正在准备批处理",
+    "description": "Preparing batch"
+  },
+  "m_import_complete_5d213773": {
+    "message": "导入完成",
+    "description": "Import complete"
+  },
+  "m_import_failed_9ffdaa11": {
+    "message": "导入失败",
+    "description": "Import failed"
+  },
+  "m_the_batch_could_not_be_applied_417dafd2": {
+    "message": "无法应用该批处理。",
+    "description": "The batch could not be applied."
+  },
+  "m_1_of_2_359557ff": {
+    "message": "$slot_1$ 中的 $slot_2$",
+    "description": "$1 of $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_1_succeeded_2_failed_3_skipped_218f4367": {
+    "message": "$slot_1$ 成功，$slot_2$ 失败，$slot_3$ 被跳过",
+    "description": "$1 succeeded, $2 failed, $3 skipped",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_site_data_item_59051e8d": {
+    "message": "站点数据项",
+    "description": "Site data item"
+  },
+  "m_success_3a5fbf10": {
+    "message": "成功",
+    "description": "success"
+  },
+  "m_failed_e0accfb4": {
+    "message": "失败",
+    "description": "failed"
+  },
+  "m_skipped_22ec9b7": {
+    "message": "跳过",
+    "description": "skipped"
+  },
+  "m_undoing_import_79ebb952": {
+    "message": "撤销导入",
+    "description": "Undoing import"
+  },
+  "m_import_undone_76ad3b2b": {
+    "message": "导入已撤销",
+    "description": "Import undone"
+  },
+  "m_undo_incomplete_341418ed": {
+    "message": "撤销不完整",
+    "description": "Undo incomplete"
+  },
+  "m_the_batch_could_not_be_undone_e7c1877a": {
+    "message": "无法撤销该批处理操作。",
+    "description": "The batch could not be undone."
+  },
+  "m_or_drop_a_file_here_929523b2": {
+    "message": "或在此处拖放文件",
+    "description": "or drop a file here"
+  },
+  "m_netscape_cookie_jar_6ff3f335": {
+    "message": "Netscape cookie jar",
+    "description": "Netscape cookie jar"
+  },
+  "m_package_json_7a60c07f": {
+    "message": "打包 JSON",
+    "description": "Package JSON"
+  },
+  "m_paste_netscape_curl_cookie_data_31a18196": {
+    "message": "粘贴 Netscape / cURL cookie 数据",
+    "description": "Paste Netscape / cURL cookie data"
+  },
+  "m_paste_a_site_data_package_bd31982": {
+    "message": "粘贴站点数据包",
+    "description": "Paste a site data package"
+  },
+  "m_copy_value_8902f3e5": {
+    "message": "复制值",
+    "description": "Copy value"
+  },
+  "m_copy_name_value_6c98eeaf": {
+    "message": "复制 name=value",
+    "description": "Copy name=value"
+  },
+  "m_copy_result_4fd54b5": {
+    "message": "复制结果",
+    "description": "Copy result"
+  },
+  "m_reload_after_changes_on_1de03620": {
+    "message": "修改后自动刷新：开启",
+    "description": "Reload after changes: on"
+  },
+  "m_reload_after_changes_off_7e09437a": {
+    "message": "修改后自动刷新：关闭",
+    "description": "Reload after changes: off"
+  },
+  "m_refresh_data_page_reload_is_on_cece4e4c": {
+    "message": "刷新数据（页面自动刷新已开启）",
+    "description": "Refresh data (page reload is on)"
+  },
+  "m_refresh_data_f7e27804": {
+    "message": "刷新数据",
+    "description": "Refresh data"
+  },
+  "m_this_page_is_not_supported_c8ca9e9f": {
+    "message": "此页面不受支持",
+    "description": "This page is not supported"
+  },
+  "m_failed_to_open_site_data_tools_82dfa4d9": {
+    "message": "无法打开网站数据工具。",
+    "description": "Failed to open site data tools."
+  },
+  "m_failed_to_switch_site_b20d98c8": {
+    "message": "切换站点失败。",
+    "description": "Failed to switch site."
+  },
+  "m_opened_side_panel_7e401ebd": {
+    "message": "已打开侧边栏。",
+    "description": "Opened side panel."
+  },
+  "m_failed_to_open_side_panel_f092d38e": {
+    "message": "打开侧边栏失败。",
+    "description": "Failed to open side panel."
+  },
+  "m_1_reload_this_extension_in_chrome_extensions_aft_7b6e4c77": {
+    "message": "$slot_1$ 更新清单后，请在 chrome://extensions 中重新加载此扩展。",
+    "description": "$1 Reload this extension in chrome://extensions after updating the manifest.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_no_supported_target_dc598e35": {
+    "message": "没有受支持的目标",
+    "description": "No supported target"
+  },
+  "m_open_an_http_or_https_page_before_importing_1_157b51a6": {
+    "message": "在导入 $slot_1$ 之前，请先打开 http:// 或 https:// 页面。",
+    "description": "Open an http:// or https:// page before importing $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_import_1_item_d94801da": {
+    "message": "导入 $slot_1$ 项目",
+    "description": "Import $1 item",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_import_1_5398384d": {
+    "message": "导入 $slot_1$ 失败。",
+    "description": "Failed to import $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_row_1_2_943d7d0a": {
+    "message": "第 $slot_1$ 行：$slot_2$",
+    "description": "Row $1: $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_row_1_2_3_is_duplicated_23e8d788": {
+    "message": "第 $slot_1$ 行：$slot_2$ “$slot_3$” 已存在。",
+    "description": "Row $1: $2 \"$3\" is duplicated.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_enter_at_least_one_1_f54799b0": {
+    "message": "请输入至少一个 $slot_1$。",
+    "description": "Enter at least one $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_imported_1_7eecd17a": {
+    "message": "已导入 $slot_1$。",
+    "description": "Imported $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_imported_1_2_875cc7ac": {
+    "message": "已导入 $slot_1$ $slot_2$。",
+    "description": "Imported $1 $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_imported_1_2_3_failed_4_4ed60786": {
+    "message": "已导入 $slot_1$ $slot_2$，$slot_3$ 导入失败。$slot_4$",
+    "description": "Imported $1 $2, $3 failed.$4",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      },
+      "slot_4": {
+        "content": "$4"
+      }
+    }
+  },
+  "m_1_ready_2ec8dfb5": {
+    "message": "$slot_1$ 已准备就绪。",
+    "description": "$1 ready.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_unable_to_parse_this_value_88fdaac5": {
+    "message": "无法解析此值。",
+    "description": "Unable to parse this value."
+  },
+  "m_show_result_b85e67ad": {
+    "message": "显示结果",
+    "description": "Show result"
+  },
+  "m_raw_a689aa91": {
+    "message": "原始值",
+    "description": "Raw"
+  },
+  "m_raw_value_c5a32700": {
+    "message": "原始值",
+    "description": "raw value"
+  },
+  "m_show_1_a598d193": {
+    "message": "显示 $slot_1$",
+    "description": "Show $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_search_selected_cookies_a8e71275": {
+    "message": "搜索选中的 cookies",
+    "description": "Search selected cookies"
+  },
+  "m_search_name_value_domain_path_3fd69442": {
+    "message": "搜索名称、值、域、路径",
+    "description": "Search name, value, domain, path"
+  },
+  "m_search_selected_items_c4b3e72a": {
+    "message": "搜索所选项目",
+    "description": "Search selected items"
+  },
+  "m_search_key_value_origin_a6484085": {
+    "message": "搜索键、值、来源",
+    "description": "Search key, value, origin"
+  },
+  "m_refresh_1_4d5efd5b": {
+    "message": "刷新 $slot_1$",
+    "description": "Refresh $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_editor_86069f43": {
+    "message": "$slot_1$ 编辑器",
+    "description": "$1 editor",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_select_a_1_c629d055": {
+    "message": "选择一个 $slot_1$",
+    "description": "Select a $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_resize_1_column_a7150cf6": {
+    "message": "调整 $slot_1$ 列宽",
+    "description": "Resize $1 column",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_cookie_dccfa860": {
+    "message": "$slot_1$ cookie",
+    "description": "$1 cookie",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_cookies_ade595e9": {
+    "message": "$slot_1$ cookies",
+    "description": "$1 cookies",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_local_storage_item_2393a4f7": {
+    "message": "$slot_1$ 本地存储项",
+    "description": "$1 local storage item",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_local_storage_items_856bfbcc": {
+    "message": "$slot_1$ 本地存储项",
+    "description": "$1 local storage items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_session_storage_item_549260e6": {
+    "message": "$slot_1$ 会话存储项",
+    "description": "$1 session storage item",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_session_storage_items_b76e0a8f": {
+    "message": "$slot_1$ 个会话存储项",
+    "description": "$1 session storage items",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_sort_1_ascending_9526e2a6": {
+    "message": "按 $slot_1$ 升序排序",
+    "description": "Sort $1 ascending",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_sort_1_descending_c2ff5ce6": {
+    "message": "按 $slot_1$ 降序排序",
+    "description": "Sort $1 descending",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_update_favorites_5e1b6823": {
+    "message": "更新收藏夹失败。",
+    "description": "Failed to update favorites."
+  },
+  "m_1_selected_2_e507aad": {
+    "message": "已选中 $slot_1$$slot_2$",
+    "description": "$1 selected$2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_1_hidden_eef079a1": {
+    "message": " · $slot_1$ 已隐藏",
+    "description": " · $1 hidden",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_show_all_items_36117eb7": {
+    "message": "显示所有项目",
+    "description": "Show all items"
+  },
+  "m_show_selected_items_7a2ae1e9": {
+    "message": "显示选中的项目",
+    "description": "Show selected items"
+  },
+  "m_this_item_was_removed_from_the_page_your_draft_w_586055b6": {
+    "message": "该项目已从页面中移除。您的草稿已保留。",
+    "description": "This item was removed from the page. Your draft was kept."
+  },
+  "m_overwrite_changed_item_a01cac5e": {
+    "message": "是否覆盖已修改的项目？",
+    "description": "Overwrite changed item?"
+  },
+  "m_1_changed_on_the_page_after_editing_started_56a44a84": {
+    "message": "在开始编辑后，页面上的“$slot_1$”已被修改。",
+    "description": "\"$1\" changed on the page after editing started.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_the_current_value_and_expiration_will_be_replace_28509cd8": {
+    "message": "当前值和过期时间将被您的草稿替换。",
+    "description": "The current value and expiration will be replaced by your draft."
+  },
+  "m_the_current_page_value_will_be_replaced_by_your__cbc560ff": {
+    "message": "当前页面值将被您的草稿替换。",
+    "description": "The current page value will be replaced by your draft."
+  },
+  "m_overwrite_78ff0e92": {
+    "message": "覆盖",
+    "description": "Overwrite"
+  },
+  "m_this_item_changed_again_refresh_and_review_it_be_fcda25ab": {
+    "message": "该项目再次发生变化。请在保存前刷新并检查。您的草稿已保留。",
+    "description": "This item changed again. Refresh and review it before saving. Your draft was kept."
+  },
+  "m_this_item_changed_on_the_page_your_draft_was_kep_614fc574": {
+    "message": "该项目在页面上发生了变化。您的草稿已保留。",
+    "description": "This item changed on the page. Your draft was kept."
+  },
+  "m_remove_1_from_favorites_3f3873c5": {
+    "message": "将 $slot_1$ 从收藏中移除",
+    "description": "Remove $1 from favorites",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_favorite_1_748a9488": {
+    "message": "收藏 $slot_1$",
+    "description": "Favorite $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_my_favorite_cookie_1_bcb78c80": {
+    "message": "我最喜欢的 cookie $slot_1$",
+    "description": "My favorite cookie $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_enter_a_valid_expiration_date_and_time_117dcc4b": {
+    "message": "请输入有效的到期日期和时间。",
+    "description": "Enter a valid expiration date and time."
+  },
+  "m_expiration_must_be_in_the_future_87176fbd": {
+    "message": "到期时间必须在将来。",
+    "description": "Expiration must be in the future."
+  },
+  "m_site_permission_is_required_for_this_page_6af52a2e": {
+    "message": "访问此页面需要站点权限。",
+    "description": "Site permission is required for this page."
+  },
+  "m_skipped_32d7a557": {
+    "message": "已跳过",
+    "description": "Skipped"
+  },
+  "m_batch_operation_items_must_be_an_array_8927061c": {
+    "message": "批量操作项必须是数组。",
+    "description": "Batch operation items must be an array."
+  },
+  "m_batch_operation_handler_must_be_a_function_2a2e2b1": {
+    "message": "批量操作处理程序必须是函数。",
+    "description": "Batch operation handler must be a function."
+  },
+  "m_a_persistent_cookie_requires_a_valid_expiration__69a955bd": {
+    "message": "持久化 cookie 需要有效的过期日期。",
+    "description": "A persistent cookie requires a valid expiration date."
+  },
+  "m_side_panel_is_not_available_in_this_browser_1deaac7f": {
+    "message": "此浏览器不支持侧边栏。",
+    "description": "Side panel is not available in this browser."
+  },
+  "m_unspecified_646386c": {
+    "message": "未指定",
+    "description": "Unspecified"
+  },
+  "m_a_supported_data_view_and_item_id_are_required_1efa8375": {
+    "message": "必须提供受支持的数据视图和项目 ID。",
+    "description": "A supported data view and item ID are required."
+  },
+  "m_unsupported_site_data_kind_1_99f7b534": {
+    "message": "不支持的网站数据类型：$slot_1$",
+    "description": "Unsupported site data kind: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_line_1_2_3e08f18e": {
+    "message": "第 $slot_1$ 行：$slot_2$",
+    "description": "Line $1: $2",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_netscape_cookie_data_must_be_text_91c54441": {
+    "message": "Netscape cookie 数据必须为文本。",
+    "description": "Netscape cookie data must be text."
+  },
+  "m_expected_7_tab_separated_fields_12f054d4": {
+    "message": "预期有 7 个以制表符分隔的字段。",
+    "description": "Expected 7 tab-separated fields."
+  },
+  "m_path_must_start_with_f0000f56": {
+    "message": "路径必须以 / 开头。",
+    "description": "Path must start with /."
+  },
+  "m_duplicate_cookie_1_for_2_3_55aa331f": {
+    "message": "$slot_2$$slot_3$ 中的 cookie $slot_1$ 已重复。",
+    "description": "Duplicate cookie $1 for $2$3.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      },
+      "slot_3": {
+        "content": "$3"
+      }
+    }
+  },
+  "m_no_netscape_cookie_rows_were_found_7d90721b": {
+    "message": "未找到 Netscape cookie 行。",
+    "description": "No Netscape cookie rows were found."
+  },
+  "m_the_selected_scope_does_not_contain_any_cookies_f3791e8": {
+    "message": "所选范围内不包含任何 cookies。",
+    "description": "The selected scope does not contain any cookies."
+  },
+  "m_expiration_must_be_a_non_negative_integer_unix_t_43e6d38c": {
+    "message": "到期时间必须为非负整数的 Unix 时间戳。",
+    "description": "Expiration must be a non-negative integer Unix timestamp."
+  },
+  "m_cookie_domain_is_invalid_411f9532": {
+    "message": "Cookie 域名无效。",
+    "description": "Cookie domain is invalid."
+  },
+  "m_1_must_be_true_or_false_51a26bf8": {
+    "message": "$slot_1$ 必须为 TRUE 或 FALSE。",
+    "description": "$1 must be TRUE or FALSE.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_expiration_is_outside_the_supported_range_8cfc8697": {
+    "message": "到期时间超出支持的范围。",
+    "description": "Expiration is outside the supported range."
+  },
+  "m_1_cannot_be_represented_in_netscape_format_e7a8a446": {
+    "message": "$slot_1$ 无法以 Netscape 格式表示。",
+    "description": "$1 cannot be represented in Netscape format.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_the_operation_history_is_no_longer_available_in__7160ca61": {
+    "message": "此浏览器会话中已无法查看操作历史记录。",
+    "description": "The operation history is no longer available in this browser session."
+  },
+  "m_the_background_operation_service_is_unavailable__2418d24d": {
+    "message": "后台操作服务不可用。请重新打开扩展程序并重试。",
+    "description": "The background operation service is unavailable. Reopen the extension and try again."
+  },
+  "m_select_an_http_or_https_tab_before_changing_site_78b8790a": {
+    "message": "在更改网站数据前，请先选择一个 http:// 或 https:// 标签页。",
+    "description": "Select an http:// or https:// tab before changing site data."
+  },
+  "m_the_operation_target_is_unavailable_refresh_and__ea7bb94d": {
+    "message": "操作目标不可用。请刷新页面后重试。",
+    "description": "The operation target is unavailable. Refresh and try again."
+  },
+  "m_the_target_tab_changed_sites_refresh_and_try_aga_45abf2d3": {
+    "message": "目标标签页已切换网站。请刷新页面后重试。",
+    "description": "The target tab changed sites. Refresh and try again."
+  },
+  "m_the_target_tab_changed_browsing_modes_refresh_an_9b421ca": {
+    "message": "目标标签页已切换浏览模式。请刷新页面后重试。",
+    "description": "The target tab changed browsing modes. Refresh and try again."
+  },
+  "m_the_target_cookie_store_changed_refresh_and_try__d7c5bc8d": {
+    "message": "目标浏览器的 Cookie 存储已发生变化。请刷新页面后重试。",
+    "description": "The target cookie store changed. Refresh and try again."
+  },
+  "m_this_change_can_no_longer_be_undone_in_this_brow_54389916": {
+    "message": "此更改在本次浏览器会话中已无法撤销。",
+    "description": "This change can no longer be undone in this browser session."
+  },
+  "m_this_older_change_has_no_verified_target_informa_19604fe9": {
+    "message": "此较早的更改没有经过验证的目标信息，因此无法撤销。",
+    "description": "This older change has no verified target information and cannot be undone."
+  },
+  "m_undo_is_only_available_for_1_f2a63182": {
+    "message": "仅可对 $slot_1$ 执行撤销操作。",
+    "description": "Undo is only available for $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_switch_to_the_original_browsing_mode_before_undo_870755c9": {
+    "message": "在撤销此更改之前，请切换回原始浏览模式。",
+    "description": "Switch to the original browsing mode before undoing this change."
+  },
+  "m_session_storage_undo_requires_the_original_tab_1_2fdf9bd9": {
+    "message": "撤销 Session Storage 需要原始标签页（$slot_1$）。",
+    "description": "Session Storage undo requires the original tab ($1).",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_this_change_has_incomplete_cookie_target_informa_a2dd5586": {
+    "message": "此更改的 cookie 目标信息不完整，无法撤销。",
+    "description": "This change has incomplete cookie target information and cannot be undone."
+  },
+  "m_switch_to_the_original_cookie_store_before_undoi_d2820a6a": {
+    "message": "在撤销此更改之前，请切换到原始的 cookie 存储。",
+    "description": "Switch to the original cookie store before undoing this change."
+  },
+  "m_this_change_has_incomplete_storage_target_inform_55298dcd": {
+    "message": "此更改的存储目标信息不完整，无法撤销。",
+    "description": "This change has incomplete storage target information and cannot be undone."
+  },
+  "m_the_operation_requires_a_complete_verified_targe_c2dd669c": {
+    "message": "该操作需要一个完整的、已验证的目标。",
+    "description": "The operation requires a complete verified target."
+  },
+  "m_the_operation_target_origin_is_invalid_d22ef5f": {
+    "message": "该操作的目标源无效。",
+    "description": "The operation target origin is invalid."
+  },
+  "m_the_operation_item_type_is_not_supported_7da692f3": {
+    "message": "该操作不支持此项目类型。",
+    "description": "The operation item type is not supported."
+  },
+  "m_an_operation_item_requires_its_before_and_after__f10583a8": {
+    "message": "操作项需要其“之前”和“之后”的状态。",
+    "description": "An operation item requires its before and after states."
+  },
+  "m_an_operation_cannot_change_an_item_s_identity_de_98312c57": {
+    "message": "操作不能更改项的标识。请分别执行删除和创建操作。",
+    "description": "An operation cannot change an item's identity. Delete and create separate items instead."
+  },
+  "m_undo_requires_the_original_site_cookie_store_and_5fcd5b1a": {
+    "message": "撤销操作需要原始站点、cookie 存储和浏览模式。",
+    "description": "Undo requires the original site, cookie store, and browsing mode."
+  },
+  "m_session_storage_undo_requires_the_original_tab_c5074cf1": {
+    "message": "Session Storage 撤销操作需要原始标签页。",
+    "description": "Session Storage undo requires the original tab."
+  },
+  "m_the_cookie_changed_during_writing_or_chrome_norm_9c28e63c": {
+    "message": "cookie 在写入过程中发生了变化，或者 Chrome 已将不支持的属性规范化。请在重试前检查其当前状态。",
+    "description": "The cookie changed during writing or Chrome normalized unsupported attributes. Review its current state before retrying."
+  },
+  "m_chrome_would_remove_a_different_same_name_cookie_1f0e6ca9": {
+    "message": "Chrome 将移除另一个同名的 cookie。其数据已保留。",
+    "description": "Chrome would remove a different same-name cookie. Its data was preserved."
+  },
+  "m_the_cookie_changed_during_writing_or_chrome_norm_c0f5c111": {
+    "message": "在写入过程中 cookie 发生了变化，或者 Chrome 对其属性进行了规范化处理。请检查其当前状态后再试一次。",
+    "description": "The cookie changed during writing or Chrome normalized its attributes. Review its current state before retrying."
+  },
+  "m_this_item_changed_after_the_operation_was_prepar_6afc1ff6": {
+    "message": "该项在操作准备完成后发生了变化。其当前数据已被保留。",
+    "description": "This item changed after the operation was prepared. Its current data was preserved."
+  },
+  "m_operation_item_states_must_be_objects_or_null_648de299": {
+    "message": "操作项的状态必须是对象或 null。",
+    "description": "Operation item states must be objects or null."
+  },
+  "m_storage_operations_require_a_key_and_a_string_va_be861fef": {
+    "message": "存储操作需要一个键和一个字符串值。",
+    "description": "Storage operations require a key and a string value."
+  },
+  "m_the_storage_item_belongs_to_a_different_origin_c5770dcf": {
+    "message": "该存储项属于不同的源。",
+    "description": "The storage item belongs to a different origin."
+  },
+  "m_cookie_operations_require_a_name_value_and_domai_ad606296": {
+    "message": "Cookie 操作需要名称、值和域。",
+    "description": "Cookie operations require a name, value, and domain."
+  },
+  "m_the_cookie_store_does_not_match_the_target_brows_8b6d58d0": {
+    "message": "cookie 存储与目标浏览上下文不匹配。",
+    "description": "The cookie store does not match the target browsing context."
+  },
+  "m_the_cookie_domain_is_outside_the_target_site_2c893fc": {
+    "message": "cookie 域名不在目标网站范围内。",
+    "description": "The cookie domain is outside the target site."
+  },
+  "m_the_cookie_scope_is_not_supported_by_the_target__5ed5f691": {
+    "message": "目标网站不支持 cookie 作用域。",
+    "description": "The cookie scope is not supported by the target site."
+  },
+  "m_this_operation_id_already_belongs_to_another_req_26aec4b6": {
+    "message": "此操作 ID 已属于另一个请求。",
+    "description": "This operation ID already belongs to another request."
+  },
+  "m_the_undo_selection_contains_an_unknown_operation_7a61fd74": {
+    "message": "撤销选择中包含一个未知操作项。",
+    "description": "The undo selection contains an unknown operation item."
+  },
+  "m_select_at_least_one_site_data_item_before_starti_3a6505e4": {
+    "message": "开始操作前，请至少选择一个网站数据项。",
+    "description": "Select at least one site data item before starting an operation."
+  },
+  "m_operation_item_ids_must_be_unique_within_the_bat_c80b02fe": {
+    "message": "同一批次内的操作项 ID 必须唯一。",
+    "description": "Operation item IDs must be unique within the batch."
+  },
+  "m_a_batch_cannot_contain_the_same_site_data_item_m_12586bbb": {
+    "message": "一个批次中不能包含多个相同的站点数据项。",
+    "description": "A batch cannot contain the same site data item more than once."
+  },
+  "m_site_data_change_85c94fa": {
+    "message": "站点数据变更",
+    "description": "Site data change"
+  },
+  "m_this_operation_is_no_longer_available_in_the_cur_dd0b5906": {
+    "message": "在当前浏览器会话中，此操作已不可用。",
+    "description": "This operation is no longer available in the current browser session."
+  },
+  "m_wait_for_the_operation_to_finish_before_retrying_4e00d481": {
+    "message": "请等待操作完成，然后再重试、撤销或清除该操作。",
+    "description": "Wait for the operation to finish before retrying, undoing, or clearing it."
+  },
+  "m_the_operation_failed_ab9ab784": {
+    "message": "操作失败。",
+    "description": "The operation failed."
+  },
+  "m_the_operation_journal_cannot_be_read_existing_hi_5f7bdebd": {
+    "message": "无法读取操作日志。现有历史记录已保留。",
+    "description": "The operation journal cannot be read. Existing history has been preserved."
+  },
+  "m_operation_history_is_limited_to_1_batches_5f70f1c6": {
+    "message": "操作历史记录限制为 $slot_1$ 个批次。",
+    "description": "Operation history is limited to $1 batches.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_session_storage_does_not_have_enough_room_to_rec_baffb4f6": {
+    "message": "会话存储空间不足，无法安全地记录此操作。",
+    "description": "Session storage does not have enough room to record this operation safely."
+  },
+  "m_chrome_could_not_reserve_operation_history_space_cb06e6c2": {
+    "message": "Chrome 无法预留操作历史记录空间。",
+    "description": "Chrome could not reserve operation history space."
+  },
+  "m_session_storage_is_required_for_recoverable_site_a5071db5": {
+    "message": "可恢复的网站数据操作需要使用会话存储。",
+    "description": "Session storage is required for recoverable site data operations."
+  },
+  "m_1_clear_completed_batches_in_history_and_try_aga_8d7c6029": {
+    "message": "$slot_1$ 请清除“历史记录”中的已完成批次，然后重试。",
+    "description": "$1 Clear completed batches in History and try again.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_the_operation_was_not_completed_open_operations__1ba12ca0": {
+    "message": "操作未完成。请打开“操作”页面查看结果。",
+    "description": "The operation was not completed. Open Operations to review its result."
+  },
+  "m_unknown_error_ce512b43": {
+    "message": "未知错误",
+    "description": "Unknown error"
+  },
+  "m_invalid_batch_operation_result_2c7f1d9c": {
+    "message": "批处理操作结果无效。",
+    "description": "Invalid batch operation result."
+  },
+  "m_enter_a_valid_1_a42ed343": {
+    "message": "请输入有效的 $slot_1$。",
+    "description": "Enter a valid $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_enter_a_cookie_name_829f0c23": {
+    "message": "请输入 cookie 名称。",
+    "description": "Enter a cookie name."
+  },
+  "m_cookie_name_is_invalid_dafca5ad": {
+    "message": "Cookie 名称无效。",
+    "description": "Cookie name is invalid."
+  },
+  "m_enter_a_storage_key_42911d0a": {
+    "message": "请输入存储条目名称。",
+    "description": "Enter a storage key."
+  },
+  "m_a_favorite_item_id_and_enabled_state_are_require_d025e94a": {
+    "message": "必须提供收藏项 ID 及其启用状态。",
+    "description": "A favorite item ID and enabled state are required."
+  },
+  "m_unsupported_import_conflict_strategy_1_11eb35cf": {
+    "message": "不支持的导入冲突策略：$slot_1$",
+    "description": "Unsupported import conflict strategy: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_item_is_not_supported_3c19884d": {
+    "message": "该项不受支持。",
+    "description": "Item is not supported."
+  },
+  "m_not_selected_88a4320b": {
+    "message": "未选中。",
+    "description": "Not selected."
+  },
+  "m_already_identical_4051b14a": {
+    "message": "已存在相同项。",
+    "description": "Already identical."
+  },
+  "m_only_new_items_are_enabled_71d46290": {
+    "message": "仅启用新项目。",
+    "description": "Only new items are enabled."
+  },
+  "m_existing_item_was_kept_8d637d38": {
+    "message": "保留了现有项目。",
+    "description": "Existing item was kept."
+  },
+  "m_conflict_was_not_selected_41b4cfaa": {
+    "message": "未选中冲突项。",
+    "description": "Conflict was not selected."
+  },
+  "m_the_package_contains_the_same_stable_item_more_t_5819a2cf": {
+    "message": "该软件包中包含多个相同的稳定版项目。",
+    "description": "The package contains the same stable item more than once."
+  },
+  "m_no_changes_23de827f": {
+    "message": "无更改。",
+    "description": "No changes."
+  },
+  "m_value_will_change_67c2db88": {
+    "message": "值将发生变化。",
+    "description": "Value will change."
+  },
+  "m_cookie_attributes_differ_from_the_target_343b62be": {
+    "message": "Cookie 的属性与目标不一致。",
+    "description": "Cookie attributes differ from the target."
+  },
+  "m_source_origin_1_does_not_match_2_d97e2856": {
+    "message": "源位置 $slot_1$ 与 $slot_2$ 不匹配。",
+    "description": "Source origin $1 does not match $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_storage_origin_1_cannot_be_written_to_2_5e2f32f1": {
+    "message": "存储位置 $slot_1$ 无法写入 $slot_2$。",
+    "description": "Storage origin $1 cannot be written to $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_secure_cookies_require_an_https_target_42458c0f": {
+    "message": "安全 cookies 需要一个 HTTPS 目标。",
+    "description": "Secure cookies require an HTTPS target."
+  },
+  "m_samesite_none_cookies_require_secure_b0e3af34": {
+    "message": "SameSite=None cookies 需要安全属性。",
+    "description": "SameSite=None cookies require Secure."
+  },
+  "m_persistent_cookies_require_a_valid_expiration_da_59fa4574": {
+    "message": "持久化 cookies 需要有效的过期日期。",
+    "description": "Persistent cookies require a valid expiration date."
+  },
+  "m_the_cookie_expiration_date_is_in_the_past_fb6631d3": {
+    "message": "cookie 的过期日期已过。",
+    "description": "The cookie expiration date is in the past."
+  },
+  "m_the_partition_key_is_not_supported_f5b3f532": {
+    "message": "不支持该分区键。",
+    "description": "The partition key is not supported."
+  },
+  "m_cookie_domain_1_is_not_valid_for_2_87a7b1d8": {
+    "message": "Cookie 域 $slot_1$ 对于 $slot_2$ 无效。",
+    "description": "Cookie domain $1 is not valid for $2.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_a_valid_http_or_https_target_url_is_required_d1af520b": {
+    "message": "需要一个有效的 HTTP 或 HTTPS 目标 URL。",
+    "description": "A valid HTTP or HTTPS target URL is required."
+  },
+  "m_site_data_package_is_not_valid_json_1_205edefc": {
+    "message": "站点数据包无效 JSON：$slot_1$",
+    "description": "Site data package is not valid JSON: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_site_data_package_must_be_a_json_object_4b3bb0fc": {
+    "message": "站点数据包必须是 JSON 对象。",
+    "description": "Site data package must be a JSON object."
+  },
+  "m_unsupported_site_data_schema_version_1_1e133de1": {
+    "message": "站点数据模式版本不受支持：$slot_1$",
+    "description": "Unsupported site data schema version: $1",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_failed_to_parse_site_data_package_13a1fb6f": {
+    "message": "解析站点数据包失败。",
+    "description": "Failed to parse site data package."
+  },
+  "m_cookie_must_be_an_object_2f03109b": {
+    "message": "Cookie 必须是对象。",
+    "description": "Cookie must be an object."
+  },
+  "m_cookie_domain_c25955b9": {
+    "message": "Cookie 域",
+    "description": "Cookie domain"
+  },
+  "m_storage_item_must_be_an_object_1cfa84f9": {
+    "message": "存储项必须是对象。",
+    "description": "Storage item must be an object."
+  },
+  "m_site_data_package_data_must_be_an_object_e66f478": {
+    "message": "站点数据包的数据必须是对象。",
+    "description": "Site data package data must be an object."
+  },
+  "m_site_data_package_source_must_be_an_object_56cfeb13": {
+    "message": "站点数据包的源必须是对象。",
+    "description": "Site data package source must be an object."
+  },
+  "m_source_url_199c3119": {
+    "message": "源 URL",
+    "description": "Source URL"
+  },
+  "m_source_url_is_invalid_79058912": {
+    "message": "源 URL 无效。",
+    "description": "Source URL is invalid."
+  },
+  "m_source_url_must_use_http_or_https_402a5c35": {
+    "message": "源 URL 必须使用 http 或 https。",
+    "description": "Source URL must use http or https."
+  },
+  "m_source_origin_does_not_match_the_source_url_ddb08ac2": {
+    "message": "源地址与源 URL 不匹配。",
+    "description": "Source origin does not match the source URL."
+  },
+  "m_export_time_14390320": {
+    "message": "导出时间",
+    "description": "Export time"
+  },
+  "m_export_time_is_invalid_966ca827": {
+    "message": "导出时间无效。",
+    "description": "Export time is invalid."
+  },
+  "m_storage_origin_is_invalid_c2b74933": {
+    "message": "存储源无效。",
+    "description": "Storage origin is invalid."
+  },
+  "m_1_must_be_an_array_e1b4fde0": {
+    "message": "$slot_1$ 必须是数组。",
+    "description": "$1 must be an array.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_must_be_a_string_7db28ee6": {
+    "message": "$slot_1$ 必须是字符串。",
+    "description": "$1 must be a string.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_cannot_be_empty_e318fe17": {
+    "message": "$slot_1$ 不能为空。",
+    "description": "$1 cannot be empty.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_a_saved_state_with_this_id_already_exists_reload_d5d699bd": {
+    "message": "已存在具有此 ID 的保存状态。请重新加载“保存状态”并重试。",
+    "description": "A saved state with this ID already exists. Reload Saved States and try again."
+  },
+  "m_this_saved_state_no_longer_exists_reload_saved_s_2606c3f0": {
+    "message": "此保存状态已不存在。请重新加载“保存状态”并选择另一个状态。",
+    "description": "This saved state no longer exists. Reload Saved States and select another state."
+  },
+  "m_saved_states_is_limited_to_1_states_return_to_th_c6f09f4f": {
+    "message": "“已保存状态”最多支持 $slot_1$ 个状态。请返回“已保存状态”列表，在保存或复制另一个状态之前删除未使用的状态。您的现有状态未被更改。",
+    "description": "Saved States is limited to $1 states. Return to the Saved States list and delete unused states before saving or copying another state. Your existing states have not been changed.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_chrome_limit_1_2_3949d5f2": {
+    "message": " （Chrome 限制：$slot_1$$slot_2$）",
+    "description": " (Chrome limit: $1$2)",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      },
+      "slot_2": {
+        "content": "$2"
+      }
+    }
+  },
+  "m_extension_storage_is_full_1_return_to_the_saved__c0d6cf4b": {
+    "message": "扩展程序存储空间已满$slot_1$。请返回“已保存状态”列表并删除未使用的状态，或减少保存的网站数据条目，然后重试。您的现有状态未受影响。",
+    "description": "Extension storage is full$1. Return to the Saved States list and delete unused states, or save fewer site data entries, then try again. Your existing states have not been changed.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_profile_must_be_an_object_d72872c": {
+    "message": "配置文件必须是对象。",
+    "description": "Profile must be an object."
+  },
+  "m_profile_name_is_required_19a1effa": {
+    "message": "必须填写配置文件名称。",
+    "description": "Profile name is required."
+  },
+  "m_enter_a_value_for_1_91a86c1b": {
+    "message": "请为 $slot_1$ 输入一个值。",
+    "description": "Enter a value for $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_missing_profile_variables_1_1592cd58": {
+    "message": "缺少配置文件变量：$slot_1$。",
+    "description": "Missing profile variables: $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_variable_line_1_must_use_name_value_2dec1abd": {
+    "message": "变量行 $slot_1$ 必须使用 name=value。",
+    "description": "Variable line $1 must use name=value.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_variable_name_1_is_invalid_56f993ec": {
+    "message": "变量名 $slot_1$ 无效。",
+    "description": "Variable name $1 is invalid.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_variable_1_is_duplicated_2d297b8b": {
+    "message": "变量 $slot_1$ 已重复。",
+    "description": "Variable $1 is duplicated.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_variable_1_needs_a_captured_value_516edb55": {
+    "message": "变量 $slot_1$ 需要捕获值。",
+    "description": "Variable $1 needs a captured value.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_copy_3f7d3a3f": {
+    "message": "$slot_1$ 副本",
+    "description": "$1 copy",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_profile_variables_require_a_valid_name_and_captu_58575d16": {
+    "message": "配置文件变量需要有效的名称和捕获值。",
+    "description": "Profile variables require a valid name and captured value."
+  },
+  "m_profile_variable_names_must_be_valid_and_unique_dbee74c8": {
+    "message": "配置文件变量名称必须有效且唯一。",
+    "description": "Profile variable names must be valid and unique."
+  },
+  "m_conditional_storage_values_must_be_strings_or_nu_f66e578c": {
+    "message": "条件存储值必须为字符串或 null。",
+    "description": "Conditional storage values must be strings or null."
+  },
+  "m_storage_operation_did_not_return_a_verified_resu_a0d8584c": {
+    "message": "存储操作未返回经过验证的结果。请刷新并重试。",
+    "description": "Storage operation did not return a verified result. Refresh and try again."
+  },
+  "m_no_active_tab_is_available_7fb08c70": {
+    "message": "没有可用的活动标签页。",
+    "description": "No active tab is available."
+  },
+  "m_storage_type_is_not_supported_6565b571": {
+    "message": "不支持此存储类型。",
+    "description": "Storage type is not supported."
+  },
+  "m_storage_key_is_required_9a984642": {
+    "message": "必须提供存储键。",
+    "description": "Storage key is required."
+  },
+  "m_tab_session_79252400": {
+    "message": "标签页会话",
+    "description": "Tab session"
+  },
+  "m_persistent_b9d8a5e0": {
+    "message": "持久化",
+    "description": "Persistent"
+  },
+  "m_a_storage_key_and_update_action_are_required_bcf52f8d": {
+    "message": "必须填写存储条目名称和更新操作。",
+    "description": "A storage key and update action are required."
+  },
+  "m_storage_write_coordination_is_unavailable_reload_a3049af7": {
+    "message": "无法进行存储写入协调。请在最新版本的 Chrome 浏览器中重新加载扩展程序，然后重试。",
+    "description": "Storage write coordination is unavailable. Reload the extension in an up-to-date Chrome browser and try again."
+  },
+  "m_unsupported_page_ba4049fb": {
+    "message": "不支持的页面",
+    "description": "Unsupported page"
+  },
+  "m_value_is_not_valid_url_encoded_text_410c8c5c": {
+    "message": "该值不是有效的 URL 编码文本。",
+    "description": "Value is not valid URL-encoded text."
+  },
+  "m_value_is_not_valid_json_4ebcf7b9": {
+    "message": "该值不是有效的 JSON。",
+    "description": "Value is not valid JSON."
+  },
+  "m_value_is_not_a_jwt_ced21751": {
+    "message": "该值不是 JWT。",
+    "description": "Value is not a JWT."
+  },
+  "m_jwt_payload_could_not_be_decoded_c3f891e7": {
+    "message": "无法解码 JWT 有效载荷。",
+    "description": "JWT payload could not be decoded."
+  },
+  "m_loading_page_9a85b9e6": {
+    "message": "正在加载页面",
+    "description": "Loading page"
+  },
+  "m_0_cookies_82c7dfac": {
+    "message": "0 cookies",
+    "description": "0 cookies"
+  },
+  "m_current_page_fe92f855": {
+    "message": "当前页面",
+    "description": "Current page"
+  },
+  "m_switch_active_tab_site_fbd36ba9": {
+    "message": "切换当前标签页的网站",
+    "description": "Switch active tab site"
+  },
+  "m_switch_site_d8886748": {
+    "message": "切换网站",
+    "description": "Switch site"
+  },
+  "m_data_type_9af022c7": {
+    "message": "数据类型",
+    "description": "Data type"
+  },
+  "m_search_c646a2c9": {
+    "message": "搜索",
+    "description": "Search"
+  },
+  "m_reload_settings_b738e329": {
+    "message": "重新加载设置",
+    "description": "Reload settings"
+  },
+  "m_open_reload_settings_4892e4a3": {
+    "message": "打开重新加载设置",
+    "description": "Open reload settings"
+  },
+  "m_reload_after_changes_bf61c657": {
+    "message": "更改后重新加载",
+    "description": "Reload after changes"
+  },
+  "m_reload_the_active_page_after_editing_data_b1f353e4": {
+    "message": "编辑数据后重新加载当前页面",
+    "description": "Reload the active page after editing data"
+  },
+  "m_open_side_panel_6c80bafe": {
+    "message": "打开侧边栏",
+    "description": "Open side panel"
+  },
+  "m_history_7d96597f": {
+    "message": "历史记录",
+    "description": "History"
+  },
+  "m_show_recent_changes_aa3be0a2": {
+    "message": "显示最近的更改",
+    "description": "Show recent changes"
+  },
+  "m_site_access_is_required_to_read_cookies_a1440a5d": {
+    "message": "阅读 cookies 需要网站访问权限。",
+    "description": "Site access is required to read cookies."
+  },
+  "m_retry_8036af59": {
+    "message": "重试",
+    "description": "Retry"
+  },
+  "m_dismiss_message_df912220": {
+    "message": "关闭提示",
+    "description": "Dismiss message"
+  },
+  "m_site_data_actions_6b44a8f5": {
+    "message": "站点数据操作",
+    "description": "Site data actions"
+  },
+  "m_select_all_visible_rows_2f22967d": {
+    "message": "全选可见行",
+    "description": "Select all visible rows"
+  },
+  "m_sort_name_ascending_68daec8a": {
+    "message": "按名称升序排序",
+    "description": "Sort Name ascending"
+  },
+  "m_0_selected_326ec79c": {
+    "message": "已选中 0 项",
+    "description": "0 selected"
+  },
+  "m_delete_selected_97a78547": {
+    "message": "删除所选项",
+    "description": "Delete selected"
+  },
+  "m_selected_item_actions_93276b88": {
+    "message": "所选项操作",
+    "description": "Selected item actions"
+  },
+  "m_cookie_list_e8aca549": {
+    "message": "Cookie 列表",
+    "description": "Cookie list"
+  },
+  "m_select_a_cookie_21e3db4c": {
+    "message": "选择一个 cookie",
+    "description": "Select a cookie"
+  },
+  "m_favorite_item_639ee370": {
+    "message": "收藏项目",
+    "description": "Favorite item"
+  },
+  "m_choose_copy_format_c244c130": {
+    "message": "选择复制格式",
+    "description": "Choose copy format"
+  },
+  "m_copy_format_85aa5ff": {
+    "message": "复制格式",
+    "description": "Copy format"
+  },
+  "m_reset_ac8a560": {
+    "message": "重置",
+    "description": "Reset"
+  },
+  "m_save_4d2d5d68": {
+    "message": "保存",
+    "description": "Save"
+  },
+  "m_editor_actions_e49fe113": {
+    "message": "编辑器操作",
+    "description": "Editor actions"
+  },
+  "m_tools_950196fc": {
+    "message": "工具",
+    "description": "Tools"
+  },
+  "m_value_tools_462d8191": {
+    "message": "值工具",
+    "description": "Value tools"
+  },
+  "m_url_decode_21cf2a4c": {
+    "message": "URL 解码",
+    "description": "URL decode"
+  },
+  "m_url_encode_e1baee70": {
+    "message": "URL 编码",
+    "description": "URL encode"
+  },
+  "m_format_json_c6800e10": {
+    "message": "格式化 JSON",
+    "description": "Format JSON"
+  },
+  "m_compact_json_3e7be4cc": {
+    "message": "压缩 JSON",
+    "description": "Compact JSON"
+  },
+  "m_cookie_expiration_date_and_time_29a11076": {
+    "message": "Cookie 到期日期和时间",
+    "description": "Cookie expiration date and time"
+  },
+  "m_clear_the_time_to_use_a_session_cookie_cfc8ce4f": {
+    "message": "若要使用会话 Cookie，请将过期时间留空",
+    "description": "Clear the time to use a session cookie"
+  },
+  "m_cookie_editor_1dce6a00": {
+    "message": "Cookie 编辑器",
+    "description": "Cookie editor"
+  },
+  "m_operations_a78e754f": {
+    "message": "操作",
+    "description": "Operations"
+  },
+  "m_history_view_122e9250": {
+    "message": "历史记录视图",
+    "description": "History view"
+  },
+  "m_clear_4a57fc2": {
+    "message": "清除",
+    "description": "Clear"
+  },
+  "m_no_recent_changes_1ba3108": {
+    "message": "没有最近的更改",
+    "description": "No recent changes"
+  },
+  "m_no_operations_in_this_session_9f373445": {
+    "message": "本次会话中没有操作",
+    "description": "No operations in this session"
+  },
+  "m_close_cd86acc3": {
+    "message": "关闭",
+    "description": "Close"
+  },
+  "m_before_25a2cf5e": {
+    "message": "之前",
+    "description": "Before"
+  },
+  "m_after_a7dd3a69": {
+    "message": "之后",
+    "description": "After"
+  },
+  "m_recent_cookie_changes_948aeb99": {
+    "message": "cookie的最近更改",
+    "description": "Recent cookie changes"
+  },
+  "m_cookie_workspace_934f6bae": {
+    "message": "Cookie工作区",
+    "description": "Cookie workspace"
+  },
+  "m_delete_item_9112cfa6": {
+    "message": "删除该项目？",
+    "description": "Delete item?"
+  },
+  "m_selected_items_401a0220": {
+    "message": "已选项目",
+    "description": "Selected items"
+  },
+  "m_cancel_35afca3b": {
+    "message": "取消",
+    "description": "Cancel"
+  },
+  "m_enter_value_4f11af6c": {
+    "message": "输入值",
+    "description": "Enter value"
+  },
+  "m_continue_ab43d664": {
+    "message": "继续",
+    "description": "Continue"
+  },
+  "m_import_method_d6e65675": {
+    "message": "导入方式",
+    "description": "Import method"
+  },
+  "m_1_quick_entry_c1ce8719": {
+    "message": "$slot_1$ 快速输入",
+    "description": "$1 Quick entry",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_json_package_5fd092bc": {
+    "message": "$slot_1$ JSON 包",
+    "description": "$1 JSON package",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_1_netscape_curl_8c6f0afa": {
+    "message": "$slot_1$ Netscape / cURL",
+    "description": "$1 Netscape / cURL",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_add_9dc3aa14": {
+    "message": "添加",
+    "description": "Add"
+  },
+  "m_remove_cookie_row_2371fc81": {
+    "message": "删除 cookie 行",
+    "description": "Remove cookie row"
+  },
+  "m_cookies_only_domains_from_the_file_must_be_valid_7598760a": {
+    "message": "仅限 Cookies。文件中的域名必须对当前目标有效。",
+    "description": "Cookies only. Domains from the file must be valid for the current target."
+  },
+  "m_choose_file_7ccb86d6": {
+    "message": "选择文件",
+    "description": "Choose file"
+  },
+  "m_choose_or_drop_an_import_file_cb7cec54": {
+    "message": "选择或取消选择导入文件",
+    "description": "Choose or drop an import file"
+  },
+  "m_preview_fdda4cf7": {
+    "message": "预览",
+    "description": "Preview"
+  },
+  "m_change_source_389c45d2": {
+    "message": "更改源",
+    "description": "Change source"
+  },
+  "m_map_source_origin_to_current_target_b4c34739": {
+    "message": "将源位置映射到当前目标",
+    "description": "Map source origin to current target"
+  },
+  "m_conflicts_3e8a9594": {
+    "message": "冲突",
+    "description": "Conflicts"
+  },
+  "m_skip_c197c7e2": {
+    "message": "跳过",
+    "description": "Skip"
+  },
+  "m_add_only_fc8d6796": {
+    "message": "仅添加",
+    "description": "Add only"
+  },
+  "m_individual_4debea66": {
+    "message": "单个",
+    "description": "Individual"
+  },
+  "m_apply_selected_14d0d990": {
+    "message": "应用所选",
+    "description": "Apply selected"
+  },
+  "m_undo_batch_9db3f173": {
+    "message": "撤销批量操作",
+    "description": "Undo batch"
+  },
+  "m_import_another_33095ef7": {
+    "message": "导入另一个",
+    "description": "Import another"
+  },
+  "m_format_ffb0ff72": {
+    "message": "格式",
+    "description": "Format"
+  },
+  "m_export_format_918e82a6": {
+    "message": "导出格式",
+    "description": "Export format"
+  },
+  "m_export_scope_6080fad7": {
+    "message": "导出范围",
+    "description": "Export scope"
+  },
+  "m_current_view_cookies_b8f50c77": {
+    "message": "当前视图(Cookies)",
+    "description": "Current view(Cookies)"
+  },
+  "m_select_items_to_export_bbcae900": {
+    "message": "选择要导出的项目",
+    "description": "Select items to export"
+  },
+  "m_select_all_visible_90496e48": {
+    "message": "全选可见项",
+    "description": "Select all visible"
+  },
+  "m_filter_items_910b807f": {
+    "message": "筛选项目",
+    "description": "Filter items"
+  },
+  "m_filter_items_to_export_95e0b822": {
+    "message": "筛选要导出的项目",
+    "description": "Filter items to export"
+  },
+  "m_no_items_in_the_current_view_51e3b0f4": {
+    "message": "当前视图中没有项目",
+    "description": "No items in the current view"
+  },
+  "m_export_preview_33afc7c3": {
+    "message": "导出预览",
+    "description": "Export preview"
+  },
+  "m_saved_states_a5eae766": {
+    "message": "已保存的状态",
+    "description": "Saved states"
+  },
+  "m_how_saved_states_work_7efa7c25": {
+    "message": "已保存状态的工作原理",
+    "description": "How saved states work"
+  },
+  "m_0_saved_43d1ba2c": {
+    "message": "已保存 0 个",
+    "description": "0 saved"
+  },
+  "m_save_current_state_27cc8b68": {
+    "message": "保存当前状态",
+    "description": "Save current state"
+  },
+  "m_no_saved_states_3f60a5e1": {
+    "message": "没有已保存的状态",
+    "description": "No saved states"
+  },
+  "m_tags_76bda0c0": {
+    "message": "标签",
+    "description": "Tags"
+  },
+  "m_description_66de7a09": {
+    "message": "描述",
+    "description": "Description"
+  },
+  "m_capture_2fbb5e61": {
+    "message": "捕获范围",
+    "description": "Capture"
+  },
+  "m_current_view_d4b5b48f": {
+    "message": "当前视图",
+    "description": "Current view"
+  },
+  "m_default_conflicts_5dc68821": {
+    "message": "默认冲突处理",
+    "description": "Default conflicts"
+  },
+  "m_variables_7996f062": {
+    "message": "变量",
+    "description": "Variables"
+  },
+  "m_save_state_fb44729d": {
+    "message": "保存状态",
+    "description": "Save state"
+  },
+  "m_apply_saved_state_f8327dc5": {
+    "message": "应用保存的状态",
+    "description": "Apply saved state"
+  },
+  "m_map_saved_origin_to_current_target_367fc6c1": {
+    "message": "将保存的网站源映射到当前目标网站",
+    "description": "Map saved origin to current target"
+  },
+  "m_preview_changes_964c14fa": {
+    "message": "预览更改",
+    "description": "Preview changes"
+  },
+  "m_a_saved_state_keeps_a_reusable_set_of_cookies_lo_7feb125b": {
+    "message": "保存的状态会为某个站点保留一组可重用的 Cookies、Local Storage 和 Session Storage。",
+    "description": "A saved state keeps a reusable set of Cookies, Local Storage, and Session Storage for a site."
+  },
+  "m_save_the_current_state_166690d7": {
+    "message": "保存当前状态",
+    "description": "Save the current state"
+  },
+  "m_open_the_site_state_you_want_to_reuse_then_selec_5ce0052": {
+    "message": "打开您要重用的站点状态，然后选择 $slot_1$。",
+    "description": "Open the site state you want to reuse, then select $1.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_choose_the_capture_scope_the_current_data_view_s_529cd2f6": {
+    "message": "选择捕获范围：当前数据视图、所选项目或所有站点数据。",
+    "description": "Choose the capture scope: the current data view, selected items, or all site data."
+  },
+  "m_add_optional_variables_then_save_saved_states_st_dd227e3": {
+    "message": "添加可选变量，然后保存。已保存的状态将保留在此浏览器中，除非您将其导出。",
+    "description": "Add optional variables, then save. Saved states stay in this browser unless you export them."
+  },
+  "m_enter_one_captured_value_per_line_matching_value_22f4016": {
+    "message": "每行输入一个捕获的值。保存的数据中匹配的值将被变量替换。",
+    "description": "Enter one captured value per line. Matching values in the saved data are replaced with a variable."
+  },
+  "m_prefills_1_when_applying_the_saved_state_e33e2ad4": {
+    "message": "应用保存的状态时，将预填 $slot_1$。",
+    "description": "Prefills $1 when applying the saved state.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_asks_for_the_value_every_time_and_does_not_store_cb4d0df3": {
+    "message": "每次都会提示输入该值，且不会将 $slot_1$ 存储在保存的状态中。",
+    "description": "Asks for the value every time and does not store $1 in the saved state.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_apply_a_saved_state_504c0672": {
+    "message": "应用已保存的状态",
+    "description": "Apply a saved state"
+  },
+  "m_select_1_and_enter_any_requested_variables_c8ff81f6": {
+    "message": "选择 $slot_1$ 并输入所需的变量。",
+    "description": "Select $1 and enter any requested variables.",
+    "placeholders": {
+      "slot_1": {
+        "content": "$1"
+      }
+    }
+  },
+  "m_for_a_different_origin_explicitly_enable_origin__b4821030": {
+    "message": "若源不同，请显式启用源映射。",
+    "description": "For a different origin, explicitly enable origin mapping."
+  },
+  "m_preview_the_changes_and_conflict_handling_before_29ad5a": {
+    "message": "在应用更改前，请预览更改内容及冲突处理方案。",
+    "description": "Preview the changes and conflict handling before applying them."
+  },
+  "m_the_storage_change_could_not_be_verified_after_w_7a7ef6a4": {
+    "message": "写入后无法验证存储值。",
+    "description": "The storage change could not be verified after writing."
+  },
+  "m_the_storage_value_could_not_be_verified_after_sa_77c05f71": {
+    "message": "保存后无法验证存储值。",
+    "description": "The storage value could not be verified after saving."
+  },
+  "m_the_storage_item_could_not_be_verified_as_delete_6d3355a2": {
+    "message": "无法验证存储项是否已被删除。",
+    "description": "The storage item could not be verified as deleted."
+  },
+  "m_storage_is_unavailable_in_the_target_page_cee7872a": {
+    "message": "目标页面中无法使用存储功能。",
+    "description": "Storage is unavailable in the target page."
+  },
+  "extensionName": {
+    "message": "Cookie Controller",
+    "description": "Cookie Controller"
+  },
+  "extensionDescription": {
+    "message": "管理当前页面的 cookies、Local Storage 和 Session Storage。",
+    "description": "Manage cookies, Local Storage, and Session Storage for the current page."
+  },
+  "m_settings_4b058728": {
+    "message": "设置",
+    "description": "Settings"
+  },
+  "m_language_9a73db9b": {
+    "message": "语言",
+    "description": "Language"
+  },
+  "m_automatic_616a6784": {
+    "message": "自动",
+    "description": "Automatic"
+  },
+  "m_could_not_save_settings_please_try_again_960d71ae": {
+    "message": "无法保存设置。请重试。",
+    "description": "Could not save settings. Please try again."
+  },
+  "m_could_not_load_this_language_please_try_again_fe3d5f54": {
+    "message": "无法加载此语言。请重试。",
+    "description": "Could not load this language. Please try again."
+  },
+  "m_color_theme_5f51d6fd": {
+    "message": "配色方案",
+    "description": "Color theme"
+  },
+  "m_light_theme_f8e348fa": {
+    "message": "浅色主题",
+    "description": "Light theme"
+  },
+  "m_dark_theme_5a026490": {
+    "message": "深色主题",
+    "description": "Dark theme"
+  },
+  "m_allow_access_d2983970": {
+    "message": "允许访问",
+    "description": "Allow access"
+  }
+,
+  "m_site_access_is_required_to_read_this_site_s_data_acf058b1": {
+    "message": "读取此网站的数据需要网站访问权限。",
+    "description": "Site access is required to read this site's data."
+  }
+,
+  "m_allow_this_extension_to_read_this_site_s_data_a1c9bac0": {
+    "message": "允许此扩展读取此网站的数据吗？",
+    "description": "Allow this extension to read this site's data?"
+  },
+  "m_allow_site_data_access_75dd19dc": {
+    "message": "允许访问网站数据？",
+    "description": "Allow site data access?"
+  },
+  "m_back_c2954bc2": {
+    "message": "返回",
+    "description": "Back"
+  },
+  "m_cookies_local_storage_and_session_storage_data_s_e67cf99e": {
+    "message": "可读取 Cookie、Local Storage 和 Session Storage。数据仅在本机处理。",
+    "description": "Cookies, Local Storage, and Session Storage. Data stays on your device."
+  }
+}

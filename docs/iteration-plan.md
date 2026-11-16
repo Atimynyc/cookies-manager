@@ -326,7 +326,7 @@ Cookie 的 value 差异和属性差异应分开显示。JSON 类型 value 优先
 
 ## 8. v0.5.0：完整编辑与安全
 
-实现状态：未开始。当前列表可展示 HttpOnly、Secure、SameSite 和 Partitioned 等属性，编辑 value 或 expiration 时会尽量保留原 Cookie 属性，导入预览也会拦截部分明确无效的属性组合；高级属性编辑、敏感值统一保护和权限策略优化仍未实现。Manifest 当前仍使用全部 HTTP/HTTPS 站点权限。
+实现状态：部分完成。当前列表可展示 HttpOnly、Secure、SameSite 和 Partitioned 等属性，编辑 value 或 expiration 时会尽量保留原 Cookie 属性，导入预览也会拦截部分明确无效的属性组合；高级属性编辑和敏感值统一保护仍未实现。站点权限已改为可选权限，首次读取当前站点数据前由用户主动授权。
 
 ### 8.1 Cookie 高级编辑器
 
@@ -367,12 +367,9 @@ Cookie 的 value 差异和属性差异应分开显示。JSON 类型 value 优先
 
 ### 8.3 权限策略
 
-对以下两种模式进行技术验证后确定最终方案：
+当前采用按站点申请权限的模式：Manifest 声明 HTTP/HTTPS 可选主机权限，用户点击“允许访问”后才读取当前站点的 Cookie 和网页存储。已授权站点的权限由 Chrome 持久保存，用户可以在扩展管理页撤销。
 
-1. 默认按站点申请权限，用户可主动开启全部站点权限。
-2. 保留全部 HTTP/HTTPS 权限，但增加首次使用说明和当前站点访问状态。
-
-推荐优先验证第一种模式。验收范围包括：
+验收范围包括：
 
 - Popup 首次打开当前站点。
 - Side Panel 持续打开后切换页面。
