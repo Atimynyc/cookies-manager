@@ -18,7 +18,7 @@ The extension uses chrome.storage.local to store interface preferences, automati
 
 Justification for scripting
 
-The extension uses chrome.scripting.executeScript to run fixed functions bundled with the extension in the user-selected tab. These functions read, create, update, and remove Local Storage and Session Storage entries for that page. Injection occurs only when the user opens the extension and performs a related action. The extension does not download, generate, or execute remote code.
+The extension directly calls chrome.scripting.executeScript in src/shared/storage-api.js to run the bundled operateStorageInPage function in the user-selected tab. These functions read, create, update, and remove Local Storage and Session Storage entries for that page. To reproduce, approve site access, click Local or Session, and use Import > Quick entry or edit an existing entry. Injection occurs only when the user opens the extension and performs a related action. The extension does not download, generate, or execute remote code.
 
 Justification for sidePanel
 

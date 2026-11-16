@@ -1,7 +1,5 @@
-Please reconsider the Purple Potassium rejection of Cookie Controller v0.3.6. The scripting permission is used to read and modify the selected website's Local Storage and Session Storage.
+Please review Cookie Controller v0.3.7 for Purple Potassium. This update replaces the generic API wrapper with a direct chrome.scripting.executeScript({...}) call in src/shared/storage-api.js. The scripting permission is required to read, create, edit and delete the selected website's Local Storage and Session Storage. chrome.storage only manages extension data and cannot provide this functionality.
 
-In src/shared/storage-api.js, executeStorageOperation invokes callChrome("scripting.executeScript", ...). src/shared/chrome-call.js resolves this to chrome.scripting.executeScript. The bundled operateStorageInPage function accesses the page's localStorage/sessionStorage; chrome.storage cannot manage website storage.
+To verify: open https://example.com, open Cookie Controller and approve site access, then choose Local or Session. Use Import > Quick entry to add a key/value, edit and save it, then delete it. Check that tab's DevTools > Application to confirm the changes.
 
-To verify: open https://example.com, open the extension, approve site access, then click Local or Session. Use Import > Quick entry to add a key/value, edit and save it, then delete it. Verify changes in that tab's DevTools > Application.
-
-Execution is limited to the user-selected, authorized site. All functions are packaged locally; no remote code is used.
+Only bundled functions execute on the user-selected, authorized site. No remote code is downloaded or executed.

@@ -1,6 +1,5 @@
 import { t } from "./i18n.js";
 import { isSupportedPageUrl } from "./url.js";
-import { callChrome } from "./chrome-call.js";
 
 const STORAGE_TYPES = new Set(["local", "session"]);
 
@@ -46,7 +45,7 @@ export async function compareAndSetStorageItem(tabId, url, type, key, expected, 
 async function executeStorageOperation(tabId, url, type, action, key = "", value = "", expected = null) {
   assertStorageRequest(tabId, url, type);
   const expectedOrigin = new URL(url).origin;
-  const injections = await callChrome("scripting.executeScript", {
+  const injections = await chrome.scripting.executeScript({
     target: { tabId },
     func: operateStorageInPage,
     args: [type, expectedOrigin, action, key, value, expected]

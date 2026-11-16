@@ -2,37 +2,37 @@ Cookie Controller
 
 Short description
 
-Manage cookies and web storage for the current page.
+View, edit, import, and export cookies, Local Storage, and Session Storage.
 
 Detailed description
 
-Cookie Controller is a site data management tool for developers, testers, and advanced users. It lets you inspect and manage cookies, Local Storage, and Session Storage for the current page from a popup or the Chrome side panel, without opening the full developer tools.
+Manage website cookies, Local Storage, and Session Storage in one place. Cookie Controller helps developers, testers, and advanced users inspect and change site data from a popup or the Chrome side panel, without opening DevTools.
+Source code: https://github.com/Atimynyc/cookies-manager
 
 Main features
 
-- View cookies for the current page and quickly search by name, value, domain, or path.
-- Edit an individual cookie value while preserving its domain, path, expiration, SameSite, Secure, and HttpOnly attributes.
-- Create or delete cookies, delete multiple selected cookies, and set values in batches.
-- View, create, edit, and remove Local Storage and Session Storage entries.
-- Favorite frequently used cookies and Local/Session Storage entries so they stay at the top of each list.
-- Switch the management target between HTTP/HTTPS tabs in the current browser window.
-- Export the current view, selected items, or all site data as a versioned JSON package, then import it with a difference preview, conflict controls, per-item results, and batch undo.
-- Import and export Cookies in the common Netscape/cURL cookie-jar format, including cURL HttpOnly and session-cookie conventions. SameSite, Partitioned/CHIPS, and Cookie store metadata remain available through JSON packages only.
-- Save reusable site profiles locally with tags, origin rules, default conflict behavior, and apply-time variables; rename, duplicate, export, apply, or delete them.
-- Quickly import one or more Cookies with separate Name and Value fields; Storage supports key=value for one-off imports.
-- Copy a cookie value, a name=value pair, or structured JSON with one action.
-- Use built-in URL encode/decode, JSON format/compact, and JWT payload decoding tools.
-- Save reusable site states with tags, origin rules, apply-time variables, rename, duplicate, export, apply, and delete actions.
-- Review recent changes and before/after differences, and undo changes during the current browser session.
-- Optionally reload the page automatically after a change.
-- Use the extension from either its popup or the Chrome side panel.
+- Search cookies by name, value, domain, or path; create or delete entries, delete selected cookies, and set values in batches.
+- Edit cookie values or expiration times while preserving domain, path, SameSite, Secure, and HttpOnly attributes.
+- View, create, edit, and delete Local Storage and Session Storage entries for the selected website.
+- Export the current view, selected items, or all site data as a versioned JSON package. Import with a difference preview, conflict strategies, and per-item results.
+- Import and export cookies in Netscape/cURL cookie-jar format, including HttpOnly and session cookies.
+- Quickly import cookies with separate Name and Value fields, or add a storage entry with key=value. Copy values, name=value pairs, or structured JSON.
+- Save reusable site states locally with tags, origin rules, default conflict strategies, and variables supplied when applying a state. Rename, duplicate, export, apply, or delete saved states.
+- Pin favorite cookies and storage entries to the top of their lists.
+- Review recent changes, inspect before/after differences, retry failed operations, and undo supported changes during the current browser session.
+- Switch between HTTP/HTTPS tabs in the current window and optionally reload the target page after changes.
+- Use URL encoding/decoding, JSON formatting/compacting, and JWT payload decoding tools while editing values.
+- Choose a light or dark theme for the popup and side panel.
+- Use the interface in nine languages: English, Simplified Chinese, Traditional Chinese, Spanish, Brazilian Portuguese, German, French, Japanese, and Romanian.
 
 Privacy
 
-Cookie Controller contains no advertising, analytics, or user tracking and does not require an account. Cookies and web storage data accessed by the extension are processed only on the user's device. They are not uploaded, sold, or shared with the developer or third-party servers. Interface preferences, favorite site-data identifiers (which do not contain cookie or storage values), site profiles explicitly saved by the user, and recent change records are stored in the browser's local extension storage and can be removed by clearing the extension data or uninstalling the extension. Complete batch-undo snapshots remain only in browser-session storage.
+No ads, analytics, user tracking, or account required. Site data is processed on your device; the extension does not upload, sell, or share it with the developer or third-party servers. Preferences, site-access confirmations, favorite identifiers (without cookie or storage values), saved states, and history summaries remain in local extension storage. Saved states can contain the cookie and storage values you explicitly choose to save. Full before/after values and operation recovery data are retained only for the current browser session and are cleared when Chrome restarts or the extension reloads. Locally saved extension data can be removed by clearing the extension data or uninstalling the extension.
 
 Usage notes
 
-The extension accesses data for a selected website only when the user opens and operates it. Cookies and web storage can contain sensitive information such as sign-in state, so use the extension only on trusted devices and protect any exported data.
+Open an HTTP/HTTPS page, open Cookie Controller, and approve access to the selected site when prompted. Choose Cookies, Local Storage, or Session Storage to begin. Website access is required to read and change that site's data and can be revoked in Chrome's extension settings. Operations you start may finish after you close the popup or side panel.
 
-The JWT tool decodes the payload for inspection only. It does not verify signatures or determine whether a token is trustworthy or valid. Full value snapshots required for difference viewing and undo are kept only in memory for the current browser session.
+Netscape/cURL handles cookies only. Use JSON to preserve web storage and cookie metadata such as SameSite, Partitioned/CHIPS, and cookie store information.
+The JWT tool only decodes the payload; it does not verify signatures or establish token validity.
+Cookies and web storage may contain sign-in information or other sensitive values. Use trusted devices and protect copied or exported data.

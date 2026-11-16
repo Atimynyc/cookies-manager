@@ -23,6 +23,7 @@ const favoritesOnly = process.argv.includes("--favorites-only");
 const v030Only = process.argv.includes("--v030-only");
 const selectionOnly = process.argv.includes("--selection-only");
 const siteAccessOnly = process.argv.includes("--site-access-only");
+const storageOnly = process.argv.includes("--storage-only");
 const jwt =
   "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VyIjoiZGV2Iiwicm9sZXMiOlsicWEiXX0.";
 
@@ -71,6 +72,10 @@ try {
   await assertValueTypeIndicators(popup);
   if (siteAccessOnly) {
     console.log("site access: modal, cancel, retry, denial, consent persistence, and narrow layout verified");
+  } else if (storageOnly) {
+    await assertLocalStorageFlow(popup, testPage, runId);
+    await assertSessionStorageFlow(popup, testPage, runId);
+    console.log("storage: native scripting API reads, edits, imports, exports, deletes, and Local Storage undo verified against page data");
   } else if (selectionOnly) {
     await assertLargeCookieSelectionStaysLocal(popup, context, baseUrl);
   } else if (favoritesOnly) {

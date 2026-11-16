@@ -66,7 +66,7 @@ test("Storage operations return verified page values and detect rejected mutatio
 
 test("Storage rejects an absent injection result instead of reporting success", async (t) => {
   mockBrowser(t);
-  chrome.scripting.executeScript = (_details, callback) => callback([]);
+  chrome.scripting.executeScript = async () => [];
   await assert.rejects(setStorageValue(11, ORIGINAL_TAB.url, "local", "key", "new"), /verified result/);
   await assert.rejects(removeStorageItem(11, ORIGINAL_TAB.url, "session", "key"), /verified result/);
 });

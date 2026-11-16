@@ -18,7 +18,7 @@ Cookie Controller 的唯一用途是在用户明确选择的网页上查看和�
 
 需请求 scripting 的理由
 
-插件需要使用 chrome.scripting.executeScript 在用户所选标签页中执行随扩展包一同发布的固定函数，以读取、添加、修改和删除该页面的 Local Storage 与 Session Storage 数据。注入操作只在用户打开插件并执行相关操作时发生。插件不下载、不生成也不执行任何远程代码。
+插件在 src/shared/storage-api.js 中直接调用 chrome.scripting.executeScript，在用户所选标签页执行随扩展包发布的 operateStorageInPage 函数，以读取、添加、修改和删除该页面的 Local Storage 与 Session Storage 数据。复现方式：批准站点访问权限，点击 Local 或 Session，再通过 Import > Quick entry 新增数据，或编辑已有条目。注入操作只在用户打开插件并执行相关操作时发生。插件不下载、不生成也不执行任何远程代码。
 
 需请求 sidePanel 的理由
 

@@ -1,88 +1,72 @@
+| **English ✓** | [简体中文](docs/readme/README.zh-CN.md) | [繁體中文](docs/readme/README.zh-TW.md) | [Español](docs/readme/README.es.md) | [Português (Brasil)](docs/readme/README.pt-BR.md) | [Deutsch](docs/readme/README.de.md) | [Français](docs/readme/README.fr.md) | [日本語](docs/readme/README.ja.md) | [Română](docs/readme/README.ro.md) |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 
-# ![](assets/icon-48.png) cookies-manager
-Cookie Controller is a site data management tool for developers, testers, and advanced users. It lets you inspect and manage cookies, Local Storage, and Session Storage for the current page from a popup or the Chrome side panel, without opening the full developer tools.
+# ![](assets/icon-48.png) Cookie Controller
 
-Main features
+Manage cookies, Local Storage, and Session Storage for the website you choose, from a popup or the Chrome side panel. Built for developers, testers, and advanced users who want to inspect and change site data without opening DevTools.
 
-- View cookies for the current page and quickly search by name, value, domain, or path.
-- Favorite frequently used cookies and Local/Session Storage entries so they stay at the top of each list.
-- Edit an individual cookie value or expiration time while preserving its domain, path, SameSite, Secure, and HttpOnly attributes.
-- Create or delete cookies, delete multiple selected cookies, and set values in batches.
-- View, create, edit, and remove Local Storage and Session Storage entries.
-- Switch the management target between HTTP/HTTPS tabs in the current browser window.
-- Open export directly above the data list, preview the generated content, then export the current view, selected items, or all site data as a versioned JSON package to the clipboard or a file.
-- Open import directly above the data list and choose quick entry, a JSON package, or Netscape/cURL; package imports include per-item selection, conflict strategies, progress, exact failures, and batch undo.
-- Import and export Cookies in the common Netscape/cURL cookie-jar format, including cURL's `#HttpOnly_` convention and session cookies.
-- Open Saved States directly above the data list and save reusable site states locally, including tags, origin rules, default conflict behavior, and apply-time variables; rename, duplicate, export, apply, or delete them.
-- Quickly import one or more Cookies with separate Name and Value fields; Storage keeps the lightweight key=value entry point.
-- Copy a cookie value, a name=value pair, or structured JSON with one action.
-- Use built-in URL encode/decode, JSON format/compact, and JWT payload decoding tools.
-- Review recent changes and before/after differences, and undo changes during the current browser session.
-- Optionally reload the page automatically after a change.
-- Use the extension from either its popup or the Chrome side panel.
+## Get started
 
-Open the gear button at the top right for Settings. On first install, the extension selects and saves a supported language based on Chrome's language, falling back to English if none matches. The language list contains English, Simplified Chinese, Traditional Chinese, Spanish, Brazilian Portuguese, German, French, Japanese, and Romanian. Romanian browser locales, including `ro-RO` and `ro-MD`, select Romanian. You can change this saved choice at any time. Click the sun/moon button to switch themes: sun means light, moon means dark. Regular mode defaults to light and incognito mode defaults to dark; each mode remembers its own choice independently of the operating system. Choices are saved locally and synchronize across open extension surfaces in the same mode; language changes preserve editor drafts. All translations ship with the extension and work offline.
+1. Install [Cookie Controller from the Chrome Web Store](https://chromewebstore.google.com/detail/cookie-controller/hmfnocennjjcieebhojphobilohcdfda).
+2. Open an HTTP/HTTPS page and click the extension icon.
+3. Approve access to the selected website when prompted, then choose Cookies, Local Storage, or Session Storage.
+4. Search, edit, import, or export data. Open the side panel for a larger workspace, or enable automatic page reload after changes.
 
-Cookie Controller 是一款面向开发者、测试人员和高级用户的站点数据管理工具。它可以在弹出窗口或 Chrome 侧边栏中查看和管理当前网页的 Cookie、Local Storage 与 Session Storage，无需打开完整的开发者工具。
+For local installation, clone this repository, open `chrome://extensions`, enable Developer mode, and use Load unpacked to select the repository folder containing `manifest.json`. The extension runs directly from the included files; no build step is required.
 
-主要功能
+## Features
 
-- 查看当前网页的 Cookie，并按名称、值、域名或路径快速搜索。
-- 修改单个 Cookie 的值或过期时间，同时保留其域名、路径、SameSite、Secure 和 HttpOnly 等属性。
-- 新增、删除或批量删除 Cookie，并为多个选中项批量设置值。
-- 查看、添加、修改和删除 Local Storage 与 Session Storage 数据。
-- 在当前浏览器窗口的多个 HTTP/HTTPS 标签页之间快速切换管理目标。
-- 从数据列表上方直接打开导出，先预览生成内容，再将当前视图、选中项或全部站点数据导出为带版本号的 JSON 数据包，并复制到剪贴板或保存为文件。
-- 从数据列表上方直接打开导入，并选择快速输入、JSON 数据包或 Netscape/cURL；数据包导入支持逐项选择、冲突策略、进度、精确失败原因和整批撤销。
-- 以常用的 Netscape/cURL cookie jar 格式导入和导出 Cookie，支持 cURL 的 `#HttpOnly_` 约定和会话 Cookie。
-- 从数据列表上方直接打开 Saved States（已保存状态），在浏览器本地保存可复用的站点状态，支持标签、Origin 规则、默认冲突策略、应用时变量，以及重命名、复制、导出、应用和删除。
-- 使用独立的 Name 与 Value 输入框快速导入一条或多条 Cookie；Storage 继续保留轻量的 key=value 入口。
-- 一键复制 Cookie 值、name=value 键值对或结构化 JSON。
-- 内置 URL 编码与解码、JSON 格式化与压缩、JWT Payload 解码工具。
-- 查看最近的修改记录和修改前后差异，并在当前操作会话中撤销变更。
-- 可选自动刷新页面，让修改后的站点状态立即生效。
-- 同时支持扩展弹出窗口和 Chrome 侧边栏模式。
+- Search cookies by name, value, domain, or path.
+- The editor preserves each cookie's domain, path, SameSite, Secure, and HttpOnly attributes when you change its value or expiration time.
+- Create and delete cookies, delete selected items, and set values in batches.
+- View, create, edit, and delete Local Storage and Session Storage entries.
+- Favorite HTTP cookies and web storage entries appear at the top of each data list.
+- Preview exports and save the current view, selected items, or all site data as a versioned JSON package, to a file or the clipboard. Import with a difference preview, per-item selection, conflict strategies, progress, results, and batch undo.
+- Import and export cookies in Netscape/cURL cookie-jar format, including the `#HttpOnly_` convention and session cookies.
+- Save reusable site states locally with tags, origin rules, default conflict strategies, and variables entered when applying a state. Rename, duplicate, export, apply, or delete saved states.
+- Quickly import cookies using separate Name and Value fields, or add a storage entry with `key=value`. Copy values, `name=value` pairs, or structured JSON.
+- Use URL encoding/decoding, JSON formatting/compacting, and JWT payload decoding tools while editing values.
+- Inspect recent changes and before/after differences, retry failed operations, and undo supported changes during the current browser session.
+- Switch the target between HTTP/HTTPS tabs in the current browser window.
 
-点击右上角齿轮打开设置。首次安装时会按 Chrome 的语言自动选择并保存合适的语言，未匹配时默认英语。语言列表包含英语、简体中文、繁体中文、西班牙语、巴西葡萄牙语、德语、法语、日语和罗马尼亚语，可随时手动更改。罗马尼亚语浏览器（包括 `ro-RO`、`ro-MD`）会自动选中罗马尼亚语，也可手动选择 Română。点击太阳/月亮按钮切换皮肤：太阳表示白色，月亮表示黑色。普通模式默认白色，隐私模式默认黑色，两种模式分别记住自己的选择，不跟随系统外观。选择会保存在本地并同步到同模式下已打开的扩展界面，切换语言不会清空编辑草稿。翻译随扩展打包，使用时无需连接翻译服务。
+The Netscape/cURL format handles only cookies. It does not preserve the SameSite attribute, Partitioned/CHIPS partition information, or the Chrome cookie store identifier. Use JSON packages to preserve these attributes and web storage.
 
-Development
+## Languages and themes
 
-- Run `npm run lint` for undefined JavaScript identifier checks.
-- Run `npm test` for the unit-test baseline covering parsing, identifiers, package validation, conflicts, batch results, favorites, and recent-change normalization.
-- Run `npm run test:locales` for source coverage, catalog keys, placeholders, and store text length checks.
-- Run `npm run test:locales:browser` for all nine languages and English fallback, including manual language/theme settings, preference persistence, cross-surface updates, draft preservation, literal Cookie/Storage data, editing, import/export, and a 380px side panel. Screenshots and results are saved in `output/playwright/locales/`.
-- Run `npm run test:theme:browser` for sun/moon switching, independent regular/incognito defaults and saved choices, native incognito action popup reopening, synchronization, keyboard controls, and save failure rollback. Screenshots and results are saved in `output/playwright/themes/`.
-- Run `npm run test:acceptance` for the full Chrome extension workflow.
-- Run `npm run test:acceptance:v032` for target isolation, editor drafts, history undo, and Saved States capacity regressions.
-- Run `npm run test:acceptance:v033` for operation recovery, worker interruption, concurrent writes, retry, undo conflicts, and result views.
-- Run `npm run test:acceptance:v030` for the focused data-package and saved-state workflow.
-- The versioned site data interchange contract is documented in `docs/site-data-package-v1.md`.
-- Translation maintenance is documented in [docs/localization.md](docs/localization.md).
-- Acceptance screenshots are written to `.tmp/` by default. Set `ACCEPTANCE_ARTIFACT_DIR` to choose another artifact directory for the full workflow.
+The interface supports English, Simplified Chinese, Traditional Chinese, Spanish, Brazilian Portuguese, German, French, Japanese, and Romanian. All translations are bundled with the extension and work offline.
 
-v0.3.6 release preparation
+On first use, a supported language is selected from Chrome's language and saved; unmatched languages fall back to English. Romanian locales such as `ro-RO` and `ro-MD` select Romanian. Change the language at any time using the settings button; switching languages preserves editor drafts.
 
-- Manifest version is `0.3.6` and the supported Chrome baseline is version 114 or newer.
-- Upload `release/cookie-controller-0.3.6.zip`; package details are in [v0.3.6 release notes](docs/release-notes-v0.3.6.md).
-- The upload package contains only `manifest.json`, `assets/`, `src/`, and `_locales/`; release checks exclude tests, scripts, docs, temporary files, and dependencies.
-- Chrome Web Store copy and four 1280×800 feature images are in `store-assets/`.
-- Localized store copy is available in `store-assets/store-listing-{locale}.txt`. The existing feature images use English.
+Use the sun/moon button to switch between light and dark themes. Regular mode defaults to light and incognito mode defaults to dark. Each mode remembers its choice independently of the operating system, and preferences synchronize across open extension windows in the same mode.
 
-v0.3.3 operation reliability
+## Privacy and data control
 
-- Edits, deletions and imports share a background operation journal. Accepted tasks survive closing the extension surface; worker restarts reconcile interrupted writes before continuing.
-- History > Operations retains batch results and per-item errors, supports retrying failed items and conflict-checked undo, and lets you remove completed records.
-- Storage checks the expected value inside the target page before writing. Cookie operations verify identity and attributes before and after writing; Chrome does not provide atomic Cookie compare-and-set.
-- Favorites and Saved States use coordinated incremental updates across extension surfaces. Journal capacity errors reject new writes without removing older records.
-- Full values and recovery data stay in browser session storage. Restarting the browser or reloading the extension ends that recovery session; local summaries remain available. Older history entries without a complete operation journal are view-only.
-- Implementation details and verification: [v0.3.3 release notes](docs/release-notes-v0.3.3.md).
+No ads, analytics, user tracking, or account required. Site data is processed on your device and is not uploaded, sold, or shared with the developer or third-party servers. Website access is requested for the site you select and can be revoked in Chrome's extension settings. Operations you start may finish after closing the popup or side panel.
 
-v0.3.2 stability
+Preferences, site-access confirmations, favorite identifiers (without item values), saved states, and history summaries remain in local extension storage. Saved states can contain the cookie and storage values you explicitly choose to save. Full before/after values and operation recovery data remain only for the current browser session; restarting Chrome or reloading the extension clears them. Clear extension data or uninstall the extension to remove locally saved extension data.
 
-- Site-data mutations keep their original tab, origin, browsing mode, and Cookie store. Storage checks the actual page origin inside the injected operation.
-- History undo is available only for a verified target; Session Storage additionally requires its original tab. Older snapshots without target metadata remain viewable but cannot be undone.
-- Unsaved value and expiration drafts stay in the open extension surface when switching items, views, sites, or refreshing. External changes require confirmation before overwriting. Drafts are not persisted after closing that surface.
-- Saved States reject additions beyond 50 without deleting existing states; older collections above the limit remain readable and manageable. Storage quota failures preserve existing data and provide an actionable error.
-- Reset updates the complete editor state. Error messages remain visible until dismissed or replaced.
+Cookies and web storage may contain sign-in information or other sensitive values. Protect copied and exported data. The JWT tool displays the Base64URL-decoded payload for inspection only. It does not verify signatures or check whether an authentication token is trustworthy or valid. Read the [privacy policy](docs/privacy-policy.html) for details.
 
-Netscape/cURL import and export is Cookie-only. The format cannot represent SameSite, Partitioned/CHIPS, or the Chrome Cookie store, so use the JSON package when those attributes or web storage must round-trip without loss.
+## Software development
+
+Install the development dependencies and run the checks from the repository root:
+
+```sh
+npm install
+npm run lint
+npm test
+npm run test:locales
+npm run test:acceptance -- --storage-only
+```
+
+The last command tests reading and changing a website's Local Storage and Session Storage data in Chromium. See the [development and release reference (English)](docs/development.md) for the full browser test commands, output locations, and operation reliability details.
+
+## Release and documentation
+
+Current version: **0.3.7**. Requires **Chrome 114 or newer**.
+
+- [v0.3.7 release notes](docs/release-notes-v0.3.7.md)
+- [Localization maintenance](docs/localization.md)
+- [Versioned site data package format](docs/site-data-package-v1.md)
+- [Store descriptions and promotional images for the Chrome Web Store](store-assets/)
+- [Report an issue](https://github.com/Atimynyc/cookies-manager/issues)

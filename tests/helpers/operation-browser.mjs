@@ -135,7 +135,7 @@ export function installOperationBrowser(t, { tabs = [
       }
     },
     scripting: {
-      executeScript(details, callback) {
+      async executeScript(details) {
         env.beforeStorageScript?.(details);
         const tab = env.tabs.get(details.target.tabId);
         const origin = env.origins.get(tab.id) || new URL(tab.url).origin;
@@ -148,7 +148,7 @@ export function installOperationBrowser(t, { tabs = [
           recordWrite({ kind: `storage-${details.args[2]}`, tabId: tab.id, type: details.args[0],
             origin, key: details.args[3], args: structuredClone(details.args) });
         }
-        callback([{ result: structuredClone(result) }]);
+        return [{ result: structuredClone(result) }];
       }
     },
     storage: { local: storageArea(env.localData), session: storageArea(env.sessionData) }
