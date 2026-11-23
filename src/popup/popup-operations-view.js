@@ -10,7 +10,7 @@ const STATE_LABELS = {
   get undoing() { return t("Undoing"); }, get undone() { return t("Undone"); }, get "undo-failed"() { return t("Undo failed"); }, get "undo-conflict"() { return t("Undo conflict"); }
 };
 
-export function createOperationsView({ state, loadRecentChanges, refreshData, setBusy, showStatus, requestDeleteConfirmation }) {
+export function createOperationsView({ state, clearHistoryDetail, renderHistory, loadRecentChanges, refreshData, setBusy, showStatus, requestDeleteConfirmation }) {
   const list = document.querySelector("#operationList");
   const empty = document.querySelector("#operationsEmpty");
   const changesButton = document.querySelector("#changesTabButton");
@@ -35,9 +35,9 @@ export function createOperationsView({ state, loadRecentChanges, refreshData, se
 
   function switchMode(mode) {
     state.historyMode = mode;
-    document.querySelector("#historyDetail").hidden = true;
+    clearHistoryDetail();
+    renderHistory();
     void loadRecentChanges();
-    render();
   }
 
   function render() {

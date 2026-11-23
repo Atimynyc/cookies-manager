@@ -41,7 +41,9 @@ Utiliza el botón del sol/la luna para cambiar entre los temas claro y oscuro. E
 
 ## Privacidad y control de datos
 
-Sin anuncios, análisis, seguimiento de usuarios ni necesidad de crear una cuenta. Los datos del sitio se procesan en tu dispositivo y no se suben, venden ni comparten con el desarrollador ni con servidores de terceros. Se solicita acceso al sitio web que selecciones, y este acceso puede revocarse en la configuración de la extensión Chrome. Las operaciones que inicies pueden finalizar tras cerrar la ventana emergente o el panel lateral.
+Sin anuncios, análisis, seguimiento de usuarios ni necesidad de crear una cuenta. Los datos del sitio se procesan en tu dispositivo y no se suben, venden ni comparten con el desarrollador ni con servidores de terceros. De forma predeterminada, se solicita acceso a cada sitio por separado; puedes revocarlo en la configuración de la extensión en Chrome. Las operaciones que inicies pueden finalizar tras cerrar la ventana emergente o el panel lateral.
+
+Puedes activar **Permitir todos los sitios** en la configuración o en el diálogo de acceso al sitio para solicitar acceso a las cookies, localStorage y sessionStorage de todos los sitios HTTP/HTTPS que visites. Una vez que Chrome conceda este permiso, los sitios nuevos ya no necesitarán confirmación individual. Desactiva el interruptor para volver a autorizar cada sitio por separado.
 
 Las preferencias, las confirmaciones de acceso a sitios web, los identificadores de favoritos (sin los valores de los elementos), los estados guardados y los resúmenes del historial permanecen en el almacenamiento local de la extensión. Los estados guardados pueden contener los valores de las cookies y del almacenamiento que elijas guardar explícitamente. Los valores completos «antes» y «después», así como los datos de recuperación de operaciones, solo se conservan durante la sesión actual del navegador; al reiniciar Chrome o al recargar la extensión, se borran. Borra los datos de la extensión o desinstálala para eliminar los datos guardados localmente.
 
@@ -63,9 +65,9 @@ El último comando comprueba la lectura y la modificación de los datos Local St
 
 ## Lanzamiento y documentación
 
-Versión actual: **0.3.7**. Requiere **Chrome 114 o una versión posterior**.
+Versión actual: **0.3.9**. Requiere **Chrome 114 o una versión posterior**.
 
-- [Notas de la versión v0.3.7](../../docs/release-notes-v0.3.7.md)
+- [Notas de la versión v0.3.9](../../docs/release-notes-v0.3.9.md)
 - [Mantenimiento de la localización](../../docs/localization.md)
 - [Formato del paquete de datos del sitio con versiones](../../docs/site-data-package-v1.md)
 - [Descripciones de la tienda e imágenes promocionales de la tienda web Chrome](../../store-assets/)

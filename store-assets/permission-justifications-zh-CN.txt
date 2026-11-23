@@ -26,7 +26,7 @@ Cookie Controller 的唯一用途是在用户明确选择的网页上查看和�
 
 需请求主机权限的理由
 
-插件声明 http://*/* 和 https://*/* 为可选主机权限，以便用户只为其主动选择的 HTTP 或 HTTPS 网站授予访问权限。chrome.cookies API 访问 Cookie 以及 chrome.scripting.executeScript 访问网页存储都要求具备与目标网站匹配的主机权限。用户点击读取当前站点数据后，插件才会申请并访问该站点；插件不会在后台批量扫描网站，数据不会传输到外部服务器。
+插件声明 http://*/* 和 https://*/* 为可选主机权限。默认逐站申请访问权限；Cookie 读取包括所选主机及各级父域主机的 HTTP、HTTPS 权限。用户可以在设置或站点授权弹框中主动开启“允许所有网站”，授权读取所访问的所有 HTTP/HTTPS 网站的 Cookie、Local Storage 和 Session Storage。关闭开关会撤销通配主机权限并恢复逐站授权。chrome.cookies API 访问 Cookie 以及 chrome.scripting.executeScript 访问网页存储都要求具备与目标网站匹配的主机权限。数据仍在用户打开和操作插件时按所选页面读取，插件不会在后台批量扫描网站，数据不会传输到外部服务器。
 
 远程代码声明
 

@@ -34,7 +34,7 @@ test("history disables Undo during reads and writes while retaining target restr
   });
   globalThis.document = { createElement: makeElement };
   const elements = Object.fromEntries([
-    "historyList", "historyEmpty", "clearHistoryButton", "historyCountBadge", "historyViewButton", "historyDetail"
+    "historyPanel", "historyList", "historyEmpty", "clearHistoryButton", "historyCountBadge", "historyViewButton", "historyDetail"
   ].map((name) => [name, makeElement()]));
   elements.historyDetail.hidden = true;
   const tab = { id: 11, url: "https://example.test/", incognito: false };

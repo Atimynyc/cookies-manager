@@ -41,7 +41,9 @@ Use o botão do sol/lua para alternar entre os temas claro e escuro. O modo norm
 
 ## Privacidade e controle de dados
 
-Sem anúncios, análises, rastreamento de usuários nem necessidade de criar uma conta. Os dados do site são processados no seu dispositivo e não são enviados, vendidos nem compartilhados com o desenvolvedor ou com servidores de terceiros. O acesso ao site é solicitado para o site que você selecionar e pode ser revogado nas configurações da extensão Chrome. As operações iniciadas por você podem ser concluídas após o fechamento da janela pop-up ou do painel lateral.
+Sem anúncios, análises, rastreamento de usuários nem necessidade de criar uma conta. Os dados do site são processados no seu dispositivo e não são enviados, vendidos nem compartilhados com o desenvolvedor ou com servidores de terceiros. Por padrão, o acesso é solicitado para cada site separadamente e pode ser revogado nas configurações da extensão no Chrome. As operações iniciadas por você podem ser concluídas após o fechamento da janela pop-up ou do painel lateral.
+
+Você pode ativar **Permitir todos os sites** nas configurações ou na caixa de diálogo de acesso ao site para solicitar acesso a cookies, localStorage e sessionStorage em todos os sites HTTP/HTTPS que visitar. Depois que o Chrome aprovar essa permissão, novos sites não precisarão de confirmação individual. Desative a opção para voltar a autorizar cada site separadamente.
 
 Preferências, confirmações de acesso a sites, identificadores de favoritos (sem valores dos itens), estados salvos e resumos do histórico permanecem no armazenamento local da extensão. Os estados salvos podem conter os valores de cookies e de armazenamento que você optar explicitamente por salvar. Os valores completos de antes e depois e os dados de recuperação de operações permanecem apenas durante a sessão atual do navegador; reiniciar o Chrome ou recarregar a extensão os apaga. Limpe os dados da extensão ou desinstale-a para remover os dados salvos localmente.
 
@@ -63,9 +65,9 @@ O último comando testa a leitura e a alteração dos dados Local Storage e Sess
 
 ## Lançamento e documentação
 
-Versão atual: **0.3.7**. Requer **Chrome 114 ou mais recente**.
+Versão atual: **0.3.9**. Requer **Chrome 114 ou mais recente**.
 
-- [Notas de lançamento da versão v0.3.7](../../docs/release-notes-v0.3.7.md)
+- [Notas de lançamento da versão v0.3.9](../../docs/release-notes-v0.3.9.md)
 - [Manutenção da localização](../../docs/localization.md)
 - [Formato do pacote de dados do site com controle de versão](../../docs/site-data-package-v1.md)
 - [Descrições da loja e imagens promocionais da loja virtual Chrome](../../store-assets/)

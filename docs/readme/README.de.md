@@ -41,7 +41,9 @@ Verwenden Sie die Sonne-/Mond-Schaltfläche, um zwischen hellem und dunklem Desi
 
 ## Datenschutz und Datenkontrolle
 
-Keine Werbung, keine Analysen, kein Nutzer-Tracking und kein Konto erforderlich. Die Daten der Website werden auf Ihrem Gerät verarbeitet und werden weder hochgeladen noch verkauft oder an den Entwickler oder Server von Drittanbietern weitergegeben. Der Zugriff auf die von Ihnen ausgewählte Website wird angefordert und kann in den Erweiterungseinstellungen von Chrome widerrufen werden. Von Ihnen gestartete Vorgänge werden möglicherweise nach dem Schließen des Popups oder des Seitenpanels abgeschlossen.
+Keine Werbung, keine Analysen, kein Nutzer-Tracking und kein Konto erforderlich. Die Daten der Website werden auf Ihrem Gerät verarbeitet und werden weder hochgeladen noch verkauft oder an den Entwickler oder Server von Drittanbietern weitergegeben. Standardmäßig wird der Zugriff für jede Website einzeln angefordert und kann in den Erweiterungseinstellungen von Chrome widerrufen werden. Von Ihnen gestartete Vorgänge werden möglicherweise nach dem Schließen des Popups oder des Seitenpanels abgeschlossen.
+
+Sie können **Alle Websites zulassen** in den Einstellungen oder im Dialog für den Website-Zugriff aktivieren, um Zugriff auf Cookies, localStorage und sessionStorage auf allen von Ihnen besuchten HTTP/HTTPS-Websites anzufordern. Sobald Chrome diese Berechtigung erteilt, ist bei neuen Websites keine einzelne Bestätigung mehr nötig. Deaktivieren Sie den Schalter, um wieder jede Website einzeln zu autorisieren.
 
 Einstellungen, Bestätigungen für den Zugriff auf Websites, Favoriten-Kennungen (ohne Elementwerte), gespeicherte Zustände und Verlaufsübersichten verbleiben im lokalen Speicher der Erweiterung. Gespeicherte Zustände können die Cookie- und Speicherdaten enthalten, die Sie ausdrücklich zum Speichern ausgewählt haben. Vollständige Vorher-/Nachher-Werte und Daten zur Wiederherstellung von Vorgängen bleiben nur für die aktuelle Browsersitzung erhalten; ein Neustart von Chrome oder das Neuladen der Erweiterung löscht sie. Löschen Sie die Erweiterungsdaten oder deinstallieren Sie die Erweiterung, um lokal gespeicherte Erweiterungsdaten zu entfernen.
 
@@ -63,9 +65,9 @@ Der letzte Befehl dient zum Testen des Lesens und Änderns der Daten „Local St
 
 ## Veröffentlichung und Dokumentation
 
-Aktuelle Version: **0.3.7**. Erfordert **Chrome 114 oder neuer**.
+Aktuelle Version: **0.3.9**. Erfordert **Chrome 114 oder neuer**.
 
-- [Versionshinweise zu v0.3.7](../../docs/release-notes-v0.3.7.md)
+- [Versionshinweise zu v0.3.9](../../docs/release-notes-v0.3.9.md)
 - [Pflege der Lokalisierung](../../docs/localization.md)
 - [Format für versionierte Website-Datenpakete](../../docs/site-data-package-v1.md)
 - [Produktbeschreibungen und Werbebilder für den Chrome-Webshop](../../store-assets/)

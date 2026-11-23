@@ -5,6 +5,8 @@
     "test:locales": "node scripts/verify-locales.mjs",
     "test:locales:browser": "node scripts/acceptance-locales.mjs",
     "test:theme:browser": "node scripts/acceptance-theme.mjs",
+    "test:cookie-permissions": "node scripts/acceptance-cookie-permissions.mjs",
+    "test:all-sites": "node scripts/acceptance-all-sites-access.mjs",
     "test": "node --test --test-isolation=none tests/unit/*.test.mjs",
     "test:acceptance": "node scripts/acceptance-extension.mjs",
     "test:acceptance:v030": "node scripts/acceptance-extension.mjs --v030-only",

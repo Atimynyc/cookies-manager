@@ -71,7 +71,7 @@ try {
   await assertPopupListsSeededCookies(popup);
   await assertValueTypeIndicators(popup);
   if (siteAccessOnly) {
-    console.log("site access: modal, cancel, retry, denial, consent persistence, and narrow layout verified");
+    console.log("site access: modal, cancel, retry, denial, consent persistence after popup closure, and narrow layout verified");
   } else if (storageOnly) {
     await assertLocalStorageFlow(popup, testPage, runId);
     await assertSessionStorageFlow(popup, testPage, runId);
@@ -318,9 +318,15 @@ async function assertSiteAccessFlow(popup, browserContext, site, baseUrl) {
   await popup.locator("#siteAccessDialogAllowButton").click();
   await popup.locator("#siteAccessDialogError").waitFor({ state: "visible" });
   assert.deepEqual(await readCounts(), { cookies: 0, storage: 0 }, "Rejected host permission must not trigger reads");
-  assert.deepEqual(await popup.evaluate(async () => (await chrome.storage.local.get("siteAccessConsents")).siteAccessConsents || []), []);
+  assert.equal(await popup.evaluate(async (url) => {
+    const { hasSiteAccessConsent } = await import(chrome.runtime.getURL("src/shared/settings-store.js"));
+    return hasSiteAccessConsent(url);
+  }, baseUrl), false);
   await popup.evaluate(() => { chrome.permissions.request = globalThis.originalSiteAccessRequest; });
   await popup.locator("#siteAccessDialogAllowButton").click();
+  await popup.waitForFunction(() => document.querySelector("#cookieTableBody tr")
+    || !document.querySelector("#siteAccessDialogError").hidden);
+  assert.equal(await popup.locator("#siteAccessDialogError").isVisible(), false, await popup.locator("#siteAccessDialogError").textContent());
   await popup.waitForSelector("#cookieTableBody tr");
   assert.equal(await popup.locator("#siteAccessDialog").isVisible(), false);
   assert.ok((await readCounts()).cookies > 0);
@@ -333,10 +339,13 @@ async function assertSiteAccessFlow(popup, browserContext, site, baseUrl) {
   await popup.waitForFunction(() => document.body.dataset.view === "localStorage" && document.querySelector("#loadingState").hidden);
   assert.ok((await readCounts()).storage > 0);
 
-  await popup.evaluate(async () => {
-    await chrome.storage.local.remove("siteAccessConsents");
+  await assertSiteAccessSurvivesPopupClosure(popup, browserContext, site, baseUrl);
+
+  await popup.evaluate(async (url) => {
+    const { revokeSiteAccessConsent } = await import(chrome.runtime.getURL("src/shared/settings-store.js"));
+    await revokeSiteAccessConsent(url);
     await chrome.storage.local.set({ uiLanguage: "zh_CN" });
-  });
+  }, baseUrl);
   const popupUrl = popup.url();
   await site.bringToFront();
   await popup.goto(`${popupUrl.split("?")[0]}?surface=sidepanel`);
@@ -366,6 +375,53 @@ async function assertSiteAccessFlow(popup, browserContext, site, baseUrl) {
   await popup.waitForFunction(() => document.body.dataset.view === "cookies" && document.querySelector("#loadingState").hidden
     && [...document.querySelectorAll(".name-cell-text")].some(element => element.textContent === "plain"));
   assert.ok((await browserContext.cookies(baseUrl)).length > 0);
+}
+
+async function assertSiteAccessSurvivesPopupClosure(popup, browserContext, site, baseUrl) {
+  await popup.evaluate(async (url) => {
+    const { revokeSiteAccessConsent } = await import(chrome.runtime.getURL("src/shared/settings-store.js"));
+    await revokeSiteAccessConsent(url);
+  }, baseUrl);
+  await site.bringToFront();
+  await popup.reload();
+  await popup.waitForFunction(() => document.querySelector("#siteAccessDialog").open && document.querySelector("#loadingState").hidden);
+  const cdp = await browserContext.newCDPSession(site);
+  try {
+    await popup.evaluate(() => {
+      const sendMessage = chrome.runtime.sendMessage.bind(chrome.runtime);
+      chrome.runtime.sendMessage = (message, callback) => {
+        if (message.channel !== "site-access-consent") return sendMessage(message, callback);
+        Object.defineProperty(chrome.runtime, "lastError", { configurable: true, value: {
+          message: "The message port closed before a response was received."
+        } });
+        try { callback(); } finally { delete chrome.runtime.lastError; }
+      };
+      const set = chrome.storage.local.set.bind(chrome.storage.local);
+      chrome.storage.local.set = (values, callback) => set(values, () => {
+        if (Object.keys(values).some((key) => key.startsWith("siteAccessConsent:"))) {
+          globalThis.siteAccessConfirmationSaved = true;
+          return; // Drop the callback as if the native prompt destroyed the requesting document.
+        }
+        callback?.();
+      });
+      chrome.permissions.request = () => { globalThis.nativeSiteAccessPromptOpened = true; };
+    });
+    await popup.locator("#siteAccessDialogAllowButton").click();
+    await popup.waitForFunction(() => globalThis.nativeSiteAccessPromptOpened && globalThis.siteAccessConfirmationSaved);
+    assert.deepEqual(await popup.evaluate(() => globalThis.siteAccessReadCounts), { cookies: 0, storage: 0 });
+    const popupUrl = popup.url();
+    await popup.goto("about:blank");
+    await cdp.send("ServiceWorker.enable");
+    await cdp.send("ServiceWorker.stopAllWorkers");
+    await site.bringToFront();
+    await popup.goto(popupUrl);
+    await popup.waitForFunction(() => !document.querySelector("#siteAccessDialog").open && document.querySelector("#loadingState").hidden);
+    assert.equal(await popup.locator("#siteAccessDialog").isVisible(), false, "Returning from browser approval must not require another Allow click");
+    await popup.locator("#cookiesViewButton").click();
+    await popup.waitForSelector("#cookieTableBody tr");
+  } finally {
+    await cdp.detach();
+  }
 }
 
 async function assertSiteIcon(popup) {

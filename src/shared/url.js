@@ -39,6 +39,23 @@ export function getOriginPermissionPattern(value) {
   return `${url.protocol}//${url.hostname}/*`;
 }
 
+export function getSiteCookiePermissionPatterns(value) {
+  const url = parseHttpUrl(value);
+  if (!url) return [];
+
+  const host = url.hostname;
+  const hosts = [host];
+  // Cookie API checks a cookie's own domain and its secure flag, rather than
+  // just the selected page URL. Use exact ancestor hosts, never sibling wildcards.
+  if (!host.startsWith("[") && !/^\d+(?:\.\d+){3}$/.test(host)) {
+    const labels = host.split(".");
+    for (let index = 1; index < labels.length - 1; index += 1) {
+      hosts.push(labels.slice(index).join("."));
+    }
+  }
+  return hosts.flatMap((domain) => [`http://${domain}/*`, `https://${domain}/*`]);
+}
+
 export function getCookieScopedUrl(cookie, fallbackUrl) {
   const fallback = parseHttpUrl(fallbackUrl);
   const protocol = cookie.secure ? "https:" : fallback?.protocol || "https:";

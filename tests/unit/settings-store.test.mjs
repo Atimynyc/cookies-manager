@@ -5,11 +5,13 @@ import {
   FAVORITE_SITE_DATA_IDS_KEY,
   SITE_ACCESS_CONSENTS_KEY,
   getSiteAccessConsents,
+  getSiteAccessConsentStorageKey,
   getFavoriteSiteDataIds,
   getLastViewedSiteData,
   getLastViewedSiteDataStorageKey,
   grantSiteAccessConsent,
   hasSiteAccessConsent,
+  revokeSiteAccessConsent,
   saveLastViewedSiteData,
   savePreferences,
   setFavoriteSiteDataId
@@ -101,11 +103,41 @@ test("site access consent is scoped to origins and written idempotently", async 
   assert.equal(await hasSiteAccessConsent("https://other.example.com/account"), false);
   assert.equal(await hasSiteAccessConsent("chrome://extensions"), false);
   assert.deepEqual(await grantSiteAccessConsent("https://example.com/settings"), true);
-  assert.equal(storage.writes, 0);
+  assert.equal(await hasSiteAccessConsent("https://example.com/another"), true);
 
   await grantSiteAccessConsent("https://other.example.com/settings");
   assert.deepEqual(await getSiteAccessConsents(), ["https://example.com", "https://other.example.com"]);
-  assert.equal(storage.writes, 1);
+  assert.deepEqual(storage.data[SITE_ACCESS_CONSENTS_KEY], ["https://example.com"], "Older confirmation records stay readable without rewriting their shared array");
+  assert.equal(storage.data[getSiteAccessConsentStorageKey("https://other.example.com")], true);
+});
+
+test("revoking site consent preserves other origins and concurrent confirmations", async (t) => {
+  const storage = installStorage(t, {
+    [SITE_ACCESS_CONSENTS_KEY]: ["https://example.com", "https://retained.example.com"]
+  });
+  await Promise.all([
+    revokeSiteAccessConsent("https://example.com/account"),
+    grantSiteAccessConsent("https://new.example.com/account")
+  ]);
+  assert.deepEqual(await getSiteAccessConsents(), ["https://retained.example.com", "https://new.example.com"]);
+  await revokeSiteAccessConsent("https://example.com");
+  assert.equal(await hasSiteAccessConsent("https://example.com"), false, "Revocation overrides an older array entry");
+  const writes = storage.writes;
+  assert.equal(await revokeSiteAccessConsent("chrome://extensions"), false);
+  assert.equal(storage.writes, writes);
+});
+
+test("simultaneous site confirmations from separate surfaces retain both origins without a worker or lock", async (t) => {
+  const storage = installStorage(t);
+  const otherSurface = await import("../../src/shared/settings-store.js?consent=sidepanel");
+  await Promise.all([
+    grantSiteAccessConsent("https://first.example.com/account"),
+    otherSurface.grantSiteAccessConsent("https://second.example.com/account")
+  ]);
+  assert.equal(await hasSiteAccessConsent("https://first.example.com"), true);
+  assert.equal(await hasSiteAccessConsent("https://second.example.com"), true);
+  assert.equal(await hasSiteAccessConsent("https://third.example.com"), false);
+  assert.equal(storage.lockRequests.length, 0);
 });
 
 test("last-viewed patches from different views preserve each selected item", async (t) => {

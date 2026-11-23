@@ -17,6 +17,8 @@ export function createHistoryView({
 
     const visibleChanges = getVisibleRecentChanges();
     updateHistoryBadge(syncUnreadHistory(visibleChanges));
+    // Preserve the shared detail when its old row is replaced while it is hidden.
+    elements.historyPanel.append(elements.historyDetail);
     elements.historyList.replaceChildren(...visibleChanges.map(createHistoryItem));
     elements.historyList.hidden = visibleChanges.length === 0;
     elements.historyEmpty.hidden = visibleChanges.length > 0;

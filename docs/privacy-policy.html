@@ -341,7 +341,7 @@
     <article id="zh-CN" class="language-section" lang="zh-CN">
       <div class="language-heading">
         <h2>隐私权政策</h2>
-        <p class="updated">生效及最后更新日期：2026 年 9 月 3 日</p>
+        <p class="updated">生效及最后更新日期：2026 年 11 月 23 日</p>
       </div>
 
       <p class="summary">Cookie Controller 在用户设备本地处理站点数据，不运营数据收集服务器，不包含广告、统计分析或用户跟踪功能，也不会出售或共享用户数据。</p>
@@ -421,7 +421,7 @@
           <li><strong>storage：</strong>在浏览器本地保存界面偏好、收藏标识、站点数据读取确认记录、用户创建的站点配置组和最近修改记录，并在当前浏览器会话内临时保存修改前后值。</li>
           <li><strong>scripting：</strong>在用户所选标签页运行扩展包内置函数，以管理 Local Storage 和 Session Storage。</li>
           <li><strong>sidePanel：</strong>在 Chrome 侧边栏中提供同一套站点数据管理界面。</li>
-          <li><strong>HTTP/HTTPS 可选主机权限：</strong>用户点击读取当前站点数据后，扩展才会申请对应站点的访问权限，并据此使用 Cookie 和网页存储管理功能。</li>
+          <li><strong>HTTP/HTTPS 可选主机权限：</strong>默认逐站申请访问权限；Cookie 读取范围包括所选主机及各级父域主机的 HTTP、HTTPS 权限。用户也可以在设置或站点授权弹框中主动开启“允许所有网站”，一次批准访问所访问的所有 HTTP/HTTPS 网站的 Cookie、Local Storage 和 Session Storage。关闭该开关会撤销所有网站权限并恢复逐站授权，浏览器可能要求重新批准此前授权的网站。数据仍仅在用户打开和操作扩展时按所选页面读取，不会在后台批量扫描网站。</li>
         </ul>
         <p>扩展不下载或执行远程代码。所有 JavaScript 均包含在提交至 Chrome Web Store 的扩展包中。</p>
       </section>
@@ -457,7 +457,7 @@
     <article id="en" class="language-section" lang="en">
       <div class="language-heading">
         <h2>Privacy Policy</h2>
-        <p class="updated">Effective and last updated: September 3, 2026</p>
+        <p class="updated">Effective and last updated: November 23, 2026</p>
       </div>
 
       <p class="summary">Cookie Controller processes site data locally on the user's device. It operates no data collection server, contains no advertising, analytics, or user tracking, and does not sell or share user data.</p>
@@ -537,7 +537,7 @@
           <li><strong>storage:</strong> save interface preferences, favorite identifiers, site-data read-consent records, user-created site profiles, and recent change records in local browser storage, and temporarily retain before-and-after values during the current browser session.</li>
           <li><strong>scripting:</strong> run bundled extension functions in the user-selected tab to manage Local Storage and Session Storage.</li>
           <li><strong>sidePanel:</strong> provide the same site data management interface in the Chrome side panel.</li>
-          <li><strong>HTTP/HTTPS optional host permissions:</strong> after a user chooses to read the current site, the extension requests access for that site before managing its cookies and web storage.</li>
+          <li><strong>HTTP/HTTPS optional host permissions:</strong> access is requested per site by default. Cookie access covers HTTP and HTTPS for the selected hostname and its exact parent hostnames. Users can opt into “Allow all sites” in Settings or the site-access dialog to approve access to cookies, Local Storage, and Session Storage on all HTTP/HTTPS sites they visit. Turning it off revokes all-sites permissions and restores per-site authorization; Chrome may require previously approved sites to be authorized again. Data is still read for the selected page while the user opens and operates the extension; websites are not scanned in the background.</li>
         </ul>
         <p>The extension does not download or execute remote code. All JavaScript is included in the extension package submitted to the Chrome Web Store.</p>
       </section>

@@ -2897,5 +2897,45 @@
   "m_cookies_local_storage_and_session_storage_data_s_e67cf99e": {
     "message": "Cookies, Local Storage și Session Storage. Datele rămân pe dispozitivul dumneavoastră.",
     "description": "Cookies, Local Storage, and Session Storage. Data stays on your device."
+  },
+  "m_allow_all_sites_e185055": {
+    "message": "Permite toate site-urile",
+    "description": "Allow all sites"
+  },
+  "m_read_cookies_localstorage_and_sessionstorage_on__c407371a": {
+    "message": "Citește cookie-urile, localStorage și sessionStorage pe toate site-urile HTTP/HTTPS pe care le vizitezi.",
+    "description": "Read cookies, localStorage, and sessionStorage on all HTTP/HTTPS sites you visit."
+  },
+  "m_turn_off_to_ask_for_access_on_new_sites_17515563": {
+    "message": "Dezactivează pentru a solicita acces pe site-uri noi.",
+    "description": "Turn off to ask for access on new sites."
+  },
+  "m_all_sites_access_was_not_allowed_67d3bba5": {
+    "message": "Accesul la toate site-urile nu a fost permis.",
+    "description": "All-sites access was not allowed."
+  },
+  "m_allow_access_to_all_websites_76b07a19": {
+    "message": "Permiți accesul la toate site-urile?",
+    "description": "Allow access to all websites?"
+  },
+  "m_this_allows_the_extension_to_read_cookies_locals_f00af916": {
+    "message": "Aceasta permite extensiei să citească cookie-uri, localStorage și sessionStorage pe fiecare site HTTP/HTTPS pe care îl vizitezi.",
+    "description": "This allows the extension to read cookies, localStorage, and sessionStorage on every HTTP/HTTPS website you visit."
+  },
+  "m_you_can_turn_off_all_sites_access_in_settings_at_a03628ea": {
+    "message": "Poți dezactiva oricând accesul la toate site-urile din setări.",
+    "description": "You can turn off all-sites access in Settings at any time."
+  },
+  "m_confirm_and_allow_all_sites_24edbd4c": {
+    "message": "Confirmă și permite toate site-urile",
+    "description": "Confirm and allow all sites"
+  },
+  "m_allow_access_all_sites_b839ef03": {
+    "message": "Permite accesul la toate site-urile",
+    "description": "Allow access all sites"
+  },
+  "m_read_cookies_localstorage_and_sessionstorage_on__6823d6d4": {
+    "message": "Citește cookie-urile, localStorage și sessionStorage pe toate site-urile HTTP/HTTPS pe care le vizitezi. Dezactivează pentru a solicita acces pe site-uri noi.",
+    "description": "Read cookies, localStorage, and sessionStorage on all HTTP/HTTPS sites you visit. Turn off to ask for access on new sites."
   }
 }

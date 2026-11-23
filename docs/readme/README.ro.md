@@ -41,7 +41,9 @@ Folosește butonul cu soarele/luna pentru a comuta între temele deschisă și �
 
 ## Confidențialitate și controlul datelor
 
-Fără reclame, analize, urmărirea utilizatorilor sau conturi. Datele site-ului sunt procesate pe dispozitivul tău și nu sunt încărcate, vândute sau partajate cu dezvoltatorul sau cu servere ale unor terțe părți. Se solicită accesul la site-ul pe care îl selectezi, iar acest acces poate fi revocat din setările extensiei Chrome. Operațiunile pe care le inițiezi se pot finaliza după închiderea ferestrei pop-up sau a panoului lateral.
+Fără reclame, analize, urmărirea utilizatorilor sau conturi. Datele site-ului sunt procesate pe dispozitivul tău și nu sunt încărcate, vândute sau partajate cu dezvoltatorul sau cu servere ale unor terțe părți. În mod implicit, accesul este solicitat separat pentru fiecare site și poate fi revocat din setările extensiei în Chrome. Operațiunile pe care le inițiezi se pot finaliza după închiderea ferestrei pop-up sau a panoului lateral.
+
+Poți activa **Permite toate site-urile** din setări sau din dialogul de acces la site pentru a solicita acces la cookie-uri, localStorage și sessionStorage pe toate site-urile HTTP/HTTPS pe care le vizitezi. După aprobarea acestei permisiuni în Chrome, site-urile noi nu mai necesită confirmare individuală. Dezactivează opțiunea pentru a reveni la autorizarea separată a fiecărui site.
 
 Preferințele, confirmările de acces la site-uri, identificatorii favoritelor (fără valorile elementelor), stările salvate și rezumatele istoricului rămân în memoria locală a extensiei. Stările salvate pot conține valorile cookie-urilor și ale memoriei pe care alegeți în mod explicit să le salvați. Valorile complete „înainte/după” și datele de recuperare a operațiunilor rămân doar pe durata sesiunii curente a browserului; repornirea Chrome sau reîncărcarea extensiei le șterge. Ștergeți datele extensiei sau dezinstalați extensia pentru a elimina datele extensiei salvate local.
 
@@ -63,9 +65,9 @@ Ultima comandă testează citirea și modificarea datelor Local Storage și Sess
 
 ## Lansare și documentație
 
-Versiunea actuală: **0.3.7**. Necesită **Chrome 114 sau o versiune mai recentă**.
+Versiunea actuală: **0.3.9**. Necesită **Chrome 114 sau o versiune mai recentă**.
 
-- [Note de lansare v0.3.7](../../docs/release-notes-v0.3.7.md)
+- [Note de lansare v0.3.9](../../docs/release-notes-v0.3.9.md)
 - [Întreținerea localizării](../../docs/localization.md)
 - [Formatul pachetului de date al site-ului cu versiuni](../../docs/site-data-package-v1.md)
 - [Descrieri ale produselor și imagini promoționale pentru magazinul online Chrome](../../store-assets/)

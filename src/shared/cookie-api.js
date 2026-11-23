@@ -1,6 +1,12 @@
 import { t } from "./i18n.js";
-import { getCookieScopedUrl, getOriginPermissionPattern, isSupportedPageUrl } from "./url.js";
+import { getCookieScopedUrl, getSiteCookiePermissionPatterns, isSupportedPageUrl } from "./url.js";
 import { callChrome } from "./chrome-call.js";
+
+export const ALL_SITES_PERMISSION_ORIGINS = Object.freeze(["http://*/*", "https://*/*"]);
+
+export async function hasAllSitesPermission() {
+  return callChrome("permissions.contains", { origins: [...ALL_SITES_PERMISSION_ORIGINS] });
+}
 
 export async function getActiveTab() {
   const tabs = await callChrome("tabs.query", {
@@ -175,23 +181,23 @@ export function watchCookieChanges(callback) {
 }
 
 export async function hasSitePermission(url) {
-  const origin = getOriginPermissionPattern(url);
-  if (!origin) {
+  const origins = getSiteCookiePermissionPatterns(url);
+  if (!origins.length) {
     return false;
   }
 
   return callChrome("permissions.contains", {
-    origins: [origin]
+    origins
   });
 }
 
 export async function requestSitePermission(url) {
-  const origin = getOriginPermissionPattern(url);
-  if (!origin) {
+  const origins = getSiteCookiePermissionPatterns(url);
+  if (!origins.length) {
     return false;
   }
 
   return callChrome("permissions.request", {
-    origins: [origin]
+    origins
   });
 }

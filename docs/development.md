@@ -11,6 +11,7 @@ Detailed engineering and release notes shared by the localized READMEs. Commands
 - Run `npm run test:locales` for source coverage, catalog keys, placeholders, and store text length checks.
 - Run `npm run test:locales:browser` for all nine languages and English fallback, including manual language/theme settings, preference persistence, cross-surface updates, draft preservation, literal Cookie/Storage data, editing, import/export, and a 380px side panel. Screenshots and results are saved in `output/playwright/locales/`.
 - Run `npm run test:theme:browser` for sun/moon switching, independent regular/incognito defaults and saved choices, native incognito action popup reopening, synchronization, keyboard controls, and save failure rollback. Screenshots and results are saved in `output/playwright/themes/`.
+- Run `npm run test:all-sites` for the settings switch and two-step site-dialog confirmation, denied requests, Cookie/Local/Session reads on new sites, persistence, cross-surface synchronization, and browser permission removal. Screenshots and results are saved in `output/playwright/all-sites-access/`; Chrome's native permission prompt is not automated.
 - Run `npm run test:acceptance` for the full Chrome extension workflow.
 - Run `npm run test:acceptance -- --storage-only` for native scripting API coverage of website Local Storage and Session Storage workflows.
 - Run `npm run test:acceptance:v032` for target isolation, editor drafts, history undo, and Saved States capacity regressions.
@@ -20,10 +21,10 @@ Detailed engineering and release notes shared by the localized READMEs. Commands
 - Translation maintenance is documented in [localization.md](localization.md).
 - Acceptance screenshots are written to `.tmp/` by default. Set `ACCEPTANCE_ARTIFACT_DIR` to choose another artifact directory for the full workflow.
 
-## v0.3.7 release preparation
+## v0.3.9 release preparation
 
-- Manifest version is `0.3.7` and the supported Chrome baseline is version 114 or newer.
-- Upload `release/cookie-controller-0.3.7.zip`; package details are in [v0.3.7 release notes](release-notes-v0.3.7.md).
+- Manifest version is `0.3.9` and the supported Chrome baseline is version 114 or newer.
+- Upload `release/cookie-controller-0.3.9.zip`; package details are in [v0.3.9 release notes](release-notes-v0.3.9.md).
 - The upload package contains only `manifest.json`, `assets/`, `src/`, and `_locales/`; release checks exclude tests, scripts, docs, temporary files, and dependencies.
 - Chrome Web Store copy and four 1280×800 feature images are in `store-assets/`.
 - Localized store copy is available in `store-assets/store-listing-{locale}.txt`. The existing feature images use English.

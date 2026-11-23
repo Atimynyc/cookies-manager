@@ -26,7 +26,7 @@ The extension uses the chrome.sidePanel API to open the same site data managemen
 
 Justification for host permissions
 
-The extension declares http://*/* and https://*/* as optional host permissions so users can grant access only to the HTTP or HTTPS websites they explicitly select. Access through the chrome.cookies API and chrome.scripting.executeScript requires host permission matching the target website. The extension asks for the current site's access when the user chooses to read its data, and does not scan websites in the background. No site data is transmitted to an external server.
+The extension declares http://*/* and https://*/* as optional host permissions. By default, access is requested per site; Cookie access includes HTTP and HTTPS for the selected hostname and its exact parent hostnames. Users may explicitly enable “Allow all sites” in Settings or the site-access dialog to grant access to cookies, Local Storage, and Session Storage on all HTTP/HTTPS sites they visit. Turning the switch off revokes the wildcard grants and restores per-site authorization. Access through the chrome.cookies API and chrome.scripting.executeScript requires host permission matching the target website. Data access remains scoped to the selected page while the user opens and operates the extension; it does not scan websites in the background. No site data is transmitted to an external server.
 
 Remote code declaration
 

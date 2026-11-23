@@ -41,7 +41,9 @@ Utilisez le bouton « Soleil/Lune » pour basculer entre les thèmes clair et fo
 
 ## Confidentialité et contrôle des données
 
-Pas de publicités, d'analyses, de suivi des utilisateurs ni de compte requis. Les données du site sont traitées sur votre appareil et ne sont ni transmises, ni vendues, ni partagées avec le développeur ou des serveurs tiers. L'accès au site web est demandé pour le site que vous sélectionnez et peut être révoqué dans les paramètres de l'extension Chrome. Les opérations que vous lancez peuvent se terminer après la fermeture de la fenêtre contextuelle ou du panneau latéral.
+Pas de publicités, d'analyses, de suivi des utilisateurs ni de compte requis. Les données du site sont traitées sur votre appareil et ne sont ni transmises, ni vendues, ni partagées avec le développeur ou des serveurs tiers. Par défaut, l’accès est demandé séparément pour chaque site et peut être révoqué dans les paramètres de l’extension dans Chrome. Les opérations que vous lancez peuvent se terminer après la fermeture de la fenêtre contextuelle ou du panneau latéral.
+
+Vous pouvez activer **Autoriser tous les sites** dans les paramètres ou la boîte de dialogue d’accès au site pour demander l’accès aux cookies, à localStorage et à sessionStorage sur tous les sites HTTP/HTTPS que vous consultez. Une fois cette autorisation accordée par Chrome, les nouveaux sites ne nécessitent plus de confirmation individuelle. Désactivez cette option pour revenir à une autorisation séparée pour chaque site.
 
 Les préférences, les confirmations d'accès au site, les identifiants des favoris (sans les valeurs associées), les états enregistrés et les résumés de l'historique sont conservés dans le stockage local de l'extension. Les états enregistrés peuvent contenir les valeurs des cookies et du stockage que vous choisissez explicitement d'enregistrer. Les valeurs complètes « avant/après » et les données de récupération des opérations ne sont conservées que pendant la session de navigation en cours ; le redémarrage de Chrome ou le rafraîchissement de l’extension les efface. Effacez les données de l’extension ou désinstallez-la pour supprimer les données enregistrées localement.
 
@@ -63,9 +65,9 @@ La dernière commande permet de tester la lecture et la modification des donnée
 
 ## Version et documentation
 
-Version actuelle : **0.3.7**. Nécessite **Chrome 114 ou une version plus récente**.
+Version actuelle : **0.3.9**. Nécessite **Chrome 114 ou une version plus récente**.
 
-- [Notes de mise à jour v0.3.7](../../docs/release-notes-v0.3.7.md)
+- [Notes de mise à jour v0.3.9](../../docs/release-notes-v0.3.9.md)
 - [Maintenance de la localisation](../../docs/localization.md)
 - [Format de pack de données de site avec gestion des versions](../../docs/site-data-package-v1.md)
 - [Descriptions des produits et images promotionnelles de la boutique en ligne Chrome](../../store-assets/)

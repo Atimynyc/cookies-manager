@@ -2877,13 +2877,11 @@
   "m_allow_access_d2983970": {
     "message": "Zugriff erlauben",
     "description": "Allow access"
-  }
-,
+  },
   "m_site_access_is_required_to_read_this_site_s_data_acf058b1": {
     "message": "Zum Lesen der Daten dieser Website ist Websitezugriff erforderlich.",
     "description": "Site access is required to read this site's data."
-  }
-,
+  },
   "m_allow_this_extension_to_read_this_site_s_data_a1c9bac0": {
     "message": "Darf diese Erweiterung die Daten dieser Website lesen?",
     "description": "Allow this extension to read this site's data?"
@@ -2899,5 +2897,45 @@
   "m_cookies_local_storage_and_session_storage_data_s_e67cf99e": {
     "message": "Cookies, Local Storage und Session Storage. Die Daten bleiben auf Ihrem Gerät.",
     "description": "Cookies, Local Storage, and Session Storage. Data stays on your device."
+  },
+  "m_allow_all_sites_e185055": {
+    "message": "Alle Websites zulassen",
+    "description": "Allow all sites"
+  },
+  "m_read_cookies_localstorage_and_sessionstorage_on__c407371a": {
+    "message": "Cookies, localStorage und sessionStorage auf allen besuchten HTTP/HTTPS-Websites lesen.",
+    "description": "Read cookies, localStorage, and sessionStorage on all HTTP/HTTPS sites you visit."
+  },
+  "m_turn_off_to_ask_for_access_on_new_sites_17515563": {
+    "message": "Deaktivieren, um bei neuen Websites nach Zugriff zu fragen.",
+    "description": "Turn off to ask for access on new sites."
+  },
+  "m_all_sites_access_was_not_allowed_67d3bba5": {
+    "message": "Der Zugriff auf alle Websites wurde nicht erlaubt.",
+    "description": "All-sites access was not allowed."
+  },
+  "m_allow_access_to_all_websites_76b07a19": {
+    "message": "Zugriff auf alle Websites erlauben?",
+    "description": "Allow access to all websites?"
+  },
+  "m_this_allows_the_extension_to_read_cookies_locals_f00af916": {
+    "message": "Dadurch kann die Erweiterung Cookies, localStorage und sessionStorage auf jeder von Ihnen besuchten HTTP/HTTPS-Website lesen.",
+    "description": "This allows the extension to read cookies, localStorage, and sessionStorage on every HTTP/HTTPS website you visit."
+  },
+  "m_you_can_turn_off_all_sites_access_in_settings_at_a03628ea": {
+    "message": "Sie können den Zugriff auf alle Websites jederzeit in den Einstellungen deaktivieren.",
+    "description": "You can turn off all-sites access in Settings at any time."
+  },
+  "m_confirm_and_allow_all_sites_24edbd4c": {
+    "message": "Bestätigen und alle Websites zulassen",
+    "description": "Confirm and allow all sites"
+  },
+  "m_allow_access_all_sites_b839ef03": {
+    "message": "Zugriff auf alle Websites erlauben",
+    "description": "Allow access all sites"
+  },
+  "m_read_cookies_localstorage_and_sessionstorage_on__6823d6d4": {
+    "message": "Cookies, localStorage und sessionStorage auf allen besuchten HTTP/HTTPS-Websites lesen. Deaktivieren, um bei neuen Websites nach Zugriff zu fragen.",
+    "description": "Read cookies, localStorage, and sessionStorage on all HTTP/HTTPS sites you visit. Turn off to ask for access on new sites."
   }
 }

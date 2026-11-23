@@ -54,6 +54,7 @@ try {
     return createOperationContext(tab, storeId);
   }, targetPage.url());
 
+  await testHistoryTabsWithoutOperations();
   await testSurfaceClosure();
   await testPartialFailureRetry();
   await testUndoConflict();
@@ -101,9 +102,9 @@ async function getWorker() {
     || context.waitForEvent("serviceworker", { timeout: 10000 });
 }
 
-async function openExtensionPage() {
+async function openExtensionPage(surface = "popup") {
   const page = await context.newPage();
-  await page.goto(`chrome-extension://${extensionId}/src/popup/popup.html`);
+  await page.goto(`chrome-extension://${extensionId}/src/popup/popup.html?surface=${surface}`);
   await targetPage.bringToFront();
   await page.reload();
   await page.waitForFunction(() => document.querySelector("#loadingState")?.hidden === true);
@@ -197,10 +198,61 @@ async function testSurfaceClosure() {
   recordScenario("initiator closes and reopens after durable ACK", job);
 }
 
+async function testHistoryTabsWithoutOperations() {
+  await inspector.evaluate(async (origin) => {
+    const { saveRecentCookieChanges } = await import(chrome.runtime.getURL("src/shared/history-store.js"));
+    await saveRecentCookieChanges([{
+      id: "history-tab-regression", name: "archived_cookie", timestamp: Date.now(), itemKind: "cookie",
+      domain: new URL(origin).hostname, path: "/", origin, beforeSize: 1, afterSize: 2
+    }]);
+  }, origin);
+  for (const [surface, width] of [["popup", 760], ["sidepanel", 420]]) {
+    const page = await openExtensionPage(surface);
+    await page.setViewportSize({ width, height: 820 });
+    await assertHistoryTabNavigation(page, "cookies", false);
+    await page.screenshot({ path: path.join(artifactDir, `history-tabs-${surface}.png`) });
+    await page.close();
+  }
+  await inspector.evaluate(async () => {
+    const { clearRecentCookieChanges } = await import(chrome.runtime.getURL("src/shared/history-store.js"));
+    await clearRecentCookieChanges();
+  });
+  console.log("ok: history tabs with archived changes and no session operations in popup and sidepanel");
+}
+
+async function assertHistoryTabNavigation(page, dataView, hasOperations) {
+  await page.locator(`.data-switch button[data-view="${dataView}"]`).click();
+  await page.waitForFunction(() => document.querySelector("#loadingState").hidden);
+  await page.locator("#historyViewButton").click();
+  for (const closeDetail of [false, true]) {
+    await page.locator("#historyList .history-detail-button").first().click();
+    await page.locator("#historyDetail").waitFor();
+    if (closeDetail) await page.locator("#closeHistoryDetailButton").click();
+    await page.locator("#operationsTabButton").click();
+    await page.locator(hasOperations ? "#operationList" : "#operationsEmpty").waitFor();
+    await page.locator("#refreshButton").click();
+    await page.waitForFunction(() => document.querySelector("#loadingState").hidden);
+    assert.equal(await page.locator("#statusBar.is-error").count(), 0, await page.locator("#statusMessage").textContent());
+    await page.locator("#changesTabButton").click();
+    await page.waitForFunction(() => document.querySelector("#changesTabButton").getAttribute("aria-pressed") === "true");
+    await page.locator("#historyList").waitFor();
+    assert.equal(await page.locator("#historyDetail").count(), 1, "The shared detail must remain in the document");
+    assert.equal(await page.locator("#historyDetail").isHidden(), true);
+    assert.equal(await page.locator('#historyList [aria-expanded="true"]').count(), 0);
+    assert.equal(await page.locator("#operationList").isHidden(), true);
+    assert.equal(await page.locator("#operationsEmpty").isHidden(), true);
+    assert.equal(await page.locator("#clearHistoryButton").isVisible(), true);
+    assert.equal(await page.locator("#statusBar.is-error").count(), 0);
+  }
+  await page.locator("#historyList .history-detail-button").first().click();
+  await page.locator("#historyDetail").waitFor();
+  await page.locator("#closeHistoryDetailButton").click();
+}
+
 async function testOperationsView() {
   await targetPage.bringToFront();
   await inspector.locator("#refreshButton").click();
-  await inspector.locator("#historyViewButton").click();
+  await assertHistoryTabNavigation(inspector, "localStorage", true);
   await inspector.locator("#operationsTabButton").click();
   await inspector.locator("#operationList > li").first().waitFor();
   const jobs = await callClient(inspector, "listOperations");

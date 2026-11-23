@@ -6,16 +6,20 @@ import {
   getWindowHttpTabs,
   hasSitePermission,
   openSidePanel,
-  requestSitePermission,
   reloadTab,
   watchCookieChanges
 } from "../shared/cookie-api.js";
 import {
   FAVORITE_SITE_DATA_IDS_KEY,
+  ALL_SITES_ACCESS_KEY,
+  ALL_SITES_ACCESS_GENERATION_KEY,
+  SITE_ACCESS_CONSENTS_KEY,
   getFavoriteSiteDataIds,
-  grantSiteAccessConsent,
+  getAllSitesAccessIntent,
+  getSiteAccessConsentStorageKey,
   getLastViewedSiteData,
   hasSiteAccessConsent,
+  isAllSitesAccessStorageChange,
   getPreferences,
   normalizeLastViewedSiteData,
   setFavoriteSiteDataId,
@@ -72,6 +76,7 @@ import { createPopupHistoryController } from "./popup-history-controller.js";
 import { createPopupItemActionsController } from "./popup-item-actions-controller.js";
 import { createEditorDraftStore, getEditorDraftKey, getEditorRowSignature } from "./popup-editor-drafts.js";
 import { createOperationsView } from "./popup-operations-view.js";
+import { requestConfirmedAllSitesPermission, requestConfirmedSitePermission } from "../shared/site-access-permission.js";
 
 const state = {
   tab: null,
@@ -128,6 +133,9 @@ let selectedCopyMode = "value";
 let refreshRequestId = 0;
 let cookieRefreshTimer = 0;
 let sitePermissionRequestPending = false;
+let siteAccessRefreshPending = false;
+let siteAccessStateChecks = 0;
+let dismissedSiteAccessOrigin = "";
 let renderedEditor = null;
 const editorDrafts = createEditorDraftStore();
 const pendingFavoriteIds = new Set();
@@ -146,8 +154,13 @@ const elements = {
   siteAccessDialog: document.querySelector("#siteAccessDialog"),
   siteAccessDialogDetail: document.querySelector("#siteAccessDialogDetail"),
   siteAccessDialogError: document.querySelector("#siteAccessDialogError"),
+  siteAccessDialogAllSitesButton: document.querySelector("#siteAccessDialogAllSitesButton"),
   siteAccessDialogAllowButton: document.querySelector("#siteAccessDialogAllowButton"),
   siteAccessDialogCancelButton: document.querySelector("#siteAccessDialogCancelButton"),
+  allSitesAccessDialog: document.querySelector("#allSitesAccessDialog"),
+  allSitesAccessDialogError: document.querySelector("#allSitesAccessDialogError"),
+  allSitesAccessDialogConfirmButton: document.querySelector("#allSitesAccessDialogConfirmButton"),
+  allSitesAccessDialogCancelButton: document.querySelector("#allSitesAccessDialogCancelButton"),
   siteAccessState: document.querySelector("#siteAccessState"),
   requestPermissionButton: document.querySelector("#requestPermissionButton"),
   statusBar: document.querySelector("#statusBar"),
@@ -312,7 +325,7 @@ const surface = popupParams.get("surface") === "sidepanel" ? "sidepanel" : "popu
 document.documentElement.dataset.surface = surface;
 document.body.dataset.surface = surface;
 const operationsView = createOperationsView({
-  state, loadRecentChanges: historyController.loadRecentChanges, refreshData,
+  state, clearHistoryDetail, renderHistory, loadRecentChanges: historyController.loadRecentChanges, refreshData,
   setBusy, showStatus, requestDeleteConfirmation
 });
 
@@ -325,6 +338,13 @@ async function initialize() {
   const settings = createSettingsController({ onOpen: () => {
     setCopyMenuOpen(false);
     setValueToolsMenuOpen(false);
+  }, onRequestAllSitesAccess: () => {
+    settings.close();
+    showAllSitesAccessDialog({ source: "settings" });
+  }, onSiteAccessChanged: refreshSiteAccess, onSiteAccessRequestStateChange: (pending) => {
+    if (pending) dismissCurrentSiteAccessPrompt();
+    sitePermissionRequestPending = pending;
+    if (!pending && siteAccessRefreshPending) refreshSiteAccess();
   } });
   onLanguageChanged(renderLanguage);
   operationsView.initialize();
@@ -406,15 +426,45 @@ function bindEvents() {
     event.preventDefault();
     void requestCurrentSitePermission();
   });
-  elements.requestPermissionButton.addEventListener("click", () => showSiteAccessDialog(state.tab?.url));
+  elements.siteAccessDialogAllSitesButton.addEventListener("click", () => showAllSitesAccessDialog());
+  elements.allSitesAccessDialogConfirmButton.addEventListener("click", () => {
+    // Invoke the native permission request directly from this second confirmation click.
+    void requestCurrentSitePermission({ allSites: true });
+  });
+  elements.requestPermissionButton.addEventListener("click", () => showSiteAccessDialog(state.tab?.url, { force: true }));
   elements.siteAccessDialog.addEventListener("close", () => {
+    if (elements.allSitesAccessDialog.open && elements.allSitesAccessDialog.dataset.source !== "settings") {
+      elements.allSitesAccessDialog.close("cancel");
+    }
     if (elements.siteAccessDialog.returnValue !== "allow") elements.requestPermissionButton.focus();
   });
-  elements.siteAccessDialog.addEventListener("cancel", (event) => {
-    if (sitePermissionRequestPending) event.preventDefault();
+  elements.allSitesAccessDialog.addEventListener("close", () => {
+    if (sitePermissionRequestPending) return;
+    if (elements.allSitesAccessDialog.dataset.source === "settings") document.querySelector("#settingsButton").focus();
+    else if (elements.siteAccessDialog.open) elements.siteAccessDialogAllSitesButton.focus();
   });
-  elements.siteAccessDialog.addEventListener("click", (event) => {
-    if (!sitePermissionRequestPending) cancelDialogFromBackdrop(event);
+  for (const dialog of [elements.siteAccessDialog, elements.allSitesAccessDialog]) {
+    dialog.addEventListener("cancel", (event) => {
+      if (sitePermissionRequestPending) event.preventDefault();
+    });
+    dialog.addEventListener("click", (event) => {
+      if (!sitePermissionRequestPending) cancelDialogFromBackdrop(event);
+    });
+  }
+  chrome.permissions.onAdded.addListener(refreshSiteAccess);
+  chrome.permissions.onRemoved.addListener((permissions) => {
+    if (permissions.origins?.some(origin => origin === "<all_urls>" || origin.endsWith("://*/*"))) {
+      void refreshAfterAllSitesDisabled();
+    } else refreshSiteAccess();
+  });
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === "local" && changes[ALL_SITES_ACCESS_KEY]?.newValue === false) {
+      void refreshAfterAllSitesDisabled(changes);
+      return;
+    }
+    if (area === "local" && (isAllSitesAccessStorageChange(changes) || changes[SITE_ACCESS_CONSENTS_KEY] || changes[getSiteAccessConsentStorageKey(state.tab?.url)])) {
+      refreshSiteAccess();
+    }
   });
   elements.closeStatusButton.addEventListener("click", clearStatus);
   elements.selectAllCheckbox.addEventListener("change", toggleSelectAllVisible);
@@ -809,9 +859,10 @@ async function refreshData({ preserveStatus = false } = {}) {
     }
     const previousTarget = state.tab ? `${state.tab.id}:${state.tab.url}` : "";
     const nextTarget = tab ? `${tab.id}:${tab.url}` : "";
+    if (getSiteOrigin(state.tab?.url) !== getSiteOrigin(tab?.url)) dismissedSiteAccessOrigin = "";
     state.tab = tab;
     if (previousTarget !== nextTarget) {
-      if (elements.siteAccessDialog.open) elements.siteAccessDialog.close("cancel");
+      closeSiteAccessDialogs("cancel");
       state.rows = [];
       state.selectedId = "";
       state.selectedIds.clear();
@@ -865,6 +916,9 @@ async function refreshData({ preserveStatus = false } = {}) {
       return;
     }
 
+    if (elements.siteAccessDialog.open && getSiteOrigin(elements.siteAccessDialog.dataset.url) === getSiteOrigin(tab.url)) {
+      closeSiteAccessDialogs("allow");
+    }
     const cookieStoreId = await resolveCookieStoreId(tab);
     if (requestId !== refreshRequestId) {
       return;
@@ -1063,31 +1117,66 @@ async function safeHasSiteAccessConsent(url) {
   }
 }
 
-async function requestCurrentSitePermission() {
+function refreshSiteAccess() {
+  if (!state.tab?.url) return;
+  siteAccessRefreshPending = true;
+  if (state.busy || sitePermissionRequestPending || siteAccessStateChecks > 0) return;
+  siteAccessRefreshPending = false;
+  void refreshData({ preserveStatus: true });
+}
+
+async function refreshAfterAllSitesDisabled(changes) {
+  const origin = getSiteOrigin(state.tab?.url);
+  const generation = changes?.[ALL_SITES_ACCESS_GENERATION_KEY]?.newValue;
+  siteAccessStateChecks += 1;
+  try {
+    const current = await getAllSitesAccessIntent();
+    if (!current.enabled && (!generation || current.generation === generation) && origin === getSiteOrigin(state.tab?.url)) {
+      dismissCurrentSiteAccessPrompt({ preserveSettingsConfirmation: true });
+    }
+  } catch {
+    // The permission refresh still checks native permission and consent before reading data.
+  } finally {
+    siteAccessStateChecks -= 1;
+    refreshSiteAccess();
+  }
+}
+
+async function requestCurrentSitePermission({ allSites = false } = {}) {
   const url = elements.siteAccessDialog.dataset.url;
-  if (!url || !isSupportedPageUrl(url) || state.loading || state.busy || sitePermissionRequestPending) {
+  if ((!allSites && (!url || !isSupportedPageUrl(url))) || state.loading || state.busy || sitePermissionRequestPending
+    || (allSites && !elements.allSitesAccessDialog.open)) {
     return;
   }
 
   sitePermissionRequestPending = true;
-  elements.siteAccessDialogAllowButton.disabled = true;
+  updateSiteAccessRequestButtons();
   elements.siteAccessDialogCancelButton.disabled = true;
-  elements.siteAccessDialogError.hidden = true;
+  elements.allSitesAccessDialogCancelButton.disabled = true;
+  const errorElement = allSites ? elements.allSitesAccessDialogError : elements.siteAccessDialogError;
+  errorElement.hidden = true;
+  const showError = (message) => {
+    errorElement.textContent = message;
+    errorElement.hidden = false;
+  };
   try {
-    const granted = await requestSitePermission(url);
+    const granted = await (allSites
+      ? requestConfirmedAllSitesPermission()
+      : requestConfirmedSitePermission(url));
     if (!granted) {
-      showSiteAccessDialogError(t("Site permission is required for this page."));
+      showError(allSites ? t("All-sites access was not allowed.") : t("Site permission is required for this page."));
       return;
     }
-    await grantSiteAccessConsent(url);
-    elements.siteAccessDialog.close("allow");
+    closeSiteAccessDialogs("allow");
     await refreshData();
   } catch (error) {
-    showSiteAccessDialogError(error?.message || t("Site permission is required for this page."));
+    showError(error?.message || t("Site permission is required for this page."));
   } finally {
     sitePermissionRequestPending = false;
     elements.siteAccessDialogCancelButton.disabled = false;
-    elements.siteAccessDialogAllowButton.disabled = state.loading || state.busy;
+    elements.allSitesAccessDialogCancelButton.disabled = false;
+    updateSiteAccessRequestButtons();
+    if (siteAccessRefreshPending) refreshSiteAccess();
   }
 }
 
@@ -2120,7 +2209,7 @@ function setLoading(isLoading) {
   elements.refreshButton.disabled = state.busy || isLoading;
   elements.siteSelect.disabled = state.busy || isLoading || state.tabs.length <= 1;
   elements.requestPermissionButton.disabled = state.busy || isLoading;
-  elements.siteAccessDialogAllowButton.disabled = state.busy || isLoading || sitePermissionRequestPending;
+  updateSiteAccessRequestButtons();
   elements.dataViewButtons.forEach((button) => { button.disabled = state.busy || isLoading; });
   elements.valueInput.disabled = state.busy || isLoading;
   elements.expirationInput.disabled = state.busy || isLoading;
@@ -2141,10 +2230,11 @@ function updateActionAvailability() {
 
 function setBusy(isBusy) {
   state.busy = isBusy;
+  if (!isBusy && siteAccessRefreshPending) refreshSiteAccess();
   elements.refreshButton.disabled = isBusy || state.loading;
   elements.siteSelect.disabled = isBusy || state.loading || state.tabs.length <= 1;
   elements.requestPermissionButton.disabled = isBusy || state.loading;
-  elements.siteAccessDialogAllowButton.disabled = isBusy || state.loading || sitePermissionRequestPending;
+  updateSiteAccessRequestButtons();
   elements.valueInput.disabled = isBusy || state.loading;
   elements.expirationInput.disabled = isBusy || state.loading;
   renderHistory();
@@ -2182,18 +2272,48 @@ function setBusy(isBusy) {
   updateSelectionSummary();
 }
 
-function showSiteAccessDialog(url) {
+function showSiteAccessDialog(url, { force = false } = {}) {
   if (!isSupportedPageUrl(url)) return;
+  if (force) dismissedSiteAccessOrigin = "";
+  else if (siteAccessStateChecks > 0 || getSiteOrigin(url) === dismissedSiteAccessOrigin) return;
+  if (!elements.siteAccessDialog.open || getSiteOrigin(elements.siteAccessDialog.dataset.url) !== getSiteOrigin(url)) {
+    if (elements.allSitesAccessDialog.open) elements.allSitesAccessDialog.close("cancel");
+    elements.siteAccessDialogError.hidden = true;
+  }
   elements.siteAccessDialog.dataset.url = url;
   elements.siteAccessDialogDetail.textContent = getSiteOrigin(url);
-  elements.siteAccessDialogError.hidden = true;
   if (!elements.siteAccessDialog.open) {
     elements.siteAccessDialog.returnValue = "cancel";
     elements.siteAccessDialog.showModal();
   }
 }
 
-function showSiteAccessDialogError(message) {
-  elements.siteAccessDialogError.textContent = message;
-  elements.siteAccessDialogError.hidden = false;
+function showAllSitesAccessDialog({ source = "site" } = {}) {
+  if ((source !== "settings" && !elements.siteAccessDialog.open) || state.loading || state.busy || sitePermissionRequestPending) return;
+  if (source === "settings") dismissCurrentSiteAccessPrompt();
+  elements.allSitesAccessDialogError.hidden = true;
+  if (!elements.allSitesAccessDialog.open) {
+    elements.allSitesAccessDialog.dataset.source = source;
+    elements.allSitesAccessDialog.returnValue = "cancel";
+    elements.allSitesAccessDialog.showModal();
+  }
+}
+
+function dismissCurrentSiteAccessPrompt({ preserveSettingsConfirmation = false } = {}) {
+  dismissedSiteAccessOrigin = getSiteOrigin(state.tab?.url);
+  if (preserveSettingsConfirmation && elements.allSitesAccessDialog.open && elements.allSitesAccessDialog.dataset.source === "settings") {
+    if (elements.siteAccessDialog.open) elements.siteAccessDialog.close("cancel");
+  } else closeSiteAccessDialogs("cancel");
+}
+
+function closeSiteAccessDialogs(result) {
+  if (elements.allSitesAccessDialog.open) elements.allSitesAccessDialog.close(result);
+  if (elements.siteAccessDialog.open) elements.siteAccessDialog.close(result);
+}
+
+function updateSiteAccessRequestButtons() {
+  const disabled = state.busy || state.loading || sitePermissionRequestPending;
+  elements.siteAccessDialogAllowButton.disabled = disabled;
+  elements.siteAccessDialogAllSitesButton.disabled = disabled;
+  elements.allSitesAccessDialogConfirmButton.disabled = disabled;
 }

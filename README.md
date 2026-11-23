@@ -41,7 +41,11 @@ Use the sun/moon button to switch between light and dark themes. Regular mode de
 
 ## Privacy and data control
 
-No ads, analytics, user tracking, or account required. Site data is processed on your device and is not uploaded, sold, or shared with the developer or third-party servers. Website access is requested for the site you select and can be revoked in Chrome's extension settings. Operations you start may finish after closing the popup or side panel.
+No ads, analytics, user tracking, or account required. Site data is processed on your device and is not uploaded, sold, or shared with the developer or third-party servers. Website access is requested per site by default and can be revoked in Chrome's extension settings. Operations you start may finish after closing the popup or side panel.
+
+You can enable **Allow all sites** in Settings or the site-access dialog to request access to cookies, localStorage, and sessionStorage on all HTTP/HTTPS sites you visit. Once Chrome approves this permission, new sites no longer need individual confirmation. Turn the switch off to return to per-site authorization.
+
+In per-site mode, cookie access requests HTTP and HTTPS permissions for the selected hostname and its exact parent hostnames, so non-Secure and parent-domain cookies are included. Existing permissions that cover only one scheme or the subdomain require approval of this additional scope. Cookie lists remain scoped to the selected page URL and cookie store.
 
 Preferences, site-access confirmations, favorite identifiers (without item values), saved states, and history summaries remain in local extension storage. Saved states can contain the cookie and storage values you explicitly choose to save. Full before/after values and operation recovery data remain only for the current browser session; restarting Chrome or reloading the extension clears them. Clear extension data or uninstall the extension to remove locally saved extension data.
 
@@ -63,9 +67,9 @@ The last command tests reading and changing a website's Local Storage and Sessio
 
 ## Release and documentation
 
-Current version: **0.3.7**. Requires **Chrome 114 or newer**.
+Current version: **0.3.9**. Requires **Chrome 114 or newer**.
 
-- [v0.3.7 release notes](docs/release-notes-v0.3.7.md)
+- [v0.3.9 release notes](docs/release-notes-v0.3.9.md)
 - [Localization maintenance](docs/localization.md)
 - [Versioned site data package format](docs/site-data-package-v1.md)
 - [Store descriptions and promotional images for the Chrome Web Store](store-assets/)

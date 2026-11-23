@@ -1,5 +1,9 @@
-Please review Cookie Controller v0.3.7 for Purple Potassium. This update replaces the generic API wrapper with a direct chrome.scripting.executeScript({...}) call in src/shared/storage-api.js. The scripting permission is required to read, create, edit and delete the selected website's Local Storage and Session Storage. chrome.storage only manages extension data and cannot provide this functionality.
+Cookie Controller v0.3.9 adds optional all-sites access with a two-step confirmation, while keeping per-site authorization as the default. It also fixes missing cookies, repeated site-access confirmation and History navigation. Cookie access requests HTTP/HTTPS permissions for the selected hostname and exact parent hostnames, so parent-domain and non-Secure cookies are included. Lists remain scoped to the selected URL and cookie store.
+
+The scripting permission is required to read, create, edit and delete the selected website's Local Storage and Session Storage via the direct chrome.scripting.executeScript({...}) call in src/shared/storage-api.js. chrome.storage only manages extension data and cannot provide this functionality.
 
 To verify: open https://example.com, open Cookie Controller and approve site access, then choose Local or Session. Use Import > Quick entry to add a key/value, edit and save it, then delete it. Check that tab's DevTools > Application to confirm the changes.
 
 Only bundled functions execute on the user-selected, authorized site. No remote code is downloaded or executed.
+
+Website access is requested per site by default. Users may enable “Allow all sites” in Settings or the site-access dialog to request both optional HTTP/HTTPS wildcard host permissions for cookies, Local Storage and Session Storage on visited websites. Turning it off revokes wildcard permissions and restores per-site authorization. The extension continues to read only the selected page's data while the user opens and operates it.

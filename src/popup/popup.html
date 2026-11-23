@@ -71,14 +71,24 @@
                   </svg>
                 </button>
               </div>
-              <label class="refresh-setting settings-refresh-row">
+              <label class="refresh-setting settings-refresh-row" title="Reload the active page after editing data" data-i18n-attrs="title">
                 <span class="refresh-setting-copy">
-                  <span class="refresh-setting-title" data-i18n="Reload after changes">Reload after changes</span>
-                  <span class="refresh-setting-note" data-i18n="Reload the active page after editing data">Reload the active page after editing data</span>
+                  <span class="refresh-setting-title" id="autoRefreshTitle" data-i18n="Reload after changes">Reload after changes</span>
+                  <span class="visually-hidden" id="autoRefreshNote" data-i18n="Reload the active page after editing data">Reload the active page after editing data</span>
                 </span>
-                <input id="autoRefreshToggle" type="checkbox">
+                <input id="autoRefreshToggle" type="checkbox" aria-labelledby="autoRefreshTitle" aria-describedby="autoRefreshNote">
                 <span class="switch-track" aria-hidden="true"></span>
               </label>
+              <div class="refresh-setting settings-access-row" title="Read cookies, localStorage, and sessionStorage on all HTTP/HTTPS sites you visit. Turn off to ask for access on new sites." data-i18n-attrs="title">
+                <span class="refresh-setting-copy">
+                  <span class="refresh-setting-title" id="allSitesAccessTitle" data-i18n="Allow access all sites">Allow access all sites</span>
+                  <span class="visually-hidden" id="allSitesAccessNote" data-i18n="Read cookies, localStorage, and sessionStorage on all HTTP/HTTPS sites you visit.">Read cookies, localStorage, and sessionStorage on all HTTP/HTTPS sites you visit.</span>
+                  <span class="visually-hidden" id="allSitesAccessOffNote" data-i18n="Turn off to ask for access on new sites.">Turn off to ask for access on new sites.</span>
+                </span>
+                <button class="all-sites-toggle" id="allSitesAccessToggle" type="button" role="switch" aria-checked="false" aria-labelledby="allSitesAccessTitle" aria-describedby="allSitesAccessNote allSitesAccessOffNote" disabled>
+                  <span class="switch-track" aria-hidden="true"></span>
+                </button>
+              </div>
             </div>
             <p class="settings-error" id="settingsError" role="alert" hidden></p>
           </section>
@@ -440,8 +450,24 @@
           <p class="dialog-field-error" id="siteAccessDialogError" role="alert" hidden></p>
         </div>
         <div class="app-dialog-actions">
+          <button class="warning-button site-access-all-sites-button" id="siteAccessDialogAllSitesButton" type="button" data-i18n="Allow all sites">Allow all sites</button>
           <button id="siteAccessDialogCancelButton" type="button" data-dialog-cancel autofocus data-i18n="Cancel">Cancel</button>
           <button class="primary-button" id="siteAccessDialogAllowButton" type="submit" value="allow" data-i18n="Allow access">Allow access</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="app-dialog all-sites-access-dialog" id="allSitesAccessDialog" aria-labelledby="allSitesAccessDialogTitle" aria-describedby="allSitesAccessDialogMessage allSitesAccessDialogNote">
+      <form method="dialog">
+        <div class="app-dialog-body">
+          <h2 id="allSitesAccessDialogTitle" data-i18n="Allow access to all websites?">Allow access to all websites?</h2>
+          <p id="allSitesAccessDialogMessage" data-i18n="This allows the extension to read cookies, localStorage, and sessionStorage on every HTTP/HTTPS website you visit.">This allows the extension to read cookies, localStorage, and sessionStorage on every HTTP/HTTPS website you visit.</p>
+          <p id="allSitesAccessDialogNote" data-i18n="You can turn off all-sites access in Settings at any time.">You can turn off all-sites access in Settings at any time.</p>
+          <p class="dialog-field-error" id="allSitesAccessDialogError" role="alert" hidden></p>
+        </div>
+        <div class="app-dialog-actions">
+          <button id="allSitesAccessDialogCancelButton" type="button" data-dialog-cancel autofocus data-i18n="Cancel">Cancel</button>
+          <button class="warning-button" id="allSitesAccessDialogConfirmButton" type="button" data-i18n="Confirm and allow all sites">Confirm and allow all sites</button>
         </div>
       </form>
     </dialog>

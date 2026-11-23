@@ -356,10 +356,43 @@ body[data-surface="popup"] .site-switch {
   min-height: 44px;
 }
 
-.settings-refresh-row {
-  min-height: 44px;
+.settings-refresh-row,
+.settings-access-row {
+  min-height: 40px;
   border-top: 1px solid var(--line);
-  padding-top: 8px;
+  padding-top: 6px;
+}
+
+.settings-access-row {
+  cursor: default;
+}
+
+.all-sites-toggle {
+  display: grid;
+  place-items: center;
+  flex: 0 0 38px;
+  width: 38px;
+  min-height: 32px;
+  padding: 2px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.all-sites-toggle .switch-track {
+  display: block;
+}
+
+.all-sites-toggle[aria-checked="true"] .switch-track {
+  background: var(--accent);
+}
+
+.all-sites-toggle[aria-checked="true"] .switch-track::after {
+  transform: translateX(14px);
+}
+
+.all-sites-toggle:focus-visible .switch-track {
+  box-shadow: var(--focus);
 }
 
 .settings-controls select {
@@ -2351,6 +2384,27 @@ body[data-surface="sidepanel"] .status-bar {
   background: var(--primary-strong);
 }
 
+.warning-button {
+  border-color: var(--warning-action-border);
+  background: var(--warning-button-bg);
+  color: var(--warning-button-text);
+  font-weight: 700;
+}
+
+.warning-button:hover:not(:disabled) {
+  border-color: var(--warning-line);
+  background: var(--warning-button-hover);
+}
+
+.warning-button:focus-visible {
+  box-shadow: var(--focus);
+}
+
+.warning-button:disabled {
+  background: var(--warning-button-bg);
+  cursor: not-allowed;
+}
+
 .danger-button {
   border-color: var(--danger-border);
   background: var(--danger-quiet);
@@ -2379,8 +2433,31 @@ body[data-surface="sidepanel"] .status-bar {
   width: min(360px, calc(100vw - 32px));
 }
 
-.site-access-dialog {
+.site-access-dialog,
+.all-sites-access-dialog {
   width: min(400px, calc(100vw - 32px));
+}
+
+.site-access-dialog .app-dialog-actions button {
+  min-width: 0;
+  min-height: 32px;
+  height: auto;
+  flex: 0 1 auto;
+}
+
+.site-access-dialog .site-access-all-sites-button {
+  width: auto;
+  margin-right: auto;
+}
+
+.all-sites-access-dialog .app-dialog-actions {
+  flex-wrap: wrap;
+}
+
+.all-sites-access-dialog .app-dialog-actions button {
+  max-width: 100%;
+  height: auto;
+  padding: 7px 11px;
 }
 
 .site-access-state {

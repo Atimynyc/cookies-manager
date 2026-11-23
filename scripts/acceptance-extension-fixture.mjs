@@ -13,7 +13,7 @@ const EXCLUDED_DIRECTORIES = new Set([
   "tests"
 ]);
 
-export async function createAcceptanceExtension(projectRoot) {
+export async function createAcceptanceExtension(projectRoot, { hostPermissions } = {}) {
   const extensionRoot = await mkdtemp(path.join(os.tmpdir(), "cookie-controller-extension-"));
   await cp(projectRoot, extensionRoot, {
     recursive: true,
@@ -26,8 +26,8 @@ export async function createAcceptanceExtension(projectRoot) {
 
   const manifestPath = path.join(extensionRoot, "manifest.json");
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
-  manifest.host_permissions = manifest.optional_host_permissions;
-  delete manifest.optional_host_permissions;
+  manifest.host_permissions = hostPermissions ?? manifest.optional_host_permissions;
+  if (!hostPermissions) delete manifest.optional_host_permissions;
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
   return {
